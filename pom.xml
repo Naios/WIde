@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
+<!-- Formatted with Notepad++ > XML Tools > Pretty print (XML only)-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>WIde</groupId>
     <artifactId>Core</artifactId>
-    <version>${git.commit.id.abbrev}</version>
+    <version>1</version>
     <packaging>jar</packaging>
     <name>Core</name>
     <url>http://maven.apache.org</url>
@@ -35,7 +36,9 @@
                             <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>wide.core.Main</mainClass>
                         </manifest>
+                        <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
+                    <finalName>WIde-${git.commit.id.abbrev}</finalName>
                 </configuration>
             </plugin>
             <!-- GIT version integration -->
