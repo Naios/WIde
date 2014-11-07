@@ -43,11 +43,11 @@ public class Arguments
     };
 
     private CommandLine cmd = null;
-    
+
     public Arguments(String[] args) throws ParseException
     {
         CommandLineParser parser = new BasicParser();
-        
+
         try
         {
             cmd = parser.parse(options, args);
@@ -66,7 +66,7 @@ public class Arguments
         }
     }
 
-    private boolean isGui()
+    public boolean isGuiApplication()
     {
         return !cmd.hasOption("nogui");
     }

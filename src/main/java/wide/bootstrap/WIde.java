@@ -1,15 +1,5 @@
 package wide.bootstrap;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.OptionGroup;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import wide.session.arguments.Arguments;
 import wide.session.config.Config;
 import wide.session.config.WIdeConfig;
@@ -22,10 +12,6 @@ public class WIde
 
     public static void main(String[] args)
     {
-        // Debug Begin
-        args = new String[] { "", "--nogui" };
-        // Debug End
-
         final Arguments arguments;
         final Config config;
 
