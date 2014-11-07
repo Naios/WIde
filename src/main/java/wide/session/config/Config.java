@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
+import wide.session.WIde;
+import wide.session.hooks.Hook;
+import wide.session.hooks.HookListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -13,39 +16,65 @@ import javafx.beans.value.ObservableValue;
 
 public class Config
 {
-	private final Properties storage;
+	private Properties storage;
 
-	private final String file;
+	private String file;
 
-	protected final HashMap<String, StringProperty> properties = new HashMap<>();
+	protected HashMap<String, StringProperty> properties = new HashMap<>();
 
-	public Config(String file)
+	public Config()
 	{
-	    this.file = file;
+	    // After Arg parser has finished, load config with args
+        WIde.getHooks().addListener(new HookListener(Hook.ON_APPLICATION_STOP, this)
+        {
+            @Override
+            public void informed()
+            {
+                load();
+            }
+        });
+	    
+	    // Saves Config on Close
+	    WIde.getHooks().addListener(new HookListener(Hook.ON_APPLICATION_STOP, this)
+        {
+            @Override
+            public void informed()
+            {
+                save();
+            }
+        });
+	}
 
-	    final String[][] defaultProperties = getDefaultProperties();
-	    final Properties defaults = new Properties();
+	protected String[][] getDefaultProperties()
+	{
+	    return new String[][] {};
+	}
+	
+	private void load()
+	{
+	    this.file = WIde.getArgs().getConfigName();
 
-	    // Array size must be [?][2]
-	    assert (defaultProperties[0].length == 2);
+        final String[][] defaultProperties = getDefaultProperties();
+        final Properties defaults = new Properties();
+
+        // Array size must be [?][2]
+        assert (defaultProperties[0].length == 2);
 
         for (String[] property : defaultProperties)
             defaults.put(property[0], property[1]);
 
         storage = new Properties(defaults);
 
-	    // Try to load an existing config file
-	    try
+        // Try to load an existing config file
+        try
         {
             storage.loadFromXML(new FileInputStream(file));
         } catch (IOException e)
         {
         }
-	}
 
-	protected String[][] getDefaultProperties()
-	{
-	    return new String[][] {};
+        // Hooks.AFTER_CONFIG_FINISHED
+        WIde.getHooks().fire(Hook.AFTER_CONFIG_FINISHED);
 	}
 
 	public void save()
@@ -65,7 +94,7 @@ public class Config
         }
 	}
 
-	public StringProperty get_property(final String key)
+	public StringProperty getProperty(final String key)
 	{
 		synchronized (properties)
 		{

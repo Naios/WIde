@@ -8,6 +8,9 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import wide.session.WIde;
+import wide.session.hooks.Hook;
+
 abstract class DefaultOptions extends Options
 {
     DefaultOptions()
@@ -44,7 +47,11 @@ public class Arguments
 
     private CommandLine cmd = null;
 
-    public Arguments(String[] args) throws ParseException
+    public Arguments()
+    {
+    }
+
+    public boolean parse(String[] args)
     {
         CommandLineParser parser = new BasicParser();
 
@@ -62,12 +69,29 @@ public class Arguments
         {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("WIde", options);
-            throw new ParseException("");
+            return false;
         }
+        
+        // Hook.AFTER_ARGS_FINISHED
+        WIde.getHooks().fire(Hook.AFTER_ARGS_FINISHED);
+        return true;
+    }
+
+    public boolean hasArgument(String arg)
+    {
+        return cmd.hasOption(arg);
     }
 
     public boolean isGuiApplication()
     {
-        return !cmd.hasOption("nogui");
+        return !hasArgument("nogui");
+    }
+
+    public String getConfigName()
+    {
+        if (!hasArgument("config"))
+            return "WIde.xml";
+        else
+            return cmd.getOptionValue("config");
     }
 }

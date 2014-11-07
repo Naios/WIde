@@ -15,11 +15,6 @@ public class WIdeConfig extends Config
             {"DB:Autologin", "false"}
     };
 
-    public WIdeConfig(String file)
-    {
-        super(file);
-    }
-
     protected String[][] getDefaultProperties()
     {
         return DEFAULT_PROPERTIES;
