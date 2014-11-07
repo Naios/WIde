@@ -10,63 +10,59 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-abstract class ConfigurateableProgramOptions extends Options
-{
-    ConfigurateableProgramOptions()
-    {
-        configure();
-    }
-    
-    protected abstract void configure(); 
-}
+import wide.session.arguments.Arguments;
+import wide.session.config.Config;
+import wide.session.config.WIdeConfig;
 
 public class WIde
 {
-    private static final Options options = new ConfigurateableProgramOptions()
-    {
-        @Override
-        @SuppressWarnings("static-access")
-        protected void configure()
-        {
-            addOption(OptionBuilder.withLongOpt("help")
-                    .withDescription("Shows the available arguments.")
-                    .create("h"));
-            addOption(OptionBuilder
-                    .withLongOpt("nogui")
-                    .withDescription("Prevents WIde from creating a gui. (console mode)")
-                    .create("ng"));
-        }
-    };
+    private final Config config;
+
+    private final Arguments args;
 
     public static void main(String[] args)
     {
-        // Debug
+        // Debug Begin
         args = new String[] { "", "--nogui" };
+        // Debug End
 
-        WIde wide = new WIde();
-        wide.parseArguments(args);
-    }
-
-    private void parseArguments(String[] args)
-    {
-        CommandLineParser parser = new BasicParser();
-        CommandLine cmd = null;
+        final Arguments arguments;
+        final Config config;
 
         try
         {
-            cmd = parser.parse(options, args);
-        } catch (ParseException exception)
-        {
-            System.out.println(exception.getMessage() + "\n");
-        }
+            arguments = new Arguments(args);
+            config = new WIdeConfig("WIde.xml");
 
-        // Parser failed if cmd == null
-        // Display help context then
-        if (cmd == null || cmd.hasOption("help"))
+        } catch (Exception e)
         {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("WIde", options);
             return;
         }
+
+        final WIde wide = new WIde(arguments, config);
+        wide.launch();
+    }
+
+    public WIde(Arguments args, Config config)
+    {
+        this.config = config;
+        this.args = args;
+    }
+    
+    public Config getConfig()
+    {
+        return config;
+    }
+
+    public Arguments getArgs()
+    {
+        return args;
+    }
+    
+    private void launch()
+    {
+        
+        
+        
     }
 }
