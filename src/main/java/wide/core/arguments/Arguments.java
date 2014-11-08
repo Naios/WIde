@@ -1,4 +1,4 @@
-package wide.session.arguments;
+package wide.core.arguments;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -8,8 +8,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import wide.session.WIde;
-import wide.session.hooks.Hook;
+import wide.core.WIde;
+import wide.core.hooks.Hook;
 
 abstract class DefaultOptions extends Options
 {
@@ -37,7 +37,7 @@ public class Arguments
                     .create("c"));
             addOption(OptionBuilder
                     .withLongOpt("trace")
-                    .withDescription("Enables detailed Tracelogs")
+                    .withDescription("Enables detailed Tracelogs.")
                     .create("t"));
             addOption(OptionBuilder
                     .withLongOpt("nogui")
@@ -75,7 +75,7 @@ public class Arguments
             formatter.printHelp("WIde", options);
             return false;
         }
-        
+
         // Hook.ON_ARGS_FINISHED
         WIde.getHooks().fire(Hook.ON_ARGS_FINISHED);
         return true;

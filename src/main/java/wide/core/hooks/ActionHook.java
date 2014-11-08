@@ -1,8 +1,8 @@
-package wide.session.hooks;
+package wide.core.hooks;
 
 import java.util.Collection;
 
-import wide.session.WIde;
+import wide.core.WIde;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.HashMultimap;

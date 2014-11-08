@@ -1,4 +1,4 @@
-package wide.session.config;
+package wide.core.config;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
-import wide.session.WIde;
-import wide.session.hooks.Hook;
-import wide.session.hooks.HookListener;
+import wide.core.WIde;
+import wide.core.hooks.Hook;
+import wide.core.hooks.HookListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;

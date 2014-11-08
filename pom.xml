@@ -31,7 +31,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>wide.session.WIde</mainClass>
+                            <mainClass>wide.core.WIde</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

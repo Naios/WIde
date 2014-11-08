@@ -1,4 +1,4 @@
-package wide.session.database;
+package wide.core.database;
 
 public enum DatabaseTypes
 {

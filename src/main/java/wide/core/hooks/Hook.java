@@ -1,4 +1,4 @@
-package wide.session.hooks;
+package wide.core.hooks;
 
 public enum Hook
 {

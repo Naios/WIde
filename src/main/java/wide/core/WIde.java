@@ -1,11 +1,11 @@
-package wide.session;
+package wide.core;
 
-import wide.session.arguments.Arguments;
-import wide.session.config.Config;
-import wide.session.config.WIdeConfig;
-import wide.session.database.Database;
-import wide.session.hooks.ActionHook;
-import wide.session.hooks.Hook;
+import wide.core.arguments.Arguments;
+import wide.core.config.Config;
+import wide.core.config.WIdeConfig;
+import wide.core.database.Database;
+import wide.core.hooks.ActionHook;
+import wide.core.hooks.Hook;
 
 public class WIde
 {

@@ -1,6 +1,6 @@
-package wide.session.config;
+package wide.core.config;
 
-import wide.session.database.DatabaseTypes;
+import wide.core.database.DatabaseTypes;
 
 public class WIdeConfig extends Config
 {

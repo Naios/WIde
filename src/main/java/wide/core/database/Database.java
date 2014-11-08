@@ -1,4 +1,4 @@
-package wide.session.database;
+package wide.core.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,9 +7,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import wide.session.WIde;
-import wide.session.hooks.Hook;
-import wide.session.hooks.HookListener;
+import wide.core.WIde;
+import wide.core.hooks.Hook;
+import wide.core.hooks.HookListener;
 
 public class Database
 {
