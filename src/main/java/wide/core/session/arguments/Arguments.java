@@ -36,6 +36,13 @@ public class Arguments
                     .hasArg()
                     .create("c"));
             addOption(OptionBuilder
+                    .withLongOpt("execute")
+                    .withDescription("Executes a Single command in the WIde Console")
+                    .withValueSeparator('=')
+                    .hasArg()
+                    .withArgName("ng")
+                    .create("e"));
+            addOption(OptionBuilder
                     .withLongOpt("trace")
                     .withDescription("Enables detailed Tracelogs.")
                     .create("t"));
@@ -50,6 +57,9 @@ public class Arguments
             addOption(OptionBuilder.withLongOpt("help")
                     .withDescription("Shows the available arguments.")
                     .create("h"));
+            addOption(OptionBuilder.withLongOpt("version")
+                    .withDescription("Shows Version and Author Info.")
+                    .create("v"));
         }
     };
 
@@ -80,6 +90,8 @@ public class Arguments
             return false;
         }
 
+        check();
+        
         // Hook.ON_ARGUMENTS_LOADED
         WIde.getHooks().fire(Hook.ON_ARGUMENTS_LOADED);
         return true;
@@ -89,10 +101,21 @@ public class Arguments
     {
         return (cmd != null) && cmd.hasOption(arg);
     }
+    
+    public String getParameter(String arg)
+    {
+        return (cmd != null) ? cmd.getOptionValue(arg) : null;
+    }
+
+    private void check()
+    {
+        if ((getParameter("execute") != null) && (!hasArgument("nogui")))
+            System.out.println("[Warning] --execute forces --nogui");
+    }
 
     public boolean isGuiApplication()
     {
-        return !hasArgument("nogui");
+        return !hasArgument("nogui") && (getParameter("execute") == null);
     }
 
     public boolean isTraceEnabled()

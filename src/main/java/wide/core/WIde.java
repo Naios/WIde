@@ -11,6 +11,7 @@ import wide.core.session.config.WIdeConfig;
 import wide.core.session.database.Database;
 import wide.core.session.hooks.ActionHook;
 import wide.core.session.hooks.Hook;
+import wide.core.session.querys.QueryParser;
 
 public class WIde
 {
@@ -22,7 +23,9 @@ public class WIde
 
     private final static ModuleLoader MODULES = new ModuleLoader();
     
-    private final static Database DATABASE = new Database();   
+    private final static Database DATABASE = new Database();
+    
+    private final static QueryParser QUERYPARSER = new QueryParser();
 
     private final static WIde INSTANCE = new WIde();
 
@@ -49,6 +52,11 @@ public class WIde
     public static Database getDatabase()
     {
         return DATABASE;
+    }
+
+    public static QueryParser getQueryparser()
+    {
+        return QUERYPARSER;
     }
 
     public static WIde getInstance()

@@ -41,58 +41,82 @@ public class Terminal extends Module implements UserInferface
         final String cmdString = WIde.getConfig().getProperty("DB:User").get() +
                 "@" + WIde.getConfig().getProperty("DB:Host").get() + ": ";
 
-        System.out.println("Welcome to WIde! (Console Mode)");
+        final String singleCommand = WIde.getArgs().getParameter("execute");
 
-        if (console != null && !WIde.getArgs().isLegacyEnabled())
-        // Normal Mode
+        if (!WIde.getDatabase().isConnected())
         {
-            System.out.println();
-            String input;
-            
-            while (true)
-            {
-                input = console.readLine(cmdString);
-                if (input == null || input.equals("exit"))
-                    break;
+            System.out.println("Sorry, could not connect to: "
+                    + WIde.getConfig().getProperty("DB:User").get() + "@"
+                    + WIde.getConfig().getProperty("DB:Host").get()
+                    + ", closed.");
 
-                execute(input);
-            }
-            
-            System.out.println();
+            return;
         }
-        // Legacy Mode
+
+        if (singleCommand != null)
+        {
+            // Single Command
+            System.out.println(cmdString + singleCommand);
+            execute(singleCommand);
+        }
         else
         {
-            System.out.println(">> Switched to Legacy Mode! (Shortcuts disabled)\n");
+            System.out.println("Welcome to WIde! (Console Mode)");
             
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-            String input = "";
-            
-            while (true)
+            if (console != null && !WIde.getArgs().isLegacyEnabled())
+            // Normal Mode
             {
-                System.out.print(cmdString);
+                System.out.println();
+                String input;
 
-                try
+                while (true)
                 {
-                    input = bufferedReader.readLine();
+                    input = console.readLine(cmdString);
+                    if (input == null || input.equals("exit"))
+                        break;
 
-                } catch (IOException e)
-                {
+                    execute(input);
                 }
-                if (input == null || input.equals("exit"))
-                    break;
 
-                execute(input);
-                
+                System.out.println();
             }
-        }
+            // Legacy Mode
+            else
+            {
+                System.out
+                        .println(">> Switched to Legacy Mode! (Shortcuts disabled)\n");
 
-        System.out.println("Bye!");
+                BufferedReader bufferedReader = new BufferedReader(
+                        new InputStreamReader(System.in));
+                String input = "";
+
+                while (true)
+                {
+                    System.out.print(cmdString);
+
+                    try
+                    {
+                        input = bufferedReader.readLine();
+
+                    } catch (IOException e)
+                    {
+                    }
+                    if (input == null || input.equals("exit"))
+                        break;
+
+                    execute(input);
+                }
+            }
+            
+            System.out.println("Bye!");
+        }
     }
-    
+
     private void execute(String cmd)
     {
         if (cmd.length() == 0)
             return;
+        
+        WIde.getQueryparser().parse(cmd);
     }
 }
