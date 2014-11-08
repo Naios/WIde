@@ -34,13 +34,14 @@ public class Arguments
                     .withDescription("Uses a specific Config instead the standard one.")
                     .withValueSeparator('=')
                     .hasArg()
+                    .withArgName("path")
                     .create("c"));
             addOption(OptionBuilder
                     .withLongOpt("execute")
                     .withDescription("Executes a Single command in the WIde Console")
                     .withValueSeparator('=')
                     .hasArg()
-                    .withArgName("ng")
+                    .withArgName("query")
                     .create("e"));
             addOption(OptionBuilder
                     .withLongOpt("trace")

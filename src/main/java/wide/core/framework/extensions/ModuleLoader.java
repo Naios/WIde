@@ -9,18 +9,12 @@ import wide.core.WIde;
 import wide.core.framework.ui.UserInferface;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
+import wide.modules.Loader;
 import wide.modules.gui.GraphicalInterface;
 import wide.modules.terminal.Terminal;
 
 public class ModuleLoader
 {
-    // Module Loader, insert new Module instances here
-    private static final Module[] MODULES =
-    {
-        new Terminal(),
-        new GraphicalInterface()
-    };
-
     private final Collection<Module> activated = new ArrayList<>();
 
     public ModuleLoader()
@@ -47,7 +41,7 @@ public class ModuleLoader
     // Load all Modules (Check dependencys)
     private void load()
     {
-        for (Module module : MODULES)
+        for (Module module : Loader.getModules())
         {
             module.read();
 
