@@ -86,6 +86,9 @@ public class Database
                 return;
             }
         }
+        
+        // Hook.ON_DATABASE_ESTABLISHED
+        WIde.getHooks().fire(Hook.ON_DATABASE_ESTABLISHED);
     }
 
     private void close()
@@ -101,6 +104,9 @@ public class Database
             }
         
         connections.clear();
+        
+        // Hook.ON_DATABASE_CLOSE
+        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
     }
 
     public Connection getConnection(DatabaseTypes type)

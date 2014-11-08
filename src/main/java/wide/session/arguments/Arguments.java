@@ -17,7 +17,7 @@ abstract class DefaultOptions extends Options
     {
         configure();
     }
-    
+
     protected abstract void configure(); 
 }
 
@@ -36,6 +36,10 @@ public class Arguments
                     .hasArg()
                     .create("c"));
             addOption(OptionBuilder
+                    .withLongOpt("trace")
+                    .withDescription("Enables detailed Tracelogs")
+                    .create("t"));
+            addOption(OptionBuilder
                     .withLongOpt("nogui")
                     .withDescription("Prevents WIde from creating a gui. (console mode)")
                     .create("ng"));
@@ -52,7 +56,7 @@ public class Arguments
     }
 
     public boolean parse(String[] args)
-    {
+    {       
         CommandLineParser parser = new BasicParser();
 
         try
@@ -79,12 +83,17 @@ public class Arguments
 
     public boolean hasArgument(String arg)
     {
-        return cmd.hasOption(arg);
+        return (cmd != null) && cmd.hasOption(arg);
     }
 
     public boolean isGuiApplication()
     {
         return !hasArgument("nogui");
+    }
+
+    public boolean isTraceEnabled()
+    {
+        return hasArgument("trace");
     }
 
     public String getConfigName()

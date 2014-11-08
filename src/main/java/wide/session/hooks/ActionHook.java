@@ -2,6 +2,8 @@ package wide.session.hooks;
 
 import java.util.Collection;
 
+import wide.session.WIde;
+
 import com.google.common.collect.Multimap;
 import com.google.common.collect.HashMultimap;
 
@@ -29,8 +31,11 @@ public class ActionHook
 
     public void fire(Hook hook)
     {
+        if (WIde.getArgs().isTraceEnabled())
+            System.out.println("Firing hook: " + hook.name());
+        
         final Collection<HookListener> hook_to_inform = listeners.get(hook);
         for (HookListener listener : hook_to_inform)
-            listener.informed();            
+            listener.informed();
     }
 }
