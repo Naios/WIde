@@ -1,4 +1,4 @@
-package wide.core.arguments;
+package wide.core.session.arguments;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -9,7 +9,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import wide.core.WIde;
-import wide.core.hooks.Hook;
+import wide.core.session.hooks.Hook;
 
 abstract class DefaultOptions extends Options
 {
@@ -76,8 +76,8 @@ public class Arguments
             return false;
         }
 
-        // Hook.ON_ARGS_FINISHED
-        WIde.getHooks().fire(Hook.ON_ARGS_FINISHED);
+        // Hook.ON_ARGUMENTS_LOADED
+        WIde.getHooks().fire(Hook.ON_ARGUMENTS_LOADED);
         return true;
     }
 

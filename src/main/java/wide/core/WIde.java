@@ -1,11 +1,12 @@
 package wide.core;
 
-import wide.core.arguments.Arguments;
-import wide.core.config.Config;
-import wide.core.config.WIdeConfig;
-import wide.core.database.Database;
-import wide.core.hooks.ActionHook;
-import wide.core.hooks.Hook;
+import wide.core.framework.extensions.ModuleLoader;
+import wide.core.session.arguments.Arguments;
+import wide.core.session.config.Config;
+import wide.core.session.config.WIdeConfig;
+import wide.core.session.database.Database;
+import wide.core.session.hooks.ActionHook;
+import wide.core.session.hooks.Hook;
 
 public class WIde
 {
@@ -15,7 +16,9 @@ public class WIde
 
     private final static Config CONFIG = new WIdeConfig();
 
-    private final static Database DATABASE = new Database();
+    private final static ModuleLoader MODULES = new ModuleLoader();
+    
+    private final static Database DATABASE = new Database();   
 
     private final static WIde INSTANCE = new WIde();
 
@@ -34,6 +37,11 @@ public class WIde
         return ARGUMENTS;
     }
 
+    public static ModuleLoader getModules()
+    {
+        return MODULES;
+    }
+    
     public static Database getDatabase()
     {
         return DATABASE;
@@ -60,7 +68,7 @@ public class WIde
     {
         // Hook.ON_APPLICATION_LAUNCH
         WIde.getHooks().fire(Hook.ON_APPLICATION_LAUNCH);
-
+        
         // Hook.ON_APPLICATION_STOP
         WIde.getHooks().fire(Hook.ON_APPLICATION_STOP);
     }

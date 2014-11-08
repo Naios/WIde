@@ -1,4 +1,4 @@
-package wide.core.hooks;
+package wide.core.session.hooks;
 
 public enum Hook
 {
@@ -7,10 +7,14 @@ public enum Hook
     ON_APPLICATION_LAUNCH,      // WIde 
     ON_APPLICATION_STOP,        // WIde
 
-    ON_ARGS_FINISHED,           // Arguments
+    ON_ARGUMENTS_LOADED,        // Arguments
 
     ON_CONFIG_LOADED,           // Config
     ON_CONFIG_CHANGED,          // Config
+
+    ON_MODULES_LOADED,          // ModuleLoader
+    ON_MODULES_RELOADED,        // ModuleLoader
+    ON_MODULES_UNLOADED,        // ModuleLoader
 
     ON_DATABASE_ESTABLISHED,    // Database
     ON_DATABASE_ERROR,          // Database

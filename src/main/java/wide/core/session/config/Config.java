@@ -1,4 +1,4 @@
-package wide.core.config;
+package wide.core.session.config;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -6,26 +6,26 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
-import wide.core.WIde;
-import wide.core.hooks.Hook;
-import wide.core.hooks.HookListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import wide.core.WIde;
+import wide.core.session.hooks.Hook;
+import wide.core.session.hooks.HookListener;
 
 public class Config
 {
-	private Properties storage;
-
-	private String file;
-
-	protected HashMap<String, StringProperty> properties = new HashMap<>();
+	private final Properties storage = new Properties();
+	
+	private final HashMap<String, StringProperty> properties = new HashMap<>();
+	
+	private boolean hasChanged = false;
 
 	public Config()
 	{
 	    // After Arg parser has finished, load config with args
-        WIde.getHooks().addListener(new HookListener(Hook.ON_ARGS_FINISHED, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_ARGUMENTS_LOADED, this)
         {
             @Override
             public void informed()
@@ -43,17 +43,6 @@ public class Config
                 save();
             }
         });
-
-	    // Config Loaded means always Config Changed
-	    WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
-        {
-            @Override
-            public void informed()
-            {
-                // Hook.ON_CONFIG_CHANGED
-                WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
-            }
-        });
 	}
 
 	protected String[][] getDefaultProperties()
@@ -63,26 +52,26 @@ public class Config
 	
 	private void load()
 	{
-	    this.file = WIde.getArgs().getConfigName();
-
         final String[][] defaultProperties = getDefaultProperties();
-        final Properties defaults = new Properties();
 
         // Array size must be [?][2]
         assert (defaultProperties[0].length == 2);
 
-        for (String[] property : defaultProperties)
-            defaults.put(property[0], property[1]);
-
-        storage = new Properties(defaults);
-
         // Try to load an existing config file
         try
         {
-            storage.loadFromXML(new FileInputStream(file));
+            storage.loadFromXML(new FileInputStream(WIde.getArgs().getConfigName()));
         } catch (IOException e)
         {
+            hasChanged = true;
         }
+        
+        for (String[] property : defaultProperties)
+            if (!storage.containsKey(property[0]))
+            {
+                storage.put(property[0], property[1]);
+                hasChanged = true;
+            }
 
         // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
@@ -90,17 +79,21 @@ public class Config
 
 	public void save()
 	{
+	    if (!hasChanged)
+	        return;
+	    
 	    synchronized (properties)
         {
     		try
     		{
-    			final FileOutputStream out = new FileOutputStream(file);
+    			final FileOutputStream out = new FileOutputStream(WIde.getArgs().getConfigName());
     			storage.storeToXML(out, "WIde Config");
     			out.close();
+    			
+    			hasChanged = false;
     
     		} catch (IOException e)
     		{
-    			e.printStackTrace();
     		}
         }
 	}
@@ -122,6 +115,9 @@ public class Config
 							String oldValue, String newValue)
 					{
 						storage.setProperty(key, newValue);
+						
+						if (!hasChanged)
+						    hasChanged = true;
 						
 						// Hook.ON_CONFIG_CHANGED
 						WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);

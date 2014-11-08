@@ -1,4 +1,4 @@
-package wide.core.hooks;
+package wide.core.session.hooks;
 
 public abstract class HookListener
 {

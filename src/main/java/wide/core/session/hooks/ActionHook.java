@@ -1,4 +1,4 @@
-package wide.core.hooks;
+package wide.core.session.hooks;
 
 import java.util.Collection;
 
