@@ -25,7 +25,7 @@ public class Config
 	public Config()
 	{
 	    // After Arg parser has finished, load config with args
-        WIde.getHooks().addListener(new HookListener(Hook.ON_APPLICATION_STOP, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_ARGS_FINISHED, this)
         {
             @Override
             public void informed()
@@ -41,6 +41,17 @@ public class Config
             public void informed()
             {
                 save();
+            }
+        });
+
+	    // Config Loaded means always Config Changed
+	    WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
+        {
+            @Override
+            public void informed()
+            {
+                // Hook.ON_CONFIG_CHANGED
+                WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
             }
         });
 	}
@@ -73,8 +84,8 @@ public class Config
         {
         }
 
-        // Hooks.AFTER_CONFIG_FINISHED
-        WIde.getHooks().fire(Hook.AFTER_CONFIG_FINISHED);
+        // Hooks.ON_CONFIG_LOADED
+        WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
 	}
 
 	public void save()
@@ -84,7 +95,7 @@ public class Config
     		try
     		{
     			final FileOutputStream out = new FileOutputStream(file);
-    			storage.storeToXML(new FileOutputStream(file), "WIde Config");
+    			storage.storeToXML(out, "WIde Config");
     			out.close();
     
     		} catch (IOException e)
@@ -111,6 +122,9 @@ public class Config
 							String oldValue, String newValue)
 					{
 						storage.setProperty(key, newValue);
+						
+						// Hook.ON_CONFIG_CHANGED
+						WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
 					}
 				});
 

@@ -72,8 +72,8 @@ public class Arguments
             return false;
         }
         
-        // Hook.AFTER_ARGS_FINISHED
-        WIde.getHooks().fire(Hook.AFTER_ARGS_FINISHED);
+        // Hook.ON_ARGS_FINISHED
+        WIde.getHooks().fire(Hook.ON_ARGS_FINISHED);
         return true;
     }
 

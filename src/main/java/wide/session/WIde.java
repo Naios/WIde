@@ -3,6 +3,7 @@ package wide.session;
 import wide.session.arguments.Arguments;
 import wide.session.config.Config;
 import wide.session.config.WIdeConfig;
+import wide.session.database.Database;
 import wide.session.hooks.ActionHook;
 import wide.session.hooks.Hook;
 
@@ -13,6 +14,8 @@ public class WIde
     private final static Arguments ARGUMENTS = new Arguments();
 
     private final static Config CONFIG = new WIdeConfig();
+
+    private final static Database DATABASE = new Database();
 
     private final static WIde INSTANCE = new WIde();
 
@@ -29,6 +32,11 @@ public class WIde
     public static Arguments getArgs()
     {
         return ARGUMENTS;
+    }
+
+    public static Database getDatabase()
+    {
+        return DATABASE;
     }
 
     public static WIde getInstance()
@@ -52,10 +60,6 @@ public class WIde
     {
         // Hook.ON_APPLICATION_LAUNCH
         WIde.getHooks().fire(Hook.ON_APPLICATION_LAUNCH);
-        
-                
-        
-        
 
         // Hook.ON_APPLICATION_STOP
         WIde.getHooks().fire(Hook.ON_APPLICATION_STOP);

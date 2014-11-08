@@ -6,8 +6,16 @@ public enum Hook
     // -----------------------------------
     ON_APPLICATION_LAUNCH,      // WIde 
     ON_APPLICATION_STOP,        // WIde
-    
-    AFTER_ARGS_FINISHED,        // Arguments
-    
-    AFTER_CONFIG_FINISHED       // Config
+
+    ON_ARGS_FINISHED,           // Arguments
+
+    ON_CONFIG_LOADED,           // Config
+    ON_CONFIG_CHANGED,          // Config
+
+    ON_DATABASE_ESTABLISHED,    // Database
+    ON_DATABASE_ERROR,          // Database
+    ON_DATABASE_LOST,           // Database
+    ON_DATABASE_CLOSE,          // Database
+
+    ON_UNKNOWN
 }
