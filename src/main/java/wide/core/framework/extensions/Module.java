@@ -2,11 +2,12 @@ package wide.core.framework.extensions;
 
 public abstract class Module
 {
+    private final String uuid; 
+    
     public Module(String uuid)
     {
-        
-    }
-    
+        this.uuid = uuid;
+    }  
 
     public void read()
     {
@@ -25,4 +26,10 @@ public abstract class Module
     public abstract void enable();
 
     public abstract void disable();
+    
+    @Override
+    public String toString()
+    {
+        return uuid;
+    }
 }

@@ -1,6 +1,10 @@
 package wide.core;
 
+import java.util.Collection;
+import java.util.List;
+
 import wide.core.framework.extensions.ModuleLoader;
+import wide.core.framework.ui.UserInferface;
 import wide.core.session.arguments.Arguments;
 import wide.core.session.config.Config;
 import wide.core.session.config.WIdeConfig;
@@ -68,6 +72,14 @@ public class WIde
     {
         // Hook.ON_APPLICATION_LAUNCH
         WIde.getHooks().fire(Hook.ON_APPLICATION_LAUNCH);
+        
+        // TODO Implement better Selection for interfaces
+        // Currently its ok to select the first interface
+        final List<UserInferface> interfaces = MODULES.getUserInterfaces();
+        if (!interfaces.isEmpty())
+            interfaces.get(0).show();
+        else if(WIde.getArgs().isTraceEnabled())
+            System.err.println("No User Interface available!");
         
         // Hook.ON_APPLICATION_STOP
         WIde.getHooks().fire(Hook.ON_APPLICATION_STOP);

@@ -40,6 +40,10 @@ public class Arguments
                     .withDescription("Enables detailed Tracelogs.")
                     .create("t"));
             addOption(OptionBuilder
+                    .withLongOpt("legacy")
+                    .withDescription("Enables legacy mode.")
+                    .create("l"));
+            addOption(OptionBuilder
                     .withLongOpt("nogui")
                     .withDescription("Prevents WIde from creating a gui. (console mode)")
                     .create("ng"));
@@ -94,6 +98,11 @@ public class Arguments
     public boolean isTraceEnabled()
     {
         return hasArgument("trace");
+    }
+
+    public boolean isLegacyEnabled()
+    {
+        return hasArgument("legacy");
     }
 
     public String getConfigName()

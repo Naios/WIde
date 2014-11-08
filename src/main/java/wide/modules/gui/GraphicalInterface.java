@@ -30,6 +30,7 @@ public class GraphicalInterface extends Module implements UserInferface
     @Override
     public void show()
     {
-        
+        System.err.println("Sorry, the GUI is currently not supported!\n"+
+                           "Use the Console mode instead (WIde --nogui)");
     }
 }

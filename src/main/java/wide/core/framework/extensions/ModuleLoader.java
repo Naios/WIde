@@ -2,19 +2,22 @@ package wide.core.framework.extensions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import wide.core.WIde;
+import wide.core.framework.ui.UserInferface;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
-import wide.modules.console.Console;
 import wide.modules.gui.GraphicalInterface;
+import wide.modules.terminal.Terminal;
 
 public class ModuleLoader
 {
     // Module Loader, insert new Module instances here
     private static final Module[] MODULES =
     {
-        new Console(),
+        new Terminal(),
         new GraphicalInterface()
     };
 
@@ -48,11 +51,21 @@ public class ModuleLoader
         {
             module.read();
 
-            if (module.checkDependencys() && module.check())
+            boolean dep = module.checkDependencys(), check = module.check();
+                        
+            if (WIde.getArgs().isTraceEnabled())
+                System.out.print("Module: " + module + "\tDependencys: " + dep + ", Checks: " + check + ", Loaded: >> ");
+            
+            if (dep && check)
             {
+                if (WIde.getArgs().isTraceEnabled())
+                    System.out.print("YES\n");
+                
                 activated.add(module);
                 module.enable();
             }
+            else if(WIde.getArgs().isTraceEnabled())
+                System.out.print("NO\n");
         }
 
         // Hook.ON_MODULES_LOADED
@@ -78,5 +91,16 @@ public class ModuleLoader
         
         // Hook.ON_MODULES_UNLOADED
         WIde.getHooks().fire(Hook.ON_MODULES_UNLOADED);
+    }
+
+    public List<UserInferface> getUserInterfaces()
+    {
+        final List<UserInferface> interfaces = new LinkedList<>();
+
+        for (Module module : activated)
+            if (module instanceof UserInferface)
+                interfaces.add((UserInferface)(module));
+
+        return interfaces;
     }
 }
