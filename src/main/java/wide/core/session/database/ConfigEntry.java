@@ -1,18 +1,18 @@
 package wide.core.session.database;
 
-public enum DatabaseTypes
+public enum ConfigEntry
 {
-    DATABASE_AUTH("DB:Auth"),
-    DATABASE_CHARACTER("DB:Character"),
-    DATABASE_WORLD("DB:World");
-    
+    CONFIG_DATABASE_AUTH("DB:Auth"),
+    CONFIG_DATABASE_CHARACTER("DB:Character"),
+    CONFIG_DATABASE_WORLD("DB:World");
+
     private final String storageName;
     
-    DatabaseTypes(String storageName)
+    ConfigEntry(String storageName)
     {
         this.storageName = storageName;
     }
-    
+
     public String getStorageName()
     {
         return storageName;

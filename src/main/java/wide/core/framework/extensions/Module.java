@@ -3,7 +3,7 @@ package wide.core.framework.extensions;
 public abstract class Module
 {
     private final String uuid; 
-    
+
     public Module(String uuid)
     {
         this.uuid = uuid;

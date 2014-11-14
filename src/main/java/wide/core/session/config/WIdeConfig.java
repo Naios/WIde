@@ -1,6 +1,6 @@
 package wide.core.session.config;
 
-import wide.core.session.database.DatabaseTypes;
+import wide.core.session.database.ConfigEntry;
 
 public class WIdeConfig extends Config
 {
@@ -11,9 +11,9 @@ public class WIdeConfig extends Config
             {"DB:Host", "localhost"},
             {"DB:Port", "3306"},
             {"DB:Password", ""},
-            {DatabaseTypes.DATABASE_AUTH.getStorageName(), "auth"},
-            {DatabaseTypes.DATABASE_CHARACTER.getStorageName(), "character"},
-            {DatabaseTypes.DATABASE_WORLD.getStorageName(), "world"},
+            {ConfigEntry.CONFIG_DATABASE_AUTH.getStorageName(), "auth"},
+            {ConfigEntry.CONFIG_DATABASE_CHARACTER.getStorageName(), "character"},
+            {ConfigEntry.CONFIG_DATABASE_WORLD.getStorageName(), "world"},
             {"DB:Autologin", "false"}
     };
 

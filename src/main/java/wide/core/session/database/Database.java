@@ -13,7 +13,7 @@ import wide.core.session.hooks.HookListener;
 
 public class Database
 {
-    private Map<DatabaseTypes, Connection> connections = new HashMap<>();
+    private Map<ConfigEntry, Connection> connections = new HashMap<>();
 
     private static String GetConnectionStringForDatabase(String db)
     {        
@@ -60,7 +60,7 @@ public class Database
 
     public boolean isConnected()
     {
-        if (connections.size() != DatabaseTypes.values().length)
+        if (connections.size() != ConfigEntry.values().length)
             return false;
         
         final Collection<Connection> con_list = connections.values();
@@ -80,7 +80,7 @@ public class Database
 
     private void connect()
     {
-        for (DatabaseTypes type : DatabaseTypes.values())
+        for (ConfigEntry type : ConfigEntry.values())
         {
             final String con_string = GetConnectionStringForDatabase(WIde.getConfig().getProperty(type.getStorageName()).get());
             try
@@ -117,7 +117,7 @@ public class Database
         WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
     }
 
-    public Connection getConnection(DatabaseTypes type)
+    public Connection getConnection(ConfigEntry type)
     {
         return connections.get(type);
     }
