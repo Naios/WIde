@@ -17,9 +17,9 @@ import wide.core.session.hooks.HookListener;
 public class Config
 {
 	private final Properties storage = new Properties();
-	
+
 	private final HashMap<String, StringProperty> properties = new HashMap<>();
-	
+
 	private boolean hasChanged = false;
 
 	public Config()
@@ -33,7 +33,7 @@ public class Config
                 load();
             }
         });
-	    
+
 	    // Saves Config on Close
 	    WIde.getHooks().addListener(new HookListener(Hook.ON_APPLICATION_STOP, this)
         {
@@ -49,7 +49,7 @@ public class Config
 	{
 	    return new String[][] {};
 	}
-	
+
 	private void load()
 	{
         final String[][] defaultProperties = getDefaultProperties();
@@ -61,12 +61,12 @@ public class Config
         try
         {
             storage.loadFromXML(new FileInputStream(WIde.getArgs().getConfigName()));
-        } catch (IOException e)
+        } catch (final IOException e)
         {
             hasChanged = true;
         }
-        
-        for (String[] property : defaultProperties)
+
+        for (final String[] property : defaultProperties)
             if (!storage.containsKey(property[0]))
             {
                 storage.put(property[0], property[1]);
@@ -81,7 +81,7 @@ public class Config
 	{
 	    if (!hasChanged)
 	        return;
-	    
+
 	    synchronized (properties)
         {
     		try
@@ -89,10 +89,10 @@ public class Config
     			final FileOutputStream out = new FileOutputStream(WIde.getArgs().getConfigName());
     			storage.storeToXML(out, "WIde Config");
     			out.close();
-    			
+
     			hasChanged = false;
-    
-    		} catch (IOException e)
+
+    		} catch (final IOException e)
     		{
     		}
         }
@@ -115,10 +115,10 @@ public class Config
 							String oldValue, String newValue)
 					{
 						storage.setProperty(key, newValue);
-						
+
 						if (!hasChanged)
 						    hasChanged = true;
-						
+
 						// Hook.ON_CONFIG_CHANGED
 						WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
 					}

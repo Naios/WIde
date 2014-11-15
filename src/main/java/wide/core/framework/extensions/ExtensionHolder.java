@@ -26,7 +26,7 @@ public abstract class ExtensionHolder
             }
         });
     }
-    
+
     protected abstract void load();
 
     protected abstract void unload();

@@ -16,7 +16,7 @@ public class Database
     private Map<ConfigEntry, Connection> connections = new HashMap<>();
 
     private static String GetConnectionStringForDatabase(String db)
-    {        
+    {
         return "jdbc:mysql://" + WIde.getConfig().getProperty("DB:Host").get() + ":"
                 + WIde.getConfig().getProperty("DB:Port").get() + "/" + db + "?" + "user="
                 + WIde.getConfig().getProperty("DB:User").get() + "&" + "password="
@@ -36,7 +36,7 @@ public class Database
                     connect();
             }
         });
-        
+
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_CHANGED, this)
         {
             @Override
@@ -62,15 +62,15 @@ public class Database
     {
         if (connections.size() != ConfigEntry.values().length)
             return false;
-        
+
         final Collection<Connection> con_list = connections.values();
-        for (Connection con : con_list)
+        for (final Connection con : con_list)
             try
             {
                 if (con.isClosed())
                     return false;
 
-            } catch (SQLException e)
+            } catch (final SQLException e)
             {
                 return false;
             }
@@ -80,21 +80,21 @@ public class Database
 
     private void connect()
     {
-        for (ConfigEntry type : ConfigEntry.values())
+        for (final ConfigEntry type : ConfigEntry.values())
         {
             final String con_string = GetConnectionStringForDatabase(WIde.getConfig().getProperty(type.getStorageName()).get());
             try
             {
-                Connection connection = DriverManager.getConnection(con_string);
+                final Connection connection = DriverManager.getConnection(con_string);
                 connections.put(type, connection);
-                
-            } catch (SQLException e)
+
+            } catch (final SQLException e)
             {
                 close();
                 return;
             }
         }
-        
+
         // Hook.ON_DATABASE_ESTABLISHED
         WIde.getHooks().fire(Hook.ON_DATABASE_ESTABLISHED);
     }
@@ -102,17 +102,17 @@ public class Database
     private void close()
     {
         final Collection<Connection> con_list = connections.values();
-        for (Connection con : con_list)
+        for (final Connection con : con_list)
             try
             {
                 con.close();
 
-            } catch (SQLException e)
+            } catch (final SQLException e)
             {
             }
-        
+
         connections.clear();
-        
+
         // Hook.ON_DATABASE_CLOSE
         WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
     }

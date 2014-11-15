@@ -18,7 +18,7 @@ abstract class DefaultOptions extends Options
         configure();
     }
 
-    protected abstract void configure(); 
+    protected abstract void configure();
 }
 
 public class Arguments
@@ -71,13 +71,13 @@ public class Arguments
     }
 
     public boolean parse(String[] args)
-    {       
-        CommandLineParser parser = new BasicParser();
+    {
+        final CommandLineParser parser = new BasicParser();
 
         try
         {
             cmd = parser.parse(options, args);
-        } catch (ParseException exception)
+        } catch (final ParseException exception)
         {
             System.out.println(exception.getMessage() + "\n");
         }
@@ -86,13 +86,13 @@ public class Arguments
         // Display help context then
         if (cmd == null || cmd.hasOption("help"))
         {
-            HelpFormatter formatter = new HelpFormatter();
+            final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("WIde", options);
             return false;
         }
 
         check();
-        
+
         // Hook.ON_ARGUMENTS_LOADED
         WIde.getHooks().fire(Hook.ON_ARGUMENTS_LOADED);
         return true;
@@ -102,7 +102,7 @@ public class Arguments
     {
         return (cmd != null) && cmd.hasOption(arg);
     }
-    
+
     public String getParameter(String arg)
     {
         return (cmd != null) ? cmd.getOptionValue(arg) : null;

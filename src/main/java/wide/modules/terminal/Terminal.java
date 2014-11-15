@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import wide.core.WIde;
-import wide.core.framework.extensions.Extension;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
 
@@ -63,7 +62,7 @@ public class Terminal extends Module implements UserInferface
         else
         {
             System.out.println("Welcome to WIde! (Console Mode)");
-            
+
             if (console != null && !WIde.getArgs().isLegacyEnabled())
             // Normal Mode
             {
@@ -87,7 +86,7 @@ public class Terminal extends Module implements UserInferface
                 System.out
                         .println(">> Switched to Legacy Mode! (Shortcuts disabled)\n");
 
-                BufferedReader bufferedReader = new BufferedReader(
+                final BufferedReader bufferedReader = new BufferedReader(
                         new InputStreamReader(System.in));
                 String input = "";
 
@@ -99,7 +98,7 @@ public class Terminal extends Module implements UserInferface
                     {
                         input = bufferedReader.readLine();
 
-                    } catch (IOException e)
+                    } catch (final IOException e)
                     {
                     }
                     if (input == null || input.equals("exit"))

@@ -4,15 +4,15 @@ import java.util.Collection;
 
 import wide.core.WIde;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public class ActionHook
 {
     private final Multimap<Hook, HookListener> listeners = HashMultimap.create();
 
     public void addListener(HookListener listener)
-    {       
+    {
         listeners.put(listener.getType(), listener);
     }
 
@@ -24,7 +24,7 @@ public class ActionHook
     public void removeListenersOf(Object owner)
     {
         final Collection<HookListener> all_listeners = listeners.values();
-        for (HookListener listener : all_listeners)
+        for (final HookListener listener : all_listeners)
             if (listener.getOwner() == owner)
                 listeners.remove(listener.getType(), listener);
     }
@@ -33,9 +33,9 @@ public class ActionHook
     {
         if (WIde.getArgs().isTraceEnabled())
             System.out.println("Firing hook: " + hook.name());
-        
+
         final Collection<HookListener> hook_to_inform = listeners.get(hook);
-        for (HookListener listener : hook_to_inform)
+        for (final HookListener listener : hook_to_inform)
             listener.informed();
     }
 }

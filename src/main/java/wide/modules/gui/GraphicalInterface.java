@@ -1,7 +1,6 @@
 package wide.modules.gui;
 
 import wide.core.WIde;
-import wide.core.framework.extensions.Extension;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
 
@@ -17,7 +16,7 @@ public class GraphicalInterface extends Module implements UserInferface
     {
         return WIde.getArgs().isGuiApplication();
     }
-    
+
     @Override
     public void enable()
     {

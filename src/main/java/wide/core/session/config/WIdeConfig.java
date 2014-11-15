@@ -17,6 +17,7 @@ public class WIdeConfig extends Config
             {"DB:Autologin", "false"}
     };
 
+    @Override
     protected String[][] getDefaultProperties()
     {
         return DEFAULT_PROPERTIES;
