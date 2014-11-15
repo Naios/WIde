@@ -108,7 +108,7 @@ public class Terminal extends Module implements UserInferface
                     execute(input);
                 }
             }
-            
+
             System.out.println("Bye!");
         }
     }
@@ -118,6 +118,7 @@ public class Terminal extends Module implements UserInferface
         if (cmd.length() == 0)
             return;
 
-        WIde.getScripts().execute(cmd);
+        if (!WIde.getScripts().execute(cmd))
+            System.out.println("\t >> Wrong command!");
     }
 }

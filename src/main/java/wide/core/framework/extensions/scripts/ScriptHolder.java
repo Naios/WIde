@@ -46,7 +46,7 @@ public class ScriptHolder extends ExtensionHolder
     public boolean execute(String cmd)
     {
         // Split space but no quotes
-        String[] args = cmd.split(" (?=(([^'\"]*['\"]){2})*[^'\"]*$)");
+        final String[] args = cmd.split(" (?=(([^'\"]*['\"]){2})*[^'\"]*$)");
 
         if (args.length < 1)
             return false;
