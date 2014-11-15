@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import wide.core.WIde;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
+import wide.core.session.config.ConfigEntry;
 
 public class Terminal extends Module implements UserInferface
 {
@@ -38,16 +39,16 @@ public class Terminal extends Module implements UserInferface
     public void show()
     {
         final Console console = System.console();
-        final String cmdString = WIde.getConfig().getProperty("DB:User").get() +
-                "@" + WIde.getConfig().getProperty("DB:Host").get() + ": ";
+        final String cmdString = WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() +
+                "@" + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get() + ": ";
 
         final String singleCommand = WIde.getArgs().getParameter("execute");
 
         if (!WIde.getDatabase().isConnected())
         {
             System.out.println("Sorry, could not connect to: "
-                    + WIde.getConfig().getProperty("DB:User").get() + "@"
-                    + WIde.getConfig().getProperty("DB:Host").get()
+                    + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() + "@"
+                    + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get()
                     + ", closed.");
 
             return;
