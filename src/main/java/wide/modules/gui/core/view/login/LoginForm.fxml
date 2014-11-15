@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane id="" fx:id="mainPane" alignment="CENTER" hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="1.0" prefHeight="300.0" prefWidth="300.0" style="" vgap="-20.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="wide.view.login.LoginForm">
+  <!-- TODO Add Nodes -->
+  <children>
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="User" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+    <TextField fx:id="field_user" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="Password" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="Host" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="Port" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+    <TextField fx:id="field_host" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+    <TextField fx:id="field_port" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+    <Label prefWidth="-1.0" text="Connection Settings" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="1" GridPane.valignment="CENTER" />
+    <CheckBox id="checkBoxAutologin" fx:id="autologinCheckbox" mnemonicParsing="false" selected="false" text="Autologin" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+    <Label prefWidth="-1.0" text="Table Settings" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.rowSpan="1" GridPane.valignment="CENTER" />
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="Word DB" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+    <Label prefHeight="-1.0" prefWidth="-1.0" text="Char DB" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+    <TextField fx:id="field_worlddb" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+    <TextField fx:id="field_chardb" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+    <PasswordField id="field_pass" fx:id="field_password" prefWidth="170.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+    <Button id="loginButton" mnemonicParsing="false" onAction="#loginButtonPressed" text="Login" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+      <GridPane.margin>
+        <Insets />
+      </GridPane.margin>
+    </Button>
+    <CheckBox id="checkBoxAutologin" fx:id="savePasswordCheckbox" mnemonicParsing="false" selected="false" text="Save Password" GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.rowSpan="1" />
+    <Label id="ErrorLabel" fx:id="errorLabel" prefWidth="280.0" text="" textAlignment="CENTER" textFill="RED" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+  </children>
+  <columnConstraints>
+    <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="-1.0" minWidth="-Infinity" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="3.0" left="10.0" right="10.0" top="3.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints maxHeight="55.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="55.0" minHeight="10.0" prefHeight="53.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="49.0" minHeight="10.0" prefHeight="47.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+</GridPane>

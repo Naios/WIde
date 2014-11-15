@@ -1,0 +1,47 @@
+
+.login {
+	-fx-background-color: #227BB4;
+}
+
+.map {
+	-fx-background-color: #DAE1EF;
+}
+
+#MainForm {
+	-fx-background-color: #236CA8;
+    -fx-background-image: url("pattern.png");
+}
+
+#Dimmer {
+    -fx-background-color: rgb(0,0,0,0.5);
+}
+
+.dialog {
+    -fx-background-color: black, white, 
+        linear-gradient(rgb(250,250,250), rgb(230,230,230));
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 15, 14, 13;
+    -fx-padding: 15;
+    -fx-effect: dropshadow( three-pass-box , black , 20, 0 , 0 , 0 );
+}
+/*
+.label  {
+    -fx-font: 14px Arial;
+    -fx-fill: linear-gradient(from 0% 0% to 100% 200%, repeat, aqua 0%, red 50%);
+    -fx-stroke: black;
+    -fx-stroke-width: 1;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 2,2,2,2 );
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-background-color: 
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
+        linear-gradient(#dddddd 0%, #f6f6f6 50%);
+    -fx-background-radius: 8,7,6;
+    -fx-background-insets: 0,1,2;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+*/

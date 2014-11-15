@@ -2,8 +2,8 @@ package wide.modules.gui.core;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import wide.modules.gui.core.view.MainPane;
 
 public class FXApplication extends Application
 {
@@ -16,7 +16,7 @@ public class FXApplication extends Application
     public void start(Stage stage) throws Exception
     {
         // Assign Scene
-        stage.setScene(new Scene(new Pane()));
+        stage.setScene(new Scene(new MainPane()));
 
         stage.setMinWidth(400);
         stage.setMinHeight(300);
