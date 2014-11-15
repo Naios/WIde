@@ -31,6 +31,6 @@ public class GUI extends Module implements UserInferface
     @Override
     public void show()
     {
-        new FXApplication().run(new String[]{});
+        FXApplication.run(new String[]{});
     }
 }
