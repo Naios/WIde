@@ -3,7 +3,8 @@ package wide.core;
 import java.util.Collection;
 import java.util.List;
 
-import wide.core.framework.extensions.ModuleLoader;
+import wide.core.framework.extensions.modules.ModuleHolder;
+import wide.core.framework.extensions.scripts.ScriptHolder;
 import wide.core.framework.ui.UserInferface;
 import wide.core.session.arguments.Arguments;
 import wide.core.session.config.Config;
@@ -11,7 +12,6 @@ import wide.core.session.config.WIdeConfig;
 import wide.core.session.database.Database;
 import wide.core.session.hooks.ActionHook;
 import wide.core.session.hooks.Hook;
-import wide.core.session.querys.QueryParser;
 
 public class WIde
 {
@@ -21,11 +21,11 @@ public class WIde
 
     private final static Config CONFIG = new WIdeConfig();
 
-    private final static ModuleLoader MODULES = new ModuleLoader();
+    private final static ModuleHolder MODULES = new ModuleHolder();
     
+    private final static ScriptHolder SCRIPTS = new ScriptHolder();
+
     private final static Database DATABASE = new Database();
-    
-    private final static QueryParser QUERYPARSER = new QueryParser();
 
     private final static WIde INSTANCE = new WIde();
 
@@ -44,19 +44,19 @@ public class WIde
         return ARGUMENTS;
     }
 
-    public static ModuleLoader getModules()
+    public static ModuleHolder getModules()
     {
         return MODULES;
     }
-    
+
+    public static ScriptHolder getScripts()
+    {
+        return SCRIPTS;
+    }
+
     public static Database getDatabase()
     {
         return DATABASE;
-    }
-
-    public static QueryParser getQueryparser()
-    {
-        return QUERYPARSER;
     }
 
     public static WIde getInstance()

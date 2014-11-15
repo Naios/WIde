@@ -1,4 +1,4 @@
-package wide.core.framework.extensions;
+package wide.core.framework.extensions.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,60 +6,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 import wide.core.WIde;
+import wide.core.framework.extensions.ExtensionHolder;
 import wide.core.framework.ui.UserInferface;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
-import wide.modules.Loader;
+import wide.modules.ModuleLoader;
 import wide.modules.gui.GraphicalInterface;
 import wide.modules.terminal.Terminal;
 
-public class ModuleLoader
+public class ModuleHolder extends ExtensionHolder
 {
     private final Collection<Module> activated = new ArrayList<>();
-
-    public ModuleLoader()
-    {
-        WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
-        {
-            @Override
-            public void informed()
-            {
-                load();
-            }
-        });
-
-        WIde.getHooks().addListener(new HookListener(Hook.ON_APPLICATION_STOP, this)
-        {
-            @Override
-            public void informed()
-            {
-                unload();
-            }
-        });
-    }
+    
+    private final ModuleLoader loader = new ModuleLoader();
 
     // Load all Modules (Check dependencys)
-    private void load()
+    @Override
+    protected void load()
     {
-        for (Module module : Loader.getModules())
+        for (Module module : loader.getExtensions())
         {
-            module.read();
-
-            boolean dep = module.checkDependencys(), check = module.check();
-                        
-            if (WIde.getArgs().isTraceEnabled())
-                System.out.print("Module: " + module + "\tDependencys: " + dep + ", Checks: " + check + ", Loaded: >> ");
-            
-            if (dep && check)
+            if (module.validate())
             {
-                if (WIde.getArgs().isTraceEnabled())
-                    System.out.print("YES\n");
-                
                 activated.add(module);
                 module.enable();
+            
+                if(WIde.getArgs().isTraceEnabled())
+                    System.out.println("Module " + module + " loaded.");
             }
-            else if(WIde.getArgs().isTraceEnabled())
-                System.out.print("NO\n");
         }
 
         // Hook.ON_MODULES_LOADED
@@ -67,7 +41,7 @@ public class ModuleLoader
     }
 
     // Reload all Modules
-    private void reload()
+    public  void reload()
     {
         unload();
         load();
@@ -77,9 +51,9 @@ public class ModuleLoader
     }
 
     // Check all Modules
-    private void unload()
+    @Override
+    protected void unload()
     {
-     
         for (Module module : activated)
             module.disable();
         

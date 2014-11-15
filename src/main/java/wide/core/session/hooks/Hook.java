@@ -12,9 +12,12 @@ public enum Hook
     ON_CONFIG_LOADED,           // Config
     ON_CONFIG_CHANGED,          // Config
 
-    ON_MODULES_LOADED,          // ModuleLoader
-    ON_MODULES_RELOADED,        // ModuleLoader
-    ON_MODULES_UNLOADED,        // ModuleLoader
+    ON_MODULES_LOADED,          // Module Loader
+    ON_MODULES_RELOADED,        // Module Loader
+    ON_MODULES_UNLOADED,        // Module Loader
+    
+    ON_SCRIPTS_LOADED,          // Script Loader
+    ON_SCRIPTS_UNLOADED,        // Script Loader
 
     ON_DATABASE_ESTABLISHED,    // Database
     ON_DATABASE_ERROR,          // Database

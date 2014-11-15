@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import wide.core.WIde;
-import wide.core.framework.extensions.Module;
+import wide.core.framework.extensions.Extension;
+import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
 
 public class Terminal extends Module implements UserInferface
@@ -17,7 +18,7 @@ public class Terminal extends Module implements UserInferface
     }
 
     @Override
-    public boolean check()
+    public boolean validate()
     {
         return !WIde.getArgs().isGuiApplication();
     }
@@ -116,7 +117,7 @@ public class Terminal extends Module implements UserInferface
     {
         if (cmd.length() == 0)
             return;
-        
-        WIde.getQueryparser().parse(cmd);
+
+        WIde.getScripts().execute(cmd);
     }
 }
