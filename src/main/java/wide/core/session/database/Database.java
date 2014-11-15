@@ -8,19 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import wide.core.WIde;
+import wide.core.session.config.ConfigEntry;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
 
 public class Database
 {
-    private Map<ConfigEntry, Connection> connections = new HashMap<>();
+    private Map<DatabaseType, Connection> connections = new HashMap<>();
 
     private static String GetConnectionStringForDatabase(String db)
     {
-        return "jdbc:mysql://" + WIde.getConfig().getProperty("DB:Host").get() + ":"
-                + WIde.getConfig().getProperty("DB:Port").get() + "/" + db + "?" + "user="
-                + WIde.getConfig().getProperty("DB:User").get() + "&" + "password="
-                + WIde.getConfig().getProperty("DB:Password").get();
+        return "jdbc:mysql://" + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get() + ":"
+                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PORT.getStorageName()).get() + "/" + db + "?" + "user="
+                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() + "&" + "password="
+                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PASSWORD.getStorageName()).get();
     }
 
     public Database()
@@ -60,7 +61,7 @@ public class Database
 
     public boolean isConnected()
     {
-        if (connections.size() != ConfigEntry.values().length)
+        if (connections.size() != DatabaseType.values().length)
             return false;
 
         final Collection<Connection> con_list = connections.values();
@@ -80,9 +81,11 @@ public class Database
 
     private void connect()
     {
-        for (final ConfigEntry type : ConfigEntry.values())
+        for (final DatabaseType type : DatabaseType.values())
         {
-            final String con_string = GetConnectionStringForDatabase(WIde.getConfig().getProperty(type.getStorageName()).get());
+            final String con_string = GetConnectionStringForDatabase(
+                    WIde.getConfig().getProperty(type.getConfigEntry().getStorageName()).get());
+
             try
             {
                 final Connection connection = DriverManager.getConnection(con_string);
@@ -117,7 +120,7 @@ public class Database
         WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
     }
 
-    public Connection getConnection(ConfigEntry type)
+    public Connection getConnection(DatabaseType type)
     {
         return connections.get(type);
     }

@@ -60,7 +60,7 @@ public class Config
         // Try to load an existing config file
         try
         {
-            storage.loadFromXML(new FileInputStream(WIde.getArgs().getConfigName()));
+            storage.load(new FileInputStream(WIde.getArgs().getConfigName()));
         } catch (final IOException e)
         {
             hasChanged = true;
@@ -87,7 +87,7 @@ public class Config
     		try
     		{
     			final FileOutputStream out = new FileOutputStream(WIde.getArgs().getConfigName());
-    			storage.storeToXML(out, "WIde Config");
+    			storage.store(out, "WIde Config");
     			out.close();
 
     			hasChanged = false;
@@ -96,6 +96,15 @@ public class Config
     		{
     		}
         }
+	}
+
+	public StringProperty getPropertyWithDefault(final String key, final String def)
+	{
+	    final StringProperty property = getProperty(key);
+	    if (property.get().isEmpty())
+	        property.set(def);
+
+	    return property;
 	}
 
 	public StringProperty getProperty(final String key)

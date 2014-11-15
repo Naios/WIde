@@ -1,6 +1,5 @@
 package wide.core.session.config;
 
-import wide.core.session.database.ConfigEntry;
 
 public class WIdeConfig extends Config
 {

@@ -132,7 +132,7 @@ public class Arguments
     public String getConfigName()
     {
         if (!hasArgument("config"))
-            return "WIde.xml";
+            return "WIde.properties";
         else
             return cmd.getOptionValue("config");
     }
