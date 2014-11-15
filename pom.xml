@@ -123,6 +123,8 @@
                     <excludeProperties>
                         <excludeProperty>git.commit.user.*</excludeProperty>
                         <excludeProperty>git.build.user.*</excludeProperty>
+                        <excludeProperty>git.commit.message.*</excludeProperty>
+                        <excludeProperty>git.remote.*</excludeProperty>
                     </excludeProperties>
                     <!-- @since 2.1.0 -->
                     <!-- 
