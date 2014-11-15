@@ -3,12 +3,13 @@ package wide.modules.gui;
 import wide.core.WIde;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
+import wide.modules.gui.core.FXApplication;
 
-public class GraphicalInterface extends Module implements UserInferface
+public class GUI extends Module implements UserInferface
 {
-    public GraphicalInterface()
+    public GUI()
     {
-        super("default_gui");
+        super("gui");
     }
 
     @Override
@@ -30,7 +31,6 @@ public class GraphicalInterface extends Module implements UserInferface
     @Override
     public void show()
     {
-        System.err.println("Sorry, the GUI is currently not supported!\n"+
-                           "Use the Console mode instead (WIde --nogui)");
+        new FXApplication().run(new String[]{});
     }
 }

@@ -17,7 +17,7 @@ public class ModuleHolder extends ExtensionHolder
 
     private final ModuleLoader loader = new ModuleLoader();
 
-    // Load all Modules (Check dependencys)
+    // Load all Modules
     @Override
     protected void load()
     {
