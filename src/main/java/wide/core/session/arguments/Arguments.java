@@ -11,23 +11,13 @@ import org.apache.commons.cli.ParseException;
 import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 
-abstract class DefaultOptions extends Options
-{
-    DefaultOptions()
-    {
-        configure();
-    }
-
-    protected abstract void configure();
-}
-
 public class Arguments
 {
     private static final Options options = new DefaultOptions()
     {
         @Override
         @SuppressWarnings("static-access")
-        protected void configure()
+        public void configure()
         {
             addOption(OptionBuilder
                     .withLongOpt("config")
@@ -135,5 +125,10 @@ public class Arguments
             return "WIde.properties";
         else
             return cmd.getOptionValue("config");
+    }
+
+    public String getPath()
+    {
+        return System.getProperty("user.dir");
     }
 }
