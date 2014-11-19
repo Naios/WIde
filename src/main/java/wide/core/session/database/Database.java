@@ -93,6 +93,7 @@ public class Database
 
             } catch (final SQLException e)
             {
+                e.printStackTrace();
                 close();
                 return;
             }

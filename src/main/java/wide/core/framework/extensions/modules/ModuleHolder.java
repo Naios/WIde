@@ -7,7 +7,6 @@ import java.util.List;
 
 import wide.core.WIde;
 import wide.core.framework.extensions.ExtensionHolder;
-import wide.core.framework.ui.UserInferface;
 import wide.core.session.hooks.Hook;
 import wide.modules.ModuleLoader;
 
@@ -58,14 +57,14 @@ public class ModuleHolder extends ExtensionHolder
         WIde.getHooks().fire(Hook.ON_MODULES_UNLOADED);
     }
 
-    public List<UserInferface> getUserInterfaces()
+    public List<Module> getModulesWithCheck(ModuleCheck checker)
     {
-        final List<UserInferface> interfaces = new LinkedList<>();
+        final List<Module> modules = new LinkedList<>();
 
         for (final Module module : activated)
-            if (module instanceof UserInferface)
-                interfaces.add((UserInferface)(module));
+            if (checker.check(module))
+                modules.add(module);
 
-        return interfaces;
+        return modules;
     }
 }
