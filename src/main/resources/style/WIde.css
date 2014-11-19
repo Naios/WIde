@@ -8,8 +8,8 @@
 }
 
 #MainForm {
-	-fx-background-color: #236CA8;
-    -fx-background-image: url("pattern.png");
+	-fx-background-color: #00399E;
+    -fx-background-image: url("../images/Background.png");
 }
 
 #Dimmer {

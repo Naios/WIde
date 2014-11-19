@@ -10,13 +10,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
 
 public class Config
 {
-	private final Properties storage = new Properties();
+	private Properties storage = new Properties();
 
 	private final HashMap<String, StringProperty> properties = new HashMap<>();
 
@@ -45,33 +46,28 @@ public class Config
         });
 	}
 
-	protected String[][] getDefaultProperties()
-	{
-	    return new String[][] {};
-	}
-
 	private void load()
 	{
-        final String[][] defaultProperties = getDefaultProperties();
+	    properties.clear();
+	    storage.clear();
 
-        // Array size must be [?][2]
-        assert (defaultProperties[0].length == 2);
+	    try
+        {
+	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.DEFAULT_PROPERTIES_CREATE_PATH.get()));
 
-        // Try to load an existing config file
+        } catch (final Exception e)
+	    {
+        }
+
         try
         {
+            // We dont use the default method of properties...
             storage.load(new FileInputStream(WIde.getArgs().getConfigName()));
+
         } catch (final IOException e)
         {
             hasChanged = true;
         }
-
-        for (final String[] property : defaultProperties)
-            if (!storage.containsKey(property[0]))
-            {
-                storage.put(property[0], property[1]);
-                hasChanged = true;
-            }
 
         // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
@@ -115,7 +111,9 @@ public class Config
 
 			if (property == null)
 			{
-			    property = new SimpleStringProperty(storage.getProperty(key));
+			    final String value = storage.getProperty(key);
+
+			    property = new SimpleStringProperty(value);
 			    property.addListener(new ChangeListener<String>()
 				{
 					@Override

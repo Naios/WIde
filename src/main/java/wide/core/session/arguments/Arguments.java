@@ -8,6 +8,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 
@@ -122,7 +123,7 @@ public class Arguments
     public String getConfigName()
     {
         if (!hasArgument("config"))
-            return "WIde.properties";
+            return Constants.DEFAULT_PROPERTIES_NAME.get();
         else
             return cmd.getOptionValue("config");
     }

@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import wide.modules.gui.core.resources.Resource;
 import wide.modules.gui.core.view.components.Dimmer;
 import wide.modules.gui.core.view.components.WorldMap;
 
@@ -34,7 +35,7 @@ public class MainPane extends StackPane
     {
         setId("MainForm");
         setPrefSize(900, 600);
-        // getStylesheets().add(Resource.get("wide/modules/gui/core/resources/WIde.css"));
+        getStylesheets().add(Resource.get("style/WIde.css"));
 
         // Dimmer
         dimmer.setOnMouseClicked(new EventHandler<MouseEvent>()

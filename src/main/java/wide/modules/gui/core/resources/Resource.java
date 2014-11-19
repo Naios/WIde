@@ -4,6 +4,6 @@ public class Resource
 {
 	public static String get(String name)
 	{
-		return Resource.class.getResource(name).toExternalForm();
+		return name;
 	}
 }
