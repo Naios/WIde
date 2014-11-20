@@ -2,7 +2,9 @@ package wide.modules.gui.core;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import wide.core.Constants;
 import wide.core.WIde;
 import wide.modules.gui.core.view.MainPane;
 
@@ -17,6 +19,9 @@ public class FXApplication extends Application
     public void start(Stage stage) throws Exception
     {
         stage.setTitle(WIde.getEnviroment().getVersionString());
+        stage.getIcons().add(
+                new Image(getClass().getClassLoader().getResourceAsStream(
+                        Constants.PATH_APPLICATION_ICON.toString())));
 
         // Assign Scene
         stage.setScene(new Scene(new MainPane()));

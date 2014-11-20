@@ -34,7 +34,8 @@ public enum Constants
     ////////////////////////////////////////////////////////
     // Paths
     PATH_DEFAULT_PROPERTIES_CREATE("properties/default.properties"),
-    PATH_REPOSITORY_INFO("properties/git.properties");
+    PATH_REPOSITORY_INFO("properties/git.properties"),
+    PATH_APPLICATION_ICON("images/icon.png");
 
     private final String constant;
 

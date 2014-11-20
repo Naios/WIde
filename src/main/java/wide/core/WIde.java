@@ -112,7 +112,7 @@ public class WIde
     }
 
     /**
-     * Gets the prefered {@link UserInferface} from the {@link ModuleHolder} and displays it.
+     * Gets the preferred {@link UserInferface} from the {@link ModuleHolder} and displays it.
      */
     private void DisplayUserInterface()
     {
