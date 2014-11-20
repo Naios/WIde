@@ -6,6 +6,7 @@ public enum Constants
     // Strings
     STRING_DEFAULT_PROPERTIES("WIde.properties"),
     STRING_UNKNOWN("<unknown>"),
+    STRING_TEST("<unknown>"),
 
     ////////////////////////////////////////////////////////
     // Property Names
@@ -30,6 +31,9 @@ public enum Constants
     PROPERTY_GIT_BUILD_TIME("git.build.time"),
     PROPERTY_GIT_BRANCH("git.branch"),
     PROPERTY_GIT_TAG("git.tags"),
+
+    // Directorys
+    PROPERTY_DIR_CACHE("core.enviroment.cachedir"),
 
     ////////////////////////////////////////////////////////
     // Paths

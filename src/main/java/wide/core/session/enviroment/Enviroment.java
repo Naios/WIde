@@ -1,5 +1,7 @@
 package wide.core.session.enviroment;
 
+import java.io.File;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -72,6 +74,12 @@ public class Enviroment
 
     public boolean setUp(String[] args)
     {
+        if (!hasReadWriteAccess())
+        {
+            System.out.println("WIde needs read/write permission to the working direktory, closed!");
+            return false;
+        }
+
         readApplicationInfo();
         return parseArguments(args);
     }
@@ -166,5 +174,23 @@ public class Enviroment
     public String getVersionString()
     {
         return String.format("WIde (%s)", getApplicationInfo().getHashShort());
+    }
+
+    private boolean hasReadWriteAccess()
+    {
+        // TODO Implement this
+        return true;
+    }
+
+    public void createDirectory(String path)
+    {
+        final File dir = new File(path);
+        if (dir.exists())
+            if (dir.isDirectory())
+                return;
+            else
+                dir.delete();
+
+        dir.mkdir();
     }
 }
