@@ -27,7 +27,7 @@ public class ModuleHolder extends ExtensionHolder
                 activated.add(module);
                 module.enable();
 
-                if(WIde.getArgs().isTraceEnabled())
+                if(WIde.getEnviroment().isTraceEnabled())
                     System.out.println("Module " + module + " loaded.");
             }
         }

@@ -14,8 +14,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
+import wide.core.Constants;
 import wide.core.WIde;
-import wide.core.session.config.ConfigEntry;
 
 public class LoginForm
 {
@@ -74,18 +74,18 @@ public class LoginForm
 		assert mainPane != null : "fx:id=\"pane\" was not injected: check your FXML file 'LoginForm.fxml'.";
 
 		field_chardb.textProperty().bindBidirectional(
-				WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_CHARACTER.getStorageName()));
+				WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_CHARACTER.get()));
 
-		field_host.textProperty().bindBidirectional(WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()));
+		field_host.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()));
 
-		field_port.textProperty().bind(WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PORT.getStorageName()));
+		field_port.textProperty().bind(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT.get()));
 
-		field_user.textProperty().bindBidirectional(WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()));
+		field_user.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()));
 
 		field_worlddb.textProperty().bindBidirectional(
-		        WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_WORLD.getStorageName()));
+		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_WORLD.get()));
 		field_password.textProperty().bindBidirectional(
-		        WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PASSWORD.getStorageName()));
+		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD.get()));
 
 		final StringConverter<Boolean> stringToBooleanconverter = new StringConverter<Boolean>()
 		{
@@ -105,13 +105,13 @@ public class LoginForm
 		autologinCheckbox.selectedProperty().set(
 				stringToBooleanconverter.fromString(WIde.getConfig().getProperty(
 						"DB:Autologin").get()));
-		Bindings.bindBidirectional(WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_AUTOLOGIN.getStorageName()),
+		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_AUTOLOGIN.get()),
 				autologinCheckbox.selectedProperty(), stringToBooleanconverter);
 
 		savePasswordCheckbox.selectedProperty().set(
 				stringToBooleanconverter.fromString(WIde.getConfig().getProperty(
 						"DB:SavePassword").get()));
-		Bindings.bindBidirectional(WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_SAVE_PASSWORD.getStorageName()),
+		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_SAVE_PASSWORD.get()),
 				savePasswordCheckbox.selectedProperty(),
 				stringToBooleanconverter);
 

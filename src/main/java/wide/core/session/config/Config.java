@@ -53,7 +53,7 @@ public class Config
 
 	    try
         {
-	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.DEFAULT_PROPERTIES_CREATE_PATH.get()));
+	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.PATH_DEFAULT_PROPERTIES_CREATE.get()));
 
         } catch (final Exception e)
 	    {
@@ -62,7 +62,7 @@ public class Config
         try
         {
             // We dont use the default method of properties...
-            storage.load(new FileInputStream(WIde.getArgs().getConfigName()));
+            storage.load(new FileInputStream(WIde.getEnviroment().getConfigName()));
 
         } catch (final IOException e)
         {
@@ -82,7 +82,7 @@ public class Config
         {
     		try
     		{
-    			final FileOutputStream out = new FileOutputStream(WIde.getArgs().getConfigName());
+    			final FileOutputStream out = new FileOutputStream(WIde.getEnviroment().getConfigName());
     			storage.store(out, "WIde Config");
     			out.close();
 

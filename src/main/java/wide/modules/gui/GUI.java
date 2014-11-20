@@ -15,7 +15,7 @@ public class GUI extends Module implements UserInferface
     @Override
     public boolean validate()
     {
-        return WIde.getArgs().isGuiApplication();
+        return WIde.getEnviroment().isGuiApplication();
     }
 
     @Override

@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import wide.core.Constants;
 import wide.core.WIde;
-import wide.core.session.config.ConfigEntry;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
 
@@ -18,10 +18,10 @@ public class Database
 
     private static String GetConnectionStringForDatabase(String db)
     {
-        return "jdbc:mysql://" + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get() + ":"
-                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PORT.getStorageName()).get() + "/" + db + "?" + "user="
-                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() + "&" + "password="
-                + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_PASSWORD.getStorageName()).get();
+        return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get() + ":"
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT.get()).get() + "/" + db + "?" + "user="
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() + "&" + "password="
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD.get()).get();
     }
 
     public Database()
@@ -84,7 +84,7 @@ public class Database
         for (final DatabaseType type : DatabaseType.values())
         {
             final String con_string = GetConnectionStringForDatabase(
-                    WIde.getConfig().getProperty(type.getConfigEntry().getStorageName()).get());
+                    WIde.getConfig().getProperty(type.getConfigEntry().get()).get());
 
             try
             {

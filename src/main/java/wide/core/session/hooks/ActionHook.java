@@ -31,7 +31,7 @@ public class ActionHook
 
     public void fire(Hook hook)
     {
-        if (WIde.getArgs().isTraceEnabled())
+        if (WIde.getEnviroment().isTraceEnabled())
             System.out.println("Firing hook: " + hook.name());
 
         final Collection<HookListener> hook_to_inform = listeners.get(hook);

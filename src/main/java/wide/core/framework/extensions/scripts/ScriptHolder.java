@@ -25,7 +25,7 @@ public class ScriptHolder extends ExtensionHolder
             {
                 scripts.put(script.toString(), script);
 
-                if(WIde.getArgs().isTraceEnabled())
+                if(WIde.getEnviroment().isTraceEnabled())
                     System.out.println("Script " + script + " loaded.");
             }
         }

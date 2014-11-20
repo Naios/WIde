@@ -7,9 +7,9 @@ import wide.core.framework.extensions.modules.ModuleCheck;
 import wide.core.framework.extensions.modules.ModuleHolder;
 import wide.core.framework.extensions.scripts.ScriptHolder;
 import wide.core.framework.ui.UserInferface;
-import wide.core.session.arguments.Arguments;
 import wide.core.session.config.Config;
 import wide.core.session.database.Database;
+import wide.core.session.enviroment.Enviroment;
 import wide.core.session.hooks.ActionHook;
 import wide.core.session.hooks.Hook;
 
@@ -17,7 +17,7 @@ public class WIde
 {
     private final static ActionHook HOOKS = new ActionHook();
 
-    private final static Arguments ARGUMENTS = new Arguments();
+    private final static Enviroment ENVIROMENT = new Enviroment();
 
     private final static Config CONFIG = new Config();
 
@@ -39,9 +39,9 @@ public class WIde
         return CONFIG;
     }
 
-    public static Arguments getArgs()
+    public static Enviroment getEnviroment()
     {
-        return ARGUMENTS;
+        return ENVIROMENT;
     }
 
     public static ModuleHolder getModules()
@@ -66,7 +66,7 @@ public class WIde
 
     public static void main(String[] args)
     {
-        if (!getArgs().parse(args))
+        if (!getEnviroment().setUp(args))
             return;
 
         INSTANCE.launch();
@@ -81,7 +81,7 @@ public class WIde
         // Hook.ON_APPLICATION_LAUNCH
         WIde.getHooks().fire(Hook.ON_APPLICATION_LAUNCH);
 
-        // TODO Implement better Selection for interfaces
+        // TODO Implement better Selection for UserInterfaces
         // Currently its ok to select the first interface
         final List<Module> interfaces = MODULES.getModulesWithCheck(new ModuleCheck()
         {
@@ -94,7 +94,7 @@ public class WIde
 
         if (!interfaces.isEmpty())
             ((UserInferface)(interfaces.get(0))).show();
-        else if(WIde.getArgs().isTraceEnabled())
+        else if(WIde.getEnviroment().isTraceEnabled())
             System.err.println("No User Interface available!");
 
         // Hook.ON_APPLICATION_STOP

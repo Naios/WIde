@@ -5,10 +5,10 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
-import wide.core.session.config.ConfigEntry;
 
 public class Terminal extends Module implements UserInferface
 {
@@ -20,7 +20,7 @@ public class Terminal extends Module implements UserInferface
     @Override
     public boolean validate()
     {
-        return !WIde.getArgs().isGuiApplication();
+        return !WIde.getEnviroment().isGuiApplication();
     }
 
     @Override
@@ -39,16 +39,16 @@ public class Terminal extends Module implements UserInferface
     public void show()
     {
         final Console console = System.console();
-        final String cmdString = WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() +
-                "@" + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get() + ": ";
+        final String cmdString = WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() +
+                "@" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get() + ": ";
 
-        final String singleCommand = WIde.getArgs().getParameter("execute");
+        final String singleCommand = WIde.getEnviroment().getParameter("execute");
 
         if (!WIde.getDatabase().isConnected())
         {
             System.out.println("Sorry, could not connect to: "
-                    + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_USER.getStorageName()).get() + "@"
-                    + WIde.getConfig().getProperty(ConfigEntry.CONFIG_DATABASE_HOST.getStorageName()).get()
+                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() + "@"
+                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get()
                     + ", closed.");
 
             return;
@@ -64,7 +64,7 @@ public class Terminal extends Module implements UserInferface
         {
             System.out.println("Welcome to WIde! (Console Mode)");
 
-            if (console != null && !WIde.getArgs().isLegacyEnabled())
+            if (console != null && !WIde.getEnviroment().isLegacyEnabled())
             // Normal Mode
             {
                 System.out.println();

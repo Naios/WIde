@@ -1,4 +1,4 @@
-package wide.core.session.arguments;
+package wide.core.session.enviroment;
 
 import org.apache.commons.cli.Options;
 

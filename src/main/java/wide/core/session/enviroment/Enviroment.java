@@ -1,4 +1,4 @@
-package wide.core.session.arguments;
+package wide.core.session.enviroment;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -12,8 +12,9 @@ import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 
-public class Arguments
+public class Enviroment
 {
+    @SuppressWarnings("serial")
     private static final Options options = new DefaultOptions()
     {
         @Override
@@ -27,6 +28,7 @@ public class Arguments
                     .hasArg()
                     .withArgName("path")
                     .create("c"));
+
             addOption(OptionBuilder
                     .withLongOpt("execute")
                     .withDescription("Executes a Single command in the WIde Console")
@@ -34,21 +36,26 @@ public class Arguments
                     .hasArg()
                     .withArgName("query")
                     .create("e"));
+
             addOption(OptionBuilder
                     .withLongOpt("trace")
                     .withDescription("Enables detailed Tracelogs.")
                     .create("t"));
+
             addOption(OptionBuilder
                     .withLongOpt("legacy")
                     .withDescription("Enables legacy mode.")
                     .create("l"));
+
             addOption(OptionBuilder
                     .withLongOpt("nogui")
                     .withDescription("Prevents WIde from creating a gui. (console mode)")
                     .create("ng"));
+
             addOption(OptionBuilder.withLongOpt("help")
                     .withDescription("Shows the available arguments.")
                     .create("h"));
+
             addOption(OptionBuilder.withLongOpt("version")
                     .withDescription("Shows Version and Author Info.")
                     .create("v"));
@@ -57,11 +64,15 @@ public class Arguments
 
     private CommandLine cmd = null;
 
-    public Arguments()
+    private final ApplicationInfo applicationInfo = new ApplicationInfo(Constants.PATH_REPOSITORY_INFO.get());
+
+    public boolean setUp(String[] args)
     {
+        readApplicationInfo();
+        return parseArguments(args);
     }
 
-    public boolean parse(String[] args)
+    private boolean parseArguments(String[] args)
     {
         final CommandLineParser parser = new BasicParser();
 
@@ -75,18 +86,26 @@ public class Arguments
 
         // Parser failed if cmd == null
         // Display help context then
-        if (cmd == null || cmd.hasOption("help"))
+        if (cmd == null  || cmd.hasOption("help") || !checkArguments())
         {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("WIde", options);
             return false;
         }
-
-        check();
+        else if (cmd.hasOption("version"))
+        {
+            System.out.println(String.format("%s\n" + " * Built: %s", getVersionString(), getApplicationInfo().getBuildTime()));
+            return false;
+        }
 
         // Hook.ON_ARGUMENTS_LOADED
         WIde.getHooks().fire(Hook.ON_ARGUMENTS_LOADED);
         return true;
+    }
+
+    private void readApplicationInfo()
+    {
+        applicationInfo.read();
     }
 
     public boolean hasArgument(String arg)
@@ -99,10 +118,12 @@ public class Arguments
         return (cmd != null) ? cmd.getOptionValue(arg) : null;
     }
 
-    private void check()
+    private boolean checkArguments()
     {
         if ((getParameter("execute") != null) && (!hasArgument("nogui")))
             System.out.println("[Warning] --execute forces --nogui");
+
+        return true;
     }
 
     public boolean isGuiApplication()
@@ -123,7 +144,7 @@ public class Arguments
     public String getConfigName()
     {
         if (!hasArgument("config"))
-            return Constants.DEFAULT_PROPERTIES_NAME.get();
+            return Constants.STRING_DEFAULT_PROPERTIES.get();
         else
             return cmd.getOptionValue("config");
     }
@@ -131,5 +152,15 @@ public class Arguments
     public String getPath()
     {
         return System.getProperty("user.dir");
+    }
+
+    public ApplicationInfo getApplicationInfo()
+    {
+        return applicationInfo;
+    }
+
+    public String getVersionString()
+    {
+        return String.format("WIde (%s)", getApplicationInfo().getHashShort());
     }
 }

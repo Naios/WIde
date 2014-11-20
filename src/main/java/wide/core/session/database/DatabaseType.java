@@ -1,21 +1,21 @@
 package wide.core.session.database;
 
-import wide.core.session.config.ConfigEntry;
+import wide.core.Constants;
 
 public enum DatabaseType
 {
-    AUTH(ConfigEntry.CONFIG_DATABASE_AUTH),
-    CHARACTER(ConfigEntry.CONFIG_DATABASE_CHARACTER),
-    WORLD(ConfigEntry.CONFIG_DATABASE_WORLD);
+    AUTH(Constants.PROPERTY_DATABASE_AUTH),
+    CHARACTER(Constants.PROPERTY_DATABASE_CHARACTER),
+    WORLD(Constants.PROPERTY_DATABASE_WORLD);
 
-    private final ConfigEntry entry;
+    private final Constants entry;
 
-    DatabaseType(ConfigEntry entry)
+    DatabaseType(Constants entry)
     {
         this.entry = entry;
     }
 
-    public ConfigEntry getConfigEntry()
+    public Constants getConfigEntry()
     {
         return entry;
     }
