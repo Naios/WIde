@@ -7,7 +7,7 @@ public enum Hook
     ON_APPLICATION_LAUNCH,      // WIde
     ON_APPLICATION_STOP,        // WIde
 
-    ON_ARGUMENTS_LOADED,        // Arguments
+    ON_ENVIROMENT_LOADED,        // Arguments
 
     ON_CONFIG_LOADED,           // Config
     ON_CONFIG_CHANGED,          // Config

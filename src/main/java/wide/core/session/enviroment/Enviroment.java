@@ -82,7 +82,13 @@ public class Enviroment
         }
 
         readApplicationInfo();
-        return parseArguments(args);
+
+        if (!parseArguments(args))
+            return false;
+
+        // Hook.ON_ENVIROMENT_LOADED
+        WIde.getHooks().fire(Hook.ON_ENVIROMENT_LOADED);
+        return true;
     }
 
     private boolean parseArguments(String[] args)
@@ -111,8 +117,6 @@ public class Enviroment
             return false;
         }
 
-        // Hook.ON_ARGUMENTS_LOADED
-        WIde.getHooks().fire(Hook.ON_ARGUMENTS_LOADED);
         return true;
     }
 

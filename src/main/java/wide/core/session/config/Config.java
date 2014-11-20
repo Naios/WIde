@@ -26,7 +26,7 @@ public class Config
 	public Config()
 	{
 	    // After Arg parser has finished, load config with args
-        WIde.getHooks().addListener(new HookListener(Hook.ON_ARGUMENTS_LOADED, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_ENVIROMENT_LOADED, this)
         {
             @Override
             public void informed()
