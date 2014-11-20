@@ -1,6 +1,7 @@
 package wide.core.session.enviroment;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -178,7 +179,19 @@ public class Enviroment
 
     private boolean hasReadWriteAccess()
     {
-        // TODO Implement this
+        final File file = new File(Constants.STRING_TEST.toString());
+        try
+        {
+            file.createNewFile();
+        } catch (final IOException e)
+        {
+            return false;
+        }
+
+        if (!file.canRead() || !file.canWrite())
+            return false;
+
+        file.delete();
         return true;
     }
 

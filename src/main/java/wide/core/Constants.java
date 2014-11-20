@@ -6,7 +6,7 @@ public enum Constants
     // Strings
     STRING_DEFAULT_PROPERTIES("WIde.properties"),
     STRING_UNKNOWN("<unknown>"),
-    STRING_TEST("<unknown>"),
+    STRING_TEST("test"),
 
     ////////////////////////////////////////////////////////
     // Property Names
