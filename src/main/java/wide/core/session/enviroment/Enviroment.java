@@ -12,6 +12,10 @@ import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 
+/**
+ * {@link Enviroment} implements all static application settings like passed arguments and revision info.<p>
+ * There are several getters to check arguments. You may also get the revision with {@link #getApplicationInfo()}
+ */
 public class Enviroment
 {
     @SuppressWarnings("serial")
