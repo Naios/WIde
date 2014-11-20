@@ -14,24 +14,20 @@ import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.framework.extensions.scripts.Script;
 
-class FetchWorker implements Runnable
+class FileFetcher implements Runnable
 {
-    private final int id;
+    private final String origin, target;
 
-    private final String type, origin, target;
+    private final boolean overwrite;
 
-    private final AtomicInteger count;
+    private final Runnable postaction;
 
-    private boolean overwrite;
-
-    public FetchWorker(int id, String type, String origin, String target, AtomicInteger count, boolean overwrite)
+    public FileFetcher(String origin, String target, boolean overwrite, Runnable postaction)
     {
-        this.id = id;
-        this.type = type;
         this.origin = origin;
         this.target = target;
-        this.count = count;
         this.overwrite = overwrite;
+        this.postaction = postaction;
     }
 
     @Override
@@ -52,10 +48,7 @@ class FetchWorker implements Runnable
             fos.close();
             rbc.close();
 
-            if (WIde.getEnviroment().isTraceEnabled())
-                System.out.println(String.format("Fetched %s id: %s", type, id));
-
-            count.incrementAndGet();
+            postaction.run();
 
         } catch (final Exception e)
         {
@@ -65,7 +58,7 @@ class FetchWorker implements Runnable
 
 public class Fetch extends Script
 {
-    final String WOWHEAD_URL = "http://www.wowhead.com";
+    final static String WOWHEAD_URL = "http://www.wowhead.com";
 
     public Fetch()
     {
@@ -115,7 +108,21 @@ public class Fetch extends Script
         final AtomicInteger count = new AtomicInteger();
 
         for (int i = begin; i <= end; ++i)
-            pool.execute(new FetchWorker(i, type, WOWHEAD_URL + "/" + type + "=" + i, targetdir + "/"+ i + ".html", count, overwrite));
+        {
+            final int id = i;
+
+            pool.execute(new FileFetcher(WOWHEAD_URL + "/" + type + "=" + i, targetdir + "/"+ i + ".html", overwrite, new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if (WIde.getEnviroment().isTraceEnabled())
+                        System.out.println(String.format("Fetched %s id: %s", type, id));
+
+                    count.incrementAndGet();
+                }
+            }));
+        }
 
         pool.shutdown();
 
