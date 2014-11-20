@@ -39,16 +39,16 @@ public class Terminal extends Module implements UserInferface
     public void show()
     {
         final Console console = System.console();
-        final String cmdString = WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() +
-                "@" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get() + ": ";
+        final String cmdString = WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() +
+                "@" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ": ";
 
         final String singleCommand = WIde.getEnviroment().getParameter("execute");
 
         if (!WIde.getDatabase().isConnected())
         {
             System.out.println("Sorry, could not connect to: "
-                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() + "@"
-                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get()
+                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() + "@"
+                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get()
                     + ", closed.");
 
             return;

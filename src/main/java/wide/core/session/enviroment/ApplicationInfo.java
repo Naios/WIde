@@ -27,12 +27,12 @@ public class ApplicationInfo
         {
         }
 
-        this.tag = properties.getProperty(Constants.PROPERTY_GIT_TAG.get(), Constants.STRING_UNKNOWN.get());
-        this.hash = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_HASH.get(), Constants.STRING_UNKNOWN.get());
-        this.hash_abbrev = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_HASH_SHORT.get(), Constants.STRING_UNKNOWN.get());
-        this.branch = properties.getProperty(Constants.PROPERTY_GIT_BRANCH.get(), Constants.STRING_UNKNOWN.get());
-        this.commit_time = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_TIME.get(), Constants.STRING_UNKNOWN.get());
-        this.build_time = properties.getProperty(Constants.PROPERTY_GIT_BUILD_TIME.get(), Constants.STRING_UNKNOWN.get());
+        this.tag = properties.getProperty(Constants.PROPERTY_GIT_TAG.toString(), Constants.STRING_UNKNOWN.toString());
+        this.hash = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_HASH.toString(), Constants.STRING_UNKNOWN.toString());
+        this.hash_abbrev = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_HASH_SHORT.toString(), Constants.STRING_UNKNOWN.toString());
+        this.branch = properties.getProperty(Constants.PROPERTY_GIT_BRANCH.toString(), Constants.STRING_UNKNOWN.toString());
+        this.commit_time = properties.getProperty(Constants.PROPERTY_GIT_COMMIT_TIME.toString(), Constants.STRING_UNKNOWN.toString());
+        this.build_time = properties.getProperty(Constants.PROPERTY_GIT_BUILD_TIME.toString(), Constants.STRING_UNKNOWN.toString());
     }
 
     public String getTag()

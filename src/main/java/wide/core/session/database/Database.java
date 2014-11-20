@@ -18,10 +18,10 @@ public class Database
 
     private static String GetConnectionStringForDatabase(String db)
     {
-        return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()).get() + ":"
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT.get()).get() + "/" + db + "?" + "user="
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()).get() + "&" + "password="
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD.get()).get();
+        return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ":"
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get() + "/" + db + "?" + "user="
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() + "&" + "password="
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD).get();
     }
 
     public Database()
@@ -84,7 +84,7 @@ public class Database
         for (final DatabaseType type : DatabaseType.values())
         {
             final String con_string = GetConnectionStringForDatabase(
-                    WIde.getConfig().getProperty(type.getConfigEntry().get()).get());
+                    WIde.getConfig().getProperty(type.getConfigEntry()).get());
 
             try
             {

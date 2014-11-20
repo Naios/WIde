@@ -64,7 +64,7 @@ public class Enviroment
 
     private CommandLine cmd = null;
 
-    private final ApplicationInfo applicationInfo = new ApplicationInfo(Constants.PATH_REPOSITORY_INFO.get());
+    private final ApplicationInfo applicationInfo = new ApplicationInfo(Constants.PATH_REPOSITORY_INFO.toString());
 
     public boolean setUp(String[] args)
     {
@@ -144,7 +144,7 @@ public class Enviroment
     public String getConfigName()
     {
         if (!hasArgument("config"))
-            return Constants.STRING_DEFAULT_PROPERTIES.get();
+            return Constants.STRING_DEFAULT_PROPERTIES.toString();
         else
             return cmd.getOptionValue("config");
     }

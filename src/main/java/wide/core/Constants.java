@@ -43,7 +43,8 @@ public enum Constants
         this.constant = constant;
     }
 
-    public String get()
+    @Override
+    public String toString()
     {
         return constant;
     }

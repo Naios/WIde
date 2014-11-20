@@ -53,7 +53,7 @@ public class Config
 
 	    try
         {
-	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.PATH_DEFAULT_PROPERTIES_CREATE.get()));
+	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.PATH_DEFAULT_PROPERTIES_CREATE.toString()));
 
         } catch (final Exception e)
 	    {
@@ -101,6 +101,11 @@ public class Config
 	        property.set(def);
 
 	    return property;
+	}
+
+	public StringProperty getProperty(final Object key)
+	{
+	    return getProperty(key.toString());
 	}
 
 	public StringProperty getProperty(final String key)

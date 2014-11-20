@@ -74,18 +74,18 @@ public class LoginForm
 		assert mainPane != null : "fx:id=\"pane\" was not injected: check your FXML file 'LoginForm.fxml'.";
 
 		field_chardb.textProperty().bindBidirectional(
-				WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_CHARACTER.get()));
+				WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_CHARACTER));
 
-		field_host.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST.get()));
+		field_host.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST));
 
-		field_port.textProperty().bind(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT.get()));
+		field_port.textProperty().bind(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT));
 
-		field_user.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER.get()));
+		field_user.textProperty().bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER));
 
 		field_worlddb.textProperty().bindBidirectional(
-		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_WORLD.get()));
+		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_WORLD));
 		field_password.textProperty().bindBidirectional(
-		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD.get()));
+		        WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD));
 
 		final StringConverter<Boolean> stringToBooleanconverter = new StringConverter<Boolean>()
 		{
@@ -105,13 +105,13 @@ public class LoginForm
 		autologinCheckbox.selectedProperty().set(
 				stringToBooleanconverter.fromString(WIde.getConfig().getProperty(
 						"DB:Autologin").get()));
-		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_AUTOLOGIN.get()),
+		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_AUTOLOGIN),
 				autologinCheckbox.selectedProperty(), stringToBooleanconverter);
 
 		savePasswordCheckbox.selectedProperty().set(
 				stringToBooleanconverter.fromString(WIde.getConfig().getProperty(
 						"DB:SavePassword").get()));
-		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_SAVE_PASSWORD.get()),
+		Bindings.bindBidirectional(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_SAVE_PASSWORD),
 				savePasswordCheckbox.selectedProperty(),
 				stringToBooleanconverter);
 
