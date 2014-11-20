@@ -1,4 +1,4 @@
-package wide.scripts.fetchwowhead;
+package wide.scripts.fetch;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,13 +63,13 @@ class FetchWorker implements Runnable
     }
 }
 
-public class FetchWowHead extends Script
+public class Fetch extends Script
 {
     final String WOWHEAD_URL = "http://www.wowhead.com";
 
-    public FetchWowHead()
+    public Fetch()
     {
-        super("fetchwowhead");
+        super("fetch");
     }
 
     @Override
