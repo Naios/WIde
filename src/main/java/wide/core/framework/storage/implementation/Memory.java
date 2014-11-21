@@ -1,4 +1,4 @@
-package wide.core.framework.storage;
+package wide.core.framework.storage.implementation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

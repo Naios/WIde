@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.DBCStorage;
+import wide.core.framework.storage.implementation.InternalDBCStorage;
 
 public class Test extends Script
 {
@@ -23,7 +24,20 @@ public class Test extends Script
     {
         try
         {
-            final DBCStorage dbc = new DBCStorage(openBuffer(args[0]));
+            final DBCStorage dbc = new DBCStorage(args[0]);
+
+            System.out.println(dbc.toString());
+        } catch (final Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        if ("test".equals("test"))
+            return;
+
+        try
+        {
+            final InternalDBCStorage dbc = new InternalDBCStorage(openBuffer(args[0]));
 
             for (int y = 0; y < dbc.getNRecords(); ++y)
             {
@@ -33,19 +47,19 @@ public class Test extends Script
 
                     switch (dbc.getColType(x))
                     {
-                        case DBCStorage.COL_TYPE_BOOLEAN:
+                        case InternalDBCStorage.COL_TYPE_BOOLEAN:
                             data = String.valueOf((boolean)dbc.getData(x, y));
                             break;
-                        case DBCStorage.COL_TYPE_COLOR:
+                        case InternalDBCStorage.COL_TYPE_COLOR:
                             data = "<color>";
                             break;
-                        case DBCStorage.COL_TYPE_FLOAT:
+                        case InternalDBCStorage.COL_TYPE_FLOAT:
                             // data = String.valueOf(dbc.getData(x, y));
                             // break;
-                        case DBCStorage.COL_TYPE_NUMERIC:
+                        case InternalDBCStorage.COL_TYPE_NUMERIC:
                             data = String.valueOf((int)dbc.getData(x, y));
                             break;
-                        case DBCStorage.COL_TYPE_STRING:
+                        case InternalDBCStorage.COL_TYPE_STRING:
                             data = dbc.getStringByOffset((int) dbc.getData(x, y)).toString();
                             break;
                         default:
@@ -59,24 +73,10 @@ public class Test extends Script
                 System.out.println();
             }
 
-            /*
-             *
-    public wowfile load(File f) throws InvalidClassException {
-        return new dbc( fileLoader.openBuffer(f.getAbsolutePath()) );
-    }
-             */
-
-
         } catch (final Exception e)
         {
             e.printStackTrace();
         }
-
-
-
-
-
-
     }
 
     public static ByteBuffer openBuffer(String FileName)
