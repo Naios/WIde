@@ -4,6 +4,7 @@ import wide.core.framework.extensions.ExtensionLoader;
 import wide.core.framework.extensions.scripts.Script;
 import wide.scripts.fetch.Fetch;
 import wide.scripts.hello.HelloWorld;
+import wide.scripts.test.Test;
 
 public class ScriptLoader implements ExtensionLoader<Script>
 {
@@ -11,7 +12,8 @@ public class ScriptLoader implements ExtensionLoader<Script>
     private final Script[] SCRIPTS =
     {
         new HelloWorld(),
-        new Fetch()
+        new Fetch(),
+        new Test()
     };
 
     @Override
