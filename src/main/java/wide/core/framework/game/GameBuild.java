@@ -1,6 +1,6 @@
 package wide.core.framework.game;
 
-public enum Gamebuild
+public enum GameBuild
 {
     V3_3_0_10958("3.3.0"),
     V3_3_5a_12340("3.3.5a"),
@@ -28,7 +28,7 @@ public enum Gamebuild
 
     private final String shortversion;
 
-    private Gamebuild(String shortversion)
+    private GameBuild(String shortversion)
     {
         this.shortversion = shortversion;
     }

@@ -41,7 +41,7 @@ class MissingKeyException extends Exception
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DBC
  */
 public abstract class DBCStorage<T> extends Storage<T> implements
-        StorageFactory<DBCStructure>
+        StorageFactory<T>
 {
     private final static int            HEADER_SIZE      = 20;
     private final static String         MAGIC            = "WDBC";
@@ -87,7 +87,7 @@ public abstract class DBCStorage<T> extends Storage<T> implements
 
     private Field[] getAllAnnotatedFields()
     {
-        final DBCStructure record = create();
+        final T record = create();
         return ClassUtil.getAnnotatedDeclaredFields(record.getClass(),
                 StorageEntry.class, true);
     }
@@ -181,7 +181,7 @@ public abstract class DBCStorage<T> extends Storage<T> implements
             return null;
 
         @SuppressWarnings("unchecked")
-        T record = (T) create();
+        T record = create();
 
         for (final Field field : getAllAnnotatedFields())
         {

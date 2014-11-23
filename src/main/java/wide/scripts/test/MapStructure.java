@@ -1,11 +1,11 @@
 package wide.scripts.test;
 
-import wide.core.framework.storage.DBCStructure;
-import wide.core.framework.storage.StorageEntry;
+import wide.core.framework.storage.StorageStructure;
 
-public interface MapStructure extends DBCStructure
+@StorageStructure(filename="Map.dbc")
+public interface MapStructure
 {
     public int getMapId();
-    
+
     public String getName();
 }

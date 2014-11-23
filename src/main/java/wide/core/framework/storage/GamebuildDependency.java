@@ -5,9 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import wide.core.framework.game.GameBuild;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface StorageStructure
+public @interface GamebuildDependency
 {
-    String filename();
+    GameBuild build();
 }

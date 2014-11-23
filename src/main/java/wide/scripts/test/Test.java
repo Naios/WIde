@@ -2,7 +2,6 @@ package wide.scripts.test;
 
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.DBCStorage;
-import wide.core.framework.storage.DBCStructure;
 
 public class Test extends Script
 {
@@ -24,7 +23,7 @@ public class Test extends Script
             final DBCStorage<MapStructure> dbc = new DBCStorage<MapStructure>(path)
             {
                 @Override
-                public DBCStructure create()
+                public MapStructure create()
                 {
                     return new MapStructure_335();
                 }

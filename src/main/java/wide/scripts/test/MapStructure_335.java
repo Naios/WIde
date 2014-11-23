@@ -1,11 +1,10 @@
 package wide.scripts.test;
 
-import wide.core.framework.game.Gamebuild;
-import wide.core.framework.storage.DBCStructure;
+import wide.core.framework.game.GameBuild;
+import wide.core.framework.storage.GamebuildDependency;
 import wide.core.framework.storage.StorageEntry;
-import wide.core.framework.storage.StorageStructure;
 
-@StorageStructure(build=Gamebuild.V3_3_5a_12340)
+@GamebuildDependency(build=GameBuild.V3_3_5a_12340)
 public class MapStructure_335 implements MapStructure
 {
     @StorageEntry(idx=0, name="Map ID", key=true)
