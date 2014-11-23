@@ -9,6 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.AnnotationUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+
 @SuppressWarnings("serial")
 class OutOfBoundsException extends Exception
 {
@@ -24,7 +28,8 @@ class KeyIsNoIntException extends Exception
 {
     public KeyIsNoIntException()
     {
-        super("Given DBC Structure has a Key assigned that isn't an int, impossible!");
+        super(
+                "Given DBC Structure has a Key assigned that isn't an int, impossible!");
     }
 }
 
@@ -41,13 +46,13 @@ class MissingKeyException extends Exception
  * Implementation of Blizzards DBC files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DBC
  */
-public abstract class DBCStorage<T> extends Storage<T>
-    implements StorageFactory<DBCStructure>
+public abstract class DBCStorage<T> extends Storage<T> implements
+        StorageFactory<DBCStructure>
 {
-    private final static int HEADER_SIZE = 20;
-    private final static String MAGIC = "WDBC";
+    private final static int            HEADER_SIZE      = 20;
+    private final static String         MAGIC            = "WDBC";
 
-    private final Map<Integer, Integer> intToOffsetCache = new HashMap<>();
+    private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
     public DBCStorage(String path) throws Exception
     {
@@ -57,12 +62,9 @@ public abstract class DBCStorage<T> extends Storage<T>
         // Map indexes to row offsets
         List<Integer> keys = new LinkedList<>();
         // Get indexes of fields marked as key
-        for (final Field field : create().getClass().getFields())
+        for (final Field field : getAllAnnotatedFields())
         {
-            StorageEntry annotation = field.getAnnotation(StorageEntry.class);
-            if (annotation == null)
-                continue;
-
+            final StorageEntry annotation = field.getAnnotation(StorageEntry.class);
             if (annotation.key())
                 keys.add(annotation.idx());
         }
@@ -82,53 +84,52 @@ public abstract class DBCStorage<T> extends Storage<T>
             final int entry = buffer.get(getOffset(i, keys.get(0)));
 
             // Store it with its offset
-            intToOffsetCache.put(entry, getOffset(i, 0));
+            entryToOffsetCache.put(entry, getOffset(i, 0));
         }
-            
-            
-        
+
         // TODO Pre generate String Table
 
         /*
-        public Object getData(int col, int row)
-        {
-            final int off = getRecordSize() * row + (col * rl);
-            return getWord(off);
-        }
-        */
+         * public Object getData(int col, int row) { final int off =
+         * getRecordSize() * row + (col * rl); return getWord(off); }
+         */
 
         /*
-        for (int y = 0; y < recordsCount; ++y)
-        {
-            m_rows[y] = new int[fieldsCount];
-            for (int x = 0; x < fieldsCount; ++x)
-                m_rows[y][x] = buffer.getInt();
-
-
-        }
-        */
+         * for (int y = 0; y < recordsCount; ++y) { m_rows[y] = new
+         * int[fieldsCount]; for (int x = 0; x < fieldsCount; ++x) m_rows[y][x]
+         * = buffer.getInt();
+         * 
+         * 
+         * }
+         */
 
         /*
-        // Store Records
-        for (int i = 0; i < recordsCount; i++)
-        {
-            m_rows[i] = new int[fieldsCount];
-            buffer.get(m_rows[i]);
-
-
-            break;
-        }
-        */
+         * // Store Records for (int i = 0; i < recordsCount; i++) { m_rows[i] =
+         * new int[fieldsCount]; buffer.get(m_rows[i]);
+         * 
+         * 
+         * break; }
+         */
         // Store Strings
     }
 
-    private int getOffset(int y, int x) throws OutOfBoundsException
+    private Field[] getAllAnnotatedFields()
     {
-        if ((y < 0 || y >= recordsCount) ||
-            (x < 0 || x >= fieldsCount))
-            throw new OutOfBoundsException();
+        final DBCStructure record = create();
+        return ClassUtil.getAnnotatedDeclaredFields(record.getClass(),
+                StorageEntry.class, true);
+    }
 
-        return (y * recordSize) + (x * getFieldSize());
+    private int getOffset(int y, int x)
+    {
+        if ((y < 0 || y >= recordsCount) || (x < 0 || x >= fieldsCount))
+        {
+            // Should not occur
+            assert false;
+            return 0;
+        }
+
+        return getHeaderSize() + (y * recordSize) + (x * getFieldSize());
     }
 
     @Override
@@ -146,19 +147,17 @@ public abstract class DBCStorage<T> extends Storage<T>
     @Override
     public String toString()
     {
-        
+
         final StringBuilder builder = new StringBuilder();
         // for (int y = 0; y < recordsCount; ++y)
-           //  builder.append(Arrays.toString(m_rows[y])).append("\n");
+        // builder.append(Arrays.toString(m_rows[y])).append("\n");
 
         return builder.toString();
     }
 
-    
-    
     public T getEntry(int entry)
     {
-        final int offset = intToOffsetCache.get(entry);
+        final int offset = entryToOffsetCache.get(entry);
         if (offset == 0)
             return null;
         else
@@ -170,15 +169,25 @@ public abstract class DBCStorage<T> extends Storage<T>
         @SuppressWarnings("unchecked")
         T record = (T) create();
 
-        for (final Field field : create().getClass().getFields())
+        for (final Field field : getAllAnnotatedFields())
         {
-            StorageEntry annotation = field.getAnnotation(StorageEntry.class);
-            if (annotation == null)
-                continue;
+            final StorageEntry annotation = field.getAnnotation(StorageEntry.class);
+            
+            final int absolut_index = offset + (annotation.idx() * getFieldSize());
+            
+            // Needed to set private access private fields
+            field.setAccessible(true);
+            
+            try
+            {
+                field.setInt(record, buffer.getInt(absolut_index));
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
             
             // TODO Implement String table lookup
-            
-            field.setInt(entry, buffer.getInt());
         }
         return record;
     }
@@ -186,7 +195,21 @@ public abstract class DBCStorage<T> extends Storage<T>
     @Override
     public Iterator<T> iterator()
     {
-        // TODO Implement this
-        return null;
+        return new Iterator<T>()
+        {
+            private int idx = 0;
+            
+            @Override
+            public boolean hasNext()
+            {
+                return idx < getRecordsCount();
+            }
+
+            @Override
+            public T next()
+            {
+                return getEntryByOffset(getOffset(idx++, 0));
+            }
+        };
     }
 }

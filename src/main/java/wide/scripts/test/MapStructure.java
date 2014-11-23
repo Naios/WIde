@@ -5,12 +5,11 @@ import wide.core.framework.storage.StorageEntry;
 
 public class MapStructure extends DBCStructure
 {
-    @StorageEntry(idx=1, key=true, name="Map id")
-    public int key;
+    @StorageEntry(idx=0, key=true, name="Map id")
+    private int mapid;
 
-    @Override
-    public DBCStructure create()
+    public int getMapid()
     {
-        return new MapStructure();
+        return mapid;
     }
 }

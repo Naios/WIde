@@ -48,7 +48,10 @@ public class Test extends Script
                 }
             };
 
-            System.out.println(dbc.toString());
+            for (final MapStructure map : dbc)
+                System.out.println(map.getMapid());
+
+            // System.out.println(dbc.toString());
         } catch (final Exception e)
         {
             e.printStackTrace();
