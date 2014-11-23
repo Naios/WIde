@@ -10,12 +10,12 @@ public enum Expansion
     WARLORDS_OF_DRAENOR("WOD");
 
     private final String shortVersion;
-    
+
     private Expansion(String shortVersion)
     {
         this.shortVersion = shortVersion;
     }
-    
+
     public String getShortVersion()
     {
         return shortVersion;

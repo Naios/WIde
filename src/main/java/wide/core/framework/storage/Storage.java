@@ -8,8 +8,6 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
-import wide.core.session.hooks.ActionHook;
-
 @SuppressWarnings("serial")
 class InvalidDataException extends Exception
 {
@@ -100,9 +98,9 @@ public abstract class Storage<T> implements Iterable<T>
         stringBlockSize = buffer.getInt();
     }
 
-    public abstract int getHeaderSize();
+    protected abstract int getHeaderSize();
 
-    public abstract String getMagicSig();
+    protected abstract String getMagicSig();
 
     public int getRecordsCount()
     {
@@ -127,5 +125,15 @@ public abstract class Storage<T> implements Iterable<T>
     protected int getFieldSize()
     {
         return recordSize / fieldsCount;
+    }
+
+    protected int getDataBlockOffset()
+    {
+        return getHeaderSize();
+    }
+
+    protected int getStringBlockOffset()
+    {
+        return getDataBlockOffset() + getRecordsCount() * getRecordSize();
     }
 }
