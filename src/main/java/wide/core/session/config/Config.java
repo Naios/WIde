@@ -90,6 +90,7 @@ public class Config
 
     		} catch (final IOException e)
     		{
+    		    hasChanged = false;
     		}
         }
 	}
