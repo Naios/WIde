@@ -8,12 +8,14 @@ import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
 
+import wide.core.session.hooks.ActionHook;
+
 @SuppressWarnings("serial")
 class InvalidDataException extends Exception
 {
-    public InvalidDataException(String path)
+    public InvalidDataException(String path, String magic)
     {
-        super(String.format("File '%s' isn't valid DBC file!", path));
+        super(String.format("File '%s' isn't valid %s file!", path, magic));
     }
 }
 
@@ -22,7 +24,7 @@ class CorruptedFileException extends Exception
 {
     public CorruptedFileException(String path)
     {
-        super(String.format("DBC File '%s' seems to be corrupted!", path));
+        super(String.format("Storage File '%s' seems to be corrupted!", path));
     }
 }
 
@@ -35,13 +37,30 @@ class MissingFileException extends Exception
     }
 }
 
-public abstract class Storage
+public abstract class Storage<T> implements Iterable<T>
 {
-    protected final int recordsCount /*Y*/, fieldsCount /*X*/, recordSize, stringBlockSize;
+    /**
+     * The count of records (<b>Y / Rows</b>) of the Storage
+     */
+    protected final int recordsCount;
+
+    /**
+     * The count of fields (<b>X / Columns</b>) of the Storage
+     */
+    protected final int fieldsCount /*X*/;
+
+    /**
+     * The overall size of the record (size of all Fields together).<p>
+     * Use {@link #getFieldSize()} the size of a single field.
+     */
+    protected final int recordSize;
+
+    /**
+     * The size of the String Block.
+     */
+    protected final int stringBlockSize;
 
     protected final ByteBuffer buffer;
-
-    protected final int[][] m_rows;
 
     protected final Map<Integer, String> stringTable = new HashMap<>();
 
@@ -68,17 +87,17 @@ public abstract class Storage
         buffer.get(magic);
         buffer.position(getMagicSig().length());
         if (!new String(magic).equals(getMagicSig()))
-            throw new InvalidDataException(path);
+            throw new InvalidDataException(path, getMagicSig());
 
+        // The Storage file needs at least a header
         if (getHeaderSize() > size)
             throw new CorruptedFileException(path);
 
+        // Reads header
         recordsCount = buffer.getInt();
         fieldsCount = buffer.getInt();
         recordSize = buffer.getInt();
         stringBlockSize = buffer.getInt();
-
-        m_rows = new int[recordsCount][];
     }
 
     public abstract int getHeaderSize();
@@ -103,11 +122,6 @@ public abstract class Storage
     public int getStringTableSize()
     {
         return stringBlockSize;
-    }
-
-    public int[] GetRowAsArray(int row)
-    {
-        return m_rows[row];
     }
 
     protected int getFieldSize()

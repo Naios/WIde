@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.DBCStorage;
+import wide.core.framework.storage.DBCStructure;
 import wide.core.framework.storage.implementation.InternalDBCStorage;
 
 public class Test extends Script
@@ -22,22 +24,42 @@ public class Test extends Script
     @Override
     public void run(String[] args)
     {
+        
+        
+        
+        
+
+        
+        testmy(args[0]);
+        
+        // testtallis(args[0]);
+    }
+
+    void testmy(String path)
+    {
         try
         {
-            final DBCStorage dbc = new DBCStorage(args[0]);
+            final DBCStorage<MapStructure> dbc = new DBCStorage<MapStructure>(path)
+            {
+                @Override
+                public DBCStructure create()
+                {
+                    return new MapStructure();
+                }
+            };
 
             System.out.println(dbc.toString());
         } catch (final Exception e)
         {
             e.printStackTrace();
         }
+    }
 
-        if ("test".equals("test"))
-            return;
-
+    void testtallis(String path)
+    {
         try
         {
-            final InternalDBCStorage dbc = new InternalDBCStorage(openBuffer(args[0]));
+            final InternalDBCStorage dbc = new InternalDBCStorage(openBuffer(path));
 
             for (int y = 0; y < dbc.getNRecords(); ++y)
             {
@@ -78,7 +100,7 @@ public class Test extends Script
             e.printStackTrace();
         }
     }
-
+    
     public static ByteBuffer openBuffer(String FileName)
     {
         try
