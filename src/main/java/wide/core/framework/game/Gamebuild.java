@@ -27,7 +27,7 @@ public enum Gamebuild
     V6_0_3_19103("6.0.3");
 
     private final String shortversion;
-    
+
     private Gamebuild(String shortversion)
     {
         this.shortversion = shortversion;
@@ -37,5 +37,11 @@ public enum Gamebuild
     public String toString()
     {
         return shortversion;
+    }
+
+    public Expansion getExpansion()
+    {
+        // Returns the expansion basd on the first integer of the shortversion
+        return Expansion.values()[Integer.valueOf(toString().charAt(0)) - 1];
     }
 }

@@ -1,5 +1,7 @@
 package wide.core.framework.storage;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.Reference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.lang3.AnnotationUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -144,6 +147,36 @@ public abstract class DBCStorage<T> extends Storage<T> implements
         return MAGIC;
     }
 
+    /**
+     * Returns the in memory null terminated string at the offset
+     * 
+     * @param offset
+     * @return The string at offset
+     */
+    private String getStringAtOffset(int offset)
+    {
+        List<Byte> list = new Vector<>();
+        buffer.position(offset);
+
+        byte b = ' ';
+        while ((b = buffer.get()) != 0)
+            list.add(b);
+
+        // TODO improve this, found no better way
+        final byte[] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); ++i)
+            bytes[i] = list.get(i);
+
+        try
+        {
+            return new String(bytes, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            return null;
+        }
+    }
+
     @Override
     public String toString()
     {
@@ -174,19 +207,27 @@ public abstract class DBCStorage<T> extends Storage<T> implements
             final StorageEntry annotation = field.getAnnotation(StorageEntry.class);
             
             final int absolut_index = offset + (annotation.idx() * getFieldSize());
-            
+
             // Needed to set private access private fields
             field.setAccessible(true);
-            
+
             try
             {
-                field.setInt(record, buffer.getInt(absolut_index));
+                if (field.getType().equals(int.class))
+                    field.setInt(record, buffer.getInt(absolut_index));
+                else if (field.getType().equals(String.class))
+                    field.set(record, getStringAtOffset(buffer.getInt(absolut_index)));
+                    
             }
             catch (Exception e)
             {
                 return null;
             }
-            
+            finally
+            {
+                field.setAccessible(false);
+            }
+
             // TODO Implement String table lookup
         }
         return record;

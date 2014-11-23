@@ -44,12 +44,12 @@ public class Test extends Script
                 @Override
                 public DBCStructure create()
                 {
-                    return new MapStructure();
+                    return new MapStructure_335();
                 }
             };
 
             for (final MapStructure map : dbc)
-                System.out.println(map.getMapid());
+                System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
 
             // System.out.println(dbc.toString());
         } catch (final Exception e)
