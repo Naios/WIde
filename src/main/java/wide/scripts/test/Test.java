@@ -1,7 +1,7 @@
 package wide.scripts.test;
 
 import wide.core.framework.extensions.scripts.Script;
-import wide.core.framework.storage.DBCStorage;
+import wide.core.framework.storage.DB2Storage;
 
 public class Test extends Script
 {
@@ -20,7 +20,7 @@ public class Test extends Script
     {
         try
         {
-            final DBCStorage<MapStructure> dbc = new DBCStorage<MapStructure>(path)
+            final DB2Storage<MapStructure> dbc = new DB2Storage<MapStructure>(path)
             {
                 @Override
                 public MapStructure create()
@@ -30,11 +30,10 @@ public class Test extends Script
             };
 
             //for (final MapStructure map : dbc)
-                // System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
-
-
+            // System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
 
             System.out.println(dbc.toString());
+
         } catch (final Exception e)
         {
             e.printStackTrace();

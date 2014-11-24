@@ -1,4 +1,4 @@
-package wide.core.framework.storage;
+package wide.core.framework.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
