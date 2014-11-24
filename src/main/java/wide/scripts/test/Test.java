@@ -29,10 +29,12 @@ public class Test extends Script
                 }
             };
 
-            for (final MapStructure map : dbc)
-                System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
+            //for (final MapStructure map : dbc)
+                // System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
 
-            // System.out.println(dbc.toString());
+
+
+            System.out.println(dbc.toString());
         } catch (final Exception e)
         {
             e.printStackTrace();

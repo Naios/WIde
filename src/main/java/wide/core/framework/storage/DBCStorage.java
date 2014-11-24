@@ -2,12 +2,12 @@ package wide.core.framework.storage;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 @SuppressWarnings("serial")
 class OutOfBoundsException extends Exception
@@ -43,10 +43,49 @@ class MissingKeyException extends Exception
 public abstract class DBCStorage<T> extends Storage<T> implements
         StorageFactory<T>
 {
-    private final static int            HEADER_SIZE      = 20;
-    private final static String         MAGIC            = "WDBC";
+    private final static int HEADER_SIZE = 20;
+
+    private final static String MAGIC = "WDBC";
 
     private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
+
+    private final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
+
+    private final static int COUNT_CHECK_RECORDS_FOR_STRING = 4;
+
+    private final boolean[] isColumnStringTypeCache;
+
+    private class StringInBufferCached
+    {
+        final int begin, length;
+
+        public StringInBufferCached(ByteBuffer buffer, int begin, int length)
+        {
+            this.begin = begin;
+            this.length = length;
+        }
+
+        @Override
+        public String toString()
+        {
+            final byte[] bytes = new byte[length];
+
+            // TODO Find a better way
+            // buffer.get(bytes, begin, length); seems to be bugged hard!
+            buffer.position(begin);
+            for (int i = 0; i < length; ++i)
+                bytes[i] = buffer.get();
+
+            try
+            {
+                return new String(bytes, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                return null;
+            }
+        }
+    }
 
     public DBCStorage(String path) throws Exception
     {
@@ -83,6 +122,34 @@ public abstract class DBCStorage<T> extends Storage<T> implements
             // Store it with its offset
             entryToOffsetCache.put(entry, getOffset(i, 0));
         }
+
+        // String of the String Block offset begin always at StringBlockOffset + 1
+        buffer.position(getStringBlockOffset() + 1);
+
+        while (buffer.remaining() > 1)
+        {
+            // Push buffer forward to the next string
+            final int offset = buffer.position();
+            while (buffer.get() != 0);
+
+            offsetToStringCache.put(offset, new StringInBufferCached(buffer, offset, buffer.position() - offset - 1));
+        }
+
+        // Pre Calculate if a column is a String
+        isColumnStringTypeCache = new boolean[fieldsCount];
+        for (int x = 0; x < fieldsCount; ++x)
+            isColumnStringTypeCache[x] = isFieldPossibleString(x);
+    }
+
+    private boolean isFieldPossibleString(int x)
+    {
+        for (int y = 0; (y < recordsCount) && (y < COUNT_CHECK_RECORDS_FOR_STRING); ++y)
+        {
+            final int offset = buffer.getInt(getOffset(y, x));
+            if (!offsetToStringCache.containsKey(offset + getStringBlockOffset()))
+                return false;
+        }
+        return true;
     }
 
     private Field[] getAllAnnotatedFields()
@@ -124,31 +191,18 @@ public abstract class DBCStorage<T> extends Storage<T> implements
      */
     private String getStringAtOffset(int offset)
     {
-        final List<Byte> list = new Vector<>();
-        buffer.position(offset);
-
-        byte b = ' ';
-        while ((b = buffer.get()) != 0)
-            list.add(b);
-
-        // TODO improve this, found no better way
-        final byte[] bytes = new byte[list.size()];
-        for (int i = 0; i < list.size(); ++i)
-            bytes[i] = list.get(i);
-
-        try
-        {
-            return new String(bytes, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
+        final StringInBufferCached cached = offsetToStringCache.get(offset);
+        if (cached != null)
+            return cached.toString();
+        else
             return null;
-        }
     }
 
-    @Override
-    public String toString()
+    public String asString(boolean withStrings)
     {
+        final int[][] intArray = (!withStrings) ? asIntArray() : null;
+        final String[][] stringArray = (withStrings) ? asStringArray() : null;
+
         final StringBuilder builder = new StringBuilder();
         builder.append("{\n");
 
@@ -156,7 +210,22 @@ public abstract class DBCStorage<T> extends Storage<T> implements
         {
             builder.append("\t{");
             for (int x = 0; x < fieldsCount; ++x)
-                builder.append(buffer.getInt(getOffset(y, x))).append(", ");
+            {
+                if (withStrings)
+                {
+                    if (isColumnStringTypeCache[x])
+                        builder.append("\"");
+
+                    builder.append(stringArray[y][x]);
+
+                    if (isColumnStringTypeCache[x])
+                        builder.append("\"");
+                }
+                else
+                    builder.append(intArray[y][x]);
+
+                builder.append(", ");
+            }
 
             builder.delete(builder.length() - 2, builder.length());
             builder.append("},\n");
@@ -164,6 +233,12 @@ public abstract class DBCStorage<T> extends Storage<T> implements
 
         builder.append("}");
         return builder.toString();
+    }
+
+    @Override
+    public String toString()
+    {
+        return asString(true);
     }
 
     public T getEntry(int entry)
@@ -180,8 +255,7 @@ public abstract class DBCStorage<T> extends Storage<T> implements
         if (offset >= getStringBlockOffset())
             return null;
 
-        @SuppressWarnings("unchecked")
-        T record = create();
+        final T record = create();
 
         for (final Field field : getAllAnnotatedFields())
         {
@@ -199,7 +273,6 @@ public abstract class DBCStorage<T> extends Storage<T> implements
                     field.setFloat(record, buffer.getFloat(absolut_index));
                 else if (field.getType().equals(String.class))
                     field.set(record, getStringAtOffset(buffer.getInt(absolut_index) + getStringBlockOffset()));
-
             }
             catch (Exception e)
             {
@@ -211,6 +284,33 @@ public abstract class DBCStorage<T> extends Storage<T> implements
             }
         }
         return record;
+    }
+
+    public int[][] asIntArray()
+    {
+        final int[][] array = new int[recordsCount][fieldsCount];
+        for (int y = 0; y < recordsCount; ++y)
+            for (int x = 0; x < fieldsCount; ++x)
+                array[y][x] = buffer.getInt(getOffset(y, x));
+
+        return array;
+    }
+
+    public String[][] asStringArray()
+    {
+        final String[][] array = new String[recordsCount][fieldsCount];
+        for (int y = 0; y < recordsCount; ++y)
+            for (int x = 0; x < fieldsCount; ++x)
+            {
+                final int asInt = buffer.getInt(getOffset(y, x));
+                final String asString = (isColumnStringTypeCache[x]) ? getStringAtOffset(asInt + getStringBlockOffset()) : null;
+                if (asString != null)
+                    array[y][x] = asString;
+                else
+                    array[y][x] = String.valueOf(asInt);
+            }
+
+        return array;
     }
 
     @Override
