@@ -1,4 +1,4 @@
-package wide.core.framework.storage;
+package wide.core.framework.storage.client;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -79,7 +79,7 @@ class MissingKeyException extends StorageException
     }
 }
 
-public abstract class Storage<T> implements Iterable<T>
+public abstract class ClientStorage<T> implements Iterable<T>
 {
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
@@ -144,7 +144,7 @@ public abstract class Storage<T> implements Iterable<T>
         }
     }
 
-    public Storage(String path) throws Exception
+    public ClientStorage(String path) throws Exception
     {
         final File file = new File(path);
         if (!file.exists())
@@ -190,7 +190,7 @@ public abstract class Storage<T> implements Iterable<T>
         // Get indexes of fields marked as key
         for (final Field field : getAllAnnotatedFields())
         {
-            final StorageEntry annotation = field.getAnnotation(StorageEntry.class);
+            final ClientStorageEntry annotation = field.getAnnotation(ClientStorageEntry.class);
             if (annotation.key())
                 if (field.getType().equals(int.class))
                     keys.add(annotation.idx());
@@ -298,7 +298,7 @@ public abstract class Storage<T> implements Iterable<T>
     {
         final T record = create();
         return ClassUtil.getAnnotatedDeclaredFields(record.getClass(),
-                StorageEntry.class, true);
+                ClientStorageEntry.class, true);
     }
 
     private int getOffset(int y, int x)
@@ -389,7 +389,7 @@ public abstract class Storage<T> implements Iterable<T>
 
         for (final Field field : getAllAnnotatedFields())
         {
-            final StorageEntry annotation = field.getAnnotation(StorageEntry.class);
+            final ClientStorageEntry annotation = field.getAnnotation(ClientStorageEntry.class);
 
             final int absolut_index = offset + (annotation.idx() * getFieldSize());
 

@@ -1,10 +1,10 @@
-package wide.core.framework.storage;
+package wide.core.framework.storage.client;
 
 /**
  * Implementation of Blizzards DB2 files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DB2
  */
-public abstract class DB2Storage<T> extends Storage<T>
+public abstract class DB2Storage<T> extends ClientStorage<T>
 {
     private final static int HEADER_SIZE = 48;
 

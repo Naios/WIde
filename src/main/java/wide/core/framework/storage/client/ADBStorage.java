@@ -1,4 +1,4 @@
-package wide.core.framework.storage;
+package wide.core.framework.storage.client;
 
 /**
  * Implementation of Blizzards ADB Cache files as described in:

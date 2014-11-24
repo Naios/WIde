@@ -1,10 +1,10 @@
-package wide.core.framework.storage;
+package wide.core.framework.storage.client;
 
 /**
  * Implementation of Blizzards DBC files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DBC
  */
-public abstract class DBCStorage<T> extends Storage<T>
+public abstract class DBCStorage<T> extends ClientStorage<T>
 {
     private final static int HEADER_SIZE = 20;
 

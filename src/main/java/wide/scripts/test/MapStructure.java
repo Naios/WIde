@@ -1,8 +1,8 @@
 package wide.scripts.test;
 
-import wide.core.framework.storage.StorageStructure;
+import wide.core.framework.storage.client.ClientStorageStructure;
 
-@StorageStructure(filename="Map.dbc")
+@ClientStorageStructure(filename="Map.dbc")
 public interface MapStructure
 {
     public int getMapId();

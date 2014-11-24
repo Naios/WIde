@@ -1,7 +1,7 @@
 package wide.scripts.test;
 
 import wide.core.framework.extensions.scripts.Script;
-import wide.core.framework.storage.DB2Storage;
+import wide.core.framework.storage.client.DB2Storage;
 
 public class Test extends Script
 {
