@@ -10,8 +10,8 @@ Overview
 
 Requirements
 ---------------
-JDK 8
-Maven
+- JDK 8
+- Maven
 
 Installation
 --------------
@@ -30,18 +30,26 @@ Usage
 -------------
 WIde is able to run in GUI or console mode.
 
-GUI Mode
+- GUI Mode
 
-	java -jar target/WIde_v*
+		java -jar target/WIde_v*
 
-Console Mode
+- Console Mode
 
-	java -jar target/WIde_v* -ng
+		java -jar target/WIde_v* -ng
 
-Console Mode (Execute a single script)
 
-	java -jar target/WIde_v* -e hello
+Console Mode Examples
 
-    java -jar target/WIde_v* -e hello "printdbc"
+- Simple hello message
+	
+		java -jar target/WIde_v* -e hello
 
-    java -jar target/WIde_v* -e "printdbc TaxiNodes.db2"
+- Simple help message
+
+    	java -jar target/WIde_v* -e help "printdbc"
+
+- Shows the content of TaxiNodes.db2 (or any other .dbc, .db2 or .adb storage)
+
+    	java -jar target/WIde_v* -e "printdbc TaxiNodes.db2"
+

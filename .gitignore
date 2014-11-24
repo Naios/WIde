@@ -1,8 +1,14 @@
+# WIde
 WIde.properties
 git.properties
-.project
-.classpath
-target/
 data/
 cache/
+
+# Maven
+target/
+
+# IDE's
+#   Eclipse
+.project
+.classpath
 .settings/
