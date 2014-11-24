@@ -34,6 +34,8 @@ public enum Constants
 
     // Directorys
     PROPERTY_DIR_CACHE("core.enviroment.cachedir"),
+    PROPERTY_DIR_DATA("core.enviroment.dbcdir"),
+    PROPERTY_DIR_DBC("core.enviroment.dbcdir"),
 
     ////////////////////////////////////////////////////////
     // Paths

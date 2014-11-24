@@ -10,4 +10,6 @@ public abstract class Script extends Extension
     }
 
     public abstract void run(String[] args);
+
+    public abstract String getUsage();
 }

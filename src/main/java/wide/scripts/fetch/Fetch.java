@@ -135,4 +135,10 @@ public class Fetch extends Script
 
         System.out.println("Done, fetched " + count.get() + " " + type + " files.");
     }
+
+    @Override
+    public String getUsage()
+    {
+        return "";
+    }
 }

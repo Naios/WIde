@@ -19,4 +19,10 @@ public class HelloWorld extends Script
         if (args.length > 0)
             System.out.println("\tWith Arguments: " + Arrays.toString(args));
     }
+
+    @Override
+    public String getUsage()
+    {
+        return "";
+    }
 }

@@ -1,8 +1,13 @@
 package wide.scripts.test;
 
-import wide.core.framework.extensions.scripts.Script;
-import wide.core.framework.storage.client.DB2Storage;
+import java.util.Arrays;
 
+import wide.core.framework.extensions.scripts.Script;
+
+/**
+ * Simple testing script, use this as playground.
+ * Don't commit its content in the master branch!
+ */
 public class Test extends Script
 {
     public Test()
@@ -13,30 +18,15 @@ public class Test extends Script
     @Override
     public void run(String[] args)
     {
-        testmy(args[0]);
+        System.out.println(String.format("Running %s script with args %s.",
+                toString(), Arrays.toString(args)));
+
+        // Playground begin (only commit it in sub-branches to test stuff!)
     }
 
-    void testmy(String path)
+    @Override
+    public String getUsage()
     {
-        try
-        {
-            final DB2Storage<MapStructure> dbc = new DB2Storage<MapStructure>(path)
-            {
-                @Override
-                public MapStructure create()
-                {
-                    return new MapStructure_335();
-                }
-            };
-
-            //for (final MapStructure map : dbc)
-            // System.out.println(String.format("%s %s", map.getMapId(), map.getName()));
-
-            System.out.println(dbc.toString());
-
-        } catch (final Exception e)
-        {
-            e.printStackTrace();
-        }
+        return "";
     }
 }

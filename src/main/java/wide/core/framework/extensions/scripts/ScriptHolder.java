@@ -1,9 +1,9 @@
 package wide.core.framework.extensions.scripts;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import wide.core.WIde;
 import wide.core.framework.extensions.ExtensionHolder;
@@ -13,7 +13,7 @@ import wide.scripts.ScriptLoader;
 public class ScriptHolder extends ExtensionHolder
 {
     private final ScriptLoader loader = new ScriptLoader();
-    
+
     private final Map<String, Script> scripts = new HashMap<>();
 
     @Override
@@ -38,9 +38,19 @@ public class ScriptHolder extends ExtensionHolder
     protected void unload()
     {
         scripts.clear();
-        
+
         // Hook.ON_SCRIPTS_UNLOADED
         WIde.getHooks().fire(Hook.ON_SCRIPTS_UNLOADED);
+    }
+
+    public Set<String> getScriptNames()
+    {
+        return scripts.keySet();
+    }
+
+    public Script getScriptByName(String name)
+    {
+        return scripts.get(name);
     }
 
     public boolean execute(String cmd)
@@ -51,11 +61,11 @@ public class ScriptHolder extends ExtensionHolder
         if (args.length < 1)
             return false;
 
-        Script script = scripts.get(args[0]);
+        final Script script = getScriptByName(args[0]);
         if (script == null)
             return false;
 
-        script.run(Arrays.copyOfRange(args, 1, args.length));        
+        script.run(Arrays.copyOfRange(args, 1, args.length));
         return true;
     }
 }
