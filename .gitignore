@@ -1,5 +1,8 @@
 WIde.properties
 git.properties
+.project
+.classpath
 target/
 data/
 cache/
+.settings/
