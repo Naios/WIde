@@ -81,6 +81,8 @@ class MissingKeyException extends StorageException
 
 public abstract class ClientStorage<T> implements Iterable<T>
 {
+    protected final String path;
+
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
      */
@@ -146,6 +148,8 @@ public abstract class ClientStorage<T> implements Iterable<T>
 
     public ClientStorage(String path) throws Exception
     {
+        this.path = path;
+
         final File file = new File(path);
         if (!file.exists())
             throw new MissingFileException(path);
@@ -334,11 +338,14 @@ public abstract class ClientStorage<T> implements Iterable<T>
         final String[][] stringArray = (withStrings) ? asStringArray() : null;
 
         final StringBuilder builder = new StringBuilder();
+
+        builder.append(path).append(" =\n");
+
         builder.append("{\n");
 
         for (int y = 0; y < recordsCount; ++y)
         {
-            builder.append("\t{");
+            builder.append("    {");
             for (int x = 0; x < fieldsCount; ++x)
             {
                 if (withStrings)
@@ -361,7 +368,9 @@ public abstract class ClientStorage<T> implements Iterable<T>
             builder.append("},\n");
         }
 
-        builder.append("}");
+        builder.delete(builder.length() - (",\n".length()), builder.length()).append("\n");
+
+        builder.append("};");
         return builder.toString();
     }
 
