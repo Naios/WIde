@@ -10,7 +10,8 @@ Overview
 
 Requirements
 ---------------
-
+JDK 8
+Maven
 
 Installation
 --------------
@@ -39,4 +40,8 @@ Console Mode
 
 Console Mode (Execute a single script)
 
-	java -jar target/WIde_v* -ng -e hello
+	java -jar target/WIde_v* -e hello
+
+    java -jar target/WIde_v* -e hello "printdbc"
+
+    java -jar target/WIde_v* -e "printdbc TaxiNodes.db2"

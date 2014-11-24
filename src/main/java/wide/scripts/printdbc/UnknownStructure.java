@@ -1,4 +1,4 @@
-package wide.scripts.printstorage;
+package wide.scripts.printdbc;
 
 import wide.core.framework.storage.client.ClientStorageEntry;
 

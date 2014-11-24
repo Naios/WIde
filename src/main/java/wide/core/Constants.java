@@ -32,7 +32,7 @@ public enum Constants
     PROPERTY_GIT_BRANCH("git.branch"),
     PROPERTY_GIT_TAG("git.tags"),
 
-    // Directorys
+    // Directories
     PROPERTY_DIR_CACHE("core.enviroment.cachedir"),
     PROPERTY_DIR_DATA("core.enviroment.dbcdir"),
     PROPERTY_DIR_DBC("core.enviroment.dbcdir"),

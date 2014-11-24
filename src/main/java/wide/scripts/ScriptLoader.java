@@ -5,7 +5,7 @@ import wide.core.framework.extensions.scripts.Script;
 import wide.scripts.fetch.Fetch;
 import wide.scripts.hello.HelloWorld;
 import wide.scripts.help.Help;
-import wide.scripts.printstorage.PrintDBC;
+import wide.scripts.printdbc.PrintDBC;
 import wide.scripts.test.Test;
 
 public class ScriptLoader implements ExtensionLoader<Script>

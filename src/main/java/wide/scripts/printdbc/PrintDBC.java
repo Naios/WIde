@@ -1,4 +1,4 @@
-package wide.scripts.printstorage;
+package wide.scripts.printdbc;
 
 import wide.core.Constants;
 import wide.core.WIde;
