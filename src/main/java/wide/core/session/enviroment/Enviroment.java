@@ -137,7 +137,7 @@ public class Enviroment
 
     private boolean checkArguments()
     {
-        if ((getParameter("execute") != null) && (!hasArgument("nogui")))
+        if (hasArgument("trace") && hasArgument("execute") && !hasArgument("nogui"))
             System.out.println("[Warning] --execute forces --nogui");
 
         return true;
@@ -145,7 +145,7 @@ public class Enviroment
 
     public boolean isGuiApplication()
     {
-        return !hasArgument("nogui") && (getParameter("execute") == null);
+        return !hasArgument("nogui") && (!hasArgument("execute"));
     }
 
     public boolean isTraceEnabled()

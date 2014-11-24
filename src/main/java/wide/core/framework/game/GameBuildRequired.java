@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface GameBuildDependency
+public @interface GameBuildRequired
 {
     GameBuild build();
 }

@@ -8,7 +8,7 @@ public abstract class ADBStorage<T> extends DB2Storage<T>
 {
     private final static String MAGIC = "WCH2";
 
-    private final static String EXTENSION = ".adb";
+    protected final static String EXTENSION = ".adb";
 
     public ADBStorage(String path) throws Exception
     {

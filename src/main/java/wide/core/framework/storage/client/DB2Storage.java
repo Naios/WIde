@@ -10,7 +10,7 @@ public abstract class DB2Storage<T> extends ClientStorage<T>
 
     private final static String MAGIC = "WDB2";
 
-    private final static String EXTENSION = ".db2";
+    protected final static String EXTENSION = ".db2";
 
     protected int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
 

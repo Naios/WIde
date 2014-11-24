@@ -10,7 +10,7 @@ public abstract class DBCStorage<T> extends ClientStorage<T>
 
     private final static String MAGIC = "WDBC";
 
-    private final static String EXTENSION = ".dbc";
+    protected final static String EXTENSION = ".dbc";
 
     public DBCStorage(String path) throws Exception
     {
