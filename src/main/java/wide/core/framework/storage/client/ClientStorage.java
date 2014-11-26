@@ -69,6 +69,20 @@ class MissingKeyException extends ClientStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class MissingEntryException extends ClientStorageException
+{
+    public MissingEntryException()
+    {
+        super("Entry <unknown> is missing in the storage!");
+    }
+
+    public MissingEntryException(int entry)
+    {
+        super(String.format("Entry %s is missing in the storage!", entry));
+    }
+}
+
 public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
     protected final String path;
@@ -389,20 +403,27 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return asString(true);
     }
 
-    public T getEntry(int entry)
+    public T getEntry(int entry) throws MissingEntryException
     {
         final int offset = entryToOffsetCache.get(entry);
         if (offset == 0)
-            return null;
+            throw new MissingEntryException(entry);
         else
-            return getEntryByOffset(offset);
+            try
+            {
+                return getEntryByOffset(offset);
+            }
+            catch (final MissingEntryException e)
+            {
+                throw new MissingEntryException(entry);
+            }
     }
 
     @SuppressWarnings("unchecked")
-    private T getEntryByOffset(int offset)
+    private T getEntryByOffset(int offset) throws MissingEntryException
     {
         if (offset >= getStringBlockOffset())
-            return null;
+            throw new MissingEntryException();
 
         final ClientStorageStructure record;
         try
