@@ -3,12 +3,13 @@ package wide.scripts.hello;
 import java.util.Arrays;
 
 import wide.core.framework.extensions.scripts.Script;
+import wide.scripts.ScriptDefinition;
 
 public class HelloWorld extends Script
 {
-    public HelloWorld()
+    public HelloWorld(ScriptDefinition definition)
     {
-        super("hello");
+        super(definition);
     }
 
     @Override

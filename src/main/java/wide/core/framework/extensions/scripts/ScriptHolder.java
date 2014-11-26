@@ -8,28 +8,35 @@ import java.util.Set;
 import wide.core.WIde;
 import wide.core.framework.extensions.Holder;
 import wide.core.session.hooks.Hook;
-import wide.scripts.ScriptLoader;
+import wide.scripts.ScriptDefinition;
 
 public class ScriptHolder extends Holder
 {
-    private final ScriptLoader loader = new ScriptLoader();
-
     private final Map<String, Script> scripts = new HashMap<>();
 
     @Override
     protected void load()
     {
-        for (final Script script : loader.getExtensions())
+        for (final ScriptDefinition definition : ScriptDefinition.values())
         {
             /*
              * TODO do we need this?
              *if (script.validate())
              */
 
-              scripts.put(script.toString(), script);
+            final Script script;
+            try
+            {
+                script = definition.newInstance();
+            } catch (final Exception e)
+            {
+                continue;
+            }
 
-              if(WIde.getEnviroment().isTraceEnabled())
-                  System.out.println("Script " + script + " loaded.");
+            scripts.put(script.toString(), script);
+
+            if (WIde.getEnviroment().isTraceEnabled())
+                System.out.println("Script " + script + " loaded.");
         }
 
         // Hook.ON_SCRIPTS_LOADED

@@ -3,6 +3,7 @@ package wide.scripts.test;
 import java.util.Arrays;
 
 import wide.core.framework.extensions.scripts.Script;
+import wide.scripts.ScriptDefinition;
 
 /**
  * Simple testing script, use this as playground.
@@ -10,9 +11,9 @@ import wide.core.framework.extensions.scripts.Script;
  */
 public class Test extends Script
 {
-    public Test()
+    public Test(ScriptDefinition definition)
     {
-        super("test");
+        super(definition);
     }
 
     @Override

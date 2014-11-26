@@ -2,12 +2,13 @@ package wide.scripts.help;
 
 import wide.core.WIde;
 import wide.core.framework.extensions.scripts.Script;
+import wide.scripts.ScriptDefinition;
 
 public class Help extends Script
 {
-    public Help()
+    public Help(ScriptDefinition definition)
     {
-        super("help");
+        super(definition);
     }
 
     @Override

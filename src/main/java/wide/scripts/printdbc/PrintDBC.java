@@ -5,12 +5,13 @@ import wide.core.WIde;
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.client.ClientStorage;
 import wide.core.framework.storage.client.ClientStorageSelector;
+import wide.scripts.ScriptDefinition;
 
 public class PrintDBC extends Script
 {
-    public PrintDBC()
+    public PrintDBC(ScriptDefinition definition)
     {
-        super("printdbc");
+        super(definition);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.framework.extensions.scripts.Script;
+import wide.scripts.ScriptDefinition;
 
 class FileFetcher implements Runnable
 {
@@ -60,9 +61,9 @@ public class Fetch extends Script
 {
     final static String WOWHEAD_URL = "http://www.wowhead.com";
 
-    public Fetch()
+    public Fetch(ScriptDefinition definition)
     {
-        super("fetch");
+        super(definition);
     }
 
     @Override
