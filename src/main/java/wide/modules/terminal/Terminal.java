@@ -9,12 +9,13 @@ import wide.core.Constants;
 import wide.core.WIde;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
+import wide.modules.ModuleDefinition;
 
 public class Terminal extends Module implements UserInferface
 {
-    public Terminal()
+    public Terminal(ModuleDefinition definition)
     {
-        super("default_terminal");
+        super(definition);
     }
 
     @Override
@@ -24,13 +25,13 @@ public class Terminal extends Module implements UserInferface
     }
 
     @Override
-    public void enable()
+    public void onEnable()
     {
 
     }
 
     @Override
-    public void disable()
+    public void onDisable()
     {
 
     }

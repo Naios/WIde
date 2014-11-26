@@ -3,13 +3,14 @@ package wide.modules.gui;
 import wide.core.WIde;
 import wide.core.framework.extensions.modules.Module;
 import wide.core.framework.ui.UserInferface;
+import wide.modules.ModuleDefinition;
 import wide.modules.gui.core.FXApplication;
 
 public class GUI extends Module implements UserInferface
 {
-    public GUI()
+    public GUI(ModuleDefinition definition)
     {
-        super("gui");
+        super(definition);
     }
 
     @Override
@@ -19,12 +20,12 @@ public class GUI extends Module implements UserInferface
     }
 
     @Override
-    public void enable()
+    public void onEnable()
     {
     }
 
     @Override
-    public void disable()
+    public void onDisable()
     {
     }
 

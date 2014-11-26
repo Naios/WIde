@@ -19,15 +19,17 @@ public class ScriptHolder extends ExtensionHolder
     @Override
     protected void load()
     {
-        for (Script script : loader.getExtensions())
+        for (final Script script : loader.getExtensions())
         {
-            if (script.validate())
-            {
-                scripts.put(script.toString(), script);
+            /*
+             * TODO do we need this?
+             *if (script.validate())
+             */
 
-                if(WIde.getEnviroment().isTraceEnabled())
-                    System.out.println("Script " + script + " loaded.");
-            }
+              scripts.put(script.getUUID(), script);
+
+              if(WIde.getEnviroment().isTraceEnabled())
+                  System.out.println("Script " + script + " loaded.");
         }
 
         // Hook.ON_SCRIPTS_LOADED

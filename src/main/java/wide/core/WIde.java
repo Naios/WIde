@@ -3,7 +3,6 @@ package wide.core;
 import java.util.List;
 
 import wide.core.framework.extensions.modules.Module;
-import wide.core.framework.extensions.modules.ModuleCheck;
 import wide.core.framework.extensions.modules.ModuleHolder;
 import wide.core.framework.extensions.scripts.ScriptHolder;
 import wide.core.framework.ui.UserInferface;
@@ -118,14 +117,7 @@ public class WIde
     {
         // TODO Implement better Selection for UserInterfaces
         // Currently its ok to select the first interface
-        final List<Module> interfaces = MODULES.getModulesWithCheck(new ModuleCheck()
-        {
-            @Override
-            public boolean check(Module module)
-            {
-                return module instanceof UserInferface;
-            }
-        });
+        final List<Module> interfaces = MODULES.getModulesInstanceOf(UserInferface.class);
 
         if (!interfaces.isEmpty())
             ((UserInferface)(interfaces.get(0))).show();
