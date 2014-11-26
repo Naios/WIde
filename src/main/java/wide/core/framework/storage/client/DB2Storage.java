@@ -4,7 +4,7 @@ package wide.core.framework.storage.client;
  * Implementation of Blizzards DB2 files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DB2
  */
-public abstract class DB2Storage<T> extends ClientStorage<T>
+public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<T>
 {
     private final static int HEADER_SIZE = 48;
 
@@ -14,9 +14,9 @@ public abstract class DB2Storage<T> extends ClientStorage<T>
 
     protected int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
 
-    public DB2Storage(String path) throws Exception
+    public DB2Storage(Class<? extends ClientStorageStructure> type, String path) throws Exception
     {
-        super(path);
+        super(type, path);
     }
 
     @Override

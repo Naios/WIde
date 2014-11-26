@@ -27,7 +27,6 @@ public class Database
     public Database()
     {
         // Try connect after the config was updated
-     // Try connect after the config was updated
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
         {
             @Override

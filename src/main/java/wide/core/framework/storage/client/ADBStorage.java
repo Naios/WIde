@@ -4,15 +4,15 @@ package wide.core.framework.storage.client;
  * Implementation of Blizzards ADB Cache files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=ADB
  */
-public abstract class ADBStorage<T> extends DB2Storage<T>
+public class ADBStorage<T extends ClientStorageStructure> extends DB2Storage<T>
 {
     private final static String MAGIC = "WCH2";
 
     protected final static String EXTENSION = ".adb";
 
-    public ADBStorage(String path) throws Exception
+    public ADBStorage(Class<? extends ClientStorageStructure> type, String path) throws Exception
     {
-        super(path);
+        super(type, path);
     }
 
     @Override

@@ -5,7 +5,6 @@ import wide.core.WIde;
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.client.ClientStorage;
 import wide.core.framework.storage.client.ClientStorageSelector;
-import wide.core.framework.storage.client.ClientStorageStructureCreate;
 
 public class PrintDBC extends Script
 {
@@ -23,19 +22,11 @@ public class PrintDBC extends Script
         try
         {
             final ClientStorage<UnknownStructure> clientStorage =
-                    new ClientStorageSelector<UnknownStructure>(path,
-                            new ClientStorageStructureCreate<UnknownStructure>()
-                            {
-                                @Override
-                                public UnknownStructure create()
-                                {
-                                    return new UnknownStructure();
-                                }
-                            }).select();
+                    new ClientStorageSelector<UnknownStructure>(UnknownStructure.class, path).select();
 
             System.out.println(clientStorage.toString());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
             e.printStackTrace();
             System.out.println("Something went wrong...");

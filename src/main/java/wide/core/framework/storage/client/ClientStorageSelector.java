@@ -1,15 +1,15 @@
 package wide.core.framework.storage.client;
 
-public class ClientStorageSelector<T>
+public class ClientStorageSelector<T extends ClientStorageStructure>
 {
     private final String path;
 
-    private final ClientStorageStructureCreate<T> create;
+    private final Class<? extends ClientStorageStructure> type;
 
-    public ClientStorageSelector(String path, ClientStorageStructureCreate<T> create)
+    public ClientStorageSelector(Class<? extends ClientStorageStructure> type, String path)
     {
         this.path = path;
-        this.create = create;
+        this.type = type;
     }
 
     public ClientStorage<T> select() throws Exception
@@ -20,32 +20,11 @@ public class ClientStorageSelector<T>
         switch (extension)
         {
             case ADBStorage.EXTENSION:
-                return new ADBStorage<T>(path)
-                {
-                    @Override
-                    protected T create()
-                    {
-                        return create.create();
-                    }
-                };
+                return new ADBStorage<T>(type, path);
             case DB2Storage.EXTENSION:
-                return new DB2Storage<T>(path)
-                {
-                    @Override
-                    protected T create()
-                    {
-                        return create.create();
-                    }
-                };
+                return new DB2Storage<T>(type, path);
             case DBCStorage.EXTENSION:
-                return new DBCStorage<T>(path)
-                {
-                    @Override
-                    protected T create()
-                    {
-                        return create.create();
-                    }
-                };
+                return new DBCStorage<T>(type, path);
             default:
                 return null;
         }

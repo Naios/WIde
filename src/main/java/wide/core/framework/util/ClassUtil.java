@@ -15,18 +15,18 @@ public class ClassUtil
     /**
      * Create new instance of specified class and type
      *
-     * @param clazz
+     * @param type
      *            of instance
      * @param <T>
      *            type of object
      * @return new Class instance
      */
-    public static <T> T getInstance(Class<T> clazz)
+    public static <T> T getInstance(Class<T> type)
     {
         T t = null;
         try
         {
-            t = clazz.newInstance();
+            t = type.newInstance();
         }
         catch (InstantiationException e)
         {
@@ -44,19 +44,19 @@ public class ClassUtil
      * Retrieving fields list of specified class If recursively is true,
      * retrieving fields from all class hierarchy
      *
-     * @param clazz
+     * @param type
      *            where fields are searching
      * @param recursively
      *            param
      * @return list of fields
      */
-    public static Field[] getDeclaredFields(Class clazz, boolean recursively)
+    public static Field[] getDeclaredFields(Class type, boolean recursively)
     {
         List<Field> fields = new LinkedList<Field>();
-        Field[] declaredFields = clazz.getDeclaredFields();
+        Field[] declaredFields = type.getDeclaredFields();
         Collections.addAll(fields, declaredFields);
 
-        Class superClass = clazz.getSuperclass();
+        Class superClass = type.getSuperclass();
 
         if (superClass != null && recursively)
         {
@@ -74,7 +74,7 @@ public class ClassUtil
      * incoming annotation class If recursively is true, retrieving fields from
      * all class hierarchy
      *
-     * @param clazz
+     * @param type
      *            - where fields are searching
      * @param annotationClass
      *            - specified annotation class
@@ -82,10 +82,10 @@ public class ClassUtil
      *            param
      * @return list of annotated fields
      */
-    public static Field[] getAnnotatedDeclaredFields(Class clazz,
+    public static Field[] getAnnotatedDeclaredFields(Class type,
             Class<? extends Annotation> annotationClass, boolean recursively)
     {
-        Field[] allFields = getDeclaredFields(clazz, recursively);
+        Field[] allFields = getDeclaredFields(type, recursively);
         List<Field> annotatedFields = new LinkedList<Field>();
 
         for (Field field : allFields)

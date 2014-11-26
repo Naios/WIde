@@ -51,7 +51,6 @@ class MissingFileException extends StorageException
     }
 }
 
-
 @SuppressWarnings("serial")
 class OutOfBoundsException extends StorageException
 {
@@ -79,7 +78,7 @@ class MissingKeyException extends StorageException
     }
 }
 
-public abstract class ClientStorage<T> implements Iterable<T>
+public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
     protected final String path;
 
@@ -114,6 +113,8 @@ public abstract class ClientStorage<T> implements Iterable<T>
 
     protected final boolean[] isColumnStringTypeCache;
 
+    private final Class<? extends ClientStorageStructure> type;
+
     private class StringInBufferCached
     {
         final int begin, length;
@@ -139,16 +140,17 @@ public abstract class ClientStorage<T> implements Iterable<T>
             {
                 return new String(bytes, "UTF-8");
             }
-            catch (UnsupportedEncodingException e)
+            catch (final UnsupportedEncodingException e)
             {
                 return null;
             }
         }
     }
 
-    public ClientStorage(String path) throws Exception
+    public ClientStorage(Class<? extends ClientStorageStructure> type, String path) throws Exception
     {
         this.path = path;
+        this.type = type;
 
         final File file = new File(path);
         if (!file.exists())
@@ -190,7 +192,7 @@ public abstract class ClientStorage<T> implements Iterable<T>
         buffer.position(getDataBlockOffset());
 
         // Map indexes to row offsets
-        List<Integer> keys = new LinkedList<>();
+        final List<Integer> keys = new LinkedList<>();
         // Get indexes of fields marked as key
         for (final Field field : getAllAnnotatedFields())
         {
@@ -245,8 +247,6 @@ public abstract class ClientStorage<T> implements Iterable<T>
 
     protected abstract String getExtension();
 
-    protected abstract T create();
-
     protected void finishHeaderReading()
     {
     }
@@ -300,8 +300,7 @@ public abstract class ClientStorage<T> implements Iterable<T>
 
     private Field[] getAllAnnotatedFields()
     {
-        final T record = create();
-        return ClassUtil.getAnnotatedDeclaredFields(record.getClass(),
+        return ClassUtil.getAnnotatedDeclaredFields(type,
                 ClientStorageEntry.class, true);
     }
 
@@ -389,12 +388,22 @@ public abstract class ClientStorage<T> implements Iterable<T>
             return getEntryByOffset(offset);
     }
 
+    @SuppressWarnings("unchecked")
     private T getEntryByOffset(int offset)
     {
         if (offset >= getStringBlockOffset())
             return null;
 
-        final T record = create();
+        final ClientStorageStructure record;
+        try
+        {
+            record = type.newInstance();
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
 
         for (final Field field : getAllAnnotatedFields())
         {
@@ -413,7 +422,7 @@ public abstract class ClientStorage<T> implements Iterable<T>
                 else if (field.getType().equals(String.class))
                     field.set(record, getStringAtOffset(buffer.getInt(absolut_index) + getStringBlockOffset()));
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
                 return null;
             }
@@ -422,7 +431,7 @@ public abstract class ClientStorage<T> implements Iterable<T>
                 field.setAccessible(false);
             }
         }
-        return record;
+        return (T)record;
     }
 
     public int[][] asIntArray()
