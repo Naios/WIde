@@ -13,7 +13,7 @@
     </properties>
     <build>
         <plugins>
-            <!-- Generate JAR and include dependencys -->
+            <!-- Generate JAR and include dependencies -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
@@ -39,7 +39,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- GIT version integration -->
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
@@ -52,115 +51,29 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- that's the default value, you don't have to set it -->
                     <prefix>git</prefix>
-                    <!-- that's the default value -->
                     <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
-                    <!-- false is default here, it prints some more information during the build -->
                     <verbose>false</verbose>
-                    <!-- @since 2.1.10 -->
-                    <!-- 
-                      false is default here, if set to true it uses native `git` excutable for extracting all data.
-                      This usualy has better performance than the default (jgit) implemenation, but requires you to 
-                      have git available as executable for the build as well as *might break unexpectedly* when you 
-                      upgrade your system-wide git installation.
-
-                      As rule of thumb - stay on `jgit` (keep this `false`) until you notice performance problems.
-                    -->
                     <useNativeGit>false</useNativeGit>
-                    <!--
-                        If you'd like to tell the plugin where your .git directory is,
-                        use this setting, otherwise we'll perform a search trying to
-                        figure out the right directory. It's better to add it explicite IMHO.
-                    -->
                     <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
-                    <!-- ALTERNATE SETUP - GENERATE FILE -->
-                    <!--
-                        If you want to keep git information, even in your WAR file etc,
-                        use this mode, which will generate a properties file (with filled out values)
-                        which you can then normally read using new Properties().load(/**/)
-                    -->
-                    <!--
-                        this is true by default; You may want to set this to false, if the plugin should run inside a
-                        <packaging>pom</packaging> project. Most projects won't need to override this property.
-
-                        For an use-case for this kind of behaviour see: https://github.com/ktoso/maven-git-commit-id-plugin/issues/21
-                    -->
                     <skipPoms>true</skipPoms>
-                    <!-- this is false by default, forces the plugin to generate the git.properties file -->
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <!-- The path for the to be generated properties file, it's relative to ${project.basedir} -->
                     <generateGitPropertiesFilename>src/main/resources/properties/git.properties</generateGitPropertiesFilename>
-                    <!-- true by default, controls whether the plugin will fail when no .git directory is found, when set to false the plugin will just skip execution -->
-                    <!-- @since 2.0.4 -->
                     <failOnNoGitDirectory>true</failOnNoGitDirectory>
-                    <!-- @since v2.0.4 -->
-                    <!--
-                         Controls the length of the abbreviated git commit it (git.commit.id.abbrev)
-
-                         Defaults to `7`.
-                         `0` carries the special meaning.
-                         Maximum value is `40`, because of max SHA-1 length.
-                     -->
                     <abbrevLength>7</abbrevLength>
-                    <!-- @since 2.1.8 -->
-                    <!--
-                        skip the plugin execution completely. This is useful for e.g. profile activated plugin invocations or
-                        to use properties to enable / disable pom features. Default value is 'false'.
-                    -->
                     <skip>false</skip>
-                    <!-- @since 2.1.9 -->
-                    <!--
-                        Can be used to exclude certain properties from being emited into the resulting file.
-                        May be useful when you want to hide {@code git.remote.origin.url} (maybe because it contains your repo password?),
-                        or the email of the committer etc.
-
-                        Each value may be globbing, that is, you can write {@code git.commit.user.*} to exclude both, the {@code name},
-                        as well as {@code email} properties from being emitted into the resulting files.
-
-                        Please note that the strings here are Java regexes ({@code .*} is globbing, not plain {@code *}).
-                    -->
                     <excludeProperties>
                         <excludeProperty>git.commit.user.*</excludeProperty>
                         <excludeProperty>git.build.user.*</excludeProperty>
                         <excludeProperty>git.commit.message.*</excludeProperty>
                         <excludeProperty>git.remote.*</excludeProperty>
                     </excludeProperties>
-                    <!-- @since 2.1.0 -->
-                    <!-- 
-                        read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper 
-                        and the recommended way to use git-commit-id-plugin. The configuration bellow is optional, 
-                        by default describe will run "just like git-describe on the command line", even though it's a JGit reimplementation.
-                    -->
-                    <gitDescribe>
-                        <!-- don't generate the describe property -->
-                        <skip>false</skip>
-                        <!-- 
-                            if no tag was found "near" this commit, just print the commit's id instead, 
-                            helpful when you always expect this field to be not-empty 
-                        -->
-                        <always>false</always>
-                        <!--
-                             how many chars should be displayed as the commit object id? 
-                             7 is git's default, 
-                             0 has a special meaning (see end of this README.md), 
-                             and 40 is the maximum value here 
-                        -->
-                        <abbrev>7</abbrev>
-                        <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
-                        <dirty>-dirty</dirty>
-                        <!-- 
-                             always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. 
-                             The distance will always be 0 if you're "on" the tag. 
-                        -->
-                        <forceLongFormat>false</forceLongFormat>
-                    </gitDescribe>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.1</version>
+                <version>3.2.3</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -172,18 +85,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -198,7 +106,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.6</version>
+            <version>5.1.34</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
