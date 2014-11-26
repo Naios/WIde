@@ -3,10 +3,9 @@ package wide.core.framework.extensions.modules;
 import java.util.LinkedList;
 import java.util.List;
 
-import wide.core.framework.extensions.Extension;
 import wide.modules.ModuleDefinition;
 
-public abstract class Module implements Extension
+public abstract class Module
 {
     private final ModuleDefinition definition;
 
@@ -24,12 +23,12 @@ public abstract class Module implements Extension
     public abstract void onDisable();
 
     @Override
-    public String getUUID()
+    public String toString()
     {
         return definition.getUUID();
     }
 
-    protected Module requires(ModuleDefinition definition)
+    public Module requires(ModuleDefinition definition)
     {
         requires.add(definition);
         return this;

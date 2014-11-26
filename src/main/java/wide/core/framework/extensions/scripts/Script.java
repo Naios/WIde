@@ -1,8 +1,6 @@
 package wide.core.framework.extensions.scripts;
 
-import wide.core.framework.extensions.Extension;
-
-public abstract class Script implements Extension
+public abstract class Script
 {
     // TODO do we need uuid since scripts are no modules?
     private final String uuid;
@@ -13,7 +11,7 @@ public abstract class Script implements Extension
     }
 
     @Override
-    public String getUUID()
+    public String toString()
     {
         return uuid;
     }

@@ -4,9 +4,9 @@ import wide.core.WIde;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
 
-public abstract class ExtensionHolder
+public abstract class Holder
 {
-    public ExtensionHolder()
+    public Holder()
     {
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
         {

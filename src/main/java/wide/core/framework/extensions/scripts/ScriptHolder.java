@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.Set;
 
 import wide.core.WIde;
-import wide.core.framework.extensions.ExtensionHolder;
+import wide.core.framework.extensions.Holder;
 import wide.core.session.hooks.Hook;
 import wide.scripts.ScriptLoader;
 
-public class ScriptHolder extends ExtensionHolder
+public class ScriptHolder extends Holder
 {
     private final ScriptLoader loader = new ScriptLoader();
 
@@ -26,7 +26,7 @@ public class ScriptHolder extends ExtensionHolder
              *if (script.validate())
              */
 
-              scripts.put(script.getUUID(), script);
+              scripts.put(script.toString(), script);
 
               if(WIde.getEnviroment().isTraceEnabled())
                   System.out.println("Script " + script + " loaded.");

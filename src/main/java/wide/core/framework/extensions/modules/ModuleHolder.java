@@ -5,11 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import wide.core.WIde;
-import wide.core.framework.extensions.ExtensionHolder;
+import wide.core.framework.extensions.Holder;
 import wide.core.session.hooks.Hook;
 import wide.modules.ModuleDefinition;
 
-public class ModuleHolder extends ExtensionHolder
+public class ModuleHolder extends Holder
 {
     private final List<Module> modulesLoaded = new ArrayList<>();
 
