@@ -16,16 +16,7 @@ import java.util.Map;
 import wide.core.framework.util.ClassUtil;
 
 @SuppressWarnings("serial")
-class StorageException extends RuntimeException
-{
-    public StorageException(String reason)
-    {
-        super(reason);
-    }
-}
-
-@SuppressWarnings("serial")
-class InvalidDataException extends StorageException
+class InvalidDataException extends ClientStorageException
 {
     public InvalidDataException(String path, String magic)
     {
@@ -34,7 +25,7 @@ class InvalidDataException extends StorageException
 }
 
 @SuppressWarnings("serial")
-class CorruptedFileException extends StorageException
+class CorruptedFileException extends ClientStorageException
 {
     public CorruptedFileException(String path)
     {
@@ -43,7 +34,7 @@ class CorruptedFileException extends StorageException
 }
 
 @SuppressWarnings("serial")
-class MissingFileException extends StorageException
+class MissingFileException extends ClientStorageException
 {
     public MissingFileException(String path)
     {
@@ -52,7 +43,7 @@ class MissingFileException extends StorageException
 }
 
 @SuppressWarnings("serial")
-class OutOfBoundsException extends StorageException
+class OutOfBoundsException extends ClientStorageException
 {
     public OutOfBoundsException()
     {
@@ -61,7 +52,7 @@ class OutOfBoundsException extends StorageException
 }
 
 @SuppressWarnings("serial")
-class KeyIsNoIntException extends StorageException
+class KeyIsNoIntException extends ClientStorageException
 {
     public KeyIsNoIntException()
     {
@@ -70,11 +61,11 @@ class KeyIsNoIntException extends StorageException
 }
 
 @SuppressWarnings("serial")
-class MissingKeyException extends StorageException
+class MissingKeyException extends ClientStorageException
 {
     public MissingKeyException()
     {
-        super("Given DBC Structure has no Key assigned!");
+        super("Given Client Storage Structure has no Key assigned!");
     }
 }
 
@@ -147,7 +138,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
     }
 
-    public ClientStorage(Class<? extends ClientStorageStructure> type, String path) throws Exception
+    public ClientStorage(Class<? extends ClientStorageStructure> type, String path) throws ClientStorageException
     {
         this.path = path;
         this.type = type;
@@ -156,16 +147,35 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         if (!file.exists())
             throw new MissingFileException(path);
 
-        final RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r");
-        final FileChannel channel = randomAccessFile.getChannel();
+        final RandomAccessFile randomAccessFile;
+        final FileChannel channel;
+        final long size;
 
-        // Create a little Endian Buffer
-        final long size = channel.size();
-        buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        try
+        {
+            randomAccessFile = new RandomAccessFile(file, "r");
 
-        channel.close();
-        randomAccessFile.close();
+            try
+            {
+                channel = randomAccessFile.getChannel();
+            } catch (final Exception e)
+            {
+                randomAccessFile.close();
+                throw e;
+            }
+
+            // Create a little Endian Buffer
+            size = channel.size();
+            buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+
+            channel.close();
+            randomAccessFile.close();
+
+        } catch (final Exception e)
+        {
+            throw new MissingFileException(path);
+        }
 
         // Read Header
         // Checks the Magic String

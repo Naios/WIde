@@ -12,7 +12,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         this.type = type;
     }
 
-    public ClientStorage<T> select() throws Exception
+    public ClientStorage<T> select() throws ClientStorageException
     {
         // TODO improve this
         final String extension = path.substring(path.lastIndexOf("."), path.length());

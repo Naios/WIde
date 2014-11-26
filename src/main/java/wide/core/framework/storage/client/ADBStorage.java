@@ -10,7 +10,7 @@ public class ADBStorage<T extends ClientStorageStructure> extends DB2Storage<T>
 
     protected final static String EXTENSION = ".adb";
 
-    public ADBStorage(Class<? extends ClientStorageStructure> type, String path) throws Exception
+    public ADBStorage(Class<? extends ClientStorageStructure> type, String path) throws ClientStorageException
     {
         super(type, path);
     }
