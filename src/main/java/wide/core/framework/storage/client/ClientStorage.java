@@ -18,7 +18,7 @@ import wide.core.framework.util.ClassUtil;
 @SuppressWarnings("serial")
 class InvalidDataException extends ClientStorageException
 {
-    public InvalidDataException(String path, String magic)
+    public InvalidDataException(final String path, final String magic)
     {
         super(String.format("File '%s' isn't valid %s file!", path, magic));
     }
@@ -27,7 +27,7 @@ class InvalidDataException extends ClientStorageException
 @SuppressWarnings("serial")
 class CorruptedFileException extends ClientStorageException
 {
-    public CorruptedFileException(String path)
+    public CorruptedFileException(final String path)
     {
         super(String.format("Storage File '%s' seems to be corrupted!", path));
     }
@@ -36,7 +36,7 @@ class CorruptedFileException extends ClientStorageException
 @SuppressWarnings("serial")
 class MissingFileException extends ClientStorageException
 {
-    public MissingFileException(String path)
+    public MissingFileException(final String path)
     {
         super(String.format("File '%s' isn't existing!", path));
     }
@@ -77,7 +77,7 @@ class MissingEntryException extends ClientStorageException
         super("Entry <unknown> is missing in the storage!");
     }
 
-    public MissingEntryException(int entry)
+    public MissingEntryException(final int entry)
     {
         super(String.format("Entry %s is missing in the storage!", entry));
     }
@@ -124,7 +124,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     {
         final int begin, length;
 
-        public StringInBufferCached(ByteBuffer buffer, int begin, int length)
+        public StringInBufferCached(final ByteBuffer buffer, final int begin, final int length)
         {
             this.begin = begin;
             this.length = length;
@@ -152,7 +152,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
     }
 
-    public ClientStorage(Class<? extends ClientStorageStructure> type, String path) throws ClientStorageException
+    public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {
         this.path = path;
         this.type = type;
@@ -311,7 +311,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return getDataBlockOffset() + getRecordsCount() * getRecordSize();
     }
 
-    protected boolean isFieldPossibleString(int x)
+    protected boolean isFieldPossibleString(final int x)
     {
         for (int y = 0; (y < recordsCount) && (y < COUNT_CHECK_RECORDS_FOR_STRING); ++y)
         {
@@ -328,7 +328,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
                 ClientStorageEntry.class, true);
     }
 
-    private int getOffset(int y, int x)
+    private int getOffset(final int y, final int x)
     {
         if ((y < 0 || y >= recordsCount) || (x < 0 || x >= fieldsCount))
         {
@@ -346,7 +346,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
      * @param offset
      * @return The string at offset
      */
-    private String getStringAtOffset(int offset)
+    private String getStringAtOffset(final int offset)
     {
         final StringInBufferCached cached = offsetToStringCache.get(offset);
         if (cached != null)
@@ -355,7 +355,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             return null;
     }
 
-    public String asString(boolean withStrings)
+    public String asString(final boolean withStrings)
     {
         final int[][] intArray = (!withStrings) ? asIntArray() : null;
         final String[][] stringArray = (withStrings) ? asStringArray() : null;
@@ -403,7 +403,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return asString(true);
     }
 
-    public T getEntry(int entry) throws MissingEntryException
+    public T getEntry(final int entry) throws MissingEntryException
     {
         final int offset = entryToOffsetCache.get(entry);
         if (offset == 0)
@@ -420,7 +420,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     }
 
     @SuppressWarnings("unchecked")
-    private T getEntryByOffset(int offset) throws MissingEntryException
+    private T getEntryByOffset(final int offset) throws MissingEntryException
     {
         if (offset >= getStringBlockOffset())
             throw new MissingEntryException();

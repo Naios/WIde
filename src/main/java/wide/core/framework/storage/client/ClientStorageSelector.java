@@ -6,7 +6,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 
     private final Class<? extends ClientStorageStructure> type;
 
-    public ClientStorageSelector(Class<? extends ClientStorageStructure> type, String path)
+    public ClientStorageSelector(final Class<? extends ClientStorageStructure> type, final String path)
     {
         this.path = path;
         this.type = type;

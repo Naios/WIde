@@ -12,7 +12,7 @@ public class DBCStorage<T extends ClientStorageStructure> extends ClientStorage<
 
     protected final static String EXTENSION = ".dbc";
 
-    public DBCStorage(Class<? extends ClientStorageStructure> type, String path) throws ClientStorageException
+    public DBCStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {
         super(type, path);
     }

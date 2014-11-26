@@ -14,7 +14,7 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
 
     protected int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
 
-    public DB2Storage(Class<? extends ClientStorageStructure> type, String path) throws ClientStorageException
+    public DB2Storage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {
         super(type, path);
     }
@@ -66,5 +66,14 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
     public int getLocale()
     {
         return locale;
+    }
+
+    @Override
+    public T getEntry(final int entry) throws MissingEntryException
+    {
+        if ((entry < minId) || (entry > maxId))
+            throw new MissingEntryException();
+
+        return super.getEntry(entry);
     }
 }

@@ -3,7 +3,7 @@ package wide.core.framework.storage.client;
 @SuppressWarnings("serial")
 public class ClientStorageException extends RuntimeException
 {
-    public ClientStorageException(String msg)
+    public ClientStorageException(final String msg)
     {
         super(msg);
     }
