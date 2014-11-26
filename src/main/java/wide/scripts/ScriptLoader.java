@@ -6,7 +6,6 @@ import wide.scripts.fetch.Fetch;
 import wide.scripts.hello.HelloWorld;
 import wide.scripts.help.Help;
 import wide.scripts.printdbc.PrintDBC;
-import wide.scripts.readscenescipt.ReadSceneScript;
 import wide.scripts.test.Test;
 
 public class ScriptLoader implements ExtensionLoader<Script>
@@ -18,8 +17,7 @@ public class ScriptLoader implements ExtensionLoader<Script>
         new HelloWorld(),
         new Test(),
         new Fetch(),
-        new PrintDBC(),
-        new ReadSceneScript()
+        new PrintDBC()
     };
 
     @Override
