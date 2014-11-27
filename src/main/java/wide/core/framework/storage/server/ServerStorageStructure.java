@@ -7,30 +7,22 @@ import wide.core.framework.storage.GameBuildDependentStorageStructure;
 
 public abstract class ServerStorageStructure extends GameBuildDependentStorageStructure
 {
-    private final String tableName;
-
     private ServerStorage<?> owner = null;
 
-    public ServerStorageStructure(final String tableName)
+    public ServerStorageStructure()
     {
-        this(GameBuildDependentStorageStructure.ALL_BUILDS, tableName);
+        this(GameBuildDependentStorageStructure.ALL_BUILDS);
     }
 
-    public ServerStorageStructure(final GameBuildMask gamebuilds, final String tableName)
+    public ServerStorageStructure(final GameBuildMask gamebuilds)
     {
         super(gamebuilds);
-        this.tableName = tableName;
     }
 
     @Override
     protected Class<? extends Annotation> getSpecificAnnotation()
     {
         return ServerStorageEntry.class;
-    }
-
-    public String getTableName()
-    {
-        return tableName;
     }
 
     protected void setOwner(final ServerStorage<?> owner)

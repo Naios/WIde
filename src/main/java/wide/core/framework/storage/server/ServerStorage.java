@@ -2,6 +2,7 @@ package wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,11 +10,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import wide.core.WIde;
 import wide.core.framework.util.ClassUtil;
 import wide.core.session.database.DatabaseType;
 import wide.core.session.hooks.Hook;
 import wide.core.session.hooks.HookListener;
+
+@SuppressWarnings("serial")
+class NoKeyException extends ServerStorageException
+{
+    public NoKeyException(final Class<? extends ServerStorageStructure> type)
+    {
+        super(String.format("Structure %s defines no keys!", type));
+    }
+}
 
 @SuppressWarnings("serial")
 class BadKeyException extends ServerStorageException
@@ -38,7 +56,7 @@ class DatabaseConnectionException extends ServerStorageException
 {
     public DatabaseConnectionException()
     {
-        super("Something went wronf with the database!");
+        super("Something went wrong with the database!");
     }
 }
 
@@ -52,7 +70,9 @@ public class ServerStorage<T extends ServerStorageStructure>
 
     private final DatabaseType database;
 
-    private PreparedStatement stmt;
+    private final String statementFormat;
+
+    private PreparedStatement statement;
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
     {
@@ -64,7 +84,54 @@ public class ServerStorage<T extends ServerStorageStructure>
             if (field.getAnnotation(ServerStorageEntry.class).key())
                 keys.add(field);
 
+        if (keys.isEmpty())
+            throw new NoKeyException(type);
+
+        statementFormat = createStatementFormat();
+
         initStatements();
+    }
+
+    private String getNameofField(final Field field)
+    {
+        final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
+
+        if (!annotation.name().equals(""))
+            return annotation.name();
+        else
+            return field.getName();
+    }
+
+    private String createStatementFormat()
+    {
+        final StringBuilder builder = new StringBuilder("SELECT ");
+        for (final Field field : getAllAnnotatedFields())
+        {
+            builder
+                .append(getNameofField(field))
+                .append(", ");
+        }
+
+        builder.setLength(builder.length() - 2);
+        builder.trimToSize();
+
+        builder
+            .append(" FROM ")
+            // TODO
+            .append("creature_template")
+            .append(" WHERE ");
+
+        for (final Field field : keys)
+        {
+            builder
+                .append(getNameofField(field))
+                .append("=?, ");
+        }
+
+        builder.setLength(builder.length() - 2);
+        builder.trimToSize();
+
+        return builder.toString();
     }
 
     private void initStatements()
@@ -95,7 +162,7 @@ public class ServerStorage<T extends ServerStorageStructure>
     {
         try
         {
-            stmt = WIde.getDatabase().getConnection(database).prepareStatement("");
+            statement = WIde.getDatabase().getConnection(database).prepareStatement(statementFormat);
         } catch (final SQLException e)
         {
             throw new DatabaseConnectionException();
@@ -106,12 +173,12 @@ public class ServerStorage<T extends ServerStorageStructure>
     {
         try
         {
-            stmt.close();
+            statement.close();
         } catch (final SQLException e)
         {
         }
 
-        stmt = null;
+        statement = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -138,12 +205,63 @@ public class ServerStorage<T extends ServerStorageStructure>
         record.setOwner(this);
         cache.put(hash, record);
 
+        mapStructureWithKey(record, keysOfEntry);
+
         return (T) record;
     }
 
     private void mapStructureWithKey(final ServerStorageStructure record, final Object[] keys)
     {
+        if (statement == null)
+            throw new DatabaseConnectionException();
 
+        for (int i = 0; i < keys.length; ++i)
+                try
+                {
+                    if (keys[i] instanceof String)
+                        statement.setString(i+1, (String)keys[i]);
+                    else if (keys[i] instanceof Integer)
+                        statement.setInt(i+1, (int)keys[i]);
+
+                } catch (final SQLException e)
+                {
+                    throw new DatabaseConnectionException();
+                }
+
+        final ResultSet result;
+        try
+        {
+            result = statement.executeQuery();
+            result.first();
+
+            for (final Field field : getAllAnnotatedFields())
+            {
+                if (!field.isAccessible())
+                    field.setAccessible(true);
+
+                final Object obj;
+                // ReadOnlyIntegerProperty
+                if (field.getType().equals(ReadOnlyIntegerProperty.class))
+                    obj = new ReadOnlyIntegerWrapper(result.getInt(getNameofField(field)));
+                // SimpleIntegerProperty
+                else if (field.getType().equals(IntegerProperty.class))
+                    obj = new SimpleIntegerProperty(result.getInt(getNameofField(field)));
+                // ReadOnlyStringProperty
+                else if (field.getType().equals(ReadOnlyStringProperty.class))
+                    obj = new ReadOnlyStringWrapper(result.getString(getNameofField(field)));
+                // SimpleStringProperty
+                else if (field.getType().equals(StringProperty.class))
+                    obj = new SimpleStringProperty(result.getString(getNameofField(field)));
+                else
+                    obj = null;
+
+                field.set(record, obj);
+            }
+
+        } catch (final Exception e)
+        {
+            throw new DatabaseConnectionException();
+        }
     }
 
     private int calculateHashOfKeys(final Object[] keys)
