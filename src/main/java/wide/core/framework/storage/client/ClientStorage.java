@@ -83,6 +83,15 @@ class MissingEntryException extends ClientStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class NoMatchedStructureException extends ClientStorageException
+{
+    public NoMatchedStructureException(final Class<? extends ClientStorageStructure> type, final String path)
+    {
+        super(String.format("Given Client Storage Structure mask in class %s does not match to file %s.", type.getName(), path));
+    }
+}
+
 public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
     protected final String path;
@@ -160,6 +169,19 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         final File file = new File(path);
         if (!file.exists())
             throw new MissingFileException(path);
+
+        // Tests if path matches ClientStorageStructure mask
+        {
+            try
+            {
+                if (!path.matches(type.newInstance().getRegex()))
+                    throw new Exception();
+
+            } catch (final Exception e)
+            {
+                throw new NoMatchedStructureException(type, path);
+            }
+        }
 
         final RandomAccessFile randomAccessFile;
         final FileChannel channel;
