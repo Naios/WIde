@@ -3,6 +3,7 @@ package wide.scripts.test;
 import java.util.Arrays;
 
 import wide.core.framework.extensions.scripts.Script;
+import wide.core.framework.storage.server.ServerStorage;
 import wide.scripts.ScriptDefinition;
 
 /**
@@ -34,5 +35,11 @@ public class Test extends Script
     // Playground begin (only commit it in sub-branches to test stuff!)
     private void usePlayground(final String[] args)
     {
+        final ServerStorage<CreatureTemplate> template =
+                new ServerStorage<>(CreatureTemplateStructure.class);
+
+        template.get(41378);
+
+        System.out.println(template);
     }
 }

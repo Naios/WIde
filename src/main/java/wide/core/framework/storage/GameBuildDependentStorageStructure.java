@@ -17,12 +17,12 @@ public abstract class GameBuildDependentStorageStructure
 
     public final static GameBuildMask ALL_BUILDS = new GameBuildMask().add_all();
 
-    public GameBuildDependentStorageStructure()
+    protected GameBuildDependentStorageStructure()
     {
         this(ALL_BUILDS);
     }
 
-    public GameBuildDependentStorageStructure(final GameBuildMask gamebuildMask)
+    protected GameBuildDependentStorageStructure(final GameBuildMask gamebuildMask)
     {
         this.gamebuildMask = gamebuildMask;
     }
