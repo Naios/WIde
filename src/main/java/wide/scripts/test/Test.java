@@ -22,12 +22,17 @@ public class Test extends Script
         System.out.println(String.format("Running %s script with args %s.",
                 toString(), Arrays.toString(args)));
 
-        // Playground begin (only commit it in sub-branches to test stuff!)
+        usePlayground(args);
     }
 
     @Override
     public String getUsage()
     {
         return "";
+    }
+
+    // Playground begin (only commit it in sub-branches to test stuff!)
+    private void usePlayground(final String[] args)
+    {
     }
 }
