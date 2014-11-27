@@ -17,12 +17,12 @@ public abstract class GameBuildDependentStorageStructure
 
     public final static GameBuildMask ALL_BUILDS = new GameBuildMask().add_all();
 
-    protected GameBuildDependentStorageStructure()
+    public GameBuildDependentStorageStructure()
     {
         this(ALL_BUILDS);
     }
 
-    protected GameBuildDependentStorageStructure(final GameBuildMask gamebuildMask)
+    public GameBuildDependentStorageStructure(final GameBuildMask gamebuildMask)
     {
         this.gamebuildMask = gamebuildMask;
     }
@@ -53,7 +53,11 @@ public abstract class GameBuildDependentStorageStructure
 
             try
             {
-                builder.append(field.get(this).toString());
+                final Object object = field.get(this);
+                if (object != null)
+                    builder.append(object.toString());
+                else
+                    builder.append(object);
             }
             catch (final Exception e)
             {

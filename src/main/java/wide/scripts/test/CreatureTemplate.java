@@ -3,12 +3,18 @@ package wide.scripts.test;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
+import wide.core.framework.storage.server.ServerStorageStructure;
 
-public interface CreatureTemplate
+public abstract class CreatureTemplate extends ServerStorageStructure
 {
-    public ReadOnlyIntegerProperty entry();
+    public CreatureTemplate()
+    {
+        super("creature_template");
+    }
 
-    public StringProperty name();
+    public abstract ReadOnlyIntegerProperty entry();
 
-    public IntegerProperty unit_flags();
+    public abstract StringProperty name();
+
+    public abstract IntegerProperty unit_flags();
 }

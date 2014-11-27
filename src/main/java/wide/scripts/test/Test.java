@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import wide.core.framework.extensions.scripts.Script;
 import wide.core.framework.storage.server.ServerStorage;
+import wide.core.session.database.DatabaseType;
 import wide.scripts.ScriptDefinition;
 
 /**
@@ -35,11 +36,11 @@ public class Test extends Script
     // Playground begin (only commit it in sub-branches to test stuff!)
     private void usePlayground(final String[] args)
     {
-        final ServerStorage<CreatureTemplate> template =
-                new ServerStorage<>(CreatureTemplateStructure.class);
+        final ServerStorage<CreatureTemplate> table =
+                new ServerStorage<>(CreatureTemplateStructure.class, DatabaseType.WORLD);
 
-        template.get(41378);
+        final CreatureTemplate entry = table.get(41378);
 
-        System.out.println(template);
+        System.out.println(entry);
     }
 }

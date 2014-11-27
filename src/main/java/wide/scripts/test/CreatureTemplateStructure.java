@@ -4,15 +4,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 import wide.core.framework.storage.server.ServerStorageEntry;
-import wide.core.framework.storage.server.ServerStorageStructure;
 
-public class CreatureTemplateStructure extends ServerStorageStructure implements CreatureTemplate
+public class CreatureTemplateStructure extends CreatureTemplate
 {
-    protected CreatureTemplateStructure()
-    {
-        super("creature_template");
-    }
-
     @ServerStorageEntry(key=true)
     private ReadOnlyIntegerProperty entry;
 

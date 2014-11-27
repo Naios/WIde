@@ -11,22 +11,22 @@ public abstract class ClientStorageStructure extends GameBuildDependentStorageSt
 
     public final static String REGEX_MATCH_ALL = ".*";
 
-    protected ClientStorageStructure()
+    public ClientStorageStructure()
     {
         this(REGEX_MATCH_ALL);
     }
 
-    protected ClientStorageStructure(final String mask)
+    public ClientStorageStructure(final String mask)
     {
         this(GameBuildDependentStorageStructure.ALL_BUILDS, mask);
     }
 
-    protected ClientStorageStructure(final GameBuildMask gamebuild)
+    public ClientStorageStructure(final GameBuildMask gamebuild)
     {
         this(gamebuild, REGEX_MATCH_ALL);
     }
 
-    protected ClientStorageStructure(final GameBuildMask gamebuilds, final String mask)
+    public ClientStorageStructure(final GameBuildMask gamebuilds, final String mask)
     {
         super(gamebuilds);
         this.regex = mask;

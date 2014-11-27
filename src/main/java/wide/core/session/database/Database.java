@@ -14,9 +14,9 @@ import wide.core.session.hooks.HookListener;
 
 public class Database
 {
-    private Map<DatabaseType, Connection> connections = new HashMap<>();
+    private final Map<DatabaseType, Connection> connections = new HashMap<>();
 
-    private static String GetConnectionStringForDatabase(String db)
+    private static String GetConnectionStringForDatabase(final String db)
     {
         return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ":"
                 + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get() + "/" + db + "?" + "user="
@@ -104,6 +104,9 @@ public class Database
 
     private void close()
     {
+     // Hook.ON_DATABASE_CLOSE
+        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
+
         final Collection<Connection> con_list = connections.values();
         for (final Connection con : con_list)
             try
@@ -115,12 +118,9 @@ public class Database
             }
 
         connections.clear();
-
-        // Hook.ON_DATABASE_CLOSE
-        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
     }
 
-    public Connection getConnection(DatabaseType type)
+    public Connection getConnection(final DatabaseType type)
     {
         return connections.get(type);
     }

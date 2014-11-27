@@ -9,6 +9,8 @@ public abstract class ServerStorageStructure extends GameBuildDependentStorageSt
 {
     private final String tableName;
 
+    private ServerStorage<?> owner = null;
+
     public ServerStorageStructure(final String tableName)
     {
         this(GameBuildDependentStorageStructure.ALL_BUILDS, tableName);
@@ -29,5 +31,10 @@ public abstract class ServerStorageStructure extends GameBuildDependentStorageSt
     public String getTableName()
     {
         return tableName;
+    }
+
+    protected void setOwner(final ServerStorage<?> owner)
+    {
+        this.owner = owner;
     }
 }
