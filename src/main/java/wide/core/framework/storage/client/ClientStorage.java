@@ -102,6 +102,15 @@ class WrongStructureException extends ClientStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class MappingFailedException extends ClientStorageException
+{
+    public MappingFailedException()
+    {
+        super("Failed with mapping or class creation!");
+    }
+}
+
 public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
     protected final String path;
@@ -136,30 +145,22 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     // TODO Is there any type in the JDK that already implements this?
     protected enum FieldType
     {
-        UNKNOWN(null, null),
-        BOOLEAN(boolean.class, Boolean.class),
-        INTEGER(int.class, Integer.class),
-        FLOAT(float.class, Float.class),
-        STRING(String.class, String.class);
+        UNKNOWN(null),
+        BOOLEAN(boolean.class),
+        INTEGER(int.class),
+        FLOAT(float.class),
+        STRING(String.class);
 
         private final Class<?> type;
 
-        private final Class<?> wrapper;
-
-        FieldType(final Class<?> type, final Class<?> wrapper)
+        FieldType(final Class<?> type)
         {
             this.type = type;
-            this.wrapper = wrapper;
         }
 
         public Class<?> getType()
         {
             return type;
-        }
-
-        public Class<?> getWrapper()
-        {
-            return wrapper;
         }
     }
 
@@ -356,6 +357,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     protected abstract String getExtension();
 
+    /**
+     * may be overwritten by classes that inherit this one
+     */
     protected void finishHeaderReading()
     {
     }
@@ -441,6 +445,16 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return getHeaderSize() + (y * recordSize) + (x * getFieldSize());
     }
 
+    private int getFieldOfOffset(final int offset)
+    {
+        return (offset % getRecordSize()) / getFieldSize();
+    }
+
+    private String getStringAtRelativeOffset(final int relativeOffset)
+    {
+        return getStringAtOffset(buffer.getInt(relativeOffset) + getStringBlockOffset());
+    }
+
     /**
      * Returns the in memory null terminated string at the offset
      *
@@ -454,12 +468,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             return cached.toString();
         else
             return null;
-    }
-
-    @Override
-    public String toString()
-    {
-        return Arrays.deepToString(asObjectArray()).replaceAll("],", "],\n");
     }
 
     public T getEntry(final int entry) throws MissingEntryException
@@ -478,16 +486,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             }
     }
 
-    private String getStringAtRelativeOffset(final int relativeOffset)
-    {
-        return getStringAtOffset(buffer.getInt(relativeOffset) + getStringBlockOffset());
-    }
-
-    private int getFieldOfOffset(final int offset)
-    {
-        return (offset % getRecordSize()) / getFieldSize();
-    }
-
     @SuppressWarnings("unchecked")
     private T getEntryByOffset(final int offset) throws MissingEntryException
     {
@@ -501,8 +499,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
         catch (final Exception e)
         {
-            e.printStackTrace();
-            return null;
+            throw new MappingFailedException();
         }
 
         for (final Field field : getAllAnnotatedFields())
@@ -520,22 +517,15 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             }
             catch (final Exception e)
             {
-                return null;
+                throw new MappingFailedException();
             }
         }
         return (T)record;
     }
 
-    public int[][] asIntArray()
-    {
-        final int[][] array = new int[recordsCount][fieldsCount];
-        for (int y = 0; y < recordsCount; ++y)
-            for (int x = 0; x < fieldsCount; ++x)
-                array[y][x] = buffer.getInt(getOffset(y, x));
-
-        return array;
-    }
-
+    /**
+     * @return entry at the offset as Object
+     */
     protected Object getObjectForOffsetAndField(final int offset, final int field)
     {
         switch (getFieldType(field))
@@ -553,6 +543,22 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
     }
 
+    /**
+     * @return ClientStorage as Int Array
+     */
+    public int[][] asIntArray()
+    {
+        final int[][] array = new int[recordsCount][fieldsCount];
+        for (int y = 0; y < recordsCount; ++y)
+            for (int x = 0; x < fieldsCount; ++x)
+                array[y][x] = buffer.getInt(getOffset(y, x));
+
+        return array;
+    }
+
+    /**
+     * @return ClientStorage as Object Array (use toString() to get Content)
+     */
     public Object[][] asObjectArray()
     {
         final Object[][] array = new Object[recordsCount][fieldsCount];
@@ -563,6 +569,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return array;
     }
 
+    /**
+     * @return ClientStorage as String Array
+     */
     public String[][] asStringArray()
     {
         final Object[][] asObjects = asObjectArray();
@@ -572,6 +581,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
                 array[y][x] = asObjects[y][x].toString();
 
         return array;
+    }
+
+    @Override
+    public String toString()
+    {
+        return Arrays.deepToString(asObjectArray()).replaceAll("],", "],\n");
     }
 
     @Override
