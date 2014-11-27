@@ -300,7 +300,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         for (int i = 0; i < recordsCount; ++i)
         {
             // Gets the entry
-            final int entry = buffer.get(getOffset(i, keys.get(0)));
+            final int entry = buffer.getInt(getOffset(i, keys.get(0)));
 
             // Store it with its offset
             entryToOffsetCache.put(entry, getOffset(i, 0));
@@ -456,52 +456,10 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             return null;
     }
 
-    public String asString(final boolean withStrings)
-    {
-        final int[][] intArray = (!withStrings) ? asIntArray() : null;
-        final String[][] stringArray = (withStrings) ? asStringArray() : null;
-
-        final StringBuilder builder = new StringBuilder();
-
-        builder.append(path).append(" =\n");
-
-        builder.append("{\n");
-
-        for (int y = 0; y < recordsCount; ++y)
-        {
-            builder.append("    {");
-            for (int x = 0; x < fieldsCount; ++x)
-            {
-                if (withStrings)
-                {
-                    if (getFieldType(x).equals(FieldType.STRING))
-                        builder.append("\"");
-
-                    builder.append(stringArray[y][x]);
-
-                    if (getFieldType(x).equals(FieldType.STRING))
-                        builder.append("\"");
-                }
-                else
-                    builder.append(intArray[y][x]);
-
-                builder.append(", ");
-            }
-
-            builder.delete(builder.length() - 2, builder.length());
-            builder.append("},\n");
-        }
-
-        builder.delete(builder.length() - (",\n".length()), builder.length()).append("\n");
-
-        builder.append("};");
-        return builder.toString();
-    }
-
     @Override
     public String toString()
     {
-        return asString(true);
+        return Arrays.deepToString(asObjectArray()).replaceAll("],", "],\n");
     }
 
     public T getEntry(final int entry) throws MissingEntryException
@@ -523,6 +481,11 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     private String getStringAtRelativeOffset(final int relativeOffset)
     {
         return getStringAtOffset(buffer.getInt(relativeOffset) + getStringBlockOffset());
+    }
+
+    private int getFieldOfOffset(final int offset)
+    {
+        return (offset % getRecordSize()) / getFieldSize();
     }
 
     @SuppressWarnings("unchecked")
@@ -548,24 +511,16 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
             final int absolut_index = offset + (annotation.idx() * getFieldSize());
 
-            field.setAccessible(true);
+            if (!field.isAccessible())
+                field.setAccessible(true);
 
             try
             {
-                if (field.getType().equals(int.class))
-                    field.setInt(record, buffer.getInt(absolut_index));
-                else if (field.getType().equals(float.class))
-                    field.setFloat(record, buffer.getFloat(absolut_index));
-                else if (field.getType().equals(String.class))
-                    field.set(record, getStringAtRelativeOffset(absolut_index));
+                field.set(record, getObjectForOffsetAndField(absolut_index, getFieldOfOffset(absolut_index)));
             }
             catch (final Exception e)
             {
                 return null;
-            }
-            finally
-            {
-                field.setAccessible(false);
             }
         }
         return (T)record;
@@ -581,10 +536,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return array;
     }
 
-    protected Object getObjectForColumnAndField(final int y, final int x)
+    protected Object getObjectForOffsetAndField(final int offset, final int field)
     {
-        final int offset = getOffset(y, x);
-        switch (getFieldType(x))
+        switch (getFieldType(field))
         {
             case BOOLEAN:
                 return new Boolean((buffer.getInt(offset) != 0) ? true : false);
@@ -604,7 +558,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         final Object[][] array = new Object[recordsCount][fieldsCount];
         for (int y = 0; y < recordsCount; ++y)
             for (int x = 0; x < fieldsCount; ++x)
-                array[y][x] = getObjectForColumnAndField(y, x);
+                array[y][x] = getObjectForOffsetAndField(getOffset(y, x), x);
 
         return array;
     }

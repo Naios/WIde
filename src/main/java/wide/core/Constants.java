@@ -7,6 +7,7 @@ public enum Constants
     STRING_DEFAULT_PROPERTIES("WIde.properties"),
     STRING_UNKNOWN("<unknown>"),
     STRING_TEST("test"),
+    STRING_EXCEPTION("<exception>"),
 
     ////////////////////////////////////////////////////////
     // Property Names
@@ -45,7 +46,7 @@ public enum Constants
 
     private final String constant;
 
-    Constants(String constant)
+    Constants(final String constant)
     {
         this.constant = constant;
     }

@@ -71,8 +71,9 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
     @Override
     public T getEntry(final int entry) throws MissingEntryException
     {
-        if ((entry < minId) || (entry > maxId))
-            throw new MissingEntryException();
+        // TODO Fix this (some Draenor db2 storages don't declare this field)
+        // if ((entry < minId) || (entry > maxId))
+            // throw new MissingEntryException();
 
         return super.getEntry(entry);
     }
