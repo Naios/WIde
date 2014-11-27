@@ -1,11 +1,11 @@
-package wide.scripts.test;
+package com.github.naios.wide.scripts.test;
 
 import java.util.Arrays;
 
-import wide.core.framework.extensions.scripts.Script;
-import wide.core.framework.storage.client.ClientStorage;
-import wide.core.framework.storage.client.ClientStorageSelector;
-import wide.scripts.ScriptDefinition;
+import com.github.naios.wide.core.framework.extensions.scripts.Script;
+import com.github.naios.wide.core.framework.storage.client.ClientStorage;
+import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
+import com.github.naios.wide.scripts.ScriptDefinition;
 
 /**
  * Simple testing script, use this as playground.

@@ -1,7 +1,7 @@
-package wide.scripts.test;
+package com.github.naios.wide.scripts.test;
 
-import wide.core.framework.storage.client.ClientStorageEntry;
-import wide.core.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.core.framework.storage.client.ClientStorageEntry;
+import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 
 public class TaxiNodesStructure extends ClientStorageStructure
 {
