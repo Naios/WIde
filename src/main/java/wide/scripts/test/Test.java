@@ -11,13 +11,13 @@ import wide.scripts.ScriptDefinition;
  */
 public class Test extends Script
 {
-    public Test(ScriptDefinition definition)
+    public Test(final ScriptDefinition definition)
     {
         super(definition);
     }
 
     @Override
-    public void run(String[] args)
+    public void run(final String[] args)
     {
         System.out.println(String.format("Running %s script with args %s.",
                 toString(), Arrays.toString(args)));

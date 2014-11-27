@@ -170,17 +170,15 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         if (!file.exists())
             throw new MissingFileException(path);
 
-        // Tests if path matches ClientStorageStructure mask
+        // Test if the storage file matches the regex defined in the structure
+        try
         {
-            try
-            {
-                if (!path.matches(type.newInstance().getRegex()))
-                    throw new Exception();
+            if (!path.matches(type.newInstance().getRegex()))
+                throw new Exception();
 
-            } catch (final Exception e)
-            {
-                throw new NoMatchedStructureException(type, path);
-            }
+        } catch (final Exception e)
+        {
+            throw new NoMatchedStructureException(type, path);
         }
 
         final RandomAccessFile randomAccessFile;
