@@ -14,7 +14,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 
     public ClientStorage<T> select() throws ClientStorageException
     {
-        // TODO improve this
+        // TODO improve this: maybe there is an easier way to get the extension
         final String extension = path.substring(path.lastIndexOf("."), path.length());
 
         switch (extension)

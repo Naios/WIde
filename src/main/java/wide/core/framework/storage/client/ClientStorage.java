@@ -173,7 +173,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         // Test if the storage file matches the regex defined in the structure
         try
         {
-            if (!path.matches(type.newInstance().getRegex()))
+            if (!type.newInstance().matchesFile(path))
                 throw new Exception();
 
         } catch (final Exception e)

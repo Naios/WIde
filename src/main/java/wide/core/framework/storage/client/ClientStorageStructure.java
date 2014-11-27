@@ -1,21 +1,37 @@
 package wide.core.framework.storage.client;
 
-public abstract class ClientStorageStructure
+import wide.core.framework.game.GameBuildMask;
+import wide.core.framework.storage.GameBuildDependentStorageStructure;
+
+public abstract class ClientStorageStructure extends GameBuildDependentStorageStructure
 {
     private final String regex;
 
+    public final static String REGEX_MATCH_ALL = ".*";
+
     protected ClientStorageStructure()
     {
-        this(".*");
+        this(REGEX_MATCH_ALL);
     }
 
     protected ClientStorageStructure(final String mask)
     {
+        this(GameBuildDependentStorageStructure.ALL_BUILDS, mask);
+    }
+
+    protected ClientStorageStructure(final GameBuildMask gamebuild)
+    {
+        this(gamebuild, REGEX_MATCH_ALL);
+    }
+
+    protected ClientStorageStructure(final GameBuildMask gamebuilds, final String mask)
+    {
+        super(gamebuilds);
         this.regex = mask;
     }
 
-    public String getRegex()
+    public boolean matchesFile(final String path)
     {
-        return regex;
+        return path.matches(regex);
     }
 }
