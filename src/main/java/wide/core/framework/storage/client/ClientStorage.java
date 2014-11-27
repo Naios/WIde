@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -92,6 +93,15 @@ class NoMatchedStructureException extends ClientStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class WrongStructureException extends ClientStorageException
+{
+    public WrongStructureException(final Class<? extends ClientStorageStructure> type, final String path)
+    {
+        super(String.format("Given Client Storage Structure %s is not valid for file %s.", type.getName(), path));
+    }
+}
+
 public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
     protected final String path;
@@ -99,33 +109,63 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
      */
-    protected final int recordsCount;
+    private final int recordsCount;
 
     /**
      * The count of fields (<b>X / Columns</b>) of the Storage
      */
-    protected final int fieldsCount /*X*/;
+    private final int fieldsCount /*X*/;
 
     /**
      * The overall size of the record (size of all Fields together).<p>
      * Use {@link #getFieldSize()} the size of a single field.
      */
-    protected final int recordSize;
+    private final int recordSize;
 
     /**
      * The size of the String Block.
      */
-    protected final int stringBlockSize;
+    private final int stringBlockSize;
 
     protected final ByteBuffer buffer;
 
-    protected final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
+    private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
-    protected final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
+    private final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
 
-    protected final static int COUNT_CHECK_RECORDS_FOR_STRING = 4;
+    // TODO Is there any type in the JDK that already implements this?
+    protected enum FieldType
+    {
+        UNKNOWN(null, null),
+        BOOLEAN(boolean.class, Boolean.class),
+        INTEGER(int.class, Integer.class),
+        FLOAT(float.class, Float.class),
+        STRING(String.class, String.class);
 
-    protected final boolean[] isColumnStringTypeCache;
+        private final Class<?> type;
+
+        private final Class<?> wrapper;
+
+        FieldType(final Class<?> type, final Class<?> wrapper)
+        {
+            this.type = type;
+            this.wrapper = wrapper;
+        }
+
+        public Class<?> getType()
+        {
+            return type;
+        }
+
+        public Class<?> getWrapper()
+        {
+            return wrapper;
+        }
+    }
+
+    private final FieldType[] fieldType;
+
+    private final static int COUNT_CHECK_RECORDS_FOR_STRING = 3;
 
     private final Class<? extends ClientStorageStructure> type;
 
@@ -278,10 +318,35 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             offsetToStringCache.put(offset, new StringInBufferCached(buffer, offset, buffer.position() - offset - 1));
         }
 
-        // Pre Calculate if a column is a String
-        isColumnStringTypeCache = new boolean[fieldsCount];
+        // Calculate field types
+        fieldType = new FieldType[fieldsCount];
+        Arrays.fill(fieldType, FieldType.UNKNOWN);
+
+        // Pre calculate type based on given mapping structure
         for (int x = 0; x < fieldsCount; ++x)
-            isColumnStringTypeCache[x] = isFieldPossibleString(x);
+        {
+            final Field field = getFieldForColumn(x);
+            if (field != null)
+            {
+                for (final FieldType t : FieldType.values())
+                    if (field.getType().equals(t.getType()))
+                        fieldType[x] = t;
+            }
+
+            // If the column is a string but the given structure is wrong throw
+            // an exception
+            if (isFieldPossibleString(x))
+            {
+                if (fieldType[x].equals(FieldType.UNKNOWN)
+                        || fieldType[x].equals(FieldType.STRING))
+                    fieldType[x] = FieldType.STRING;
+                else
+                    throw new WrongStructureException(type, path);
+            }
+
+            if (fieldType[x].equals(FieldType.UNKNOWN))
+                fieldType[x] = FieldType.INTEGER;
+        }
     }
 
     // Overwritten Methods
@@ -331,7 +396,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return getDataBlockOffset() + getRecordsCount() * getRecordSize();
     }
 
-    protected boolean isFieldPossibleString(final int x)
+    protected FieldType getFieldType(final int field)
+    {
+        return fieldType[field];
+    }
+
+    private boolean isFieldPossibleString(final int x)
     {
         for (int y = 0; (y < recordsCount) && (y < COUNT_CHECK_RECORDS_FOR_STRING); ++y)
         {
@@ -346,6 +416,17 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     {
         return ClassUtil.getAnnotatedDeclaredFields(type,
                 ClientStorageEntry.class, true);
+    }
+
+    private Field getFieldForColumn(final int column)
+    {
+        for (final Field field : getAllAnnotatedFields())
+        {
+            final ClientStorageEntry annotation = field.getAnnotation(ClientStorageEntry.class);
+            if (annotation.idx() == column)
+                return field;
+        }
+        return null;
     }
 
     private int getOffset(final int y, final int x)
@@ -393,12 +474,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             {
                 if (withStrings)
                 {
-                    if (isColumnStringTypeCache[x])
+                    if (getFieldType(x).equals(FieldType.STRING))
                         builder.append("\"");
 
                     builder.append(stringArray[y][x]);
 
-                    if (isColumnStringTypeCache[x])
+                    if (getFieldType(x).equals(FieldType.STRING))
                         builder.append("\"");
                 }
                 else
@@ -439,6 +520,11 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             }
     }
 
+    private String getStringAtRelativeOffset(final int relativeOffset)
+    {
+        return getStringAtOffset(buffer.getInt(relativeOffset) + getStringBlockOffset());
+    }
+
     @SuppressWarnings("unchecked")
     private T getEntryByOffset(final int offset) throws MissingEntryException
     {
@@ -471,7 +557,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
                 else if (field.getType().equals(float.class))
                     field.setFloat(record, buffer.getFloat(absolut_index));
                 else if (field.getType().equals(String.class))
-                    field.set(record, getStringAtOffset(buffer.getInt(absolut_index) + getStringBlockOffset()));
+                    field.set(record, getStringAtRelativeOffset(absolut_index));
             }
             catch (final Exception e)
             {
@@ -495,19 +581,41 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return array;
     }
 
+    protected Object getObjectForColumnAndField(final int y, final int x)
+    {
+        final int offset = getOffset(y, x);
+        switch (getFieldType(x))
+        {
+            case BOOLEAN:
+                return new Boolean((buffer.getInt(offset) != 0) ? true : false);
+            case FLOAT:
+                return new Float(buffer.getFloat(offset));
+            case STRING:
+                return getStringAtRelativeOffset(offset);
+            case INTEGER:
+            case UNKNOWN:
+            default:
+                return new Integer(buffer.getInt(offset));
+        }
+    }
+
+    public Object[][] asObjectArray()
+    {
+        final Object[][] array = new Object[recordsCount][fieldsCount];
+        for (int y = 0; y < recordsCount; ++y)
+            for (int x = 0; x < fieldsCount; ++x)
+                array[y][x] = getObjectForColumnAndField(y, x);
+
+        return array;
+    }
+
     public String[][] asStringArray()
     {
+        final Object[][] asObjects = asObjectArray();
         final String[][] array = new String[recordsCount][fieldsCount];
         for (int y = 0; y < recordsCount; ++y)
             for (int x = 0; x < fieldsCount; ++x)
-            {
-                final int asInt = buffer.getInt(getOffset(y, x));
-                final String asString = (isColumnStringTypeCache[x]) ? getStringAtOffset(asInt + getStringBlockOffset()) : null;
-                if (asString != null)
-                    array[y][x] = asString;
-                else
-                    array[y][x] = String.valueOf(asInt);
-            }
+                array[y][x] = asObjects[y][x].toString();
 
         return array;
     }
