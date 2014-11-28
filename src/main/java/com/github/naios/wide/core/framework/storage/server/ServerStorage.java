@@ -66,9 +66,9 @@ class IllegalTypeAsKeyException extends ServerStorageException
 @SuppressWarnings("serial")
 class DatabaseConnectionException extends ServerStorageException
 {
-    public DatabaseConnectionException()
+    public DatabaseConnectionException(final String msg)
     {
-        super("Something went wrong with the database!");
+        super(String.format("Something went wrong with the database! (%s)", msg));
     }
 }
 
@@ -78,6 +78,15 @@ class NoDefinedTableNameException extends ServerStorageException
     public NoDefinedTableNameException(final Class<?> type)
     {
         super(String.format("Structure %s defines no @StorageName!", type.getName()));
+    }
+}
+
+@SuppressWarnings("serial")
+class WrongDatabaseStructureException extends ServerStorageException
+{
+    public WrongDatabaseStructureException(final Class<?> type, final String msg)
+    {
+        super(String.format("Your database structure dosn't match to %s (%s)!", type.getName(), msg));
     }
 }
 
@@ -222,7 +231,7 @@ public class ServerStorage<T extends ServerStorageStructure>
             statement = WIde.getDatabase().getConnection(database).prepareStatement(statementFormat);
         } catch (final SQLException e)
         {
-            throw new DatabaseConnectionException();
+            throw new DatabaseConnectionException(e.getMessage());
         }
     }
 
@@ -270,7 +279,7 @@ public class ServerStorage<T extends ServerStorageStructure>
     private void mapStructureWithKey(final ServerStorageStructure record, final Object[] keys)
     {
         if (statement == null)
-            throw new DatabaseConnectionException();
+            throw new DatabaseConnectionException("Statement is null");
 
         for (int i = 0; i < keys.length; ++i)
                 try
@@ -279,10 +288,12 @@ public class ServerStorage<T extends ServerStorageStructure>
                         statement.setString(i+1, (String)keys[i]);
                     else if (keys[i] instanceof Integer)
                         statement.setInt(i+1, (int)keys[i]);
+                    else if (keys[i] instanceof Boolean)
+                        statement.setBoolean(i+1, (boolean)keys[i]);
 
                 } catch (final SQLException e)
                 {
-                    throw new DatabaseConnectionException();
+                    throw new DatabaseConnectionException(e.getMessage());
                 }
 
         final ResultSet result;
@@ -304,8 +315,7 @@ public class ServerStorage<T extends ServerStorageStructure>
         }
         catch (final Exception e)
         {
-            e.printStackTrace();
-            throw new DatabaseConnectionException();
+            throw new WrongDatabaseStructureException(type, e.getMessage());
         }
     }
 
