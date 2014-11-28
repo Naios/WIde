@@ -12,7 +12,7 @@ import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
 
-public class Database
+public class Database implements AutoCloseable
 {
     private final Map<DatabaseType, Connection> connections = new HashMap<>();
 
@@ -102,7 +102,8 @@ public class Database
         WIde.getHooks().fire(Hook.ON_DATABASE_ESTABLISHED);
     }
 
-    private void close()
+    @Override
+    public void close()
     {
      // Hook.ON_DATABASE_CLOSE
         WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);

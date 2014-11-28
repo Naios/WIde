@@ -47,10 +47,25 @@ public class Test extends Script
 
         System.out.println(entry + "\n");
 
-        final List<CreatureTemplate> list = table.getFromWhereQuery("entry between 0 and 200");
+        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 200");
         for (final CreatureTemplate c : list)
-        {
             System.out.println(c);
-        }
+
+        // Check for same reference
+        final CreatureTemplate e1 = table.get(491);
+        final CreatureTemplate e2 = table.get(491);
+        System.out.println(e1 == e2);
+
+        final CreatureTemplate e3 = table.getWhere("entry=%d", 491).get(0);
+        System.out.println(e2 == e3);
+
+        final CreatureTemplate e4 = table.getWhere("name=%s", "Quartermaster Lewis").get(0);
+        System.out.println(e3 == e4);
+
+        final CreatureTemplate e5 = table.getWhere("name=%s", "Maloriak").get(0);
+        System.out.println(e4 != e5);
+        System.out.println(entry == e5);
+
+        table.close();
     }
 }

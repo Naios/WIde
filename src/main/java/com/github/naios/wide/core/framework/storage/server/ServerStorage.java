@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.value.ObservableValue;
+
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageName;
@@ -93,7 +95,7 @@ class WrongDatabaseStructureException extends ServerStorageException
     }
 }
 
-public class ServerStorage<T extends ServerStorageStructure>
+public class ServerStorage<T extends ServerStorageStructure> implements AutoCloseable
 {
     private final Class<? extends ServerStorageStructure> type;
 
@@ -255,14 +257,21 @@ public class ServerStorage<T extends ServerStorageStructure>
     {
         try
         {
-            preparedStatement.close();
-            statement.close();
+            if (statement != null)
+                statement.close();
+
+            if (preparedStatement != null)
+                preparedStatement.close();
+
         } catch (final SQLException e)
         {
         }
-
-        statement = null;
-        preparedStatement = null;
+        finally
+        {
+            statement = null;
+            preparedStatement = null;
+            cache.clear();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -285,13 +294,17 @@ public class ServerStorage<T extends ServerStorageStructure>
         return (T) record;
     }
 
-    public List<T> getFromWhereQuery(final String where, final Object... args)
+    public List<T> getWhere(final String where, final Object... args)
     {
-        return getFromWhereQuery(String.format(where, args));
+        for (int i = 0; i < args.length; ++i)
+            if (args[i] instanceof String)
+                args[i] = ("\"" + args[i].toString() + "\"");
+
+        return getWhere(String.format(where, args));
     }
 
     @SuppressWarnings("unchecked")
-    public List<T> getFromWhereQuery(final String where)
+    public List<T> getWhere(final String where)
     {
         final List<T> list = new ArrayList<T>();
         final ResultSet result;
@@ -300,7 +313,18 @@ public class ServerStorage<T extends ServerStorageStructure>
             result = statement.executeQuery(selectLowPart + where);
 
             while (result.next())
-                list.add((T) newStructureFromResult(result));
+            {
+                final ServerStorageStructure struc = newStructureFromResult(result);
+                final int hash = calculateHashOfStructure(struc);
+
+                if (cache.containsKey(hash))
+                    list.add((T) cache.get(hash));
+                else
+                {
+                    cache.put(hash, struc);
+                    list.add((T) struc);
+                }
+            }
 
         } catch (final SQLException e)
         {
@@ -391,9 +415,45 @@ public class ServerStorage<T extends ServerStorageStructure>
         return Arrays.hashCode(keys);
     }
 
+    private int calculateHashOfStructure(final ServerStorageStructure storage)
+    {
+        final List<Object> keys = new LinkedList<>();
+
+        for (final Field field : getAllAnnotatedFields())
+        {
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            if (field.getAnnotation(ServerStorageEntry.class).key())
+            {
+                try
+                {
+                    final Object me = field.get(storage);
+                    if (me instanceof ObservableValue<?>)
+                        keys.add(((ObservableValue<?>)me).getValue());
+                    else
+                        throw new WrongDatabaseStructureException(type,
+                                String.format("Field %s isn't an ObservableValue!", field.getName()));
+                }
+                catch (final Exception e)
+                {
+                    throw new DatabaseConnectionException(e.getMessage());
+                }
+            }
+        }
+
+        return Arrays.hashCode(keys.toArray());
+    }
+
     private Field[] getAllAnnotatedFields()
     {
         return ClassUtil.getAnnotatedDeclaredFields(type,
                 ServerStorageEntry.class, true);
+    }
+
+    @Override
+    public void close()
+    {
+        deleteStatements();
     }
 }
