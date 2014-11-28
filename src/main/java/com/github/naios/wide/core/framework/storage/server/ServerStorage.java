@@ -8,10 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javafx.beans.value.ObservableValue;
 
@@ -22,6 +20,8 @@ import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @SuppressWarnings("serial")
 class NoKeyException extends ServerStorageException
@@ -101,7 +101,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private final List<Field> keys = new LinkedList<>();
 
-    private final Map<Integer, ServerStorageStructure> cache = new HashMap<>();
+    private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
+            CacheBuilder.newBuilder().weakValues().build();
 
     private final DatabaseType database;
 
@@ -270,7 +271,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         {
             statement = null;
             preparedStatement = null;
-            cache.clear();
+            cache.cleanUp();
         }
     }
 
@@ -282,15 +283,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         // If the Object is already cached return it
         final int hash = calculateHashOfKeys(keysOfEntry);
-        if (cache.containsKey(hash))
-            return (T) cache.get(hash);
 
+        ServerStorageStructure record = cache.getIfPresent(hash);
+        if (record != null)
+            return (T) record;
 
-
-        final ServerStorageStructure record = newStructureFromResult(createResultSetFromKeys(keysOfEntry));
-
+        record = newStructureFromResult(createResultSetFromKeys(keysOfEntry));
         cache.put(hash, record);
-
         return (T) record;
     }
 
@@ -314,16 +313,18 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
             while (result.next())
             {
-                final ServerStorageStructure struc = newStructureFromResult(result);
-                final int hash = calculateHashOfStructure(struc);
+                final ServerStorageStructure dbStructure = newStructureFromResult(result);
+                final int hash = calculateHashOfStructure(dbStructure);
 
-                if (cache.containsKey(hash))
-                    list.add((T) cache.get(hash));
-                else
+                final ServerStorageStructure cachedStructure = cache.getIfPresent(hash);
+
+                if (cachedStructure == null)
                 {
-                    cache.put(hash, struc);
-                    list.add((T) struc);
+                    list.add((T) dbStructure);
+                    cache.put(hash, dbStructure);
                 }
+                else
+                    list.add((T) cachedStructure);
             }
 
         } catch (final SQLException e)
