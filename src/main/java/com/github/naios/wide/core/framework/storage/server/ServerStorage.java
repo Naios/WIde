@@ -14,8 +14,7 @@ import java.util.List;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
-import com.github.naios.wide.core.framework.storage.StorageException;
-import com.github.naios.wide.core.framework.storage.StorageName;
+import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.core.session.hooks.Hook;
@@ -78,15 +77,6 @@ class DatabaseConnectionException extends ServerStorageException
 }
 
 @SuppressWarnings("serial")
-class NoDefinedTableNameException extends ServerStorageException
-{
-    public NoDefinedTableNameException(final Class<?> type)
-    {
-        super(String.format("Structure %s defines no @StorageName!", type.getName()));
-    }
-}
-
-@SuppressWarnings("serial")
 class WrongDatabaseStructureException extends ServerStorageException
 {
     public WrongDatabaseStructureException(final Class<?> type, final String msg)
@@ -116,7 +106,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
     {
-        this (type, database, GetTableName(type, type));
+        this (type, database, StorageStructure.GetStorageName(type));
     }
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database, final String tableName) throws ServerStorageException
@@ -146,20 +136,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         statementFormat = createStatementFormat();
 
         initStatements();
-    }
-
-    // Looks recursively for StorageName annotation
-    private static String GetTableName(final Class<? extends ServerStorageStructure> base,
-            final Class<?> type) throws StorageException
-    {
-        if (type == null)
-            throw new NoDefinedTableNameException(base);
-
-        final StorageName name = type.getAnnotation(StorageName.class);
-        if (name != null)
-            return name.name();
-
-        return GetTableName(base, type.getSuperclass());
     }
 
     public String getTableName()
@@ -373,7 +349,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             if (result.isBeforeFirst())
                 result.first();
 
-        } catch (final Exception e)
+        }
+        catch (final Exception e)
         {
             throw new WrongDatabaseStructureException(type, e.getMessage());
         }
@@ -383,12 +360,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         {
             record = type.newInstance();
 
-        } catch (final Exception e)
+        }
+        catch (final Exception e)
         {
             throw new BadMappingException(type);
         }
-
-        record.setOwner(this);
 
         try
         {

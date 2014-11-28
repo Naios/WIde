@@ -8,6 +8,8 @@ public class GameBuildMask
 {
     private final Set<GameBuild> container = new HashSet<GameBuild>();
 
+    public final static GameBuildMask ALL_BUILDS = new GameBuildMask().addAll();
+
     public GameBuildMask()
     {
     }
@@ -29,12 +31,17 @@ public class GameBuildMask
         return this;
     }
 
-    public GameBuildMask add_range(final GameBuild begin, final GameBuild end)
+    public GameBuildMask addUntil(final GameBuild until)
+    {
+        return add(Arrays.copyOfRange(GameBuild.values(), 0, until.ordinal()));
+    }
+
+    public GameBuildMask addRange(final GameBuild begin, final GameBuild end)
     {
         return add(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal()));
     }
 
-    public GameBuildMask add_expansion(final Expansion... expansions)
+    public GameBuildMask addExpansion(final Expansion... expansions)
     {
         for (final Expansion expansion : expansions)
             for (final GameBuild build : GameBuild.values())
@@ -44,7 +51,7 @@ public class GameBuildMask
         return this;
     }
 
-    public GameBuildMask add_all()
+    public GameBuildMask addAll()
     {
         return add(GameBuild.values());
     }
@@ -61,12 +68,17 @@ public class GameBuildMask
         return this;
     }
 
-    public GameBuildMask remove_range(final GameBuild begin, final GameBuild end)
+    public GameBuildMask removeUntil(final GameBuild until)
+    {
+        return remove(Arrays.copyOfRange(GameBuild.values(), 0, until.ordinal()));
+    }
+
+    public GameBuildMask removeRange(final GameBuild begin, final GameBuild end)
     {
         return remove(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal()));
     }
 
-    public GameBuildMask remove_expansion(final Expansion... expansions)
+    public GameBuildMask removeExpansion(final Expansion... expansions)
     {
         for (final Expansion expansion : expansions)
             for (final GameBuild build : GameBuild.values())
@@ -76,7 +88,7 @@ public class GameBuildMask
         return this;
     }
 
-    public GameBuildMask remove_all()
+    public GameBuildMask removeAll()
     {
         container.clear();
         return this;

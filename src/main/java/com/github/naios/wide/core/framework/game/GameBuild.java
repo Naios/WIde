@@ -29,7 +29,7 @@ public enum GameBuild
     private final String version;
     private final Expansion expansion;
 
-    private GameBuild(String version, Expansion expansion)
+    private GameBuild(final String version, final Expansion expansion)
     {
         this.version = version;
         this.expansion = expansion;

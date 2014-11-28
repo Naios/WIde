@@ -14,6 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.github.naios.wide.core.Constants;
+import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.StorageException;
+import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 
 @SuppressWarnings("serial")
@@ -202,6 +206,16 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
     }
 
+    public ClientStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
+    {
+        this (type, GetStringOfStorageInDataDir(type));
+    }
+
+    private static String GetStringOfStorageInDataDir(final Class<? extends ClientStorageStructure> type)
+    {
+        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC) + "/" + StorageStructure.GetStorageName(type);
+    }
+
     public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {
         this.path = path;
@@ -214,7 +228,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         // Test if the storage file matches the regex defined in the structure
         try
         {
-            if (!type.newInstance().matchesFile(path))
+            final String regex = StorageStructure.GetStorageName(type);
+            if (!path.matches(regex))
                 throw new Exception();
 
         } catch (final Exception e)
