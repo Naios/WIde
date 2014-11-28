@@ -49,7 +49,7 @@ public class Test extends Script
 
         System.out.println(entry + "\n");
 
-        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 200");
+        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 200 LIMIT 5");
         for (final CreatureTemplate c : list)
             System.out.println(c);
 
@@ -73,7 +73,11 @@ public class Test extends Script
         final ClientStorage<TaxiNodes> taxiNodes =
                 new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
 
-        // System.out.println(taxiNodes);
-
+        int count = 0;
+        for (final TaxiNodes nodes : taxiNodes)
+            if (++count > 5)
+                break;
+            else
+                System.out.println(nodes);
     }
 }
