@@ -1,5 +1,7 @@
 package com.github.naios.wide.core.framework.storage.client;
 
+import com.github.naios.wide.core.framework.storage.StorageException;
+
 /**
  * Implementation of Blizzards DB2 files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DB2
@@ -13,6 +15,11 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
     protected final static String EXTENSION = ".db2";
 
     protected int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
+
+    public DB2Storage(final Class<? extends ClientStorageStructure> type) throws StorageException
+    {
+        super(type);
+    }
 
     public DB2Storage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {

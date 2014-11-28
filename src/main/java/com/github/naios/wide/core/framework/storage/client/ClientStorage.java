@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.naios.wide.core.Constants;
-import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
@@ -91,9 +89,9 @@ class MissingEntryException extends ClientStorageException
 @SuppressWarnings("serial")
 class NoMatchedStructureException extends ClientStorageException
 {
-    public NoMatchedStructureException(final Class<? extends ClientStorageStructure> type, final String path)
+    public NoMatchedStructureException(final Class<? extends ClientStorageStructure> type, final String  mask, final String path)
     {
-        super(String.format("Given Client Storage Structure mask in class %s does not match to file %s.", type.getName(), path));
+        super(String.format("Given Client Storage Structure mask in class %s (%s) does not match to file %s.", type.getName(), mask, path));
     }
 }
 
@@ -208,12 +206,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
     {
-        this (type, GetStringOfStorageInDataDir(type));
-    }
-
-    private static String GetStringOfStorageInDataDir(final Class<? extends ClientStorageStructure> type)
-    {
-        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC) + "/" + StorageStructure.GetStorageName(type);
+        this (type, ClientStorageStructure.GetPathThroughStorageName(type));
     }
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
@@ -226,15 +219,16 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             throw new MissingFileException(path);
 
         // Test if the storage file matches the regex defined in the structure
+        String regex = null;
         try
         {
-            final String regex = StorageStructure.GetStorageName(type);
-            if (!path.matches(regex))
+            regex = StorageStructure.GetStorageName(type);
+            if (!file.getName().matches(regex))
                 throw new Exception();
 
         } catch (final Exception e)
         {
-            throw new NoMatchedStructureException(type, path);
+            throw new NoMatchedStructureException(type, regex, path);
         }
 
         final RandomAccessFile randomAccessFile;
@@ -571,15 +565,47 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return array;
     }
 
+    private class StringWrapper
+    {
+        private final Object obj;
+
+        public StringWrapper(final Object obj)
+        {
+            this.obj = obj;
+        }
+
+        public Object getString()
+        {
+            return obj;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "\"" + obj + "\"";
+        }
+    }
+
     /**
      * @return ClientStorage as Object Array (use toString() to get Content)
      */
     public Object[][] asObjectArray()
     {
+        return asObjectArray(false);
+    }
+
+    public Object[][] asObjectArray(final boolean stringEnclosure)
+    {
         final Object[][] array = new Object[recordsCount][fieldsCount];
         for (int y = 0; y < recordsCount; ++y)
             for (int x = 0; x < fieldsCount; ++x)
-                array[y][x] = getObjectForOffsetAndField(getOffset(y, x), x);
+            {
+                final Object obj = getObjectForOffsetAndField(getOffset(y, x), x);
+                if (stringEnclosure && (obj instanceof String))
+                    array[y][x] = new StringWrapper(obj);
+                else
+                    array[y][x] = obj;
+            }
 
         return array;
     }
@@ -601,7 +627,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     @Override
     public String toString()
     {
-        return Arrays.deepToString(asObjectArray()).replaceAll("],", "],\n");
+        return Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n");
     }
 
     @Override

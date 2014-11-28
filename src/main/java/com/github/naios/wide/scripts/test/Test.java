@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
+import com.github.naios.wide.core.framework.storage.client.ClientStorage;
+import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
@@ -67,5 +69,11 @@ public class Test extends Script
         System.out.println(entry == e5);
 
         table.close();
+
+        final ClientStorage<TaxiNodes> taxiNodes =
+                new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
+
+        // System.out.println(taxiNodes);
+
     }
 }
