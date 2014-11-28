@@ -183,7 +183,6 @@ public class ServerStorage<T extends ServerStorageStructure>
 
         builder
             .append(" FROM ")
-            // TODO
             .append(tableName)
             .append(" WHERE ");
 
@@ -258,25 +257,16 @@ public class ServerStorage<T extends ServerStorageStructure>
         if (cache.containsKey(hash))
             return (T) cache.get(hash);
 
-        final ServerStorageStructure record;
-        try
-        {
-            record = type.newInstance();
 
-        } catch (final Exception e)
-        {
-            throw new BadMappingException(type);
-        }
 
-        record.setOwner(this);
+        final ServerStorageStructure record = newStructureFromResult(createResultSetFromKeys(keysOfEntry));
+
         cache.put(hash, record);
-
-        mapStructureWithKey(record, keysOfEntry);
 
         return (T) record;
     }
 
-    private void mapStructureWithKey(final ServerStorageStructure record, final Object[] keys)
+    private ResultSet createResultSetFromKeys(final Object[] keys)
     {
         if (statement == null)
             throw new DatabaseConnectionException("Statement is null");
@@ -299,9 +289,45 @@ public class ServerStorage<T extends ServerStorageStructure>
         final ResultSet result;
         try
         {
-            result = statement.executeQuery();
-            result.first();
+            if (WIde.getEnviroment().isTraceEnabled())
+                System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", statement, type.getName()));
 
+            result = statement.executeQuery();
+        }
+        catch (final Exception e)
+        {
+            throw new WrongDatabaseStructureException(type, e.getMessage());
+        }
+
+        return result;
+    }
+
+    private ServerStorageStructure newStructureFromResult(final ResultSet result)
+    {
+        try
+        {
+            if (result.isBeforeFirst())
+                result.first();
+
+        } catch (final Exception e)
+        {
+            throw new WrongDatabaseStructureException(type, e.getMessage());
+        }
+
+        final ServerStorageStructure record;
+        try
+        {
+            record = type.newInstance();
+
+        } catch (final Exception e)
+        {
+            throw new BadMappingException(type);
+        }
+
+        record.setOwner(this);
+
+        try
+        {
             for (final Field field : getAllAnnotatedFields())
             {
                 if (!field.isAccessible())
@@ -317,6 +343,8 @@ public class ServerStorage<T extends ServerStorageStructure>
         {
             throw new WrongDatabaseStructureException(type, e.getMessage());
         }
+
+        return record;
     }
 
     private int calculateHashOfKeys(final Object[] keys)
