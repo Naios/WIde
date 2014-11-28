@@ -21,18 +21,18 @@ public class ClassUtil
      *            type of object
      * @return new Class instance
      */
-    public static <T> T getInstance(Class<T> type)
+    public static <T> T getInstance(final Class<T> type)
     {
         T t = null;
         try
         {
             t = type.newInstance();
         }
-        catch (InstantiationException e)
+        catch (final InstantiationException e)
         {
             e.printStackTrace();
         }
-        catch (IllegalAccessException e)
+        catch (final IllegalAccessException e)
         {
             e.printStackTrace();
         }
@@ -50,17 +50,17 @@ public class ClassUtil
      *            param
      * @return list of fields
      */
-    public static Field[] getDeclaredFields(Class type, boolean recursively)
+    public static Field[] getDeclaredFields(final Class type, final boolean recursively)
     {
-        List<Field> fields = new LinkedList<Field>();
-        Field[] declaredFields = type.getDeclaredFields();
+        final List<Field> fields = new LinkedList<Field>();
+        final Field[] declaredFields = type.getDeclaredFields();
         Collections.addAll(fields, declaredFields);
 
-        Class superClass = type.getSuperclass();
+        final Class superClass = type.getSuperclass();
 
         if (superClass != null && recursively)
         {
-            Field[] declaredFieldsOfSuper = getDeclaredFields(superClass,
+            final Field[] declaredFieldsOfSuper = getDeclaredFields(superClass,
                     recursively);
             if (declaredFieldsOfSuper.length > 0)
                 Collections.addAll(fields, declaredFieldsOfSuper);
@@ -82,13 +82,13 @@ public class ClassUtil
      *            param
      * @return list of annotated fields
      */
-    public static Field[] getAnnotatedDeclaredFields(Class type,
-            Class<? extends Annotation> annotationClass, boolean recursively)
+    public static Field[] getAnnotatedDeclaredFields(final Class type,
+            final Class<? extends Annotation> annotationClass, final boolean recursively)
     {
-        Field[] allFields = getDeclaredFields(type, recursively);
-        List<Field> annotatedFields = new LinkedList<Field>();
+        final Field[] allFields = getDeclaredFields(type, recursively);
+        final List<Field> annotatedFields = new LinkedList<Field>();
 
-        for (Field field : allFields)
+        for (final Field field : allFields)
         {
             if (field.isAnnotationPresent(annotationClass))
                 annotatedFields.add(field);

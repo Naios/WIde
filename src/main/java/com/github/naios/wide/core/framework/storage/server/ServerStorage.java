@@ -10,15 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.StorageException;
+import com.github.naios.wide.core.framework.storage.StorageName;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.core.session.hooks.Hook;
@@ -52,11 +46,38 @@ class BadMappingException extends ServerStorageException
 }
 
 @SuppressWarnings("serial")
+class IllegalTypeException extends ServerStorageException
+{
+    public IllegalTypeException(final Class<?> type)
+    {
+        super(String.format("Class can't be used in StorageStructures %s", type.getName()));
+    }
+}
+
+@SuppressWarnings("serial")
+class IllegalTypeAsKeyException extends ServerStorageException
+{
+    public IllegalTypeAsKeyException(final Class<?> type)
+    {
+        super(String.format("Class %s can't be used as key in StorageStructures", type.getName()));
+    }
+}
+
+@SuppressWarnings("serial")
 class DatabaseConnectionException extends ServerStorageException
 {
     public DatabaseConnectionException()
     {
         super("Something went wrong with the database!");
+    }
+}
+
+@SuppressWarnings("serial")
+class NoDefinedTableNameException extends ServerStorageException
+{
+    public NoDefinedTableNameException(final Class<?> type)
+    {
+        super(String.format("Structure %s defines no @StorageName!", type.getName()));
     }
 }
 
@@ -72,17 +93,34 @@ public class ServerStorage<T extends ServerStorageStructure>
 
     private final String statementFormat;
 
+    private final String tableName;
+
     private PreparedStatement statement;
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
     {
+        this (type, database, GetTableName(type, type));
+    }
+
+    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database, final String tableName) throws ServerStorageException
+    {
         this.type = type;
         this.database = database;
+        this.tableName = tableName;
 
         // Store keys into this.keys
         for (final Field field : getAllAnnotatedFields())
+        {
+            final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
+            if (fieldType == null)
+                throw new IllegalTypeException(field.getType());
+
             if (field.getAnnotation(ServerStorageEntry.class).key())
-                keys.add(field);
+                if (fieldType.getIsPossibleKey())
+                    keys.add(field);
+                else
+                    throw new IllegalTypeAsKeyException(field.getType());
+        }
 
         if (keys.isEmpty())
             throw new NoKeyException(type);
@@ -90,6 +128,25 @@ public class ServerStorage<T extends ServerStorageStructure>
         statementFormat = createStatementFormat();
 
         initStatements();
+    }
+
+    // Looks recursively for StorageName annotation
+    private static String GetTableName(final Class<? extends ServerStorageStructure> base,
+            final Class<?> type) throws StorageException
+    {
+        if (type == null)
+            throw new NoDefinedTableNameException(base);
+
+        final StorageName name = type.getAnnotation(StorageName.class);
+        if (name != null)
+            return name.name();
+
+        return GetTableName(base, type.getSuperclass());
+    }
+
+    public String getTableName()
+    {
+        return tableName;
     }
 
     private String getNameofField(final Field field)
@@ -118,7 +175,7 @@ public class ServerStorage<T extends ServerStorageStructure>
         builder
             .append(" FROM ")
             // TODO
-            .append("creature_template")
+            .append(tableName)
             .append(" WHERE ");
 
         for (final Field field : keys)
@@ -239,27 +296,15 @@ public class ServerStorage<T extends ServerStorageStructure>
                 if (!field.isAccessible())
                     field.setAccessible(true);
 
-                final Object obj;
-                // ReadOnlyIntegerProperty
-                if (field.getType().equals(ReadOnlyIntegerProperty.class))
-                    obj = new ReadOnlyIntegerWrapper(result.getInt(getNameofField(field)));
-                // SimpleIntegerProperty
-                else if (field.getType().equals(IntegerProperty.class))
-                    obj = new SimpleIntegerProperty(result.getInt(getNameofField(field)));
-                // ReadOnlyStringProperty
-                else if (field.getType().equals(ReadOnlyStringProperty.class))
-                    obj = new ReadOnlyStringWrapper(result.getString(getNameofField(field)));
-                // SimpleStringProperty
-                else if (field.getType().equals(StringProperty.class))
-                    obj = new SimpleStringProperty(result.getString(getNameofField(field)));
-                else
-                    obj = null;
+                final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
+                final Object obj = fieldType.createFromResult(result, getNameofField(field));
 
                 field.set(record, obj);
             }
-
-        } catch (final Exception e)
+        }
+        catch (final Exception e)
         {
+            e.printStackTrace();
             throw new DatabaseConnectionException();
         }
     }
@@ -272,6 +317,6 @@ public class ServerStorage<T extends ServerStorageStructure>
     private Field[] getAllAnnotatedFields()
     {
         return ClassUtil.getAnnotatedDeclaredFields(type,
-               ServerStorageEntry.class, true);
+                ServerStorageEntry.class, true);
     }
 }

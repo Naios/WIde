@@ -3,6 +3,7 @@ package com.github.naios.wide.scripts.test;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
+
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
 
 public class CreatureTemplateStructure extends CreatureTemplate

@@ -41,6 +41,9 @@ public class Test extends Script
 
         final CreatureTemplate entry = table.get(41378);
 
+        // final FlagVersionedProperty<UnitFlags> flags =
+        //         new SimpleFlagVersionedProperty<>();
+
         System.out.println(entry);
     }
 }
