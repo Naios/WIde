@@ -1,9 +1,12 @@
 package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -100,11 +103,13 @@ public class ServerStorage<T extends ServerStorageStructure>
 
     private final DatabaseType database;
 
-    private final String statementFormat;
+    private final String statementFormat, selectLowPart;
 
     private final String tableName;
 
-    private PreparedStatement statement;
+    private PreparedStatement preparedStatement;
+
+    private Statement statement;
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
     {
@@ -134,6 +139,7 @@ public class ServerStorage<T extends ServerStorageStructure>
         if (keys.isEmpty())
             throw new NoKeyException(type);
 
+        selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
 
         initStatements();
@@ -168,7 +174,7 @@ public class ServerStorage<T extends ServerStorageStructure>
             return field.getName();
     }
 
-    private String createStatementFormat()
+    private String createSelectFormat()
     {
         final StringBuilder builder = new StringBuilder("SELECT ");
         for (final Field field : getAllAnnotatedFields())
@@ -186,6 +192,12 @@ public class ServerStorage<T extends ServerStorageStructure>
             .append(tableName)
             .append(" WHERE ");
 
+        return builder.toString();
+    }
+
+    private String createStatementFormat()
+    {
+        final StringBuilder builder = new StringBuilder(selectLowPart);
         for (final Field field : keys)
         {
             builder
@@ -206,7 +218,7 @@ public class ServerStorage<T extends ServerStorageStructure>
             @Override
             public void informed()
             {
-                createStatement();
+                createStatements();
             }
         });
 
@@ -215,35 +227,42 @@ public class ServerStorage<T extends ServerStorageStructure>
             @Override
             public void informed()
             {
-                deleteStatement();
+                deleteStatements();
             }
         });
 
         if (WIde.getDatabase().isConnected())
-            createStatement();
+            createStatements();
     }
 
-    private void createStatement()
+    private void createStatements()
     {
         try
         {
-            statement = WIde.getDatabase().getConnection(database).prepareStatement(statementFormat);
-        } catch (final SQLException e)
+            final Connection con = WIde.getDatabase().getConnection(database);
+
+            statement = con.createStatement();
+            preparedStatement = con.prepareStatement(statementFormat);
+
+        }
+        catch (final SQLException e)
         {
             throw new DatabaseConnectionException(e.getMessage());
         }
     }
 
-    private void deleteStatement()
+    private void deleteStatements()
     {
         try
         {
+            preparedStatement.close();
             statement.close();
         } catch (final SQLException e)
         {
         }
 
         statement = null;
+        preparedStatement = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -266,20 +285,40 @@ public class ServerStorage<T extends ServerStorageStructure>
         return (T) record;
     }
 
+    public List<T> getFromWhereQuery(final String where, final Object... args)
+    {
+        return getFromWhereQuery(String.format(where, args));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<T> getFromWhereQuery(final String where)
+    {
+        final List<T> list = new ArrayList<T>();
+        final ResultSet result;
+        try
+        {
+            result = statement.executeQuery(selectLowPart + where);
+
+            while (result.next())
+                list.add((T) newStructureFromResult(result));
+
+        } catch (final SQLException e)
+        {
+            throw new DatabaseConnectionException(e.getMessage());
+        }
+
+        return list;
+    }
+
     private ResultSet createResultSetFromKeys(final Object[] keys)
     {
-        if (statement == null)
+        if (preparedStatement == null)
             throw new DatabaseConnectionException("Statement is null");
 
         for (int i = 0; i < keys.length; ++i)
                 try
                 {
-                    if (keys[i] instanceof String)
-                        statement.setString(i+1, (String)keys[i]);
-                    else if (keys[i] instanceof Integer)
-                        statement.setInt(i+1, (int)keys[i]);
-                    else if (keys[i] instanceof Boolean)
-                        statement.setBoolean(i+1, (boolean)keys[i]);
+                    preparedStatement.setString(i + 1, keys[i].toString());
 
                 } catch (final SQLException e)
                 {
@@ -290,9 +329,9 @@ public class ServerStorage<T extends ServerStorageStructure>
         try
         {
             if (WIde.getEnviroment().isTraceEnabled())
-                System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", statement, type.getName()));
+                System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
 
-            result = statement.executeQuery();
+            result = preparedStatement.executeQuery();
         }
         catch (final Exception e)
         {

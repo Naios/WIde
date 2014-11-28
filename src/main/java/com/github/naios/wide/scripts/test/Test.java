@@ -1,6 +1,7 @@
 package com.github.naios.wide.scripts.test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
@@ -44,6 +45,12 @@ public class Test extends Script
         // final FlagVersionedProperty<UnitFlags> flags =
         //         new SimpleFlagVersionedProperty<>();
 
-        System.out.println(entry);
+        System.out.println(entry + "\n");
+
+        final List<CreatureTemplate> list = table.getFromWhereQuery("entry between 0 and 200");
+        for (final CreatureTemplate c : list)
+        {
+            System.out.println(c);
+        }
     }
 }
