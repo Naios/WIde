@@ -6,22 +6,29 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.game.GameBuild;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
 
 public class Config
 {
-	private Properties storage = new Properties();
+	private final Properties storage = new Properties();
 
 	private final HashMap<String, StringProperty> properties = new HashMap<>();
 
 	private boolean hasChanged = false;
+
+	private final ObjectProperty<GameBuild> cachedBuild =
+	        new SimpleObjectProperty<GameBuild>();
 
 	public Config()
 	{
@@ -68,6 +75,17 @@ public class Config
         {
             hasChanged = true;
         }
+
+        // Init GameBuilds
+        getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue)
+            {
+                recalculateGameBuild();
+            }
+        });
 
         // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
@@ -124,8 +142,8 @@ public class Config
 				{
 					@Override
 					public void changed(
-							ObservableValue<? extends String> observable,
-							String oldValue, String newValue)
+							final ObservableValue<? extends String> observable,
+							final String oldValue, final String newValue)
 					{
 						storage.setProperty(key, newValue);
 
@@ -141,5 +159,23 @@ public class Config
 			}
 			return property;
 		}
+	}
+
+	public ObjectProperty<GameBuild> getGameBuild()
+	{
+        return cachedBuild;
+	}
+
+	private void recalculateGameBuild()
+	{
+	    final String configVersion = getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).get();
+	    for (final GameBuild build : GameBuild.values())
+	        if (build.getVersion().equals(configVersion))
+	        {
+	            cachedBuild.set(build);
+	            return;
+	        }
+
+	    cachedBuild.set(null);
 	}
 }

@@ -24,6 +24,9 @@ public enum Constants
     PROPERTY_DATABASE_AUTOLOGIN("core.session.database.autologin"),
     PROPERTY_DATABASE_SAVE_PASSWORD("core.session.database.savepassword"),
 
+    // Enviroment
+    PROPERTY_ENVIROMENT_VERSION("core.enviroment.version"),
+
     // Git
     PROPERTY_GIT_COMMIT_HASH("git.commit.id"),
     PROPERTY_GIT_COMMIT_HASH_SHORT("git.commit.id.abbrev"),

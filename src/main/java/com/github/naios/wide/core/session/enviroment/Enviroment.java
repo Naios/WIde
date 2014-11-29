@@ -73,7 +73,7 @@ public class Enviroment
 
     private final ApplicationInfo applicationInfo = new ApplicationInfo(Constants.PATH_REPOSITORY_INFO.toString());
 
-    public boolean setUp(String[] args)
+    public boolean setUp(final String[] args)
     {
         if (!hasReadWriteAccess())
         {
@@ -91,7 +91,7 @@ public class Enviroment
         return true;
     }
 
-    private boolean parseArguments(String[] args)
+    private boolean parseArguments(final String[] args)
     {
         final CommandLineParser parser = new BasicParser();
 
@@ -125,12 +125,12 @@ public class Enviroment
         applicationInfo.read();
     }
 
-    public boolean hasArgument(String arg)
+    public boolean hasArgument(final String arg)
     {
         return (cmd != null) && cmd.hasOption(arg);
     }
 
-    public String getParameter(String arg)
+    public String getParameter(final String arg)
     {
         return (cmd != null) ? cmd.getOptionValue(arg) : null;
     }
@@ -199,7 +199,7 @@ public class Enviroment
         return true;
     }
 
-    public void createDirectory(String path)
+    public void createDirectory(final String path)
     {
         final File dir = new File(path);
         if (dir.exists())
