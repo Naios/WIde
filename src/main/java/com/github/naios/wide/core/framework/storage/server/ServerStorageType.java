@@ -183,4 +183,26 @@ public enum ServerStorageType
 
         return null;
     }
+
+    // The Mapping process
+    public static void MapFieldToRecordFromResult(final Field field, final ServerStorageStructure record, final ResultSet result) throws ServerStorageException
+    {
+        if (!field.isAccessible())
+            field.setAccessible(true);
+
+        final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
+        final ObservableValue<?> value = fieldType.createFromResult(result, ServerStorageStructure.GetNameOfField(field));
+
+        value.addListener(new ServerStoragedEntryChangeListener(record, field));
+
+        try
+        {
+            field.set(record, value);
+        }
+        catch (final Exception e)
+        {
+            // TODO
+            // Throw Mapping exception
+        }
+    }
 }

@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 
 import javafx.beans.value.ObservableValue;
 
@@ -83,6 +85,15 @@ class WrongDatabaseStructureException extends ServerStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class StorageClosedException extends ServerStorageException
+{
+    public StorageClosedException()
+    {
+        super("Tried to access to this closed Storage!");
+    }
+}
+
 public class ServerStorage<T extends ServerStorageStructure> implements AutoCloseable
 {
     private final Class<? extends ServerStorageStructure> type;
@@ -141,6 +152,18 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     public String getTableName()
     {
         return tableName;
+    }
+
+    public boolean isOpen()
+    {
+        // If the connection gets closed the statements are set to null
+        return preparedStatement != null;
+    }
+
+    private void checkOpen()
+    {
+        if (!isOpen())
+            throw new StorageClosedException();
     }
 
     private String createSelectFormat()
@@ -237,7 +260,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         {
             statement = null;
             preparedStatement = null;
-            cache.cleanUp();
+            cache.invalidateAll();
         }
     }
 
@@ -259,6 +282,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     @SuppressWarnings("unchecked")
     public T get(final ServerStorageKey<T> key)
     {
+        checkOpen();
+
         if (key.get().length != keys.size())
             throw new BadKeyException(key.get().length, keys.size());
 
@@ -277,6 +302,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     @SuppressWarnings("unchecked")
     public List<T> getWhere(final String where)
     {
+        checkOpen();
+
         final List<T> list = new ArrayList<T>();
         final ResultSet result;
         try
@@ -331,7 +358,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         {
             if (result.isBeforeFirst())
                 result.first();
-
         }
         catch (final Exception e)
         {
@@ -341,8 +367,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         final ServerStorageStructure record;
         try
         {
-            record = type.newInstance();
-
+            record = type.getConstructor(getClass()).newInstance(this);
         }
         catch (final Exception e)
         {
@@ -352,15 +377,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         try
         {
             for (final Field field : record.getAllFields())
-            {
-                if (!field.isAccessible())
-                    field.setAccessible(true);
-
-                final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
-                final Object obj = fieldType.createFromResult(result, ServerStorageStructure.GetNameOfField(field));
-
-                field.set(record, obj);
-            }
+                ServerStorageType.MapFieldToRecordFromResult(field, record, result);
         }
         catch (final Exception e)
         {
@@ -376,9 +393,22 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
                 ServerStorageEntry.class, true);
     }
 
+    protected void valueChanged(final ServerStorageStructure record, final Field field, final ObservableValue<?> value)
+    {
+        // TODO
+        System.out.println(String.format("Value of %s changed to %s", ServerStorageStructure.GetNameOfField(field), value.getValue()));
+    }
+
     @Override
     public void close()
     {
         deleteStatements();
+    }
+
+    @Override
+    public String toString()
+    {
+        final ConcurrentMap<Integer, ServerStorageStructure> map = cache.asMap();
+        return Arrays.toString(map.entrySet().toArray()).replace("],", "],\n");
     }
 }

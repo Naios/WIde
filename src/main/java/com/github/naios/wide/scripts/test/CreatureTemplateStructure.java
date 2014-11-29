@@ -5,10 +5,16 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
+import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
 
 public class CreatureTemplateStructure extends CreatureTemplate
 {
+    public CreatureTemplateStructure(final ServerStorage<CreatureTemplate> owner)
+    {
+        super(owner);
+    }
+
     @ServerStorageEntry(key=true)
     private ReadOnlyIntegerProperty entry;
 

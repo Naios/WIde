@@ -5,11 +5,20 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.beans.value.ObservableValue;
+
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 
 public abstract class ServerStorageStructure extends StorageStructure
 {
+    final private ServerStorage<?> owner;
+
+    public ServerStorageStructure(final ServerStorage<?> owner)
+    {
+        this.owner = owner;
+    }
+
     @Override
     protected Class<? extends Annotation> getSpecificAnnotation()
     {
@@ -63,6 +72,16 @@ public abstract class ServerStorageStructure extends StorageStructure
     public <T extends ServerStorageStructure> ServerStorageKey<T> getKey()
     {
         return new ServerStorageKey<T>(getPrimaryKeys().toArray());
+    }
+
+    protected ServerStorage<?> getOwner()
+    {
+        return owner;
+    }
+
+    protected void valueChanged(final Field field, final ObservableValue<?> me)
+    {
+        owner.valueChanged(this, field, me);
     }
 
     @Override

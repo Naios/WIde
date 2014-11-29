@@ -5,12 +5,18 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.storage.StorageName;
+import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 
 @StorageName(name="creature_template")
 public abstract class CreatureTemplate extends ServerStorageStructure
 {
+    public CreatureTemplate(final ServerStorage<CreatureTemplate> owner)
+    {
+        super(owner);
+    }
+
     public abstract ReadOnlyIntegerProperty entry();
 
     public abstract StringProperty name();

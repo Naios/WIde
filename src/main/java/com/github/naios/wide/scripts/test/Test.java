@@ -3,6 +3,9 @@ package com.github.naios.wide.scripts.test;
 import java.util.Arrays;
 import java.util.List;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
@@ -41,6 +44,16 @@ public class Test extends Script
     // Playground begin (only commit it in sub-branches to test stuff!)
     private void usePlayground(final String[] args)
     {
+        final ClientStorage<TaxiNodes> taxiNodes =
+                new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
+
+        int count = 0;
+        for (final TaxiNodes nodes : taxiNodes)
+            if (++count > 5)
+                break;
+            else
+                System.out.println(nodes);
+
         final ServerStorage<CreatureTemplate> table =
                 new ServerStorage<>(CreatureTemplateStructure.class, DatabaseType.WORLD);
 
@@ -51,7 +64,7 @@ public class Test extends Script
 
         System.out.println(entry + "\n");
 
-        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 200 LIMIT 5");
+        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 1000 LIMIT 200");
         for (final CreatureTemplate c : list)
             System.out.println(c);
 
@@ -70,16 +83,26 @@ public class Test extends Script
         System.out.println(e4 != e5);
         System.out.println(entry == e5);
 
+        // System.out.println(table);
+
+        /*
+        // Heavy hashing check
+        final List<CreatureTemplate> l1 = table.getWhere("entry = entry");
+        final List<CreatureTemplate> l2 = table.getWhere("entry = entry");
+
+        for (final CreatureTemplate t : l2)
+            if (!l1.contains(t))
+                System.out.println("Error on " + t);
+        */
+
+        // Change Listener test
+
+        final IntegerProperty ip = new SimpleIntegerProperty();
+        entry.unit_flags().bind(ip);
+
+        for (int i = 1; i <= 5; ++i)
+            ip.set(i);
+
         table.close();
-
-        final ClientStorage<TaxiNodes> taxiNodes =
-                new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
-
-        int count = 0;
-        for (final TaxiNodes nodes : taxiNodes)
-            if (++count > 5)
-                break;
-            else
-                System.out.println(nodes);
     }
 }
