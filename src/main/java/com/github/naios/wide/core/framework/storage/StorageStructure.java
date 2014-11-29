@@ -64,11 +64,16 @@ public abstract class StorageStructure
         return GetStorageNameRecursively(base, type.getSuperclass());
     }
 
+    public Field[] getAllFields()
+    {
+        return ClassUtil.getAnnotatedDeclaredFields(getClass(),
+                getSpecificAnnotation(), true);
+    }
+
     @Override
     public String toString()
     {
-        final Field[] all_fields = ClassUtil.getAnnotatedDeclaredFields(getClass(),
-                getSpecificAnnotation(), true);
+        final Field[] all_fields = getAllFields();
 
         final List<String> list = new LinkedList<String>();
 

@@ -7,11 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
-
-import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
@@ -240,22 +236,28 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
     }
 
+    /**
+     * @param record
+     * @return The record in cache if exists or the record itself and cache it.
+     */
+    private ServerStorageStructure getAndCache(final ServerStorageStructure record)
+    {
+        final int hash = record.hashCode();
+        final ServerStorageStructure inCache = cache.getIfPresent(hash);
+        if (inCache != null)
+            return inCache;
+
+        cache.put(hash, record);
+        return record;
+    }
+
     @SuppressWarnings("unchecked")
     public T get(final ServerStorageKey<T> key)
     {
         if (key.get().length != keys.size())
             throw new BadKeyException(key.get().length, keys.size());
 
-        // If the Object is already cached return it
-        final int hash = key.hashCode();
-
-        ServerStorageStructure record = cache.getIfPresent(hash);
-        if (record != null)
-            return (T) record;
-
-        record = newStructureFromResult(createResultSetFromKey(key));
-        cache.put(hash, record);
-        return (T) record;
+        return (T) getAndCache(newStructureFromResult(createResultSetFromKey(key)));
     }
 
     public List<T> getWhere(final String where, final Object... args)
@@ -277,20 +279,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             result = statement.executeQuery(selectLowPart + where);
 
             while (result.next())
-            {
-                final ServerStorageStructure dbStructure = newStructureFromResult(result);
-                final int hash = calculateHashOfStructure(dbStructure);
-
-                final ServerStorageStructure cachedStructure = cache.getIfPresent(hash);
-
-                if (cachedStructure == null)
-                {
-                    list.add((T) dbStructure);
-                    cache.put(hash, dbStructure);
-                }
-                else
-                    list.add((T) cachedStructure);
-            }
+                list.add((T) getAndCache(newStructureFromResult(result)));
 
         } catch (final SQLException e)
         {
@@ -357,7 +346,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         try
         {
-            for (final Field field : getAllAnnotatedFields())
+            for (final Field field : record.getAllFields())
             {
                 if (!field.isAccessible())
                     field.setAccessible(true);
@@ -374,36 +363,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
 
         return record;
-    }
-
-    private int calculateHashOfStructure(final ServerStorageStructure storage)
-    {
-        final List<Object> keys = new LinkedList<>();
-
-        for (final Field field : getAllAnnotatedFields())
-        {
-            if (!field.isAccessible())
-                field.setAccessible(true);
-
-            if (field.getAnnotation(ServerStorageEntry.class).key())
-            {
-                try
-                {
-                    final Object me = field.get(storage);
-                    if (me instanceof ObservableValue<?>)
-                        keys.add(((ObservableValue<?>)me).getValue());
-                    else
-                        throw new WrongDatabaseStructureException(type,
-                                String.format("Field %s isn't an ObservableValue!", field.getName()));
-                }
-                catch (final Exception e)
-                {
-                    throw new DatabaseConnectionException(e.getMessage());
-                }
-            }
-        }
-
-        return Arrays.hashCode(keys.toArray());
     }
 
     private Field[] getAllAnnotatedFields()

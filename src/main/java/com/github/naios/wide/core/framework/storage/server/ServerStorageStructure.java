@@ -64,4 +64,10 @@ public abstract class ServerStorageStructure extends StorageStructure
     {
         return new ServerStorageKey<T>(getPrimaryKeys().toArray());
     }
+
+    @Override
+    public int hashCode()
+    {
+        return getKey().hashCode();
+    }
 }
