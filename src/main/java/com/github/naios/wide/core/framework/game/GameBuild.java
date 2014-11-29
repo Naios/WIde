@@ -3,7 +3,7 @@ package com.github.naios.wide.core.framework.game;
 public enum GameBuild
 {
     v1_12_2_6005("1.12.2", Expansion.CLASSIC),
-    v2_4_3_8478("2.4.3", Expansion.BURNING_CRUSADE),
+    v2_4_3_8478("2.4.3", Expansion.THE_BURNING_CRUSADE),
     V3_3_0_10958("3.3.0", Expansion.WRATH_OF_THE_LICH_KING),
     V3_3_5a_12340("3.3.5a", Expansion.WRATH_OF_THE_LICH_KING),
     V4_0_3_13329("4.0.3", Expansion.CATACLYSM),

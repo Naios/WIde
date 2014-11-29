@@ -3,7 +3,7 @@ package com.github.naios.wide.core.framework.game;
 public enum Expansion
 {
     CLASSIC("CL"),
-    BURNING_CRUSADE("BC"),
+    THE_BURNING_CRUSADE("TBC"),
     WRATH_OF_THE_LICH_KING("WOTLK"),
     CATACLYSM("CATA"),
     MISTS_OF_PANDARIA("MOP"),
