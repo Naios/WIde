@@ -33,12 +33,12 @@ public class GameBuildMask
 
     public GameBuildMask addUntil(final GameBuild until)
     {
-        return add(Arrays.copyOfRange(GameBuild.values(), 0, until.ordinal()));
+        return addRange(GameBuild.values()[0], until);
     }
 
     public GameBuildMask addRange(final GameBuild begin, final GameBuild end)
     {
-        return add(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal()));
+        return add(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal() + 1));
     }
 
     public GameBuildMask addExpansion(final Expansion... expansions)
@@ -70,12 +70,12 @@ public class GameBuildMask
 
     public GameBuildMask removeUntil(final GameBuild until)
     {
-        return remove(Arrays.copyOfRange(GameBuild.values(), 0, until.ordinal()));
+        return removeRange(GameBuild.values()[0], until);
     }
 
     public GameBuildMask removeRange(final GameBuild begin, final GameBuild end)
     {
-        return remove(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal()));
+        return remove(Arrays.copyOfRange(GameBuild.values(), begin.ordinal(), end.ordinal() + 1));
     }
 
     public GameBuildMask removeExpansion(final Expansion... expansions)

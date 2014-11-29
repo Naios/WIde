@@ -9,6 +9,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
+import com.github.naios.wide.core.framework.game.Expansion;
+import com.github.naios.wide.core.framework.game.GameBuild;
+import com.github.naios.wide.core.framework.game.GameBuildMask;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
@@ -104,5 +107,17 @@ public class Test extends Script
             ip.set(i);
 
         table.close();
+
+        final GameBuildMask mask = new GameBuildMask()
+            .addUntil(GameBuild.V4_2_0_14480)
+            .removeExpansion(Expansion.WRATH_OF_THE_LICH_KING)
+            .removeRange(GameBuild.V5_0_5_16048, GameBuild.V5_4_1_17538)
+            .add(GameBuild.V6_0_3_19103);
+
+        System.out.println(mask.contains(GameBuild.V4_2_0_14480));
+        System.out.println(!mask.contains(GameBuild.V3_3_5a_12340));
+        System.out.println(!mask.contains(GameBuild.V5_0_5_16048));
+        System.out.println(!mask.contains(GameBuild.V5_4_1_17538));
+        System.out.println(mask.contains(GameBuild.V6_0_3_19103));
     }
 }
