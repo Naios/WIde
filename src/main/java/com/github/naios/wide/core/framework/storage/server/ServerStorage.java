@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.value.ObservableValue;
+
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
@@ -92,9 +94,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private final DatabaseType database;
 
-    private final String statementFormat, selectLowPart;
-
-    private final String tableName;
+    private final String statementFormat, selectLowPart, tableName;
 
     private PreparedStatement preparedStatement;
 
@@ -126,6 +126,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             if (!fieldType.getIsPossibleKey())
                 throw new IllegalTypeAsKeyException(field.getType());
         }
+
+        for (final Field field : getAllAnnotatedFields())
+            if (!ObservableValue.class.isAssignableFrom(field.getType()))
+                throw new WrongDatabaseStructureException
+                    (type,  String.format("Field %s isn't an ObservableValue!", field.getName()));
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
