@@ -1,4 +1,4 @@
-package com.github.naios.wide.scripts.test;
+package com.github.naios.wide.core.framework.entities.client;
 
 import com.github.naios.wide.core.framework.storage.StorageName;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;

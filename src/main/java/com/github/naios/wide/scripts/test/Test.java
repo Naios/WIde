@@ -3,6 +3,8 @@ package com.github.naios.wide.scripts.test;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
+import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
@@ -42,7 +44,7 @@ public class Test extends Script
         final ServerStorage<CreatureTemplate> table =
                 new ServerStorage<>(CreatureTemplateStructure.class, DatabaseType.WORLD);
 
-        final CreatureTemplate entry = table.get(41378);
+        final CreatureTemplate entry = table.get(CreatureTemplate.CreateKey(41378));
 
         // final FlagVersionedProperty<UnitFlags> flags =
         //         new SimpleFlagVersionedProperty<>();
@@ -54,8 +56,8 @@ public class Test extends Script
             System.out.println(c);
 
         // Check for same reference
-        final CreatureTemplate e1 = table.get(491);
-        final CreatureTemplate e2 = table.get(491);
+        final CreatureTemplate e1 = table.get(CreatureTemplate.CreateKey(491));
+        final CreatureTemplate e2 = table.get(CreatureTemplate.CreateKey(491));
         System.out.println(e1 == e2);
 
         final CreatureTemplate e3 = table.getWhere("entry=%d", 491).get(0);

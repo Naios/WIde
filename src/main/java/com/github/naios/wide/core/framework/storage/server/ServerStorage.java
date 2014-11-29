@@ -89,7 +89,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 {
     private final Class<? extends ServerStorageStructure> type;
 
-    private final List<Field> keys = new LinkedList<>();
+    private final List<Field> keys;
 
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
@@ -116,21 +116,20 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         this.tableName = tableName;
 
         // Store keys into this.keys
-        for (final Field field : getAllAnnotatedFields())
+        keys = ServerStorageStructure.GetPrimaryFields(type);
+
+        if (keys.isEmpty())
+            throw new NoKeyException(type);
+
+        for (final Field field : keys)
         {
             final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
             if (fieldType == null)
                 throw new IllegalTypeException(field.getType());
 
-            if (field.getAnnotation(ServerStorageEntry.class).key())
-                if (fieldType.getIsPossibleKey())
-                    keys.add(field);
-                else
-                    throw new IllegalTypeAsKeyException(field.getType());
+            if (!fieldType.getIsPossibleKey())
+                throw new IllegalTypeAsKeyException(field.getType());
         }
-
-        if (keys.isEmpty())
-            throw new NoKeyException(type);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -143,23 +142,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return tableName;
     }
 
-    private String getNameofField(final Field field)
-    {
-        final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
-
-        if (!annotation.name().equals(""))
-            return annotation.name();
-        else
-            return field.getName();
-    }
-
     private String createSelectFormat()
     {
         final StringBuilder builder = new StringBuilder("SELECT ");
         for (final Field field : getAllAnnotatedFields())
         {
             builder
-                .append(getNameofField(field))
+                .append(ServerStorageStructure.GetNameOfField(field))
                 .append(", ");
         }
 
@@ -180,7 +169,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         for (final Field field : keys)
         {
             builder
-                .append(getNameofField(field))
+                .append(ServerStorageStructure.GetNameOfField(field))
                 .append("=?, ");
         }
 
@@ -252,19 +241,19 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     }
 
     @SuppressWarnings("unchecked")
-    public T get(final Object... keysOfEntry)
+    public T get(final ServerStorageKey<T> key)
     {
-        if (keysOfEntry.length != keys.size())
-            throw new BadKeyException(keysOfEntry.length, keys.size());
+        if (key.get().length != keys.size())
+            throw new BadKeyException(key.get().length, keys.size());
 
         // If the Object is already cached return it
-        final int hash = calculateHashOfKeys(keysOfEntry);
+        final int hash = key.hashCode();
 
         ServerStorageStructure record = cache.getIfPresent(hash);
         if (record != null)
             return (T) record;
 
-        record = newStructureFromResult(createResultSetFromKeys(keysOfEntry));
+        record = newStructureFromResult(createResultSetFromKey(key));
         cache.put(hash, record);
         return (T) record;
     }
@@ -311,15 +300,15 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return list;
     }
 
-    private ResultSet createResultSetFromKeys(final Object[] keys)
+    private ResultSet createResultSetFromKey(final ServerStorageKey<T> key)
     {
         if (preparedStatement == null)
             throw new DatabaseConnectionException("Statement is null");
 
-        for (int i = 0; i < keys.length; ++i)
+        for (int i = 0; i < key.get().length; ++i)
                 try
                 {
-                    preparedStatement.setString(i + 1, keys[i].toString());
+                    preparedStatement.setString(i + 1, key.get()[i].toString());
 
                 } catch (final SQLException e)
                 {
@@ -374,7 +363,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
                     field.setAccessible(true);
 
                 final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
-                final Object obj = fieldType.createFromResult(result, getNameofField(field));
+                final Object obj = fieldType.createFromResult(result, ServerStorageStructure.GetNameOfField(field));
 
                 field.set(record, obj);
             }
@@ -385,11 +374,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
 
         return record;
-    }
-
-    private int calculateHashOfKeys(final Object[] keys)
-    {
-        return Arrays.hashCode(keys);
     }
 
     private int calculateHashOfStructure(final ServerStorageStructure storage)

@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.beans.value.ObservableValue;
+
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.framework.game.GameBuildMask;
 import com.github.naios.wide.core.framework.util.ClassUtil;
@@ -81,7 +83,10 @@ public abstract class StorageStructure
 
             try
             {
-                final Object object = field.get(this);
+                Object object = field.get(this);
+                if (object instanceof ObservableValue)
+                    object = ((ObservableValue<?>)object).getValue();
+
                 if (object != null)
                     builder.append(object.toString());
                 else

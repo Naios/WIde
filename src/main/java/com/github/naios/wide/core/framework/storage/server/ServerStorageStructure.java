@@ -1,8 +1,12 @@
 package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.github.naios.wide.core.framework.storage.StorageStructure;
+import com.github.naios.wide.core.framework.util.ClassUtil;
 
 public abstract class ServerStorageStructure extends StorageStructure
 {
@@ -10,5 +14,54 @@ public abstract class ServerStorageStructure extends StorageStructure
     protected Class<? extends Annotation> getSpecificAnnotation()
     {
         return ServerStorageEntry.class;
+    }
+
+    public static List<Field> GetPrimaryFields(final Class<? extends ServerStorageStructure> type)
+    {
+        final List<Field> list = new LinkedList<>();
+
+        final Field[] fields = ClassUtil.getAnnotatedDeclaredFields(type,
+                ServerStorageEntry.class, true);
+
+        for (final Field field : fields)
+            if (field.getAnnotation(ServerStorageEntry.class).key())
+                list.add(field);
+
+        return list;
+    }
+
+    public List<Object> getPrimaryKeys()
+    {
+        final List<Object> list = new LinkedList<>();
+
+        for (final Field field : GetPrimaryFields(getClass()))
+            {
+                if (!field.isAccessible())
+                    field.setAccessible(true);
+
+                try
+                {
+                    list.add(field.get(this));
+                }
+                catch (final Exception e)
+                {
+                }
+            }
+
+        return list;
+    }
+
+    public static String GetNameOfField(final Field field)
+    {
+        final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
+        if (!annotation.name().equals(""))
+            return annotation.name();
+        else
+            return field.getName();
+    }
+
+    public <T extends ServerStorageStructure> ServerStorageKey<T> getKey()
+    {
+        return new ServerStorageKey<T>(getPrimaryKeys().toArray());
     }
 }

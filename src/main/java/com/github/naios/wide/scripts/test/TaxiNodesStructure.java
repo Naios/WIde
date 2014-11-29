@@ -1,5 +1,6 @@
 package com.github.naios.wide.scripts.test;
 
+import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageEntry;
 
 public class TaxiNodesStructure extends TaxiNodes
