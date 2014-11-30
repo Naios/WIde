@@ -12,8 +12,7 @@ public class FlagUtil
 
     public static <T extends Enum<T>> boolean HasFlag(final T flag, final int mask)
     {
-        final int i = CreateFlag(flag);
-        return (mask & i) == i;
+        return (mask & CreateFlag(flag)) != 0;
     }
 
     public static <T extends Enum<T>> List<T> GetFlagList(final Class<T> type, final int mask)

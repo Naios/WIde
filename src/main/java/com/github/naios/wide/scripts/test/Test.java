@@ -3,18 +3,14 @@ package com.github.naios.wide.scripts.test;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
-import com.github.naios.wide.core.framework.game.Expansion;
-import com.github.naios.wide.core.framework.game.GameBuild;
-import com.github.naios.wide.core.framework.game.GameBuildMask;
+import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
+import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -67,7 +63,7 @@ public class Test extends Script
 
         System.out.println(entry + "\n");
 
-        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 1000 LIMIT 200");
+        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 1000 and unit_flags != 0 LIMIT 10");
         for (final CreatureTemplate c : list)
             System.out.println(c);
 
@@ -100,14 +96,16 @@ public class Test extends Script
 
         // Change Listener test
 
-        final IntegerProperty ip = new SimpleIntegerProperty();
-        entry.unit_flags().bind(ip);
+        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED));
+        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE));
+        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_DISABLE_MOVE));
 
-        for (int i = 1; i <= 5; ++i)
-            ip.set(i);
+        for (final CreatureTemplate te : list)
+            System.out.println(Integer.toBinaryString(te.unit_flags().get()) + " = " + Arrays.toString(te.unit_flags().getFlagList().toArray()));
 
         table.close();
 
+        /*
         final GameBuildMask mask = new GameBuildMask()
             .addUntil(GameBuild.V4_2_0_14480)
             .removeExpansion(Expansion.WRATH_OF_THE_LICH_KING)
@@ -119,5 +117,6 @@ public class Test extends Script
         System.out.println(!mask.contains(GameBuild.V5_0_5_16048));
         System.out.println(!mask.contains(GameBuild.V5_4_1_17538));
         System.out.println(mask.contains(GameBuild.V6_0_3_19103));
+        */
     }
 }
