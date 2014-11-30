@@ -21,6 +21,6 @@ public class FormatterWrapper
         else if (obj instanceof String)
             return "\"" + obj.toString() + "\"";
         else
-            return super.toString();
+            return obj.toString();
     }
 }

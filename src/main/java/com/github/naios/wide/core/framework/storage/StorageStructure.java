@@ -10,7 +10,9 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.framework.game.GameBuildMask;
+import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.ClassUtil;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
 class MissingStorageNameException extends StorageException
@@ -89,8 +91,11 @@ public abstract class StorageStructure
             try
             {
                 Object object = field.get(this);
-                if (object instanceof ObservableValue)
+                if (object instanceof ObservableValue &&
+                    !(object instanceof FlagProperty<?>))
                     object = ((ObservableValue<?>)object).getValue();
+
+                object = new FormatterWrapper(object);
 
                 if (object != null)
                     builder.append(object.toString());
