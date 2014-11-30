@@ -28,9 +28,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
-import com.github.naios.wide.core.framework.storage.server.types.ReadOnlyFlagProperty;
-import com.github.naios.wide.core.framework.storage.server.types.ReadOnlyFlagWrapper;
-import com.github.naios.wide.core.framework.storage.server.types.SimpleFlagProperty;
 
 @SuppressWarnings("serial")
 class NoMetaEnumException extends ServerStorageException
@@ -169,32 +166,19 @@ public enum ServerStorageType
        }
     }),
     // Flag
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     FLAG(FlagProperty.class, false, (result, field) ->
     {
         final Class<?> type = GetEnumClassHelper(field);
 
         try
         {
-           return (IntegerProperty)(new SimpleFlagProperty
-                   (GetEnumClassHelper(field), result.getInt(ServerStorageStructure.GetNameOfField(field))));
+           return (new FlagProperty
+                   (type, result.getInt(ServerStorageStructure.GetNameOfField(field))));
         }
         catch (final SQLException e)
         {
-           return (IntegerProperty)(new SimpleFlagProperty(GetEnumClassHelper(field)));
-        }
-    }),
-    @SuppressWarnings("unchecked")
-    READONLY_FLAG(ReadOnlyFlagProperty.class, true, (result, field) ->
-    {
-        try
-        {
-            return (ReadOnlyIntegerProperty)(new ReadOnlyFlagWrapper
-                    (GetEnumClassHelper(field), result.getInt(ServerStorageStructure.GetNameOfField(field))));
-        }
-        catch (final SQLException e)
-        {
-            return (ReadOnlyIntegerProperty)(new ReadOnlyFlagWrapper(GetEnumClassHelper(field)));
+           return (new FlagProperty(type));
         }
     });
 
@@ -242,8 +226,14 @@ public enum ServerStorageType
         final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
         Class<?> type = null;
 
-        if (annotation.metaenum().isEmpty())
-            type = Class.forName(annotation.metaenum());
+        if (!annotation.metaenum().isEmpty())
+            try
+            {
+                type = Class.forName(annotation.metaenum());
+            }
+            catch (final Exception e)
+            {
+            }
 
         if (type == null || !type.isEnum())
             throw new NoMetaEnumException(field);
