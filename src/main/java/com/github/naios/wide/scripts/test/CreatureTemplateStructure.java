@@ -1,12 +1,13 @@
 package com.github.naios.wide.scripts.test;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
+import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
+import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
 public class CreatureTemplateStructure extends CreatureTemplate
 {
@@ -33,11 +34,12 @@ public class CreatureTemplateStructure extends CreatureTemplate
         return name;
     }
 
-    @ServerStorageEntry
-    private IntegerProperty unit_flags;
+    // TODO is there a way to get the
+    @ServerStorageEntry(metaenum="com.github.naios.wide.core.framework.game.UnitFlags")
+    private FlagProperty<UnitFlags> unit_flags;
 
     @Override
-    public IntegerProperty unit_flags()
+    public FlagProperty<UnitFlags> unit_flags()
     {
         return unit_flags;
     }

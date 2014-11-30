@@ -14,4 +14,6 @@ public @interface ServerStorageEntry
     boolean key() default false;
 
     String description() default "";
+
+    String metaenum() default "";
 }

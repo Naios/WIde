@@ -1,21 +1,22 @@
 package com.github.naios.wide.core.framework.storage.server.types;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class SimpelFlagProperty<T extends Enum<T>> extends SimpleIntegerProperty implements FlagProperty<T>
+import com.github.naios.wide.core.framework.util.FlagUtil;
+
+public class SimpleFlagProperty<T extends Enum<T>> extends SimpleIntegerProperty implements FlagProperty<T>
 {
     private final Class<T> type;
 
-    public SimpelFlagProperty(final Class<T> type)
+    public SimpleFlagProperty(final Class<T> type)
     {
         super();
         this.type = type;
     }
 
-    public SimpelFlagProperty(final Class<T> type, final int def)
+    public SimpleFlagProperty(final Class<T> type, final int def)
     {
         super(def);
         this.type = type;
@@ -24,14 +25,19 @@ public class SimpelFlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
     @Override
     public int createFlag(final T flag)
     {
-        return 1 << flag.ordinal();
+        return FlagUtil.CreateFlag(flag);
     }
 
     @Override
     public boolean hasFlag(final T flag)
     {
-        final int i = createFlag(flag);
-        return (get() & i) == i;
+        return FlagUtil.HasFlag(flag, get());
+    }
+
+    @Override
+    public List<T> getFlagList()
+    {
+        return FlagUtil.GetFlagList(type, get());
     }
 
     @Override
@@ -50,16 +56,5 @@ public class SimpelFlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
     public String toString()
     {
         return Integer.toHexString(get());
-    }
-
-    @Override
-    public List<T> getFlags()
-    {
-        final List<T> list = new LinkedList<T>();
-        for (final T flag : type.getEnumConstants())
-            if (hasFlag(flag))
-                list.add(flag);
-
-        return list;
     }
 }
