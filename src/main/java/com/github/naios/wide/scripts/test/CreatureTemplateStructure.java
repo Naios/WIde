@@ -34,7 +34,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
         return name;
     }
 
-    // TODO is there a way to get the
+    // TODO is there a way to get the canonical name directly from the class?
     @ServerStorageEntry(metaenum="com.github.naios.wide.core.framework.game.UnitFlags")
     private FlagProperty<UnitFlags> unit_flags;
 

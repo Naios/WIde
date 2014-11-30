@@ -1,5 +1,6 @@
 package com.github.naios.wide.core.framework.storage.server.types;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,6 +21,11 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
     {
         super(def);
         this.type = type;
+    }
+
+    public Class<T> getEnum()
+    {
+        return type;
     }
 
     public int createFlag(final T flag)
@@ -47,9 +53,14 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
         set(get() &~ createFlag(flag));
     }
 
+    public String asHex()
+    {
+        return "0x" + Integer.toHexString(get());
+    }
+
     @Override
     public String toString()
     {
-        return Integer.toHexString(get());
+        return String.format("FlagProperty (%s) = %s", asHex(), Arrays.toString(getFlagList().toArray()));
     }
 }

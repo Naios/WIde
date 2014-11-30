@@ -101,7 +101,7 @@ public class Test extends Script
         System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_DISABLE_MOVE));
 
         for (final CreatureTemplate te : list)
-            System.out.println(Integer.toBinaryString(te.unit_flags().get()) + " = " + Arrays.toString(te.unit_flags().getFlagList().toArray()));
+            System.out.println(te.unit_flags());
 
         table.close();
 
