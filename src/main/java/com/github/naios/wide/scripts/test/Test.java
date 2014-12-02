@@ -63,7 +63,7 @@ public class Test extends Script
 
         System.out.println(entry + "\n");
 
-        final List<CreatureTemplate> list = table.getWhere("entry between 0 and 1000 and unit_flags != 0 LIMIT 10");
+        final List<CreatureTemplate> list = table.getWhere("entry > 0 and unit_flags != 0 LIMIT 20");
         for (final CreatureTemplate c : list)
             System.out.println(c);
 

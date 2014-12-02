@@ -2,6 +2,8 @@ package com.github.naios.wide.core.framework.storage.server.types;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
+import com.github.naios.wide.core.Constants;
+
 public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
 {
     private final Class<T> type;
@@ -33,14 +35,20 @@ public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
         return get() == value.ordinal();
     }
 
-    public String asHex()
-    {
-        return "0x" + Integer.toHexString(get());
-    }
-
     @Override
     public String toString()
     {
-        return String.format("(%s)=%s", asHex(), type.getEnumConstants()[get()].toString());
+        String enumName;
+
+        try
+        {
+            enumName = type.getEnumConstants()[get()].toString();
+        }
+        catch (final Exception e)
+        {
+            enumName = Constants.STRING_MISSIN_ENTRY.toString();
+        }
+
+        return String.format("%s(%s)", enumName, get());
     }
 }

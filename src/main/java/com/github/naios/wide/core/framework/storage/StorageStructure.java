@@ -10,6 +10,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.framework.game.GameBuildMask;
+import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
@@ -92,7 +93,8 @@ public abstract class StorageStructure
             {
                 Object object = field.get(this);
                 if (object instanceof ObservableValue &&
-                    !(object instanceof FlagProperty<?>))
+                    !(object instanceof FlagProperty<?>) &&
+                      !(object instanceof EnumProperty<?>))
                     object = ((ObservableValue<?>)object).getValue();
 
                 builder.append(new FormatterWrapper(object).toString());

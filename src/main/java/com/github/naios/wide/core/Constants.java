@@ -8,6 +8,7 @@ public enum Constants
     STRING_UNKNOWN("<unknown>"),
     STRING_TEST("test"),
     STRING_EXCEPTION("<exception>"),
+    STRING_MISSIN_ENTRY("<missing entry>"),
 
     ////////////////////////////////////////////////////////
     // Property Names
