@@ -23,6 +23,6 @@ public class ServerStoragedEntryChangeListener implements ChangeListener<Object>
     public void changed(final ObservableValue<? extends Object> observable,
             final Object oldValue, final Object newValue)
     {
-        record.get().valueChanged(field, observable);
+        record.get().valueChanged(field, observable, oldValue);
     }
 }

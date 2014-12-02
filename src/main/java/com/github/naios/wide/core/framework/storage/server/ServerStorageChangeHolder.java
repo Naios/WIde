@@ -3,6 +3,7 @@ package com.github.naios.wide.core.framework.storage.server;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Stack;
 
 import javafx.beans.property.BooleanProperty;
@@ -51,6 +52,10 @@ class ObservableValueHistory
 
 public class ServerStorageChangeHolder
 {
+    private final static Object CURRENT_STATE = new Object();
+
+    private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
+
     private final Map<ObservableValueInStorage, ObservableValue<?>> reference =
             new HashMap<>();
 
@@ -82,33 +87,80 @@ public class ServerStorageChangeHolder
     public void remove(final ObservableValue<?> observable)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
-        if (history == null)
+        history.remove(observable);
+
+        if (valueHistory == null)
             return;
 
         reference.remove(valueHistory.getReference());
     }
 
+    /**
+     * Reverts all changes until the point you started the application
+     * @param observable The Observable value you want to edit.
+     */
     public void revert(final ObservableValue<?> observable)
+    {
+        rollback_impl(observable, -1, false);
+    }
+
+    /**
+     * Drops all changes, so you are in sync with the database
+     * @param observable The Observable value you want to edit.
+     */
+    public void drop(final ObservableValue<?> observable)
+    {
+        rollback_impl(observable, -1, true);
+    }
+
+    /**
+     * Reverts the last change made
+     * @param observable The Observable value you want to edit.
+     */
+    public void rollback(final ObservableValue<?> observable)
+    {
+        rollback_impl(observable, 1, false);
+    }
+
+    /**
+     * Rolls {@link times} operations back.
+     * @param observable The Observable value you want to edit.
+     * @param times How many operations you want to roll back.
+     */
+    public void rollback(final ObservableValue<?> observable, final int times)
+    {
+        rollback_impl(observable, times, false);
+    }
+
+    public void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         if (valueHistory == null || valueHistory.getHistory().empty())
             return;
 
-        // Prevents recursive calls
-        valueHistory.invalidate();
+        while ((0 != times--) && (!valueHistory.getHistory().empty()))
+        {
+            final Object value = valueHistory.getHistory().pop();
+            if (value == CURRENT_STATE)
+                if (toCurrentSync)
+                    break;
+                else
+                    continue;
 
-        final Object value = valueHistory.getHistory().pop();
+            // Prevents recursive calls
+            valueHistory.invalidate();
 
-        if (observable instanceof IntegerProperty)
-            ((IntegerProperty) observable).set((int) value);
-        else if (observable instanceof BooleanProperty)
-            ((BooleanProperty) observable).set((boolean) value);
-        else if (observable instanceof FloatProperty)
-            ((FloatProperty) observable).set((float) value);
-        else if (observable instanceof DoubleProperty)
-            ((DoubleProperty) observable).set((double) value);
-        else if (observable instanceof StringProperty)
-            ((StringProperty) observable).set((String) value);
+            if (observable instanceof IntegerProperty)
+                ((IntegerProperty) observable).set((int) value);
+            else if (observable instanceof BooleanProperty)
+                ((BooleanProperty) observable).set((boolean) value);
+            else if (observable instanceof FloatProperty)
+                ((FloatProperty) observable).set((float) value);
+            else if (observable instanceof DoubleProperty)
+                ((DoubleProperty) observable).set((double) value);
+            else if (observable instanceof StringProperty)
+                ((StringProperty) observable).set((String) value);
+        }
 
         // If the history is empty remove the observable from the history
         if (valueHistory.getHistory().empty())
@@ -119,5 +171,31 @@ public class ServerStorageChangeHolder
     {
         reference.clear();
         history.clear();
+    }
+
+    public static ServerStorageChangeHolder Instance()
+    {
+        return INSTANCE;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder builder = new StringBuilder();
+
+        builder.append(String.format("%s Observables were changed.\n", reference.size()));
+
+        for (final Entry<ObservableValueInStorage, ObservableValue<?>> entry : reference.entrySet())
+        {
+            builder.append(String.format("%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
+            final Stack<Object> stack = history.get(entry.getValue()).getHistory();
+
+            for (final Object obj : stack)
+                builder.append(String.format("%s -> ", obj));
+
+            builder.append("Now\n");
+        }
+
+        return builder.toString();
     }
 }

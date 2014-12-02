@@ -10,6 +10,7 @@ import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
@@ -102,6 +103,23 @@ public class Test extends Script
 
         for (final CreatureTemplate te : list)
             System.out.println(te);
+
+        System.out.println("Changes...");
+
+        System.out.println(entry);
+        entry.name().set("TestName");
+        entry.unit_flags().set(1);
+        System.out.println(entry);
+        entry.name().set("Sec Test");
+        entry.unit_flags().set(2);
+        System.out.println(entry);
+        System.out.println(ServerStorageChangeHolder.Instance());
+        System.out.println("Reverting...");
+        ServerStorageChangeHolder.Instance().rollback(entry.name(), 2);
+        ServerStorageChangeHolder.Instance().revert(entry.unit_flags());
+        System.out.println(entry);
+        System.out.println(ServerStorageChangeHolder.Instance());
+
 
         table.close();
 

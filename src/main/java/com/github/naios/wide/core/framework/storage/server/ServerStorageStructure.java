@@ -14,6 +14,8 @@ public abstract class ServerStorageStructure extends StorageStructure
 {
     final private ServerStorage<?> owner;
 
+    private ServerStorageStructureState state = ServerStorageStructureState.STATE_IN_SYNC;
+
     public ServerStorageStructure(final ServerStorage<?> owner)
     {
         this.owner = owner;
@@ -79,9 +81,25 @@ public abstract class ServerStorageStructure extends StorageStructure
         return owner;
     }
 
-    protected void valueChanged(final Field field, final ObservableValue<?> me)
+    protected void valueChanged(final Field field, final ObservableValue<?> me, final Object oldValue)
     {
-        owner.valueChanged(this, field, me);
+        owner.valueChanged(this, field, me, oldValue);
+    }
+
+    public boolean hasState(final ServerStorageStructureState state)
+    {
+        return state.equals(this.state);
+    }
+
+    protected void setState(final ServerStorageStructureState state)
+    {
+        this.state = state;
+    }
+
+    public void delete()
+    {
+        setState(ServerStorageStructureState.STATE_DELETED);
+        owner.structureDeleted(this);
     }
 
     @Override
