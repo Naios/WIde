@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
 @SuppressWarnings("serial")
@@ -164,6 +165,22 @@ public enum ServerStorageType
        {
            return new ReadOnlyStringWrapper();
        }
+    }),
+    // Enum
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    ENUM(EnumProperty.class, false, (result, field) ->
+    {
+        final Class<?> type = GetEnumClassHelper(field);
+
+        try
+        {
+           return (new EnumProperty
+                   (type, result.getInt(ServerStorageStructure.GetNameOfField(field))));
+        }
+        catch (final SQLException e)
+        {
+           return (new EnumProperty(type));
+        }
     }),
     // Flag
     @SuppressWarnings({ "unchecked", "rawtypes" })
