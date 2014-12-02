@@ -95,12 +95,7 @@ public abstract class StorageStructure
                     !(object instanceof FlagProperty<?>))
                     object = ((ObservableValue<?>)object).getValue();
 
-                object = new FormatterWrapper(object);
-
-                if (object != null)
-                    builder.append(object.toString());
-                else
-                    builder.append(object);
+                builder.append(new FormatterWrapper(object).toString());
             }
             catch (final Exception e)
             {
