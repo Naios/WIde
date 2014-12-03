@@ -87,12 +87,8 @@ public class ServerStorageChangeHolder
     public void remove(final ObservableValue<?> observable)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
-        history.remove(observable);
-
-        if (valueHistory == null)
-            return;
-
         reference.remove(valueHistory.getReference());
+        history.remove(observable);
     }
 
     /**
@@ -135,8 +131,11 @@ public class ServerStorageChangeHolder
     public void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
-        if (valueHistory == null || valueHistory.getHistory().empty())
+        if (valueHistory == null)
             return;
+
+        if (valueHistory.getHistory().empty())
+            remove(observable);
 
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
@@ -188,6 +187,7 @@ public class ServerStorageChangeHolder
         for (final Entry<ObservableValueInStorage, ObservableValue<?>> entry : reference.entrySet())
         {
             builder.append(String.format("%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
+
             final Stack<Object> stack = history.get(entry.getValue()).getHistory();
 
             for (final Object obj : stack)

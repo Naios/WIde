@@ -24,8 +24,27 @@ public class ServerStorageKey<T extends ServerStorageStructure>
     }
 
     @Override
+    public boolean equals(final Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        @SuppressWarnings("rawtypes")
+        final ServerStorageKey other = (ServerStorageKey) obj;
+        if (!Arrays.equals(keys, other.keys))
+            return false;
+        return true;
+    }
+
+    @Override
     public int hashCode()
     {
-        return Arrays.hashCode(keys);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.hashCode(keys);
+        return result;
     }
 }
