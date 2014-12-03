@@ -13,6 +13,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
+
 class ObservableValueHistory
 {
     private final ObservableValueInStorage reference;
@@ -191,9 +193,9 @@ public class ServerStorageChangeHolder
             final Stack<Object> stack = history.get(entry.getValue()).getHistory();
 
             for (final Object obj : stack)
-                builder.append(String.format("%s -> ", obj));
+                builder.append(String.format("%s -> ", new FormatterWrapper(obj)));
 
-            builder.append("Now\n");
+            builder.append(String.format("Now: %s\n", new FormatterWrapper(entry.getValue().getValue())));
         }
 
         return builder.toString();
