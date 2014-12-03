@@ -108,10 +108,10 @@ public class Test extends Script
 
         System.out.println(entry);
         entry.name().set("TestName");
-        entry.unit_flags().set(1);
+        entry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED);
         System.out.println(entry);
         entry.name().set("Sec Test");
-        entry.unit_flags().set(2);
+        entry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE);
         System.out.println(entry);
         System.out.println(ServerStorageChangeHolder.instance());
         System.out.println("Reverting...");

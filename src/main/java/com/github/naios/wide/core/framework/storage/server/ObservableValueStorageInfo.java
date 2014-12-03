@@ -2,7 +2,7 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
 
-public class ObservableValueInStorage
+public class ObservableValueStorageInfo
 {
     private final String tableName;
 
@@ -10,7 +10,7 @@ public class ObservableValueInStorage
 
     private final Field field;
 
-    public ObservableValueInStorage(final String tableName,
+    public ObservableValueStorageInfo(final String tableName,
             final ServerStorageStructure structure, final Field field)
     {
         this.tableName = tableName;
@@ -42,7 +42,7 @@ public class ObservableValueInStorage
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final ObservableValueInStorage other = (ObservableValueInStorage) obj;
+        final ObservableValueStorageInfo other = (ObservableValueStorageInfo) obj;
         if (field == null)
         {
             if (other.field != null)

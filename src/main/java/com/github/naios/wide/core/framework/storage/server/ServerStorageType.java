@@ -291,6 +291,7 @@ public enum ServerStorageType
 
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
+        // TODO move this into the type definition
         if (observable instanceof IntegerProperty)
             ((IntegerProperty) observable).set((int) value);
         else if (observable instanceof BooleanProperty)

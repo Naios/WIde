@@ -395,7 +395,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     protected void valueChanged(final ServerStorageStructure record, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
-        ServerStorageChangeHolder.instance().insert(new ObservableValueInStorage(getTableName(), record, field), observable, oldValue);
+        ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(getTableName(), record, field), observable, oldValue);
     }
 
     protected void structureDeleted(final ServerStorageStructure serverStorageStructure)

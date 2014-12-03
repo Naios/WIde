@@ -1,5 +1,6 @@
 package com.github.naios.wide.core.framework.storage.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -16,19 +17,19 @@ import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 class ObservableValueHistory
 {
-    private final ObservableValueInStorage reference;
+    private final ObservableValueStorageInfo reference;
 
     private final Stack<Object> history = new Stack<>();
 
     // Prevents recursive calls from Rollbacks that inform changelisteners
     private boolean nextIsValid = true;
 
-    public ObservableValueHistory(final ObservableValueInStorage reference)
+    public ObservableValueHistory(final ObservableValueStorageInfo reference)
     {
         this.reference = reference;
     }
 
-    public ObservableValueInStorage getReference()
+    public ObservableValueStorageInfo getReference()
     {
         return reference;
     }
@@ -53,11 +54,11 @@ class ObservableValueHistory
 
 public class ServerStorageChangeHolder implements Observable
 {
-    private final static Object CURRENT_STATE = new Object();
+    private final static Object CURRENT_DATABASE_SYNC = new Object();
 
     private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
 
-    private final Map<ObservableValueInStorage, ObservableValue<?>> reference =
+    private final Map<ObservableValueStorageInfo, ObservableValue<?>> reference =
             new HashMap<>();
 
     private final Map<ObservableValue<?>, ObservableValueHistory> history =
@@ -65,7 +66,7 @@ public class ServerStorageChangeHolder implements Observable
 
     private final Set<InvalidationListener> listeners = new HashSet<>();
 
-    public void insert(final ObservableValueInStorage storage, final ObservableValue<?> observable, final Object oldValue)
+    public void insert(final ObservableValueStorageInfo storage, final ObservableValue<?> observable, final Object oldValue)
     {
         ObservableValue<?> value = reference.get(storage);
         if (value == null)
@@ -135,7 +136,7 @@ public class ServerStorageChangeHolder implements Observable
         rollback_impl(observable, times, false);
     }
 
-    public void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync)
+    private void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         if (valueHistory == null)
@@ -147,7 +148,7 @@ public class ServerStorageChangeHolder implements Observable
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
             final Object value = valueHistory.getHistory().pop();
-            if (value == CURRENT_STATE)
+            if (value == CURRENT_DATABASE_SYNC)
                 if (toCurrentSync)
                     break;
                 else
@@ -185,7 +186,7 @@ public class ServerStorageChangeHolder implements Observable
 
         builder.append(String.format("%s Observables were changed.", reference.size()));
 
-        for (final Entry<ObservableValueInStorage, ObservableValue<?>> entry : reference.entrySet())
+        for (final Entry<ObservableValueStorageInfo, ObservableValue<?>> entry : reference.entrySet())
         {
             builder.append(String.format("\n%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
 
@@ -198,6 +199,56 @@ public class ServerStorageChangeHolder implements Observable
         }
 
         return builder.toString();
+    }
+
+    /**
+     * @return All Observables that have changed since the last sync
+     */
+    public Collection<ObservableValue<?>> getObservablesChanged()
+    {
+        return getObservablesChanged(true);
+    }
+
+    public Collection<ObservableValue<?>> getObservablesChanged(final boolean sinceLastSync)
+    {
+        // Do we want to skip the last sync check?
+        if (!sinceLastSync)
+            return reference.values();
+
+        final Collection<ObservableValue<?>> set = new HashSet<>();
+        for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
+        {
+            final int current_sync_pos = entry.getValue().getHistory().indexOf(CURRENT_DATABASE_SYNC);
+            final int current_size = entry.getValue().getHistory().size();
+            if (current_sync_pos < (current_size - 1))
+                set.add(entry.getKey());
+        }
+
+        return set;
+    }
+
+    /**
+     * @return The ObservableValueStorageInfo of an observable stored in the Changeholder
+     */
+    public ObservableValueStorageInfo getStorageInformationOfObservable(final ObservableValue<?> observable)
+    {
+        final ObservableValueHistory h = history.get(observable);
+        if (h != null)
+            return h.getReference();
+        else
+            return null;
+    }
+
+    /**
+     * Updates the current database sync of all history stacks to now
+     */
+    public void updateCurrentSync()
+    {
+        for (final ObservableValueHistory h : history.values())
+        {
+            h.getHistory().remove(CURRENT_DATABASE_SYNC);
+            h.getHistory().push(CURRENT_DATABASE_SYNC);
+        }
     }
 
     private void informListeners()
