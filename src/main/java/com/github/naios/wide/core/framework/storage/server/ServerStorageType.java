@@ -228,11 +228,15 @@ public enum ServerStorageType
         return create.apply(result, field);
     }
 
-    public static ServerStorageType SelectTypeOfField(final Field field)
+    public static ServerStorageType getType(final Field field)
     {
-        final Class<?> fieldType = field.getType();
+        return getType(field.getType());
+    }
+
+    public static ServerStorageType getType(final Class<?> type)
+    {
         for (final ServerStorageType me : values())
-            if (me.base.equals(fieldType))
+            if (me.base.equals(type))
                 return me;
 
         return null;
@@ -264,7 +268,7 @@ public enum ServerStorageType
         if (!field.isAccessible())
             field.setAccessible(true);
 
-        final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
+        final ServerStorageType fieldType = ServerStorageType.getType(field);
         final ObservableValue<?> value = fieldType.createFromResult(result, field);
 
         value.addListener(new ServerStoragedEntryChangeListener(record, field));
@@ -278,5 +282,28 @@ public enum ServerStorageType
             // TODO
             // Throw Mapping exception
         }
+    }
+
+    public static Object Get(final ObservableValue<?> observable)
+    {
+        return observable.getValue();
+    }
+
+    public static boolean Set(final ObservableValue<?> observable, final Object value)
+    {
+        if (observable instanceof IntegerProperty)
+            ((IntegerProperty) observable).set((int) value);
+        else if (observable instanceof BooleanProperty)
+            ((BooleanProperty) observable).set((boolean) value);
+        else if (observable instanceof FloatProperty)
+            ((FloatProperty) observable).set((float) value);
+        else if (observable instanceof DoubleProperty)
+            ((DoubleProperty) observable).set((double) value);
+        else if (observable instanceof StringProperty)
+            ((StringProperty) observable).set((String) value);
+        else
+            return false;
+
+        return true;
     }
 }

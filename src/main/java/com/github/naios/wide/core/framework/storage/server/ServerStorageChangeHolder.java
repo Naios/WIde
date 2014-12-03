@@ -6,11 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
@@ -151,16 +146,8 @@ public class ServerStorageChangeHolder
             // Prevents recursive calls
             valueHistory.invalidate();
 
-            if (observable instanceof IntegerProperty)
-                ((IntegerProperty) observable).set((int) value);
-            else if (observable instanceof BooleanProperty)
-                ((BooleanProperty) observable).set((boolean) value);
-            else if (observable instanceof FloatProperty)
-                ((FloatProperty) observable).set((float) value);
-            else if (observable instanceof DoubleProperty)
-                ((DoubleProperty) observable).set((double) value);
-            else if (observable instanceof StringProperty)
-                ((StringProperty) observable).set((String) value);
+            if (!ServerStorageType.Set(observable, value))
+                valueHistory.validateNext();
         }
 
         // If the history is empty remove the observable from the history

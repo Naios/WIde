@@ -130,7 +130,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         for (final Field field : keys)
         {
-            final ServerStorageType fieldType = ServerStorageType.SelectTypeOfField(field);
+            final ServerStorageType fieldType = ServerStorageType.getType(field);
             if (fieldType == null)
                 throw new IllegalTypeException(field.getType());
 
