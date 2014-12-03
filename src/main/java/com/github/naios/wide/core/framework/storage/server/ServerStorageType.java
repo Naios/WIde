@@ -47,7 +47,7 @@ public enum ServerStorageType
         try
         {
             return new SimpleIntegerProperty
-                    (result.getInt(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getInt(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -59,7 +59,7 @@ public enum ServerStorageType
         try
         {
             return new ReadOnlyIntegerWrapper
-                    (result.getInt(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getInt(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -72,7 +72,7 @@ public enum ServerStorageType
         try
         {
             return new SimpleBooleanProperty
-                    (result.getBoolean(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -84,7 +84,7 @@ public enum ServerStorageType
         try
         {
             return new ReadOnlyBooleanWrapper
-                    (result.getBoolean(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -97,7 +97,7 @@ public enum ServerStorageType
         try
         {
             return new SimpleFloatProperty
-                    (result.getFloat(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getFloat(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -109,7 +109,7 @@ public enum ServerStorageType
         try
         {
             return new ReadOnlyFloatWrapper
-                    (result.getFloat(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getFloat(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -122,7 +122,7 @@ public enum ServerStorageType
         try
         {
             return new SimpleDoubleProperty
-                    (result.getDouble(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getDouble(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -134,7 +134,7 @@ public enum ServerStorageType
         try
         {
             return new ReadOnlyDoubleWrapper
-                    (result.getDouble(ServerStorageStructure.GetNameOfField(field)));
+                    (result.getDouble(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -147,7 +147,7 @@ public enum ServerStorageType
         try
         {
             return new SimpleStringProperty
-                   (result.getString(ServerStorageStructure.GetNameOfField(field)));
+                   (result.getString(ServerStorageStructure.getNameOfField(field)));
         }
         catch (final SQLException e)
         {
@@ -159,7 +159,7 @@ public enum ServerStorageType
        try
        {
            return new ReadOnlyStringWrapper
-                   (result.getString(ServerStorageStructure.GetNameOfField(field)));
+                   (result.getString(ServerStorageStructure.getNameOfField(field)));
        }
        catch (final SQLException e)
        {
@@ -170,12 +170,12 @@ public enum ServerStorageType
     @SuppressWarnings({ "unchecked", "rawtypes" })
     ENUM(EnumProperty.class, false, (result, field) ->
     {
-        final Class<?> type = GetEnumClassHelper(field);
+        final Class<?> type = getEnumClassHelper(field);
 
         try
         {
            return (new EnumProperty
-                   (type, result.getInt(ServerStorageStructure.GetNameOfField(field))));
+                   (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
         }
         catch (final SQLException e)
         {
@@ -186,12 +186,12 @@ public enum ServerStorageType
     @SuppressWarnings({ "unchecked", "rawtypes" })
     FLAG(FlagProperty.class, false, (result, field) ->
     {
-        final Class<?> type = GetEnumClassHelper(field);
+        final Class<?> type = getEnumClassHelper(field);
 
         try
         {
            return (new FlagProperty
-                   (type, result.getInt(ServerStorageStructure.GetNameOfField(field))));
+                   (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
         }
         catch (final SQLException e)
         {
@@ -242,7 +242,7 @@ public enum ServerStorageType
         return null;
     }
 
-    private static Class<?> GetEnumClassHelper(final Field field)
+    private static Class<?> getEnumClassHelper(final Field field)
     {
         final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
         Class<?> type = null;
@@ -263,7 +263,7 @@ public enum ServerStorageType
     }
 
     // The Mapping process
-    public static void MapFieldToRecordFromResult(final Field field, final ServerStorageStructure record, final ResultSet result) throws ServerStorageException
+    public static void doMapFieldToRecordFromResult(final Field field, final ServerStorageStructure record, final ResultSet result) throws ServerStorageException
     {
         if (!field.isAccessible())
             field.setAccessible(true);
@@ -284,12 +284,12 @@ public enum ServerStorageType
         }
     }
 
-    public static Object Get(final ObservableValue<?> observable)
+    public static Object get(final ObservableValue<?> observable)
     {
         return observable.getValue();
     }
 
-    public static boolean Set(final ObservableValue<?> observable, final Object value)
+    public static boolean set(final ObservableValue<?> observable, final Object value)
     {
         if (observable instanceof IntegerProperty)
             ((IntegerProperty) observable).set((int) value);

@@ -17,8 +17,8 @@ public abstract class ClientStorageStructure extends StorageStructure
         return ClientStorageEntry.class;
     }
 
-    public static String GetPathThroughStorageName(final Class<? extends ClientStorageStructure> type) throws StorageException
+    public static String getPathThroughStorageName(final Class<? extends ClientStorageStructure> type) throws StorageException
     {
-        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + StorageStructure.GetStorageName(type);
+        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + StorageStructure.getStorageName(type);
     }
 }

@@ -113,7 +113,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
     {
-        this (type, database, StorageStructure.GetStorageName(type));
+        this (type, database, StorageStructure.getStorageName(type));
     }
 
     public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database, final String tableName) throws ServerStorageException
@@ -123,7 +123,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         this.tableName = tableName;
 
         // Store keys into this.keys
-        keys = ServerStorageStructure.GetPrimaryFields(type);
+        keys = ServerStorageStructure.getPrimaryFields(type);
 
         if (keys.isEmpty())
             throw new NoKeyException(type);
@@ -172,7 +172,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         for (final Field field : getAllAnnotatedFields())
         {
             builder
-                .append(ServerStorageStructure.GetNameOfField(field))
+                .append(ServerStorageStructure.getNameOfField(field))
                 .append(", ");
         }
 
@@ -193,7 +193,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         for (final Field field : keys)
         {
             builder
-                .append(ServerStorageStructure.GetNameOfField(field))
+                .append(ServerStorageStructure.getNameOfField(field))
                 .append("=?, ");
         }
 
@@ -377,7 +377,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         try
         {
             for (final Field field : record.getAllFields())
-                ServerStorageType.MapFieldToRecordFromResult(field, record, result);
+                ServerStorageType.doMapFieldToRecordFromResult(field, record, result);
         }
         catch (final Exception e)
         {
@@ -395,7 +395,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     protected void valueChanged(final ServerStorageStructure record, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
-        ServerStorageChangeHolder.Instance().insert(new ObservableValueInStorage(getTableName(), record, field), observable, oldValue);
+        ServerStorageChangeHolder.instance().insert(new ObservableValueInStorage(getTableName(), record, field), observable, oldValue);
     }
 
     protected void structureDeleted(final ServerStorageStructure serverStorageStructure)

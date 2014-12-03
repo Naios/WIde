@@ -16,7 +16,7 @@ public class Database implements AutoCloseable
 {
     private final Map<DatabaseType, Connection> connections = new HashMap<>();
 
-    private static String GetConnectionStringForDatabase(final String db)
+    private static String getConnectionStringForDatabase(final String db)
     {
         return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ":"
                 + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get() + "/" + db + "?" + "user="
@@ -82,7 +82,7 @@ public class Database implements AutoCloseable
     {
         for (final DatabaseType type : DatabaseType.values())
         {
-            final String con_string = GetConnectionStringForDatabase(
+            final String con_string = getConnectionStringForDatabase(
                     WIde.getConfig().getProperty(type.getConfigEntry()).get());
 
             try

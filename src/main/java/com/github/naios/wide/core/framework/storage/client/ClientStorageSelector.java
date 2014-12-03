@@ -8,7 +8,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 
     public ClientStorageSelector(final Class<? extends ClientStorageStructure> type)
     {
-        this (type, ClientStorageStructure.GetPathThroughStorageName(type));
+        this (type, ClientStorageStructure.getPathThroughStorageName(type));
     }
 
     public ClientStorageSelector(final Class<? extends ClientStorageStructure> type, final String path)

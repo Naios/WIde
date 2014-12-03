@@ -27,7 +27,7 @@ public abstract class ServerStorageStructure extends StorageStructure
         return ServerStorageEntry.class;
     }
 
-    public static List<Field> GetPrimaryFields(final Class<? extends ServerStorageStructure> type)
+    public static List<Field> getPrimaryFields(final Class<? extends ServerStorageStructure> type)
     {
         final List<Field> list = new LinkedList<>();
 
@@ -45,7 +45,7 @@ public abstract class ServerStorageStructure extends StorageStructure
     {
         final List<Object> list = new LinkedList<>();
 
-        for (final Field field : GetPrimaryFields(getClass()))
+        for (final Field field : getPrimaryFields(getClass()))
             {
                 if (!field.isAccessible())
                     field.setAccessible(true);
@@ -62,7 +62,7 @@ public abstract class ServerStorageStructure extends StorageStructure
         return list;
     }
 
-    public static String GetNameOfField(final Field field)
+    public static String getNameOfField(final Field field)
     {
         final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
         if (!annotation.name().equals(""))

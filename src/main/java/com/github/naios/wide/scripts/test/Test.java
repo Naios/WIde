@@ -57,7 +57,7 @@ public class Test extends Script
         final ServerStorage<CreatureTemplate> table =
                 new ServerStorage<>(CreatureTemplateStructure.class, DatabaseType.WORLD);
 
-        final CreatureTemplate entry = table.get(CreatureTemplate.CreateKey(41378));
+        final CreatureTemplate entry = table.get(CreatureTemplate.createKey(41378));
 
         // final FlagVersionedProperty<UnitFlags> flags =
         //         new SimpleFlagVersionedProperty<>();
@@ -69,8 +69,8 @@ public class Test extends Script
             System.out.println(c);
 
         // Check for same reference
-        final CreatureTemplate e1 = table.get(CreatureTemplate.CreateKey(491));
-        final CreatureTemplate e2 = table.get(CreatureTemplate.CreateKey(491));
+        final CreatureTemplate e1 = table.get(CreatureTemplate.createKey(491));
+        final CreatureTemplate e2 = table.get(CreatureTemplate.createKey(491));
         System.out.println(e1 == e2);
 
         final CreatureTemplate e3 = table.getWhere("entry=%d", 491).get(0);
@@ -97,9 +97,9 @@ public class Test extends Script
 
         // Change Listener test
 
-        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED));
-        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE));
-        System.out.println(FlagUtil.CreateFlag(UnitFlags.UNIT_FLAG_DISABLE_MOVE));
+        System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED));
+        System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE));
+        System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_DISABLE_MOVE));
 
         for (final CreatureTemplate te : list)
             System.out.println(te);
@@ -113,12 +113,12 @@ public class Test extends Script
         entry.name().set("Sec Test");
         entry.unit_flags().set(2);
         System.out.println(entry);
-        System.out.println(ServerStorageChangeHolder.Instance());
+        System.out.println(ServerStorageChangeHolder.instance());
         System.out.println("Reverting...");
-        ServerStorageChangeHolder.Instance().rollback(entry.name(), 2);
-        ServerStorageChangeHolder.Instance().revert(entry.unit_flags());
+        ServerStorageChangeHolder.instance().rollback(entry.name(), 2);
+        ServerStorageChangeHolder.instance().revert(entry.unit_flags());
         System.out.println(entry);
-        System.out.println(ServerStorageChangeHolder.Instance());
+        System.out.println(ServerStorageChangeHolder.instance());
 
 
         table.close();

@@ -206,7 +206,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
     {
-        this (type, ClientStorageStructure.GetPathThroughStorageName(type));
+        this (type, ClientStorageStructure.getPathThroughStorageName(type));
     }
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
@@ -222,7 +222,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         String regex = null;
         try
         {
-            regex = StorageStructure.GetStorageName(type);
+            regex = StorageStructure.getStorageName(type);
             if (!file.getName().matches(regex))
                 throw new Exception();
 

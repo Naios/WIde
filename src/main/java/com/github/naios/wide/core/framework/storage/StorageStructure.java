@@ -49,12 +49,12 @@ public abstract class StorageStructure
      *
      * @throws StorageException if the Structure doesn't contain a StorageName annotation
      */
-    public static String GetStorageName(final Class<? extends StorageStructure> type) throws StorageException
+    public static String getStorageName(final Class<? extends StorageStructure> type) throws StorageException
     {
-        return GetStorageNameRecursively(type, type);
+        return getStorageNameRecursively(type, type);
     }
 
-    private static String GetStorageNameRecursively(final Class<? extends StorageStructure> base,
+    private static String getStorageNameRecursively(final Class<? extends StorageStructure> base,
             final Class<?> type) throws StorageException
     {
         if (type == null)
@@ -64,7 +64,7 @@ public abstract class StorageStructure
         if (name != null)
             return name.name();
 
-        return GetStorageNameRecursively(base, type.getSuperclass());
+        return getStorageNameRecursively(base, type.getSuperclass());
     }
 
     public Field[] getAllFields()

@@ -30,17 +30,17 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
 
     public int createFlag(final T flag)
     {
-        return FlagUtil.CreateFlag(flag);
+        return FlagUtil.createFlag(flag);
     }
 
     public boolean hasFlag(final T flag)
     {
-        return FlagUtil.HasFlag(flag, get());
+        return FlagUtil.hasFlag(flag, get());
     }
 
     public List<T> getFlagList()
     {
-        return FlagUtil.GetFlagList(type, get());
+        return FlagUtil.getFlagList(type, get());
     }
 
     public void addFlag(final T flag)

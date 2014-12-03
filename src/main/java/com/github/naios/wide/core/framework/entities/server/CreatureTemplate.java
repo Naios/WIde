@@ -28,7 +28,7 @@ public abstract class CreatureTemplate extends ServerStorageStructure
 
     public abstract EnumProperty<UnitClass> unit_class();
 
-    public static ServerStorageKey<CreatureTemplate> CreateKey(final int entry)
+    public static ServerStorageKey<CreatureTemplate> createKey(final int entry)
     {
         return new ServerStorageKey<CreatureTemplate>(entry);
     }

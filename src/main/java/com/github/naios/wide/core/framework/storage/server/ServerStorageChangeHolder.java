@@ -146,7 +146,7 @@ public class ServerStorageChangeHolder
             // Prevents recursive calls
             valueHistory.invalidate();
 
-            if (!ServerStorageType.Set(observable, value))
+            if (!ServerStorageType.set(observable, value))
                 valueHistory.validateNext();
         }
 
@@ -161,7 +161,7 @@ public class ServerStorageChangeHolder
         history.clear();
     }
 
-    public static ServerStorageChangeHolder Instance()
+    public static ServerStorageChangeHolder instance()
     {
         return INSTANCE;
     }
