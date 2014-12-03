@@ -1,11 +1,15 @@
 package com.github.naios.wide.core.framework.storage.server;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
@@ -47,7 +51,7 @@ class ObservableValueHistory
     }
 }
 
-public class ServerStorageChangeHolder
+public class ServerStorageChangeHolder implements Observable
 {
     private final static Object CURRENT_STATE = new Object();
 
@@ -58,6 +62,8 @@ public class ServerStorageChangeHolder
 
     private final Map<ObservableValue<?>, ObservableValueHistory> history =
             new IdentityHashMap<>();
+
+    private final Set<InvalidationListener> listeners = new HashSet<>();
 
     public void insert(final ObservableValueInStorage storage, final ObservableValue<?> observable, final Object oldValue)
     {
@@ -79,6 +85,8 @@ public class ServerStorageChangeHolder
 
         if (valueHistory.validateNext())
             valueHistory.getHistory().push(oldValue);
+
+        informListeners();
     }
 
     public void remove(final ObservableValue<?> observable)
@@ -86,6 +94,8 @@ public class ServerStorageChangeHolder
         final ObservableValueHistory valueHistory = history.get(observable);
         reference.remove(valueHistory.getReference());
         history.remove(observable);
+
+        informListeners();
     }
 
     /**
@@ -153,6 +163,8 @@ public class ServerStorageChangeHolder
         // If the history is empty remove the observable from the history
         if (valueHistory.getHistory().empty())
             remove(observable);
+        else
+            informListeners();
     }
 
     public void clear()
@@ -171,20 +183,38 @@ public class ServerStorageChangeHolder
     {
         final StringBuilder builder = new StringBuilder();
 
-        builder.append(String.format("%s Observables were changed.\n", reference.size()));
+        builder.append(String.format("%s Observables were changed.", reference.size()));
 
         for (final Entry<ObservableValueInStorage, ObservableValue<?>> entry : reference.entrySet())
         {
-            builder.append(String.format("%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
+            builder.append(String.format("\n%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
 
             final Stack<Object> stack = history.get(entry.getValue()).getHistory();
 
             for (final Object obj : stack)
                 builder.append(String.format("%s -> ", new FormatterWrapper(obj)));
 
-            builder.append(String.format("Now: %s\n", new FormatterWrapper(entry.getValue().getValue())));
+            builder.append(String.format("Now: %s", new FormatterWrapper(entry.getValue().getValue())));
         }
 
         return builder.toString();
+    }
+
+    private void informListeners()
+    {
+        for (final InvalidationListener listener : listeners)
+            listener.invalidated(this);
+    }
+
+    @Override
+    public void addListener(final InvalidationListener listener)
+    {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(final InvalidationListener listener)
+    {
+        listeners.remove(listener);
     }
 }
