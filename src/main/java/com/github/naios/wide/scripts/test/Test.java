@@ -124,6 +124,11 @@ public class Test extends Script
         table.close();
 
         /*
+        final NameStorage names = new DatabaseNameStorage("creature_template", "entry", "name");
+        System.out.println(names);
+        */
+
+        /*
         final GameBuildMask mask = new GameBuildMask()
             .addUntil(GameBuild.V4_2_0_14480)
             .removeExpansion(Expansion.WRATH_OF_THE_LICH_KING)

@@ -18,7 +18,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
         super(owner);
     }
 
-    @ServerStorageEntry(key=true)
+    @ServerStorageEntry(key=true, metanamestorage="creature_name", varname="NPC_")
     private ReadOnlyIntegerProperty entry;
 
     @Override

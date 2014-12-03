@@ -106,7 +106,7 @@ public class Database implements AutoCloseable
     public void close()
     {
      // Hook.ON_DATABASE_CLOSE
-        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
+        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSED);
 
         final Collection<Connection> con_list = connections.values();
         for (final Connection con : con_list)

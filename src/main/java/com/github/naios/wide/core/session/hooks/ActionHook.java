@@ -3,7 +3,6 @@ package com.github.naios.wide.core.session.hooks;
 import java.util.Collection;
 
 import com.github.naios.wide.core.WIde;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -22,7 +21,7 @@ public class ActionHook
      *
      * @param listener The {@link HookListener} you want to add.
      */
-    public void addListener(HookListener listener)
+    public void addListener(final HookListener listener)
     {
         listeners.put(listener.getType(), listener);
     }
@@ -32,7 +31,7 @@ public class ActionHook
      *
      * @param listener The {@link HookListener} you want to remove.
      */
-    public void removeListener(HookListener listener)
+    public void removeListener(final HookListener listener)
     {
         listeners.remove(listener.getType(), listener);
     }
@@ -42,7 +41,7 @@ public class ActionHook
      *
      * @param owner Owners are defined in {@link #HookListener}.
      */
-    public void removeListenersOf(Object owner)
+    public void removeListenersOf(final Object owner)
     {
         final Collection<HookListener> all_listeners = listeners.values();
         for (final HookListener listener : all_listeners)
@@ -55,7 +54,7 @@ public class ActionHook
      *
      * @param hook {@link Hook} you want to inform about.
      */
-    public void fire(Hook hook)
+    public void fire(final Hook hook)
     {
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println("Firing hook: " + hook.name());

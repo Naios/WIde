@@ -1,0 +1,69 @@
+package com.github.naios.wide.core.framework.storage.namestorage;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.session.database.DatabaseType;
+import com.github.naios.wide.core.session.hooks.Hook;
+import com.github.naios.wide.core.session.hooks.HookListener;
+
+public class DatabaseNameStorage extends NameStorage
+{
+    private final String table, entry, name;
+
+    public DatabaseNameStorage(final String table, final String entry, final String name)
+    {
+        this.table = table;
+        this.entry = entry;
+        this.name = name;
+
+        setup();
+    }
+
+    @Override
+    public void setup()
+    {
+        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_ESTABLISHED, this)
+        {
+            @Override
+            public void informed()
+            {
+                load();
+            }
+        });
+
+        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSED, this)
+        {
+            @Override
+            public void informed()
+            {
+                unload();
+            }
+        });
+
+        if (WIde.getDatabase().isConnected())
+            load();
+    }
+
+    @Override
+    public void load()
+    {
+        try (final Statement stmt = WIde.getDatabase()
+                .getConnection(DatabaseType.WORLD).createStatement())
+        {
+            final ResultSet result = stmt.executeQuery(String.format(
+                    "SELECT %s, %s FROM %s", entry, name, table));
+
+            while (result.next())
+                storage.put(result.getInt(1), result.getString(2));
+
+            result.close();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+}

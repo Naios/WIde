@@ -214,7 +214,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         });
 
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSE, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSED, this)
         {
             @Override
             public void informed()
