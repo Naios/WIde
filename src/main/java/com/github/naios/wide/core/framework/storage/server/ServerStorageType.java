@@ -357,6 +357,9 @@ public enum ServerStorageType
         if (type == null)
             return false;
 
+        if (!type.base.isAssignableFrom(value.getClass()))
+            return false;
+
         type.set.accept(observable, value);
         return true;
     }
