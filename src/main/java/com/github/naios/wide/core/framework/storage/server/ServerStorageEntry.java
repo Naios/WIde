@@ -18,6 +18,4 @@ public @interface ServerStorageEntry
     String metaenum() default "";
 
     String metanamestorage() default "";
-
-    String varname() default "";
 }
