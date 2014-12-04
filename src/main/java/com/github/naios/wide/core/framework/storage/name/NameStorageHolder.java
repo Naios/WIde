@@ -8,23 +8,18 @@ public class NameStorageHolder
     private final static NameStorageHolder INSTANCE =
             new NameStorageHolder();
 
-    private final Map<String, NameStorage> holder =
+    private final Map<String, NameStorageType> holder =
             new HashMap<>();
 
     public NameStorageHolder()
     {
         for (final NameStorageType storage : NameStorageType.values())
-            holder.put(storage.getId(), storage.getStorage());
+            holder.put(storage.getId(), storage);
     }
 
-    public NameStorage get(final String id)
+    public NameStorageType get(final String id)
     {
         return holder.get(id);
-    }
-
-    public NameStorage get(final NameStorageType storage)
-    {
-        return storage.getStorage();
     }
 
     public static NameStorageHolder instance()

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class SQLBuilder
 {
@@ -19,17 +20,9 @@ public class SQLBuilder
         private final Map<String /*id*/, String /*value*/> variables =
                 new HashMap<>();
 
-        private String makeStringToVarName(final String str)
-        {
-            return str
-                    .toUpperCase()
-                    .replace(" ", "_")
-                    .replace("['@\"]", "");
-        }
-
         public void addVariable(final String id, final Object value)
         {
-            variables.put(makeStringToVarName(id), new FormatterWrapper(value, FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString());
+            variables.put(StringUtil.convertStringToVarName(id), new FormatterWrapper(value, FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString());
         }
 
         @Override

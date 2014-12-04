@@ -9,10 +9,13 @@ import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
+import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
+import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -124,10 +127,18 @@ public class Test extends Script
 
         table.close();
 
-        System.out.println(String.format("%s", NameStorageHolder.instance().get("creature_name").request(41378)));
-        System.out.println(String.format("%s", NameStorageHolder.instance().get("spell_name").request(13480)));
-        System.out.println(String.format("%s", NameStorageHolder.instance().get("map_name").request(189)));
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("creature_name").getStorage().request(41378)));
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("spell_name").getStorage().request(13480)));
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("map_name").getStorage().request(189)));
 
+        final NameStorageType mapType = NameStorageHolder.instance().get("spell_name");
+        final NameStorage maps = mapType.getStorage();
+        for (int i = 0; i < 30; ++i)
+        {
+            final String name = maps.request(i);
+            if (name != null)
+                System.out.println(String.format("SET @%s_%s := 0;", mapType.getPrefix(), StringUtil.convertStringToVarName(name)));
+        }
 
         /*
         final NameStorage names = new DatabaseNameStorage("creature_template", "entry", "name");
