@@ -1,10 +1,13 @@
 package com.github.naios.wide.core.framework.storage.namestorage;
 
+import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
+import com.github.naios.wide.core.session.hooks.Hook;
+import com.github.naios.wide.core.session.hooks.HookListener;
 
 public class ClientNameStorage extends NameStorage
 {
@@ -18,12 +21,32 @@ public class ClientNameStorage extends NameStorage
         this.entryColumn = entryColumn;
         this.nameColumn = nameColumn;
 
-        load();
+
+        setup();
+    }
+
+    @Override
+    public void setup()
+    {
+        WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
+        {
+            @Override
+            public void informed()
+            {
+                load();
+            }
+        });
+
+        if (WIde.getConfig().isLoaded())
+            load();
     }
 
     @Override
     public void load()
     {
+        if (WIde.getEnviroment().isTraceEnabled())
+            System.out.println(String.format("Loading Client Namstorage: %s", name));
+
         try
         {
             final ClientStorage<UnknownClientStorageStructure> dbc =

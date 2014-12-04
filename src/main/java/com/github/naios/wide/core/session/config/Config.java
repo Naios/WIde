@@ -27,6 +27,8 @@ public class Config
 
 	private boolean hasChanged = false;
 
+	private boolean isLoaded = false;
+
 	private final ObjectProperty<GameBuild> cachedBuild =
 	        new SimpleObjectProperty<GameBuild>();
 
@@ -86,6 +88,8 @@ public class Config
                 recalculateGameBuild();
             }
         });
+
+        isLoaded = true;
 
         // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
@@ -177,5 +181,10 @@ public class Config
 	        }
 
 	    cachedBuild.set(null);
+	}
+
+	public boolean isLoaded()
+	{
+	    return isLoaded;
 	}
 }

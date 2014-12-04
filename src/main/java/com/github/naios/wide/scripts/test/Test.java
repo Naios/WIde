@@ -9,6 +9,7 @@ import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
+import com.github.naios.wide.core.framework.storage.namestorage.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.util.FlagUtil;
@@ -122,6 +123,11 @@ public class Test extends Script
 
 
         table.close();
+
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("creature_name").request(41378)));
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("spell_name").request(13480)));
+        System.out.println(String.format("%s", NameStorageHolder.instance().get("map_name").request(189)));
+
 
         /*
         final NameStorage names = new DatabaseNameStorage("creature_template", "entry", "name");

@@ -50,6 +50,9 @@ public class DatabaseNameStorage extends NameStorage
     @Override
     public void load()
     {
+        if (WIde.getEnviroment().isTraceEnabled())
+            System.out.println(String.format("Loading Database Namstorage: %s", table));
+
         try (final Statement stmt = WIde.getDatabase()
                 .getConnection(DatabaseType.WORLD).createStatement())
         {
