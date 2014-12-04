@@ -11,7 +11,7 @@ public enum NameStorageType
 
     final NameStorage storage;
 
-    NameStorageType(final String id, final String prefix, final NameStorage storage)
+    private NameStorageType(final String id, final String prefix, final NameStorage storage)
     {
         this.id = id;
         this.prefix = prefix;

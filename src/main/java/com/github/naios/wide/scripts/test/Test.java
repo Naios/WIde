@@ -137,7 +137,7 @@ public class Test extends Script
         {
             final String name = maps.request(i);
             if (name != null)
-                System.out.println(String.format("SET @%s_%s := 0;", mapType.getPrefix(), StringUtil.convertStringToVarName(name)));
+                System.out.println(String.format("SET @%s_%s := %s;", mapType.getPrefix(), StringUtil.convertStringToVarName(name), i));
         }
 
         /*

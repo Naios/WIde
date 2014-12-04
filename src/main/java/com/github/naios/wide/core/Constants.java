@@ -42,6 +42,9 @@ public enum Constants
     PROPERTY_DIR_DATA("core.enviroment.dbcdir"),
     PROPERTY_DIR_DBC("core.enviroment.dbcdir"),
 
+    PROPERTY_SQL_VARIABLES("core.sql.variables"),
+    PROPERTY_SQL_COMPRESS("core.sql.compress"),
+
     ////////////////////////////////////////////////////////
     // Paths
     PATH_DEFAULT_PROPERTIES_CREATE("properties/default.properties"),
