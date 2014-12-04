@@ -129,6 +129,11 @@ public class Test extends Script
         */
 
         /*
+        final NameStorage names = new ClientNameStorage("Map.dbc", 0, 1);
+        System.out.println(names);
+        */
+
+        /*
         final GameBuildMask mask = new GameBuildMask()
             .addUntil(GameBuild.V4_2_0_14480)
             .removeExpansion(Expansion.WRATH_OF_THE_LICH_KING)
