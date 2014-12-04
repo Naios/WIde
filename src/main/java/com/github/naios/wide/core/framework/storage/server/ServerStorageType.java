@@ -199,13 +199,13 @@ public enum ServerStorageType
         }
     });
 
-    private final Class<? extends ObservableValue<?>> base;
+    private final Class<?> base;
 
     private final boolean isPossibleKey;
 
     private final BiFunction<ResultSet, Field, ObservableValue<?>> create;
 
-    private ServerStorageType(final Class<? extends ObservableValue<?>> base,
+    private ServerStorageType(final Class<?> base,
             final boolean isPossibleKey, final BiFunction<ResultSet, Field, ObservableValue<?>> create)
     {
         this.base = base;
@@ -213,7 +213,7 @@ public enum ServerStorageType
         this.create = create;
     }
 
-    public Class<? extends ObservableValue<?>> getBase()
+    public Class<?> getBase()
     {
         return base;
     }
