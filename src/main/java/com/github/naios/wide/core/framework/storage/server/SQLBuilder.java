@@ -43,12 +43,15 @@ public class SQLBuilder
     {
         final StringBuilder builder = new StringBuilder();
 
+        // Iterate through all changed ObservableValues
 
+        // Replace namestorage, enum and flag fields through sql variables
 
+        // Write "Changesets" for all updated ObservableValues & deleted structures
 
+        // Summary update/delete Changesets that target the same table but different keys
 
-
-
+        // Write insert querys for all new structures, summary same tables
 
         return builder.toString();
     }
