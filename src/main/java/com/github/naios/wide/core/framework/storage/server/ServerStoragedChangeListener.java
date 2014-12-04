@@ -6,14 +6,14 @@ import java.lang.reflect.Field;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-public class ServerStoragedEntryChangeListener implements ChangeListener<Object>
+public class ServerStoragedChangeListener implements ChangeListener<Object>
 {
     // TODO Find out whether gc cleans up the cached ServerStorageStructure correctly
     private final WeakReference<ServerStorageStructure> record;
 
     private final Field field;
 
-    protected ServerStoragedEntryChangeListener(final ServerStorageStructure record, final Field field)
+    protected ServerStoragedChangeListener(final ServerStorageStructure record, final Field field)
     {
         this.record = new WeakReference<ServerStorageStructure>(record);
         this.field = field;

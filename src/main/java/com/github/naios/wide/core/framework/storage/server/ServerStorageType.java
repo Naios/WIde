@@ -271,7 +271,7 @@ public enum ServerStorageType
         final ServerStorageType fieldType = ServerStorageType.getType(field);
         final ObservableValue<?> value = fieldType.createFromResult(result, field);
 
-        value.addListener(new ServerStoragedEntryChangeListener(record, field));
+        value.addListener(new ServerStoragedChangeListener(record, field));
 
         try
         {
