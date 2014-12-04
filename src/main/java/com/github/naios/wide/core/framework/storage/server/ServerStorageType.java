@@ -354,6 +354,7 @@ public enum ServerStorageType
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
         final ServerStorageType type = getType(observable.getClass());
+
         if (type == null)
             return false;
 
