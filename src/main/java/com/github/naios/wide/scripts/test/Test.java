@@ -9,7 +9,7 @@ import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
-import com.github.naios.wide.core.framework.storage.namestorage.NameStorageHolder;
+import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.util.FlagUtil;

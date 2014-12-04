@@ -1,4 +1,4 @@
-package com.github.naios.wide.core.framework.storage.namestorage;
+package com.github.naios.wide.core.framework.storage.name;
 
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;

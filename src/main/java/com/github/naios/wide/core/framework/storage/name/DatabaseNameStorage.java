@@ -1,4 +1,4 @@
-package com.github.naios.wide.core.framework.storage.namestorage;
+package com.github.naios.wide.core.framework.storage.name;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
