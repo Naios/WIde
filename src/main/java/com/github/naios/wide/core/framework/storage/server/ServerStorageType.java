@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
@@ -42,8 +43,14 @@ class NoMetaEnumException extends ServerStorageException
 
 public enum ServerStorageType
 {
+    // TODO Find another unhacky way fix this generetic shit problem...
+
     // Integer
-    INTEGER(IntegerProperty.class, int.class, false,
+    INTEGER((type) ->
+            {
+                return IntegerProperty.class.equals(type) ||
+                       SimpleIntegerProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -60,7 +67,11 @@ public enum ServerStorageType
             {
                 ((IntegerProperty) me).set((int) value);
             }),
-    READONLY_INTEGER(ReadOnlyIntegerProperty.class, int.class, true,
+    READONLY_INTEGER((type) ->
+            {
+                return ReadOnlyIntegerProperty.class.equals(type) ||
+                       ReadOnlyIntegerWrapper.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -78,7 +89,11 @@ public enum ServerStorageType
                 assert (false);
             }),
     // Boolean
-    BOOLEAN(BooleanProperty.class, boolean.class, false,
+    BOOLEAN((type) ->
+            {
+                return BooleanProperty.class.equals(type) ||
+                       SimpleBooleanProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -95,7 +110,11 @@ public enum ServerStorageType
             {
                 ((BooleanProperty) me).set((boolean) value);
             }),
-    READONLY_BOOLEAN(ReadOnlyBooleanProperty.class, boolean.class, true,
+    READONLY_BOOLEAN((type) ->
+            {
+                return ReadOnlyBooleanProperty.class.equals(type) ||
+                       ReadOnlyBooleanWrapper.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -113,7 +132,11 @@ public enum ServerStorageType
                 assert (false);
             }),
     // Float
-    FLOAT(FloatProperty.class, float.class, false,
+    FLOAT((type) ->
+            {
+                return FloatProperty.class.equals(type) ||
+                       SimpleFloatProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -130,7 +153,11 @@ public enum ServerStorageType
             {
                 ((FloatProperty) me).set((float) value);
             }),
-    READONLY_FLOAT(ReadOnlyFloatProperty.class, float.class, false,
+    READONLY_FLOAT((type) ->
+            {
+                return ReadOnlyFloatProperty.class.equals(type) ||
+                       ReadOnlyFloatWrapper.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -148,7 +175,11 @@ public enum ServerStorageType
                 assert (false);
             }),
     // Double
-    DOUBLE(DoubleProperty.class, double.class, false,
+    DOUBLE((type) ->
+            {
+                return DoubleProperty.class.equals(type) ||
+                       SimpleDoubleProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -165,7 +196,11 @@ public enum ServerStorageType
             {
                 ((DoubleProperty) me).set((double) value);
             }),
-    READONLY_DOUBLE(ReadOnlyDoubleProperty.class, double.class, false,
+    READONLY_DOUBLE((type) ->
+            {
+                return ReadOnlyDoubleProperty.class.equals(type) ||
+                       ReadOnlyDoubleWrapper.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -183,7 +218,11 @@ public enum ServerStorageType
                 assert (false);
             }),
     // String
-    STRING(StringProperty.class, String.class, false,
+    STRING((type) ->
+            {
+                return StringProperty.class.equals(type) ||
+                       SimpleStringProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 try
@@ -200,7 +239,12 @@ public enum ServerStorageType
             {
                 ((StringProperty) me).set((String) value);
             }),
-    READONLY_STRING(ReadOnlyStringProperty.class, String.class, true, (result, field) ->
+    READONLY_STRING((type) ->
+            {
+                return ReadOnlyStringProperty.class.equals(type) ||
+                       ReadOnlyStringWrapper.class.equals(type);
+            },
+            (result, field) ->
             {
                try
                {
@@ -218,7 +262,10 @@ public enum ServerStorageType
             }),
     // Enum
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ENUM(EnumProperty.class, int.class, false,
+    ENUM((type) ->
+            {
+                return EnumProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 final Class<?> type = getEnumClassHelper(field);
@@ -239,7 +286,10 @@ public enum ServerStorageType
             }),
     // Flag
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    FLAG(FlagProperty.class, int.class, false,
+    FLAG((type) ->
+            {
+                return FlagProperty.class.equals(type);
+            },
             (result, field) ->
             {
                 final Class<?> type = getEnumClassHelper(field);
@@ -259,30 +309,24 @@ public enum ServerStorageType
                 ((IntegerProperty) me).set((int) value);
             });
 
-    private final Class<?> type;
-
-    private final Class<?> base;
-
-    private final boolean isPossibleKey;
+    private final Predicate<Class<?>> instanceOfCheck;
 
     private final BiFunction<ResultSet, Field, ObservableValue<?>> create;
 
     private final BiConsumer<ObservableValue<?>, Object> set;
 
-    private ServerStorageType(final Class<?> type, final Class<?> base,
-            final boolean isPossibleKey, final BiFunction<ResultSet, Field, ObservableValue<?>> create,
-            final BiConsumer<ObservableValue<?>, Object> set)
+    private ServerStorageType(final Predicate<Class<?>> instanceOfCheck,
+                                final BiFunction<ResultSet, Field, ObservableValue<?>> create,
+                                    final BiConsumer<ObservableValue<?>, Object> set)
     {
-        this.base = base;
-        this.type = type;
-        this.isPossibleKey = isPossibleKey;
+        this.instanceOfCheck = instanceOfCheck;
         this.create = create;
         this.set = set;
     }
 
-    public boolean getIsPossibleKey()
+    public boolean isPossibleKey()
     {
-        return isPossibleKey;
+        return equals(READONLY_INTEGER) || equals(READONLY_STRING);
     }
 
     public ObservableValue<?> createFromResult(final ResultSet result, final Field field)
@@ -295,10 +339,10 @@ public enum ServerStorageType
         return getType(field.getType());
     }
 
-    public static ServerStorageType getType(final Class<?> type)
+    public static ServerStorageType getType(final Class<?> object)
     {
         for (final ServerStorageType me : values())
-            if (me.type.equals(type))
+            if (me.instanceOfCheck.test(object))
                 return me;
 
         return null;
@@ -353,15 +397,11 @@ public enum ServerStorageType
 
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
-        final ServerStorageType type = getType(observable.getClass());
-
-        if (type == null)
+        final ServerStorageType storageType = getType(observable.getClass());
+        if (storageType == null)
             return false;
 
-        if (!type.base.isAssignableFrom(value.getClass()))
-            return false;
-
-        type.set.accept(observable, value);
+        storageType.set.accept(observable, value);
         return true;
     }
 }

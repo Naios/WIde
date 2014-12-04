@@ -134,7 +134,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             if (fieldType == null)
                 throw new IllegalTypeException(field.getType());
 
-            if (!fieldType.getIsPossibleKey())
+            if (!fieldType.isPossibleKey())
                 throw new IllegalTypeAsKeyException(field.getType());
         }
 
