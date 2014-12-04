@@ -5,6 +5,7 @@ import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
+import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
 public class PrintDBC extends Script
@@ -22,8 +23,8 @@ public class PrintDBC extends Script
 
         try
         {
-            final ClientStorage<UnknownStructure> clientStorage =
-                    new ClientStorageSelector<UnknownStructure>(UnknownStructure.class, path).select();
+            final ClientStorage<UnknownClientStorageStructure> clientStorage =
+                    new ClientStorageSelector<UnknownClientStorageStructure>(UnknownClientStorageStructure.class, path).select();
 
             System.out.println(clientStorage.toString());
         }

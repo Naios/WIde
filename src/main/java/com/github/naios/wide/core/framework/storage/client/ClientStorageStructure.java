@@ -19,6 +19,11 @@ public abstract class ClientStorageStructure extends StorageStructure
 
     public static String getPathThroughStorageName(final Class<? extends ClientStorageStructure> type) throws StorageException
     {
-        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + StorageStructure.getStorageName(type);
+        return getPathOfFile(StorageStructure.getStorageName(type));
+    }
+
+    public static String getPathOfFile(final String path) throws StorageException
+    {
+        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + path;
     }
 }

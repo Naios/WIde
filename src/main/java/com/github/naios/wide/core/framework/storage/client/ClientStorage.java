@@ -586,6 +586,15 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
     }
 
+    public void fillNameStorage(final Map<Integer, String> map, final int entryColumn, final int nameColumn)
+    {
+        for (int y = 0; y < recordsCount; ++y)
+        {
+            map.put((Integer) getObjectForOffsetAndField(getOffset(y, entryColumn), entryColumn),
+                    (String) getObjectForOffsetAndField(getOffset(y, nameColumn), nameColumn));
+        }
+    }
+
     /**
      * @return ClientStorage as Object Array (use toString() to get Content)
      */
