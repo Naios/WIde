@@ -3,6 +3,7 @@ package com.github.naios.wide.core.framework.storage.server;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 import javafx.beans.property.BooleanProperty;
@@ -42,162 +43,223 @@ class NoMetaEnumException extends ServerStorageException
 public enum ServerStorageType
 {
     // Integer
-    INTEGER(IntegerProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new SimpleIntegerProperty
-                    (result.getInt(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new SimpleIntegerProperty();
-        }
-    }),
-    READONLY_INTEGER(ReadOnlyIntegerProperty.class, true, (result, field) ->
-    {
-        try
-        {
-            return new ReadOnlyIntegerWrapper
-                    (result.getInt(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new ReadOnlyIntegerWrapper();
-        }
-    }),
+    INTEGER(IntegerProperty.class, int.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new SimpleIntegerProperty
+                            (result.getInt(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new SimpleIntegerProperty();
+                }
+            },
+            (me, value) ->
+            {
+                ((IntegerProperty) me).set((int) value);
+            }),
+    READONLY_INTEGER(ReadOnlyIntegerProperty.class, int.class, true,
+            (result, field) ->
+            {
+                try
+                {
+                    return new ReadOnlyIntegerWrapper
+                            (result.getInt(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new ReadOnlyIntegerWrapper();
+                }
+            },
+            (me, value) ->
+            {
+                assert (false);
+            }),
     // Boolean
-    BOOLEAN(BooleanProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new SimpleBooleanProperty
-                    (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new SimpleBooleanProperty();
-        }
-    }),
-    READONLY_BOOLEAN(ReadOnlyBooleanProperty.class, true, (result, field) ->
-    {
-        try
-        {
-            return new ReadOnlyBooleanWrapper
-                    (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new ReadOnlyBooleanWrapper();
-        }
-    }),
+    BOOLEAN(BooleanProperty.class, boolean.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new SimpleBooleanProperty
+                            (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new SimpleBooleanProperty();
+                }
+            },
+            (me, value) ->
+            {
+                ((BooleanProperty) me).set((boolean) value);
+            }),
+    READONLY_BOOLEAN(ReadOnlyBooleanProperty.class, boolean.class, true,
+            (result, field) ->
+            {
+                try
+                {
+                    return new ReadOnlyBooleanWrapper
+                            (result.getBoolean(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new ReadOnlyBooleanWrapper();
+                }
+            },
+            (me, value) ->
+            {
+                assert (false);
+            }),
     // Float
-    FLOAT(FloatProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new SimpleFloatProperty
-                    (result.getFloat(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new SimpleFloatProperty();
-        }
-    }),
-    READONLY_FLOAT(ReadOnlyFloatProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new ReadOnlyFloatWrapper
-                    (result.getFloat(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new ReadOnlyFloatWrapper();
-        }
-    }),
+    FLOAT(FloatProperty.class, float.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new SimpleFloatProperty
+                            (result.getFloat(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new SimpleFloatProperty();
+                }
+            },
+            (me, value) ->
+            {
+                ((FloatProperty) me).set((float) value);
+            }),
+    READONLY_FLOAT(ReadOnlyFloatProperty.class, float.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new ReadOnlyFloatWrapper
+                            (result.getFloat(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new ReadOnlyFloatWrapper();
+                }
+            },
+            (me, value) ->
+            {
+                assert (false);
+            }),
     // Double
-    DOUBLE(DoubleProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new SimpleDoubleProperty
-                    (result.getDouble(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new SimpleDoubleProperty();
-        }
-    }),
-    READONLY_DOUBLE(ReadOnlyDoubleProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new ReadOnlyDoubleWrapper
-                    (result.getDouble(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new ReadOnlyDoubleWrapper();
-        }
-    }),
+    DOUBLE(DoubleProperty.class, double.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new SimpleDoubleProperty
+                            (result.getDouble(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new SimpleDoubleProperty();
+                }
+            },
+            (me, value) ->
+            {
+                ((DoubleProperty) me).set((double) value);
+            }),
+    READONLY_DOUBLE(ReadOnlyDoubleProperty.class, double.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new ReadOnlyDoubleWrapper
+                            (result.getDouble(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new ReadOnlyDoubleWrapper();
+                }
+            },
+            (me, value) ->
+            {
+                assert (false);
+            }),
     // String
-    STRING(StringProperty.class, false, (result, field) ->
-    {
-        try
-        {
-            return new SimpleStringProperty
-                   (result.getString(ServerStorageStructure.getNameOfField(field)));
-        }
-        catch (final SQLException e)
-        {
-            return new SimpleStringProperty();
-        }
-    }),
-    READONLY_STRING(ReadOnlyStringProperty.class, true, (result, field) ->
-    {
-       try
-       {
-           return new ReadOnlyStringWrapper
-                   (result.getString(ServerStorageStructure.getNameOfField(field)));
-       }
-       catch (final SQLException e)
-       {
-           return new ReadOnlyStringWrapper();
-       }
-    }),
+    STRING(StringProperty.class, String.class, false,
+            (result, field) ->
+            {
+                try
+                {
+                    return new SimpleStringProperty
+                           (result.getString(ServerStorageStructure.getNameOfField(field)));
+                }
+                catch (final SQLException e)
+                {
+                    return new SimpleStringProperty();
+                }
+            },
+            (me, value) ->
+            {
+                ((StringProperty) me).set((String) value);
+            }),
+    READONLY_STRING(ReadOnlyStringProperty.class, String.class, true, (result, field) ->
+            {
+               try
+               {
+                   return new ReadOnlyStringWrapper
+                           (result.getString(ServerStorageStructure.getNameOfField(field)));
+               }
+               catch (final SQLException e)
+               {
+                   return new ReadOnlyStringWrapper();
+               }
+            },
+            (me, value) ->
+            {
+                assert (false);
+            }),
     // Enum
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ENUM(EnumProperty.class, false, (result, field) ->
-    {
-        final Class<?> type = getEnumClassHelper(field);
+    ENUM(EnumProperty.class, int.class, false,
+            (result, field) ->
+            {
+                final Class<?> type = getEnumClassHelper(field);
 
-        try
-        {
-           return (new EnumProperty
-                   (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
-        }
-        catch (final SQLException e)
-        {
-           return (new EnumProperty(type));
-        }
-    }),
+                try
+                {
+                   return (new EnumProperty
+                           (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
+                }
+                catch (final SQLException e)
+                {
+                   return (new EnumProperty(type));
+                }
+            },
+            (me, value) ->
+            {
+                ((IntegerProperty) me).set((int) value);
+            }),
     // Flag
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    FLAG(FlagProperty.class, false, (result, field) ->
-    {
-        final Class<?> type = getEnumClassHelper(field);
+    FLAG(FlagProperty.class, int.class, false,
+            (result, field) ->
+            {
+                final Class<?> type = getEnumClassHelper(field);
 
-        try
-        {
-           return (new FlagProperty
-                   (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
-        }
-        catch (final SQLException e)
-        {
-           return (new FlagProperty(type));
-        }
-    });
+                try
+                {
+                   return (new FlagProperty
+                           (type, result.getInt(ServerStorageStructure.getNameOfField(field))));
+                }
+                catch (final SQLException e)
+                {
+                   return (new FlagProperty(type));
+                }
+            },
+            (me, value) ->
+            {
+                ((IntegerProperty) me).set((int) value);
+            });
+
+    private final Class<?> type;
 
     private final Class<?> base;
 
@@ -205,17 +267,17 @@ public enum ServerStorageType
 
     private final BiFunction<ResultSet, Field, ObservableValue<?>> create;
 
-    private ServerStorageType(final Class<?> base,
-            final boolean isPossibleKey, final BiFunction<ResultSet, Field, ObservableValue<?>> create)
+    private final BiConsumer<ObservableValue<?>, Object> set;
+
+    private ServerStorageType(final Class<?> type, final Class<?> base,
+            final boolean isPossibleKey, final BiFunction<ResultSet, Field, ObservableValue<?>> create,
+            final BiConsumer<ObservableValue<?>, Object> set)
     {
         this.base = base;
+        this.type = type;
         this.isPossibleKey = isPossibleKey;
         this.create = create;
-    }
-
-    public Class<?> getBase()
-    {
-        return base;
+        this.set = set;
     }
 
     public boolean getIsPossibleKey()
@@ -236,7 +298,7 @@ public enum ServerStorageType
     public static ServerStorageType getType(final Class<?> type)
     {
         for (final ServerStorageType me : values())
-            if (me.base.equals(type))
+            if (me.type.equals(type))
                 return me;
 
         return null;
@@ -291,20 +353,11 @@ public enum ServerStorageType
 
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
-        // TODO move this into the type definition
-        if (observable instanceof IntegerProperty)
-            ((IntegerProperty) observable).set((int) value);
-        else if (observable instanceof BooleanProperty)
-            ((BooleanProperty) observable).set((boolean) value);
-        else if (observable instanceof FloatProperty)
-            ((FloatProperty) observable).set((float) value);
-        else if (observable instanceof DoubleProperty)
-            ((DoubleProperty) observable).set((double) value);
-        else if (observable instanceof StringProperty)
-            ((StringProperty) observable).set((String) value);
-        else
+        final ServerStorageType type = getType(observable.getClass());
+        if (type == null)
             return false;
 
+        type.set.accept(observable, value);
         return true;
     }
 }
