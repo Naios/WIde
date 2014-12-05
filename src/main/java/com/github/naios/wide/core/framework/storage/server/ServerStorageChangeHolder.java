@@ -56,6 +56,10 @@ public class ServerStorageChangeHolder implements Observable
 {
     private final static Object CURRENT_DATABASE_SYNC = new Object();
 
+    private final static Object STRUCTURE_CREATED = new Object();
+
+    private final static Object STRUCTURE_DELETED = new Object();
+
     private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
 
     private final Map<ObservableValueStorageInfo, ObservableValue<?>> reference =

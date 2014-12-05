@@ -387,6 +387,40 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return record;
     }
 
+    @SuppressWarnings("unchecked")
+    public T newStructureFromKey(final ServerStorageKey<T> key)
+    {
+        final ServerStorageStructure record;
+        try
+        {
+            record = type.getConstructor(getClass()).newInstance(this);
+        }
+        catch (final Exception e)
+        {
+            throw new BadMappingException(type);
+        }
+
+        record.setState(ServerStorageStructureState.STATE_NEW);
+
+        final List<Field> primaryFields = record.getPrimaryFields();
+        assert primaryFields.size() == key.get().length;
+
+        for (final Field field : record.getAllFields())
+        {
+            if (primaryFields.contains(field))
+            {
+                final int idx = primaryFields.indexOf(field);
+                ServerStorageType.doMapFieldToRecordFromObject(field, record, key.get()[idx]);
+            }
+            else
+            {
+                ServerStorageType.doMapFieldToRecordFromObject(field, record, null);
+            }
+        }
+
+        return (T) record;
+    }
+
     private Field[] getAllAnnotatedFields()
     {
         return ClassUtil.getAnnotatedDeclaredFields(type,

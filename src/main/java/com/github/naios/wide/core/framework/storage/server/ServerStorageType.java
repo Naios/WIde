@@ -63,6 +63,10 @@ public enum ServerStorageType
                     return new SimpleIntegerProperty();
                 }
             },
+            (object, field) ->
+            {
+                return new SimpleIntegerProperty();
+            },
             (me, value) ->
             {
                 ((IntegerProperty) me).set((int) value);
@@ -83,6 +87,11 @@ public enum ServerStorageType
                 {
                     return new ReadOnlyIntegerWrapper();
                 }
+            },
+            (object, field) ->
+            {
+                return new ReadOnlyIntegerWrapper
+                        ((int)object);
             },
             (me, value) ->
             {
@@ -106,6 +115,10 @@ public enum ServerStorageType
                     return new SimpleBooleanProperty();
                 }
             },
+            (object, field) ->
+            {
+                return new SimpleBooleanProperty();
+            },
             (me, value) ->
             {
                 ((BooleanProperty) me).set((boolean) value);
@@ -126,6 +139,10 @@ public enum ServerStorageType
                 {
                     return new ReadOnlyBooleanWrapper();
                 }
+            },
+            (object, field) ->
+            {
+                return new ReadOnlyBooleanWrapper();
             },
             (me, value) ->
             {
@@ -149,6 +166,10 @@ public enum ServerStorageType
                     return new SimpleFloatProperty();
                 }
             },
+            (object, field) ->
+            {
+                return new SimpleFloatProperty();
+            },
             (me, value) ->
             {
                 ((FloatProperty) me).set((float) value);
@@ -169,6 +190,10 @@ public enum ServerStorageType
                 {
                     return new ReadOnlyFloatWrapper();
                 }
+            },
+            (object, field) ->
+            {
+                return new ReadOnlyFloatWrapper();
             },
             (me, value) ->
             {
@@ -192,6 +217,10 @@ public enum ServerStorageType
                     return new SimpleDoubleProperty();
                 }
             },
+            (object, field) ->
+            {
+                return new SimpleDoubleProperty();
+            },
             (me, value) ->
             {
                 ((DoubleProperty) me).set((double) value);
@@ -212,6 +241,10 @@ public enum ServerStorageType
                 {
                     return new ReadOnlyDoubleWrapper();
                 }
+            },
+            (object, field) ->
+            {
+                return new ReadOnlyDoubleWrapper();
             },
             (me, value) ->
             {
@@ -235,6 +268,10 @@ public enum ServerStorageType
                     return new SimpleStringProperty();
                 }
             },
+            (object, field) ->
+            {
+                return new SimpleStringProperty(new String());
+            },
             (me, value) ->
             {
                 ((StringProperty) me).set((String) value);
@@ -255,6 +292,11 @@ public enum ServerStorageType
                {
                    return new ReadOnlyStringWrapper();
                }
+            },
+            (object, field) ->
+            {
+                return new ReadOnlyStringWrapper
+                        (object.toString());
             },
             (me, value) ->
             {
@@ -280,6 +322,10 @@ public enum ServerStorageType
                    return (new EnumProperty(type));
                 }
             },
+            (object, field) ->
+            {
+                return (new EnumProperty(getEnumClassHelper(field)));
+            },
             (me, value) ->
             {
                 ((IntegerProperty) me).set((int) value);
@@ -304,6 +350,10 @@ public enum ServerStorageType
                    return (new FlagProperty(type));
                 }
             },
+            (object, field) ->
+            {
+                return (new FlagProperty(getEnumClassHelper(field)));
+            },
             (me, value) ->
             {
                 ((IntegerProperty) me).set((int) value);
@@ -311,16 +361,21 @@ public enum ServerStorageType
 
     private final Predicate<Class<?>> instanceOfCheck;
 
-    private final BiFunction<ResultSet, Field, ObservableValue<?>> create;
+    private final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult;
+
+    /// Only possible primary keys must declare this function
+    private final BiFunction<Object, Field, ObservableValue<?>> createFromObjectOrEmpty;
 
     private final BiConsumer<ObservableValue<?>, Object> set;
 
     private ServerStorageType(final Predicate<Class<?>> instanceOfCheck,
-                                final BiFunction<ResultSet, Field, ObservableValue<?>> create,
-                                    final BiConsumer<ObservableValue<?>, Object> set)
+                                final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult,
+                                    final BiFunction<Object, Field, ObservableValue<?>> createFromObjectOrEmpty,
+                                        final BiConsumer<ObservableValue<?>, Object> set)
     {
         this.instanceOfCheck = instanceOfCheck;
-        this.create = create;
+        this.createFromResult = createFromResult;
+        this.createFromObjectOrEmpty = createFromObjectOrEmpty;
         this.set = set;
     }
 
@@ -331,7 +386,12 @@ public enum ServerStorageType
 
     public ObservableValue<?> createFromResult(final ResultSet result, final Field field)
     {
-        return create.apply(result, field);
+        return createFromResult.apply(result, field);
+    }
+
+    public ObservableValue<?> createFromObject(final Object object, final Field field)
+    {
+        return createFromObjectOrEmpty.apply(object, field);
     }
 
     public static ServerStorageType getType(final Field field)
@@ -390,6 +450,28 @@ public enum ServerStorageType
         }
     }
 
+    // Mapping for Keys
+    public static void doMapFieldToRecordFromObject(final Field field, final ServerStorageStructure record, final Object object) throws ServerStorageException
+    {
+        if (!field.isAccessible())
+            field.setAccessible(true);
+
+        final ServerStorageType fieldType = ServerStorageType.getType(field);
+        final ObservableValue<?> value = fieldType.createFromObject(object, field);
+
+        value.addListener(new ServerStoragedChangeListener(record, field));
+
+        try
+        {
+            field.set(record, value);
+        }
+        catch (final Exception e)
+        {
+            // TODO
+            // Throw Mapping exception
+        }
+    }
+
     public static Object get(final ObservableValue<?> observable)
     {
         return observable.getValue();
@@ -397,6 +479,7 @@ public enum ServerStorageType
 
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
+        System.out.println(String.format("DEBUG: %s %s", observable, value));
         final ServerStorageType storageType = getType(observable.getClass());
         if (storageType == null)
             return false;

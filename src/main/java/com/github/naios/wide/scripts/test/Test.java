@@ -124,9 +124,6 @@ public class Test extends Script
         System.out.println(entry);
         System.out.println(ServerStorageChangeHolder.instance());
 
-
-        table.close();
-
         System.out.println(String.format("%s", NameStorageHolder.instance().get("creature_name").getStorage().request(41378)));
         System.out.println(String.format("%s", NameStorageHolder.instance().get("spell_name").getStorage().request(13480)));
         System.out.println(String.format("%s", NameStorageHolder.instance().get("map_name").getStorage().request(189)));
@@ -163,5 +160,12 @@ public class Test extends Script
         System.out.println(!mask.contains(GameBuild.V5_4_1_17538));
         System.out.println(mask.contains(GameBuild.V6_0_3_19103));
         */
+
+
+        final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
+
+        System.out.println(myentry);
+
+        table.close();
     }
 }

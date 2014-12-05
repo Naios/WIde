@@ -4,5 +4,6 @@ public enum ServerStorageStructureState
 {
     STATE_IN_SYNC,
     STATE_UPDATED,
+    STATE_NEW,
     STATE_DELETED;
 }

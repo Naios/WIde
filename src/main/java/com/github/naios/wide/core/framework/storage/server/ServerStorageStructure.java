@@ -2,6 +2,7 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,8 +10,9 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
+import com.github.naios.wide.core.framework.util.Pair;
 
-public abstract class ServerStorageStructure extends StorageStructure
+public abstract class ServerStorageStructure extends StorageStructure implements Iterable<Pair<ObservableValue<?>, Field>>
 {
     final private ServerStorage<?> owner;
 
@@ -21,10 +23,31 @@ public abstract class ServerStorageStructure extends StorageStructure
         this.owner = owner;
     }
 
+    public ObservableValue<?> getObservableValue(final Field field)
+    {
+        if (!field.isAccessible())
+            field.setAccessible(true);
+
+        try
+        {
+            return (ObservableValue<?>) field.get(this);
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     protected Class<? extends Annotation> getSpecificAnnotation()
     {
         return ServerStorageEntry.class;
+    }
+
+    public List<Field> getPrimaryFields()
+    {
+        return getPrimaryFields(getClass());
     }
 
     public static List<Field> getPrimaryFields(final Class<? extends ServerStorageStructure> type)
@@ -45,7 +68,7 @@ public abstract class ServerStorageStructure extends StorageStructure
     {
         final List<Object> list = new LinkedList<>();
 
-        for (final Field field : getPrimaryFields(getClass()))
+        for (final Field field : getPrimaryFields())
             {
                 if (!field.isAccessible())
                     field.setAccessible(true);
@@ -83,6 +106,7 @@ public abstract class ServerStorageStructure extends StorageStructure
 
     protected void valueChanged(final Field field, final ObservableValue<?> me, final Object oldValue)
     {
+        setState(ServerStorageStructureState.STATE_UPDATED);
         owner.valueChanged(this, field, me, oldValue);
     }
 
@@ -102,9 +126,71 @@ public abstract class ServerStorageStructure extends StorageStructure
         owner.structureDeleted(this);
     }
 
+    public boolean isInSync()
+    {
+        return state.equals(ServerStorageStructureState.STATE_IN_SYNC);
+    }
+
+    public boolean isUpdated()
+    {
+        return state.equals(ServerStorageStructureState.STATE_UPDATED);
+    }
+
+    public boolean isNew()
+    {
+        return state.equals(ServerStorageStructureState.STATE_NEW);
+    }
+
+    public boolean isDeleted()
+    {
+        return state.equals(ServerStorageStructureState.STATE_DELETED);
+    }
+
     @Override
     public int hashCode()
     {
         return getKey().hashCode();
+    }
+
+    private class ServerStorageIterator implements Iterator<Pair<ObservableValue<?>, Field>>
+    {
+        private final ServerStorageStructure storage;
+
+        private final Field[] fields;
+
+        private int i = 0;
+
+        protected ServerStorageIterator(final ServerStorageStructure storage)
+        {
+            this.storage = storage;
+            fields = storage.getAllFields();
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return i < fields.length;
+        }
+
+        @Override
+        public Pair<ObservableValue<?>, Field> next()
+        {
+            try
+            {
+                final Pair<ObservableValue<?>, Field> pair = new Pair<>(storage.getObservableValue(fields[i]), fields[i]);
+                i += 1;
+                return pair;
+            }
+            catch (final Exception e)
+            {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public Iterator<Pair<ObservableValue<?>, Field>> iterator()
+    {
+        return new ServerStorageIterator(this);
     }
 }
