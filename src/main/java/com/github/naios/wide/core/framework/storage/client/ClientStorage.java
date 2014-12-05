@@ -13,10 +13,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.ClassUtil;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
 class InvalidDataException extends ClientStorageException
@@ -144,31 +146,88 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     private final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
 
+    private final static int FLOAT_CHECK_BOUNDS = 100000000;
+
+    private final static float FLOAT_CHECK_PERCENTAGE = 0.9f;
+
+    private final static int STRING_CHECK_MAX_RECORDS = 5;
+
     // TODO Is there any type in the JDK that already implements this?
     protected enum FieldType
     {
-        UNKNOWN(null),
-        BOOLEAN(boolean.class),
-        INTEGER(int.class),
-        FLOAT(float.class),
-        STRING(String.class);
+        STRING(String.class,
+        (storage, column) ->
+        {
+            for (int y = 0; (y < storage.recordsCount) && (y < STRING_CHECK_MAX_RECORDS); ++y)
+            {
+                final int offset = storage.buffer.getInt(storage.getOffset(y, column));
+                if (!storage.offsetToStringCache.containsKey(offset + storage.getStringBlockOffset()))
+                    return false;
+            }
+            return true;
+        }),
+        BOOLEAN(boolean.class,
+        (storage, column) ->
+        {
+            for (int y = 0; y < storage.recordsCount; ++y)
+            {
+                final int value = storage.buffer.getInt(storage.getOffset(y, column));
+                if (value != 0 || value != 1)
+                    return false;
+            }
+            return true;
+        }),
+        FLOAT(float.class,
+        (storage, column) ->
+        {
+            int match = 0, ignore = 0;
+
+            for (int y = 0; y < storage.recordsCount; ++y)
+            {
+                final int value = storage.buffer.getInt(storage.getOffset(y, column));
+                if ((value < -FLOAT_CHECK_BOUNDS) || (value > FLOAT_CHECK_BOUNDS))
+                    ++match;
+
+                if (value == 0)
+                    ++ignore;
+            }
+
+            final float ratio = (match) / ((float)storage.recordsCount - ignore);
+            return ratio >= FLOAT_CHECK_PERCENTAGE;
+        }),
+        INTEGER(int.class,
+        (storage, column) ->
+        {
+            return true;
+        }),
+        UNKNOWN(int.class,
+        (storage, column) ->
+        {
+            return true;
+        });
 
         private final Class<?> type;
 
-        FieldType(final Class<?> type)
+        private final BiPredicate<ClientStorage<?>, Integer /*column*/> check;
+
+        FieldType(final Class<?> type, final BiPredicate<ClientStorage<?>, Integer> check)
         {
             this.type = type;
+            this.check = check;
         }
 
         public Class<?> getType()
         {
             return type;
         }
+
+        public BiPredicate<ClientStorage<?>, Integer> getCheck()
+        {
+            return check;
+        }
     }
 
     private final FieldType[] fieldType;
-
-    private final static int COUNT_CHECK_RECORDS_FOR_STRING = 3;
 
     private final Class<? extends ClientStorageStructure> type;
 
@@ -341,21 +400,20 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
                 for (final FieldType t : FieldType.values())
                     if (field.getType().equals(t.getType()))
                         fieldType[x] = t;
-            }
 
-            // If the column is a string but the given structure is wrong throw
-            // an exception
-            if (isFieldPossibleString(x))
-            {
-                if (fieldType[x].equals(FieldType.UNKNOWN)
-                        || fieldType[x].equals(FieldType.STRING))
-                    fieldType[x] = FieldType.STRING;
-                else
-                    throw new WrongStructureException(type, path);
+                // If the column is a string but the given structure is wrong throw
+                // an exception
+                if (fieldType[x].equals(FieldType.STRING))
+                    if (FieldType.STRING.check.test(this, x))
+                        throw new WrongStructureException(type, path);
             }
-
-            if (fieldType[x].equals(FieldType.UNKNOWN))
-                fieldType[x] = FieldType.INTEGER;
+            else
+                for (final FieldType f : FieldType.values())
+                    if (f.check.test(this, x))
+                    {
+                        fieldType[x] = f;
+                        break;
+                    }
         }
     }
 
@@ -412,17 +470,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     protected FieldType getFieldType(final int field)
     {
         return fieldType[field];
-    }
-
-    private boolean isFieldPossibleString(final int x)
-    {
-        for (int y = 0; (y < recordsCount) && (y < COUNT_CHECK_RECORDS_FOR_STRING); ++y)
-        {
-            final int offset = buffer.getInt(getOffset(y, x));
-            if (!offsetToStringCache.containsKey(offset + getStringBlockOffset()))
-                return false;
-        }
-        return true;
     }
 
     private Field[] getAllAnnotatedFields()
@@ -565,27 +612,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return array;
     }
 
-    private class StringWrapper
-    {
-        private final Object obj;
-
-        public StringWrapper(final Object obj)
-        {
-            this.obj = obj;
-        }
-
-        public Object getString()
-        {
-            return obj;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "\"" + obj + "\"";
-        }
-    }
-
     public void fillNameStorage(final Map<Integer, String> map, final int entryColumn, final int nameColumn)
     {
         for (int y = 0; y < recordsCount; ++y)
@@ -603,15 +629,15 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return asObjectArray(false);
     }
 
-    public Object[][] asObjectArray(final boolean stringEnclosure)
+    public Object[][] asObjectArray(final boolean prettyWrap)
     {
         final Object[][] array = new Object[recordsCount][fieldsCount];
         for (int y = 0; y < recordsCount; ++y)
             for (int x = 0; x < fieldsCount; ++x)
             {
                 final Object obj = getObjectForOffsetAndField(getOffset(y, x), x);
-                if (stringEnclosure && (obj instanceof String))
-                    array[y][x] = new StringWrapper(obj);
+                if (prettyWrap)
+                    array[y][x] = new FormatterWrapper(obj);
                 else
                     array[y][x] = obj;
             }
