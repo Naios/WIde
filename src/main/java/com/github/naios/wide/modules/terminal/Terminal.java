@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.extensions.modules.Module;
-import com.github.naios.wide.core.framework.ui.UserInferface;
+import com.github.naios.wide.core.framework.extensions.modules.type.UIModule;
 import com.github.naios.wide.modules.ModuleDefinition;
 
-public class Terminal extends Module implements UserInferface
+public class Terminal extends Module implements UIModule
 {
     public Terminal(final ModuleDefinition definition)
     {

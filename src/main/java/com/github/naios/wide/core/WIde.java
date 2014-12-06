@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.github.naios.wide.core.framework.extensions.modules.Module;
 import com.github.naios.wide.core.framework.extensions.modules.ModuleHolder;
+import com.github.naios.wide.core.framework.extensions.modules.type.UIModule;
 import com.github.naios.wide.core.framework.extensions.scripts.ScriptHolder;
-import com.github.naios.wide.core.framework.ui.UserInferface;
 import com.github.naios.wide.core.session.config.Config;
 import com.github.naios.wide.core.session.database.Database;
 import com.github.naios.wide.core.session.enviroment.Enviroment;
@@ -111,16 +111,16 @@ public class WIde
     }
 
     /**
-     * Gets the preferred {@link UserInferface} from the {@link ModuleHolder} and displays it.
+     * Gets the preferred {@link UIModule} from the {@link ModuleHolder} and displays it.
      */
     private void DisplayUserInterface()
     {
         // TODO Implement better Selection for UserInterfaces
         // Currently its ok to select the first interface
-        final List<Module> interfaces = MODULES.getModulesInstanceOf(UserInferface.class);
+        final List<Module> interfaces = MODULES.getModulesInstanceOf(UIModule.class);
 
         if (!interfaces.isEmpty())
-            ((UserInferface)(interfaces.get(0))).show();
+            ((UIModule)(interfaces.get(0))).show();
         else if(WIde.getEnviroment().isTraceEnabled())
             System.err.println("No User Interface available!");
     }
