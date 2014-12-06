@@ -1,5 +1,6 @@
 package com.github.naios.wide.core.framework.storage.server;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.Pair;
 
 class ObservableValueHistory
 {
@@ -54,11 +56,23 @@ class ObservableValueHistory
 
 public class ServerStorageChangeHolder implements Observable
 {
-    private final static Object CURRENT_DATABASE_SYNC = new Object();
+    private enum ValueState
+    {
+        /**
+         * Is pushed on the stack so we know the time when the value is in sync with the database
+         */
+        VALUE_IN_SYNC,
 
-    private final static Object STRUCTURE_CREATED = new Object();
+        /**
+         * Is pushed on the stack so we know if the value was created
+         */
+        VALUE_CREATED,
 
-    private final static Object STRUCTURE_DELETED = new Object();
+        /**
+         * Is pushed on the stack so we know if the value was deleted
+         */
+        VALUE_DELETED;
+    }
 
     private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
 
@@ -70,7 +84,78 @@ public class ServerStorageChangeHolder implements Observable
 
     private final Set<InvalidationListener> listeners = new HashSet<>();
 
+    /**
+     * Inserts a new changed value into the history
+     */
     public void insert(final ObservableValueStorageInfo storage, final ObservableValue<?> observable, final Object oldValue)
+    {
+        pushOnHistory(storage, observable, oldValue);
+    }
+
+    /**
+     * Marks a ServerStorageStructure as just created
+     */
+    public void create(final ServerStorageStructure storage)
+    {
+        for (final Pair<ObservableValue<?>, Field> entry : storage)
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ValueState.VALUE_CREATED);
+    }
+
+    /**
+     * Marks a ServerStorageStructure as just deleted
+     */
+    public void delete(final ServerStorageStructure storage)
+    {
+        for (final Pair<ObservableValue<?>, Field> entry : storage)
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ValueState.VALUE_DELETED);
+    }
+
+    /**
+     * Cleans the history up to the last database sync
+     */
+    public void free()
+    {
+        for (final ObservableValueHistory history : history.values())
+        {
+            int idx = history.getHistory().indexOf(ValueState.VALUE_IN_SYNC);
+            if (idx == -1)
+                continue;
+
+            while (0 < idx--)
+                history.getHistory().remove(0);
+
+            if (history.getHistory().size() <= 1)
+                removeFromHistory(reference.get(history.getReference()));
+        }
+    }
+
+    /**
+     * Updates the current database sync of all history stacks to now
+     */
+    public void update()
+    {
+        for (final ObservableValueHistory h : history.values())
+        {
+            h.getHistory().remove(ValueState.VALUE_IN_SYNC);
+            h.getHistory().push(ValueState.VALUE_IN_SYNC);
+        }
+    }
+
+    /**
+     * Force removes all references of the observable from the holder
+     * You need to check if there are references before you call this method!
+     */
+    private void removeFromHistory(final ObservableValue<?> observable)
+    {
+        final ObservableValueHistory valueHistory = history.get(observable);
+        reference.remove(valueHistory.getReference());
+        history.remove(observable);
+
+        informListeners();
+    }
+
+    public void pushOnHistory(final ObservableValueStorageInfo storage, final ObservableValue<?> observable,
+            final Object oldValue)
     {
         ObservableValue<?> value = reference.get(storage);
         if (value == null)
@@ -87,21 +172,8 @@ public class ServerStorageChangeHolder implements Observable
             valueHistory = new ObservableValueHistory(storage);
             history.put(value, valueHistory);
         }
-
         if (valueHistory.validateNext())
             valueHistory.getHistory().push(oldValue);
-
-        informListeners();
-    }
-
-    /**
-     * Removes all references of the observable from the holder
-     */
-    private void removeHistoryOf(final ObservableValue<?> observable)
-    {
-        final ObservableValueHistory valueHistory = history.get(observable);
-        reference.remove(valueHistory.getReference());
-        history.remove(observable);
 
         informListeners();
     }
@@ -150,16 +222,23 @@ public class ServerStorageChangeHolder implements Observable
             return;
 
         if (valueHistory.getHistory().empty())
-            removeHistoryOf(observable);
+            removeFromHistory(observable);
 
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
             final Object value = valueHistory.getHistory().pop();
-            if (value == CURRENT_DATABASE_SYNC)
+            if (value.equals(ValueState.VALUE_IN_SYNC))
+            {
                 if (toCurrentSync)
                     break;
                 else
                     continue;
+            }
+            else if (value.equals(ValueState.VALUE_CREATED) ||
+                     value.equals(ValueState.VALUE_DELETED))
+            {
+                // TODO
+            }
 
             // Prevents recursive calls
             valueHistory.invalidate();
@@ -170,7 +249,7 @@ public class ServerStorageChangeHolder implements Observable
 
         // If the history is empty remove the observable from the history
         if (valueHistory.getHistory().empty())
-            removeHistoryOf(observable);
+            removeFromHistory(observable);
         else
             informListeners();
     }
@@ -225,7 +304,7 @@ public class ServerStorageChangeHolder implements Observable
         final Collection<ObservableValue<?>> set = new HashSet<>();
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
         {
-            final int current_sync_pos = entry.getValue().getHistory().indexOf(CURRENT_DATABASE_SYNC);
+            final int current_sync_pos = entry.getValue().getHistory().indexOf(ValueState.VALUE_IN_SYNC);
             final int current_size = entry.getValue().getHistory().size();
             if (current_sync_pos < (current_size - 1))
                 set.add(entry.getKey());
@@ -244,18 +323,6 @@ public class ServerStorageChangeHolder implements Observable
             return h.getReference();
         else
             return null;
-    }
-
-    /**
-     * Updates the current database sync of all history stacks to now
-     */
-    public void updateCurrentSync()
-    {
-        for (final ObservableValueHistory h : history.values())
-        {
-            h.getHistory().remove(CURRENT_DATABASE_SYNC);
-            h.getHistory().push(CURRENT_DATABASE_SYNC);
-        }
     }
 
     private void informListeners()

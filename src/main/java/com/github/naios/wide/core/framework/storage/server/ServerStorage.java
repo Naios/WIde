@@ -400,7 +400,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new BadMappingException(type);
         }
 
-        record.setState(ServerStorageStructureState.STATE_NEW);
+        record.setState(ServerStorageStructureState.STATE_CREATED);
 
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
@@ -418,6 +418,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         }
 
+        onStructureCreated(record);
         return (T) record;
     }
 
@@ -427,14 +428,22 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
                 ServerStorageEntry.class, true);
     }
 
-    protected void valueChanged(final ServerStorageStructure record, final Field field, final ObservableValue<?> observable, final Object oldValue)
+    protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
-        ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(record, field), observable, oldValue);
+        storage.setState(ServerStorageStructureState.STATE_UPDATED);
+        ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
-    protected void structureDeleted(final ServerStorageStructure serverStorageStructure)
+    protected void onStructureCreated(final ServerStorageStructure storage)
     {
-        // TODO
+        storage.setState(ServerStorageStructureState.STATE_CREATED);
+        ServerStorageChangeHolder.instance().create(storage);
+    }
+
+    protected void onStructureDeleted(final ServerStorageStructure storage)
+    {
+        storage.setState(ServerStorageStructureState.STATE_DELETED);
+        ServerStorageChangeHolder.instance().delete(storage);
     }
 
     @Override

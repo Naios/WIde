@@ -174,6 +174,7 @@ public class Test extends Script
 
         System.out.println(myentry);
 
+        System.out.println(ServerStorageChangeHolder.instance());
 
 
 

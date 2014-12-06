@@ -116,8 +116,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     protected void valueChanged(final Field field, final ObservableValue<?> me, final Object oldValue)
     {
-        setState(ServerStorageStructureState.STATE_UPDATED);
-        owner.valueChanged(this, field, me, oldValue);
+        owner.onValueChanged(this, field, me, oldValue);
     }
 
     public boolean hasState(final ServerStorageStructureState state)
@@ -132,8 +131,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     public void delete()
     {
-        setState(ServerStorageStructureState.STATE_DELETED);
-        owner.structureDeleted(this);
+        owner.onStructureDeleted(this);
     }
 
     public boolean isInSync()
@@ -148,7 +146,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     public boolean isNew()
     {
-        return state.equals(ServerStorageStructureState.STATE_NEW);
+        return state.equals(ServerStorageStructureState.STATE_CREATED);
     }
 
     public boolean isDeleted()
