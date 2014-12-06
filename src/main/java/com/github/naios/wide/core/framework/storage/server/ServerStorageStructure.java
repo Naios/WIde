@@ -2,6 +2,7 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,8 @@ public abstract class ServerStorageStructure extends StorageStructure implements
     final private ServerStorage<?> owner;
 
     private ServerStorageStructureState state = ServerStorageStructureState.STATE_IN_SYNC;
+
+    private ServerStorageKey<?> key = null;
 
     public ServerStorageStructure(final ServerStorage<?> owner)
     {
@@ -64,25 +67,31 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         return list;
     }
 
-    public List<Object> getPrimaryKeys()
+    @SuppressWarnings("rawtypes")
+    public ServerStorageKey<?> getPrimaryKey()
     {
-        final List<Object> list = new LinkedList<>();
+        if (key == null)
+        {
+            final List<Object> keyCache = new ArrayList<>();
 
-        for (final Field field : getPrimaryFields())
-            {
-                if (!field.isAccessible())
-                    field.setAccessible(true);
-
-                try
+            for (final Field field : getPrimaryFields())
                 {
-                    list.add(field.get(this));
-                }
-                catch (final Exception e)
-                {
-                }
-            }
+                    if (!field.isAccessible())
+                        field.setAccessible(true);
 
-        return list;
+                    try
+                    {
+                        keyCache.add(field.get(this));
+                    }
+                    catch (final Exception e)
+                    {
+                    }
+                }
+
+            key = new ServerStorageKey(keyCache.toArray());
+        }
+
+        return key;
     }
 
     public static String getNameOfField(final Field field)
@@ -94,10 +103,10 @@ public abstract class ServerStorageStructure extends StorageStructure implements
             return field.getName();
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends ServerStorageStructure> ServerStorageKey<T> getKey()
     {
-        // TODO this seems to be very expensive
-        return new ServerStorageKey<T>(getPrimaryKeys().toArray());
+        return (ServerStorageKey<T>) getPrimaryKey();
     }
 
     protected ServerStorage<?> getOwner()
