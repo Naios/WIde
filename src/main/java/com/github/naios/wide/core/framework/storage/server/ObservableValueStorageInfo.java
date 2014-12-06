@@ -4,23 +4,19 @@ import java.lang.reflect.Field;
 
 public class ObservableValueStorageInfo
 {
-    private final String tableName;
-
     private final ServerStorageStructure structure;
 
     private final Field field;
 
-    public ObservableValueStorageInfo(final String tableName,
-            final ServerStorageStructure structure, final Field field)
+    public ObservableValueStorageInfo(final ServerStorageStructure structure, final Field field)
     {
-        this.tableName = tableName;
         this.structure = structure;
         this.field = field;
     }
 
     public String getTableName()
     {
-        return tableName;
+        return structure.getOwner().getTableName();
     }
 
     public ServerStorageStructure getStructure()
@@ -57,13 +53,6 @@ public class ObservableValueStorageInfo
         }
         else if (!structure.equals(other.structure))
             return false;
-        if (tableName == null)
-        {
-            if (other.tableName != null)
-                return false;
-        }
-        else if (!tableName.equals(other.tableName))
-            return false;
         return true;
     }
 
@@ -75,8 +64,6 @@ public class ObservableValueStorageInfo
         result = prime * result + ((field == null) ? 0 : field.hashCode());
         result = prime * result
                 + ((structure == null) ? 0 : structure.hashCode());
-        result = prime * result
-                + ((tableName == null) ? 0 : tableName.hashCode());
         return result;
     }
 }

@@ -94,7 +94,10 @@ public class ServerStorageChangeHolder implements Observable
         informListeners();
     }
 
-    public void remove(final ObservableValue<?> observable)
+    /**
+     * Removes all references of the observable from the holder
+     */
+    private void removeHistoryOf(final ObservableValue<?> observable)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         reference.remove(valueHistory.getReference());
@@ -147,7 +150,7 @@ public class ServerStorageChangeHolder implements Observable
             return;
 
         if (valueHistory.getHistory().empty())
-            remove(observable);
+            removeHistoryOf(observable);
 
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
@@ -167,7 +170,7 @@ public class ServerStorageChangeHolder implements Observable
 
         // If the history is empty remove the observable from the history
         if (valueHistory.getHistory().empty())
-            remove(observable);
+            removeHistoryOf(observable);
         else
             informListeners();
     }

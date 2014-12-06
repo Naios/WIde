@@ -17,28 +17,21 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         this.type = type;
     }
 
-    public ClientStorage<T> select()
+    public ClientStorage<T> select() throws ClientStorageException
     {
         // TODO improve this: maybe there is an easier way to get the extension
         final String extension = path.substring(path.lastIndexOf("."), path.length());
 
-        try
+        switch (extension)
         {
-            switch (extension)
-            {
-                case ADBStorage.EXTENSION:
-                    return new ADBStorage<T>(type, path);
-                case DB2Storage.EXTENSION:
-                    return new DB2Storage<T>(type, path);
-                case DBCStorage.EXTENSION:
-                    return new DBCStorage<T>(type, path);
-                default:
-                    return null;
-            }
-        }
-        catch (final Exception e)
-        {
-            return null;
+            case ADBStorage.EXTENSION:
+                return new ADBStorage<T>(type, path);
+            case DB2Storage.EXTENSION:
+                return new DB2Storage<T>(type, path);
+            case DBCStorage.EXTENSION:
+                return new DBCStorage<T>(type, path);
+            default:
+                return null;
         }
     }
 }

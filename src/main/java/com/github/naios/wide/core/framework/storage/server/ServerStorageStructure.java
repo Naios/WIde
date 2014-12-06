@@ -96,6 +96,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     public <T extends ServerStorageStructure> ServerStorageKey<T> getKey()
     {
+        // TODO this seems to be very expensive
         return new ServerStorageKey<T>(getPrimaryKeys().toArray());
     }
 
@@ -146,12 +147,6 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         return state.equals(ServerStorageStructureState.STATE_DELETED);
     }
 
-    @Override
-    public int hashCode()
-    {
-        return getKey().hashCode();
-    }
-
     private class ServerStorageIterator implements Iterator<Pair<ObservableValue<?>, Field>>
     {
         private final ServerStorageStructure storage;
@@ -192,5 +187,29 @@ public abstract class ServerStorageStructure extends StorageStructure implements
     public Iterator<Pair<ObservableValue<?>, Field>> iterator()
     {
         return new ServerStorageIterator(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ServerStorageStructure other = (ServerStorageStructure) obj;
+        if (owner == null)
+        {
+            if (other.owner != null)
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return getKey().hashCode();
     }
 }
