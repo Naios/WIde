@@ -1,6 +1,8 @@
-package com.github.naios.wide.core.framework.storage.server;
+package com.github.naios.wide.core.framework.storage.server.helper;
 
 import java.lang.reflect.Field;
+
+import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 
 public class ObservableValueStorageInfo
 {

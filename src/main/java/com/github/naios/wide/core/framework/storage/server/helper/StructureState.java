@@ -1,6 +1,6 @@
-package com.github.naios.wide.core.framework.storage.server;
+package com.github.naios.wide.core.framework.storage.server.helper;
 
-public enum ServerStorageStructureState
+public enum StructureState
 {
     /**
      * Is pushed on the history stack so we know the time when the value is in sync with the database

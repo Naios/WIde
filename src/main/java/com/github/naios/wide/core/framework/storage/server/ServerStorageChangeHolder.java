@@ -14,45 +14,11 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
+import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
+import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
-
-class ObservableValueHistory
-{
-    private final ObservableValueStorageInfo reference;
-
-    private final Stack<Object> history = new Stack<>();
-
-    // Prevents recursive calls from Rollbacks that inform changelisteners
-    private boolean nextIsValid = true;
-
-    public ObservableValueHistory(final ObservableValueStorageInfo reference)
-    {
-        this.reference = reference;
-    }
-
-    public ObservableValueStorageInfo getReference()
-    {
-        return reference;
-    }
-
-    public Stack<Object> getHistory()
-    {
-        return history;
-    }
-
-    public boolean validateNext()
-    {
-        final boolean cache = nextIsValid;
-        nextIsValid = true;
-        return cache;
-    }
-
-    public void invalidate()
-    {
-        nextIsValid = false;
-    }
-}
 
 public class ServerStorageChangeHolder implements Observable
 {
@@ -80,7 +46,7 @@ public class ServerStorageChangeHolder implements Observable
     public void create(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), ServerStorageStructureState.STATE_CREATED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
     }
 
     /**
@@ -89,7 +55,7 @@ public class ServerStorageChangeHolder implements Observable
     public void delete(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), ServerStorageStructureState.STATE_DELETED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_DELETED);
     }
 
     /**
@@ -99,7 +65,7 @@ public class ServerStorageChangeHolder implements Observable
     {
         for (final ObservableValueHistory history : history.values())
         {
-            int idx = history.getHistory().indexOf(ServerStorageStructureState.STATE_IN_SYNC);
+            int idx = history.getHistory().indexOf(StructureState.STATE_IN_SYNC);
             if (idx == -1)
                 continue;
 
@@ -118,8 +84,8 @@ public class ServerStorageChangeHolder implements Observable
     {
         for (final ObservableValueHistory h : history.values())
         {
-            h.getHistory().remove(ServerStorageStructureState.STATE_IN_SYNC);
-            h.getHistory().push(ServerStorageStructureState.STATE_IN_SYNC);
+            h.getHistory().remove(StructureState.STATE_IN_SYNC);
+            h.getHistory().push(StructureState.STATE_IN_SYNC);
         }
     }
 
@@ -212,15 +178,15 @@ public class ServerStorageChangeHolder implements Observable
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
             final Object value = valueHistory.getHistory().pop();
-            if (value.equals(ServerStorageStructureState.STATE_IN_SYNC))
+            if (value.equals(StructureState.STATE_IN_SYNC))
             {
                 if (toCurrentSync)
                     break;
                 else
                     continue;
             }
-            else if (value.equals(ServerStorageStructureState.STATE_CREATED) ||
-                     value.equals(ServerStorageStructureState.STATE_DELETED))
+            else if (value.equals(StructureState.STATE_CREATED) ||
+                     value.equals(StructureState.STATE_DELETED))
             {
                 // TODO
             }
@@ -289,7 +255,7 @@ public class ServerStorageChangeHolder implements Observable
         final Collection<ObservableValue<?>> set = new HashSet<>();
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
         {
-            final int current_sync_pos = entry.getValue().getHistory().indexOf(ServerStorageStructureState.STATE_IN_SYNC);
+            final int current_sync_pos = entry.getValue().getHistory().indexOf(StructureState.STATE_IN_SYNC);
             final int current_size = entry.getValue().getHistory().size();
             if (current_sync_pos < (current_size - 1))
                 set.add(entry.getKey());

@@ -10,6 +10,7 @@ import java.util.List;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.StorageStructure;
+import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.Pair;
 
@@ -17,7 +18,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 {
     final private ServerStorage<?> owner;
 
-    private ServerStorageStructureState state = ServerStorageStructureState.STATE_IN_SYNC;
+    private StructureState state = StructureState.STATE_IN_SYNC;
 
     private ServerStorageKey<?> key = null;
 
@@ -109,7 +110,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         return (ServerStorageKey<T>) getPrimaryKey();
     }
 
-    protected ServerStorage<?> getOwner()
+    public ServerStorage<?> getOwner()
     {
         return owner;
     }
@@ -119,12 +120,12 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         owner.onValueChanged(this, field, me, oldValue);
     }
 
-    public boolean hasState(final ServerStorageStructureState state)
+    public boolean hasState(final StructureState state)
     {
         return this.state.equals(state);
     }
 
-    protected void setState(final ServerStorageStructureState state)
+    protected void setState(final StructureState state)
     {
         this.state = state;
     }

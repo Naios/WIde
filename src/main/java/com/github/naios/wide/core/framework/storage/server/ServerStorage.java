@@ -15,6 +15,8 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
+import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
+import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.core.session.hooks.Hook;
@@ -400,7 +402,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new BadMappingException(type);
         }
 
-        record.setState(ServerStorageStructureState.STATE_CREATED);
+        record.setState(StructureState.STATE_CREATED);
 
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
@@ -430,19 +432,19 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
-        storage.setState(ServerStorageStructureState.STATE_UPDATED);
+        storage.setState(StructureState.STATE_UPDATED);
         ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
     {
-        storage.setState(ServerStorageStructureState.STATE_CREATED);
+        storage.setState(StructureState.STATE_CREATED);
         ServerStorageChangeHolder.instance().create(storage);
     }
 
     protected void onStructureDeleted(final ServerStorageStructure storage)
     {
-        storage.setState(ServerStorageStructureState.STATE_DELETED);
+        storage.setState(StructureState.STATE_DELETED);
         ServerStorageChangeHolder.instance().delete(storage);
     }
 
