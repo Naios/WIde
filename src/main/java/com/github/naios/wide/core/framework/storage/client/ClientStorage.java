@@ -458,7 +458,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             return null;
     }
 
-    public T getEntry(final int entry) throws MissingEntryException
+    public T getEntry(final int entry) throws ClientStorageException
     {
         final int offset = entryToOffsetCache.get(entry);
         if (offset == 0)
@@ -475,7 +475,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     }
 
     @SuppressWarnings("unchecked")
-    private T getEntryByOffset(final int offset) throws MissingEntryException
+    private T getEntryByOffset(final int offset) throws ClientStorageException
     {
         if (offset >= getStringBlockOffset())
             throw new MissingEntryException();
@@ -613,7 +613,14 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             @Override
             public T next()
             {
-                return getEntryByOffset(getOffset(idx++, 0));
+                try
+                {
+                    return getEntryByOffset(getOffset(idx++, 0));
+                }
+                catch (final Exception e)
+                {
+                    return null;
+                }
             }
         };
     }
