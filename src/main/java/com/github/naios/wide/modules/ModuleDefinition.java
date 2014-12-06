@@ -14,7 +14,7 @@ public enum ModuleDefinition
 
     private final Class<? extends Module> type;
 
-    private ModuleDefinition(String uuid, Class<? extends Module> type)
+    private ModuleDefinition(final String uuid, final Class<? extends Module> type)
     {
         this.uuid = uuid;
         this.type = type;

@@ -13,7 +13,7 @@ import com.github.naios.wide.modules.ModuleDefinition;
 
 public class Terminal extends Module implements UserInferface
 {
-    public Terminal(ModuleDefinition definition)
+    public Terminal(final ModuleDefinition definition)
     {
         super(definition);
     }
@@ -114,7 +114,7 @@ public class Terminal extends Module implements UserInferface
         }
     }
 
-    private void execute(String cmd)
+    private void execute(final String cmd)
     {
         if (cmd.length() == 0)
             return;

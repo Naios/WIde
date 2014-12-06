@@ -64,7 +64,7 @@ public class ModuleHolder extends Holder
         WIde.getHooks().fire(Hook.ON_MODULES_UNLOADED);
     }
 
-    public List<Module> getModulesInstanceOf(Class<?> type)
+    public List<Module> getModulesInstanceOf(final Class<?> type)
     {
         final List<Module> modules = new LinkedList<>();
 

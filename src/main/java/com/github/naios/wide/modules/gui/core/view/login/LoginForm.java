@@ -14,6 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
+
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 
@@ -56,7 +57,7 @@ public class LoginForm
 	private Label errorLabel;
 
 	@FXML
-	void loginButtonPressed(ActionEvent event)
+	void loginButtonPressed(final ActionEvent event)
 	{
 		tryConnect();
 	}
@@ -90,13 +91,13 @@ public class LoginForm
 		final StringConverter<Boolean> stringToBooleanconverter = new StringConverter<Boolean>()
 		{
 			@Override
-			public Boolean fromString(String from)
+			public Boolean fromString(final String from)
 			{
 				return Boolean.valueOf(from);
 			}
 
 			@Override
-			public String toString(Boolean to)
+			public String toString(final Boolean to)
 			{
 				return to.toString();
 			}
@@ -123,8 +124,8 @@ public class LoginForm
 
 					@Override
 					public void changed(
-							ObservableValue<? extends Boolean> arg0,
-							Boolean arg1, Boolean val)
+							final ObservableValue<? extends Boolean> arg0,
+							final Boolean arg1, final Boolean val)
 					{
 						if (val)
 							errorLabel.setText(text);

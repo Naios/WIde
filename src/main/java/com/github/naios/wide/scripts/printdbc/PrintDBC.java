@@ -10,13 +10,13 @@ import com.github.naios.wide.scripts.ScriptDefinition;
 
 public class PrintDBC extends Script
 {
-    public PrintDBC(ScriptDefinition definition)
+    public PrintDBC(final ScriptDefinition definition)
     {
         super(definition);
     }
 
     @Override
-    public void run(String[] args)
+    public void run(final String[] args)
     {
         final String path =
                 WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + args[0];

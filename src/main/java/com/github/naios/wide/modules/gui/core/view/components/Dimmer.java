@@ -4,8 +4,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -19,7 +17,7 @@ public class Dimmer extends StackPane
         setVisible(false);
     }
 
-    public void setDim(boolean on, Node content)
+    public void setDim(final boolean on, final Node content)
     {
         if (on)
             setOn(content);
@@ -36,14 +34,10 @@ public class Dimmer extends StackPane
 
         new Timeline(
                 new KeyFrame(Duration.seconds(0.7d),
-                        new EventHandler<ActionEvent>()
+                        t ->
                         {
-                            @Override
-                            public void handle(ActionEvent t)
-                            {
-                                setCache(false);
-                                content.setCache(false);
-                            }
+                            setCache(false);
+                            content.setCache(false);
                         }, new KeyValue(opacityProperty(), 1f,
                                 Interpolator.EASE_BOTH)), new KeyFrame(
                         Duration.seconds(0.7d), new KeyValue(
@@ -56,16 +50,12 @@ public class Dimmer extends StackPane
         setCache(true);
         content.setCache(true);
         new Timeline(new KeyFrame(Duration.seconds(0.7d),
-                new EventHandler<ActionEvent>()
+                t ->
                 {
-                    @Override
-                    public void handle(ActionEvent t)
-                    {
-                        setCache(false);
-                        content.setCache(false);
-                        setVisible(false);
-                        getChildren().clear();
-                    }
+                    setCache(false);
+                    content.setCache(false);
+                    setVisible(false);
+                    getChildren().clear();
                 }, new KeyValue(opacityProperty(), 0, Interpolator.EASE_BOTH)),
                 new KeyFrame(Duration.seconds(0.7d), new KeyValue(content
                         .opacityProperty(), 1f, Interpolator.EASE_BOTH)))

@@ -11,7 +11,7 @@ public abstract class Module
 
     private final List<ModuleDefinition> requires = new LinkedList<ModuleDefinition>();
 
-    public Module(ModuleDefinition definition)
+    public Module(final ModuleDefinition definition)
     {
         this.definition = definition;
     }
@@ -28,7 +28,7 @@ public abstract class Module
         return definition.getUUID();
     }
 
-    public Module requires(ModuleDefinition definition)
+    public Module requires(final ModuleDefinition definition)
     {
         requires.add(definition);
         return this;

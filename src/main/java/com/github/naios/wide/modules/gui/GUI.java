@@ -8,7 +8,7 @@ import com.github.naios.wide.modules.gui.core.FXApplication;
 
 public class GUI extends Module implements UserInferface
 {
-    public GUI(ModuleDefinition definition)
+    public GUI(final ModuleDefinition definition)
     {
         super(definition);
     }

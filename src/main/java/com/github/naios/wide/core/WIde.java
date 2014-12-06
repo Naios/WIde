@@ -88,7 +88,7 @@ public class WIde
         return INSTANCE;
     }
 
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
         if (!getEnviroment().setUp(args))
             return;

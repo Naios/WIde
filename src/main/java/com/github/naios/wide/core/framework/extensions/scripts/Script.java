@@ -7,7 +7,7 @@ public abstract class Script
 {
     private final ScriptDefinition definition;
 
-    public Script(ScriptDefinition definition)
+    public Script(final ScriptDefinition definition)
     {
         this.definition = definition;
     }

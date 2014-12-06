@@ -10,7 +10,7 @@ public class ApplicationInfo
 
     private final String path;
 
-    public ApplicationInfo(String path)
+    public ApplicationInfo(final String path)
     {
         this.path = path;
     }

@@ -7,16 +7,16 @@ import javafx.scene.Parent;
 
 public class FXMLFormFactory
 {
-	public static Parent create(URL url)
+	public static Parent create(final URL url)
 	{
 		try
 		{
 			return FXMLLoader.load(url);
 
-		} catch (Exception e)
+		} catch (final Exception e)
 		{
 			e.printStackTrace();
-			
+
 			assert false : url + " does not exist in the package";
 			return null;
 		}

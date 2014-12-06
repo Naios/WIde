@@ -22,6 +22,7 @@ import com.github.naios.wide.core.framework.storage.server.helper.StructureState
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
 
+@SuppressWarnings("serial")
 class MalformedHistoryException extends IllegalStateException
 {
     public MalformedHistoryException()

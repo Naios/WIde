@@ -7,13 +7,13 @@ import com.github.naios.wide.scripts.ScriptDefinition;
 
 public class HelloWorld extends Script
 {
-    public HelloWorld(ScriptDefinition definition)
+    public HelloWorld(final ScriptDefinition definition)
     {
         super(definition);
     }
 
     @Override
-    public void run(String[] args)
+    public void run(final String[] args)
     {
         System.out.println("Hello World!");
 

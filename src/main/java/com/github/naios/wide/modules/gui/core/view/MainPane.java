@@ -3,16 +3,14 @@ package com.github.naios.wide.modules.gui.core.view;
 
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
 import com.github.naios.wide.modules.gui.core.resources.Resource;
 import com.github.naios.wide.modules.gui.core.view.components.Dimmer;
 import com.github.naios.wide.modules.gui.core.view.components.WorldMap;
@@ -38,16 +36,12 @@ public class MainPane extends StackPane
         getStylesheets().add(Resource.get("style/WIde.css"));
 
         // Dimmer
-        dimmer.setOnMouseClicked(new EventHandler<MouseEvent>()
+        dimmer.setOnMouseClicked(event ->
         {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                if (isDialogCloseable)
-                    hideDialog();
+            if (isDialogCloseable)
+                hideDialog();
 
-                event.consume();
-            }
+            event.consume();
         });
 
         final VBox controls = new VBox();
@@ -61,50 +55,46 @@ public class MainPane extends StackPane
             final Button button = new Button("Settings");
             button.setPrefSize(70, 20);
 
-            button.setOnAction(new EventHandler<ActionEvent>()
+            button.setOnAction(e ->
             {
-                @Override
-                public void handle(ActionEvent e)
+                /*
+                 * Name c = null; while (c == null) c =
+                 * Cache.CreatureNameCache.get(new Random().nextInt(50000));
+                 *
+                 *
+                 * System.out.println(c.getName());
+                 */
+
+                // setDialog(new Button("Test"), false, true);
+
+                /*
+                try
                 {
-                    /*
-                     * Name c = null; while (c == null) c =
-                     * Cache.CreatureNameCache.get(new Random().nextInt(50000));
-                     *
-                     *
-                     * System.out.println(c.getName());
-                     */
+                    final Mapping mi = new Mapping(Database.WorldDatabase
+                            .query("SELECT * FROM creature_addon limit 5"));
 
-                    // setDialog(new Button("Test"), false, true);
-
-                    /*
+                    System.out.print(mi);
                     try
                     {
-                        final Mapping mi = new Mapping(Database.WorldDatabase
-                                .query("SELECT * FROM creature_addon limit 5"));
-
-                        System.out.print(mi);
-                        try
-                        {
-                            wait();
-                        } catch (final InterruptedException e1)
-                        {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-
-                        //for (Mapping m : mi)
-                        {
-                            mi.column(3).set("333");
-                            mi.column(4).set("333");
-                        }
-
-                        // System.out.println(new SQLBuilder(mi).buildUpdateQuery());
-
-                    } catch (final SQLException e1)
+                        wait();
+                    } catch (final InterruptedException e1)
                     {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
                     }
-                    */
+
+                    //for (Mapping m : mi)
+                    {
+                        mi.column(3).set("333");
+                        mi.column(4).set("333");
+                    }
+
+                    // System.out.println(new SQLBuilder(mi).buildUpdateQuery());
+
+                } catch (final SQLException e1)
+                {
                 }
+                */
             });
 
             taskbar.getChildren().add(button);
@@ -151,8 +141,8 @@ public class MainPane extends StackPane
             final private double limit;
             final private ReadOnlyDoubleProperty property;
 
-            public LimitedDoubleBinding(ReadOnlyDoubleProperty property,
-                    double limit)
+            public LimitedDoubleBinding(final ReadOnlyDoubleProperty property,
+                    final double limit)
             {
                 this.limit = limit;
                 this.property = property;
@@ -166,16 +156,9 @@ public class MainPane extends StackPane
             }
         }
 
-        public NodeWrapper(Region container, Node node, boolean maximized)
+        public NodeWrapper(final Region container, final Node node, final boolean maximized)
         {
-            setOnMouseClicked(new EventHandler<MouseEvent>()
-            {
-                @Override
-                public void handle(MouseEvent event)
-                {
-                    event.consume();
-                }
-            });
+            setOnMouseClicked(event -> event.consume());
 
             getStyleClass().add("dialog");
             getChildren().add(node);
@@ -196,7 +179,7 @@ public class MainPane extends StackPane
         }
     }
 
-    public void setDialog(Node node, boolean maximized, boolean closeable)
+    public void setDialog(final Node node, final boolean maximized, final boolean closeable)
     {
         this.isDialogCloseable = closeable;
 

@@ -10,7 +10,7 @@ public enum DatabaseType
 
     private final Constants entry;
 
-    DatabaseType(Constants entry)
+    DatabaseType(final Constants entry)
     {
         this.entry = entry;
     }

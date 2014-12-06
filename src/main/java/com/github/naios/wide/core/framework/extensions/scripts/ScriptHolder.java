@@ -57,12 +57,12 @@ public class ScriptHolder extends Holder
         return scripts.keySet();
     }
 
-    public Script getScriptByName(String name)
+    public Script getScriptByName(final String name)
     {
         return scripts.get(name);
     }
 
-    public boolean execute(String cmd)
+    public boolean execute(final String cmd)
     {
         // Split space but no quotes
         final String[] args = cmd.split(" (?=(([^'\"]*['\"]){2})*[^'\"]*$)");

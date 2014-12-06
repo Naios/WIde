@@ -20,7 +20,7 @@ public enum ScriptDefinition
 
     private final Class<? extends Script> type;
 
-    private ScriptDefinition(String uuid, Class<? extends Script> type)
+    private ScriptDefinition(final String uuid, final Class<? extends Script> type)
     {
         this.uuid = uuid;
         this.type = type;

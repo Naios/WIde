@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
@@ -79,15 +78,7 @@ public class Config
         }
 
         // Init GameBuilds
-        getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).addListener(new ChangeListener<String>()
-        {
-            @Override
-            public void changed(final ObservableValue<? extends String> observable,
-                    final String oldValue, final String newValue)
-            {
-                recalculateGameBuild();
-            }
-        });
+        getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).addListener((ChangeListener<String>) (observable, oldValue, newValue) -> recalculateGameBuild());
 
         isLoaded = true;
 
@@ -142,22 +133,16 @@ public class Config
 			    final String value = storage.getProperty(key);
 
 			    property = new SimpleStringProperty(value);
-			    property.addListener(new ChangeListener<String>()
-				{
-					@Override
-					public void changed(
-							final ObservableValue<? extends String> observable,
-							final String oldValue, final String newValue)
-					{
-						storage.setProperty(key, newValue);
+			    property.addListener((ChangeListener<String>) (observable, oldValue, newValue) ->
+                {
+                	storage.setProperty(key, newValue);
 
-						if (!hasChanged)
-						    hasChanged = true;
+                	if (!hasChanged)
+                	    hasChanged = true;
 
-						// Hook.ON_CONFIG_CHANGED
-						WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
-					}
-				});
+                	// Hook.ON_CONFIG_CHANGED
+                	WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
+                });
 
 				properties.put(key, property);
 			}

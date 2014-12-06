@@ -6,7 +6,7 @@ public abstract class HookListener
 
     private final Object owner;
 
-    public HookListener(Hook hook, Object owner)
+    public HookListener(final Hook hook, final Object owner)
     {
         this.hook = hook;
         this.owner = owner;

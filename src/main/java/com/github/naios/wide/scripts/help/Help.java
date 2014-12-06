@@ -6,13 +6,13 @@ import com.github.naios.wide.scripts.ScriptDefinition;
 
 public class Help extends Script
 {
-    public Help(ScriptDefinition definition)
+    public Help(final ScriptDefinition definition)
     {
         super(definition);
     }
 
     @Override
-    public void run(String[] args)
+    public void run(final String[] args)
     {
         if (args.length == 0)
         {

@@ -23,7 +23,7 @@ class FileFetcher implements Runnable
 
     private final Runnable postaction;
 
-    public FileFetcher(String origin, String target, boolean overwrite, Runnable postaction)
+    public FileFetcher(final String origin, final String target, final boolean overwrite, final Runnable postaction)
     {
         this.origin = origin;
         this.target = target;
@@ -61,13 +61,13 @@ public class Fetch extends Script
 {
     final static String WOWHEAD_URL = "http://www.wowhead.com";
 
-    public Fetch(ScriptDefinition definition)
+    public Fetch(final ScriptDefinition definition)
     {
         super(definition);
     }
 
     @Override
-    public void run(String[] args)
+    public void run(final String[] args)
     {
         if (args.length < 2)
         {
@@ -112,16 +112,12 @@ public class Fetch extends Script
         {
             final int id = i;
 
-            pool.execute(new FileFetcher(WOWHEAD_URL + "/" + type + "=" + i, targetdir + "/"+ i + ".html", overwrite, new Runnable()
+            pool.execute(new FileFetcher(WOWHEAD_URL + "/" + type + "=" + i, targetdir + "/"+ i + ".html", overwrite, () ->
             {
-                @Override
-                public void run()
-                {
-                    if (WIde.getEnviroment().isTraceEnabled())
-                        System.out.println(String.format("Fetched %s id: %s", type, id));
+                if (WIde.getEnviroment().isTraceEnabled())
+                    System.out.println(String.format("Fetched %s id: %s", type, id));
 
-                    count.incrementAndGet();
-                }
+                count.incrementAndGet();
             }));
         }
 
