@@ -2,7 +2,6 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -15,7 +14,6 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
@@ -95,7 +93,7 @@ public class ServerStorageChangeHolder implements Observable
             while (0 < idx--)
                 history.getHistory().remove(0);
 
-            if (history.getHistory().size() <= 1)
+            if (empty(history))
                 removeFromHistory(reference.get(history.getReference()));
         }
     }
@@ -165,8 +163,8 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
-     * Reverts all changes hard until the point you started the application. <br>
-     * <b> Includes Create/ Inserts, may affect other observable values as well!<b>
+     * Reverts changes hard, may affect whole structure<br>
+     * <b> Includes Create/ Inserts<b>
      * @param observable value you want to edit.
      */
     public void revert(final ObservableValue<?> observable)
@@ -180,7 +178,7 @@ public class ServerStorageChangeHolder implements Observable
      */
     public void reset(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, -1, false, false);
+        rollback_impl(observable, -1, false, true);
     }
 
     /**
@@ -203,6 +201,7 @@ public class ServerStorageChangeHolder implements Observable
 
     /**
      * Rolls {@link times} operations back.
+     * You cant't roll back behind insert/deletes
      * @param observable The Observable value you want to edit.
      * @param times How many operations you want to roll back.
      */
@@ -222,7 +221,7 @@ public class ServerStorageChangeHolder implements Observable
 
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
-            final Object value = valueHistory.getHistory().pop();
+            final Object value = valueHistory.getHistory().peek();
             if (value.equals(StructureState.STATE_IN_SYNC))
             {
                 if (toCurrentSync)
@@ -233,32 +232,16 @@ public class ServerStorageChangeHolder implements Observable
             else if (value.equals(StructureState.STATE_CREATED)
                     || value.equals(StructureState.STATE_DELETED))
             {
-                try
-                {
-                    set(observable, valueHistory.getHistory().pop());
-                }
-                catch (final EmptyStackException e)
-                {
-                    throw new MalformedHistoryException();
-                }
-
-                // TODO Add database connection here
-                final SQLBuilder builder = new SQLBuilder();
-
-                if (value.equals(StructureState.STATE_CREATED))
-                    builder.addDelete(valueHistory.getReference().getStructure());
-                else
-                    builder.addCreate(valueHistory.getReference().getStructure());
-
-                builder.commit();
+                valueHistory.getHistory().pop();
                 continue;
             }
 
+            valueHistory.getHistory().pop();
             set(observable, value);
         }
 
         // If the history is empty remove the observable from the history
-        if (valueHistory.getHistory().empty())
+        if (empty(valueHistory))
             removeFromHistory(observable);
         else
             informListeners();
@@ -275,6 +258,11 @@ public class ServerStorageChangeHolder implements Observable
 
         if (!ServerStorageFieldType.set(observable, value))
             valueHistory.validateNext();
+    }
+
+    private boolean empty(final ObservableValueHistory history)
+    {
+        return history.getHistory().size() <= 1;
     }
 
     @Override
