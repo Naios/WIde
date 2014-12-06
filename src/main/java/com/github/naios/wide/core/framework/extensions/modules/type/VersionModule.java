@@ -6,7 +6,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageStructur
 
 public interface VersionModule
 {
-    public GameBuildMask getVersions();
+    public GameBuildMask getGameBuilds();
 
     public Class<? extends ServerStorageStructure> getServerStructure(final String name);
 
