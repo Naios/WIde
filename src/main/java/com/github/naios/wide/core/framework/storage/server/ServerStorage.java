@@ -132,7 +132,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         for (final Field field : keys)
         {
-            final ServerStorageType fieldType = ServerStorageType.getType(field);
+            final ServerStorageFieldType fieldType = ServerStorageFieldType.getType(field);
             if (fieldType == null)
                 throw new IllegalTypeException(field.getType());
 
@@ -379,7 +379,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         try
         {
             for (final Field field : record.getAllFields())
-                ServerStorageType.doMapFieldToRecordFromResult(field, record, result);
+                ServerStorageFieldType.doMapFieldToRecordFromResult(field, record, result);
         }
         catch (final Exception e)
         {
@@ -412,11 +412,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             if (primaryFields.contains(field))
             {
                 final int idx = primaryFields.indexOf(field);
-                ServerStorageType.doMapFieldToRecordFromObject(field, record, key.get()[idx]);
+                ServerStorageFieldType.doMapFieldToRecordFromObject(field, record, key.get()[idx]);
             }
             else
             {
-                ServerStorageType.doMapFieldToRecordFromObject(field, record, null);
+                ServerStorageFieldType.doMapFieldToRecordFromObject(field, record, null);
             }
         }
 

@@ -194,7 +194,7 @@ public class ServerStorageChangeHolder implements Observable
             // Prevents recursive calls
             valueHistory.invalidate();
 
-            if (!ServerStorageType.set(observable, value))
+            if (!ServerStorageFieldType.set(observable, value))
                 valueHistory.validateNext();
         }
 

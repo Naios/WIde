@@ -41,7 +41,7 @@ class NoMetaEnumException extends ServerStorageException
     }
 }
 
-public enum ServerStorageType
+public enum ServerStorageFieldType
 {
     // TODO Find another unhacky way fix this generetic shit problem...
 
@@ -368,7 +368,7 @@ public enum ServerStorageType
 
     private final BiConsumer<ObservableValue<?>, Object> set;
 
-    private ServerStorageType(final Predicate<Class<?>> instanceOfCheck,
+    private ServerStorageFieldType(final Predicate<Class<?>> instanceOfCheck,
                                 final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult,
                                     final BiFunction<Object, Field, ObservableValue<?>> createFromObjectOrEmpty,
                                         final BiConsumer<ObservableValue<?>, Object> set)
@@ -394,14 +394,14 @@ public enum ServerStorageType
         return createFromObjectOrEmpty.apply(object, field);
     }
 
-    public static ServerStorageType getType(final Field field)
+    public static ServerStorageFieldType getType(final Field field)
     {
         return getType(field.getType());
     }
 
-    public static ServerStorageType getType(final Class<?> object)
+    public static ServerStorageFieldType getType(final Class<?> object)
     {
-        for (final ServerStorageType me : values())
+        for (final ServerStorageFieldType me : values())
             if (me.instanceOfCheck.test(object))
                 return me;
 
@@ -434,7 +434,7 @@ public enum ServerStorageType
         if (!field.isAccessible())
             field.setAccessible(true);
 
-        final ServerStorageType fieldType = ServerStorageType.getType(field);
+        final ServerStorageFieldType fieldType = ServerStorageFieldType.getType(field);
         final ObservableValue<?> value = fieldType.createFromResult(result, field);
 
         value.addListener(new ServerStoragedChangeListener(record, field));
@@ -456,7 +456,7 @@ public enum ServerStorageType
         if (!field.isAccessible())
             field.setAccessible(true);
 
-        final ServerStorageType fieldType = ServerStorageType.getType(field);
+        final ServerStorageFieldType fieldType = ServerStorageFieldType.getType(field);
         final ObservableValue<?> value = fieldType.createFromObject(object, field);
 
         value.addListener(new ServerStoragedChangeListener(record, field));
@@ -480,7 +480,7 @@ public enum ServerStorageType
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
         System.out.println(String.format("DEBUG: %s %s", observable, value));
-        final ServerStorageType storageType = getType(observable.getClass());
+        final ServerStorageFieldType storageType = getType(observable.getClass());
         if (storageType == null)
             return false;
 
