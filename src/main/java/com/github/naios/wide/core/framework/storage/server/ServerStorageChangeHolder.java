@@ -80,7 +80,7 @@ public class ServerStorageChangeHolder implements Observable
     public void create(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ServerStorageStructureState.STATE_CREATED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), ServerStorageStructureState.STATE_CREATED);
     }
 
     /**
@@ -89,11 +89,11 @@ public class ServerStorageChangeHolder implements Observable
     public void delete(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ServerStorageStructureState.STATE_DELETED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), ServerStorageStructureState.STATE_DELETED);
     }
 
     /**
-     * Cleans the history up to the last database sync
+     * Cleans up the history to the last database sync
      */
     public void free()
     {
@@ -136,6 +136,9 @@ public class ServerStorageChangeHolder implements Observable
         informListeners();
     }
 
+    /**
+     * Pushs an object to the history
+     */
     public void pushOnHistory(final ObservableValueStorageInfo storage, final ObservableValue<?> observable,
             final Object oldValue)
     {

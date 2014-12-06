@@ -8,7 +8,7 @@ public enum ServerStorageStructureState
     STATE_IN_SYNC,
 
     /**
-     * Is only used in the Structure to mark that it has changed.
+     * Is used in the Structure to mark that it has changed.
      */
     STATE_UPDATED,
 

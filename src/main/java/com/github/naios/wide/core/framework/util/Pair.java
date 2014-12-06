@@ -12,12 +12,12 @@ public class Pair<F, S>
         this.second = second;
     }
 
-    public F getFirst()
+    public F first()
     {
         return first;
     }
 
-    public S getSecond()
+    public S second()
     {
         return second;
     }
@@ -41,6 +41,7 @@ public class Pair<F, S>
             return false;
         if (getClass() != obj.getClass())
             return false;
+        @SuppressWarnings({ "rawtypes", "rawtypes" })
         final Pair other = (Pair) obj;
         if (first == null)
         {
