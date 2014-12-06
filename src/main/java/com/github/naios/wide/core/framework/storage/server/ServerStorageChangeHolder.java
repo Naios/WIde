@@ -56,24 +56,6 @@ class ObservableValueHistory
 
 public class ServerStorageChangeHolder implements Observable
 {
-    private enum ValueState
-    {
-        /**
-         * Is pushed on the stack so we know the time when the value is in sync with the database
-         */
-        VALUE_IN_SYNC,
-
-        /**
-         * Is pushed on the stack so we know if the value was created
-         */
-        VALUE_CREATED,
-
-        /**
-         * Is pushed on the stack so we know if the value was deleted
-         */
-        VALUE_DELETED;
-    }
-
     private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
 
     private final Map<ObservableValueStorageInfo, ObservableValue<?>> reference =
@@ -98,7 +80,7 @@ public class ServerStorageChangeHolder implements Observable
     public void create(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ValueState.VALUE_CREATED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ServerStorageStructureState.STATE_CREATED);
     }
 
     /**
@@ -107,7 +89,7 @@ public class ServerStorageChangeHolder implements Observable
     public void delete(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ValueState.VALUE_DELETED);
+            pushOnHistory(new ObservableValueStorageInfo(storage, entry.getSecond()), entry.getFirst(), ServerStorageStructureState.STATE_DELETED);
     }
 
     /**
@@ -117,7 +99,7 @@ public class ServerStorageChangeHolder implements Observable
     {
         for (final ObservableValueHistory history : history.values())
         {
-            int idx = history.getHistory().indexOf(ValueState.VALUE_IN_SYNC);
+            int idx = history.getHistory().indexOf(ServerStorageStructureState.STATE_IN_SYNC);
             if (idx == -1)
                 continue;
 
@@ -136,8 +118,8 @@ public class ServerStorageChangeHolder implements Observable
     {
         for (final ObservableValueHistory h : history.values())
         {
-            h.getHistory().remove(ValueState.VALUE_IN_SYNC);
-            h.getHistory().push(ValueState.VALUE_IN_SYNC);
+            h.getHistory().remove(ServerStorageStructureState.STATE_IN_SYNC);
+            h.getHistory().push(ServerStorageStructureState.STATE_IN_SYNC);
         }
     }
 
@@ -227,15 +209,15 @@ public class ServerStorageChangeHolder implements Observable
         while ((0 != times--) && (!valueHistory.getHistory().empty()))
         {
             final Object value = valueHistory.getHistory().pop();
-            if (value.equals(ValueState.VALUE_IN_SYNC))
+            if (value.equals(ServerStorageStructureState.STATE_IN_SYNC))
             {
                 if (toCurrentSync)
                     break;
                 else
                     continue;
             }
-            else if (value.equals(ValueState.VALUE_CREATED) ||
-                     value.equals(ValueState.VALUE_DELETED))
+            else if (value.equals(ServerStorageStructureState.STATE_CREATED) ||
+                     value.equals(ServerStorageStructureState.STATE_DELETED))
             {
                 // TODO
             }
@@ -304,7 +286,7 @@ public class ServerStorageChangeHolder implements Observable
         final Collection<ObservableValue<?>> set = new HashSet<>();
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
         {
-            final int current_sync_pos = entry.getValue().getHistory().indexOf(ValueState.VALUE_IN_SYNC);
+            final int current_sync_pos = entry.getValue().getHistory().indexOf(ServerStorageStructureState.STATE_IN_SYNC);
             final int current_size = entry.getValue().getHistory().size();
             if (current_sync_pos < (current_size - 1))
                 set.add(entry.getKey());

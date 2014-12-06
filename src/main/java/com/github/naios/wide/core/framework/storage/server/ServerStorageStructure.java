@@ -121,7 +121,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     public boolean hasState(final ServerStorageStructureState state)
     {
-        return state.equals(this.state);
+        return this.state.equals(state);
     }
 
     protected void setState(final ServerStorageStructureState state)
@@ -132,26 +132,6 @@ public abstract class ServerStorageStructure extends StorageStructure implements
     public void delete()
     {
         owner.onStructureDeleted(this);
-    }
-
-    public boolean isInSync()
-    {
-        return state.equals(ServerStorageStructureState.STATE_IN_SYNC);
-    }
-
-    public boolean isUpdated()
-    {
-        return state.equals(ServerStorageStructureState.STATE_UPDATED);
-    }
-
-    public boolean isNew()
-    {
-        return state.equals(ServerStorageStructureState.STATE_CREATED);
-    }
-
-    public boolean isDeleted()
-    {
-        return state.equals(ServerStorageStructureState.STATE_DELETED);
     }
 
     private class ServerStorageIterator implements Iterator<Pair<ObservableValue<?>, Field>>
