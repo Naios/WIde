@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
@@ -122,7 +121,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
      */
-    private final int recordsCount;
+    final int recordsCount;
 
     /**
      * The count of fields (<b>X / Columns</b>) of the Storage
@@ -144,90 +143,15 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
-    private final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
+    final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
 
-    private final static int FLOAT_CHECK_BOUNDS = 100000000;
+    final static int FLOAT_CHECK_BOUNDS = 100000000;
 
-    private final static float FLOAT_CHECK_PERCENTAGE = 0.9f;
+    final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
 
-    private final static int STRING_CHECK_MAX_RECORDS = 5;
+    final static int STRING_CHECK_MAX_RECORDS = 5;
 
-    // TODO Is there any type in the JDK that already implements this?
-    protected enum FieldType
-    {
-        STRING(String.class,
-        (storage, column) ->
-        {
-            for (int y = 0; (y < storage.recordsCount) && (y < STRING_CHECK_MAX_RECORDS); ++y)
-            {
-                final int offset = storage.buffer.getInt(storage.getOffset(y, column));
-                if (!storage.offsetToStringCache.containsKey(offset + storage.getStringBlockOffset()))
-                    return false;
-            }
-            return true;
-        }),
-        BOOLEAN(boolean.class,
-        (storage, column) ->
-        {
-            for (int y = 0; y < storage.recordsCount; ++y)
-            {
-                final int value = storage.buffer.getInt(storage.getOffset(y, column));
-                if (value != 0 || value != 1)
-                    return false;
-            }
-            return true;
-        }),
-        FLOAT(float.class,
-        (storage, column) ->
-        {
-            int match = 0, ignore = 0;
-
-            for (int y = 0; y < storage.recordsCount; ++y)
-            {
-                final int value = storage.buffer.getInt(storage.getOffset(y, column));
-                if ((value < -FLOAT_CHECK_BOUNDS) || (value > FLOAT_CHECK_BOUNDS))
-                    ++match;
-
-                if (value == 0)
-                    ++ignore;
-            }
-
-            final float ratio = (match) / ((float)storage.recordsCount - ignore);
-            return ratio >= FLOAT_CHECK_PERCENTAGE;
-        }),
-        INTEGER(int.class,
-        (storage, column) ->
-        {
-            return true;
-        }),
-        UNKNOWN(int.class,
-        (storage, column) ->
-        {
-            return true;
-        });
-
-        private final Class<?> type;
-
-        private final BiPredicate<ClientStorage<?>, Integer /*column*/> check;
-
-        FieldType(final Class<?> type, final BiPredicate<ClientStorage<?>, Integer> check)
-        {
-            this.type = type;
-            this.check = check;
-        }
-
-        public Class<?> getType()
-        {
-            return type;
-        }
-
-        public BiPredicate<ClientStorage<?>, Integer> getCheck()
-        {
-            return check;
-        }
-    }
-
-    private final FieldType[] fieldType;
+    private final ClientStorageFieldType[] fieldType;
 
     private final Class<? extends ClientStorageStructure> type;
 
@@ -388,8 +312,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
 
         // Calculate field types
-        fieldType = new FieldType[fieldsCount];
-        Arrays.fill(fieldType, FieldType.UNKNOWN);
+        fieldType = new ClientStorageFieldType[fieldsCount];
+        Arrays.fill(fieldType, ClientStorageFieldType.UNKNOWN);
 
         // Pre calculate type based on given mapping structure
         for (int x = 0; x < fieldsCount; ++x)
@@ -397,18 +321,21 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             final Field field = getFieldForColumn(x);
             if (field != null)
             {
-                for (final FieldType t : FieldType.values())
-                    if (field.getType().equals(t.getType()))
+                for (final ClientStorageFieldType t : ClientStorageFieldType.values())
+                    if (field.getType().isAssignableFrom(t.getType()))
+                    {
                         fieldType[x] = t;
+                        break;
+                    }
 
                 // If the column is a string but the given structure is wrong throw
                 // an exception
-                if (fieldType[x].equals(FieldType.STRING))
-                    if (FieldType.STRING.check.test(this, x))
+                if (fieldType[x].equals(ClientStorageFieldType.STRING))
+                    if (ClientStorageFieldType.STRING.check.test(this, x))
                         throw new WrongStructureException(type, path);
             }
             else
-                for (final FieldType f : FieldType.values())
+                for (final ClientStorageFieldType f : ClientStorageFieldType.values())
                     if (f.check.test(this, x))
                     {
                         fieldType[x] = f;
@@ -467,9 +394,14 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return getDataBlockOffset() + getRecordsCount() * getRecordSize();
     }
 
-    protected FieldType getFieldType(final int field)
+    protected ClientStorageFieldType getFieldType(final int field)
     {
         return fieldType[field];
+    }
+
+    public ClientStorageFieldType[] getFieldTypes()
+    {
+        return fieldType;
     }
 
     private Field[] getAllAnnotatedFields()
@@ -489,7 +421,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return null;
     }
 
-    private int getOffset(final int y, final int x)
+    int getOffset(final int y, final int x)
     {
         if ((y < 0 || y >= recordsCount) || (x < 0 || x >= fieldsCount))
         {

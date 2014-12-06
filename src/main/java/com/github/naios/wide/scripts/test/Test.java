@@ -9,6 +9,8 @@ import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
+import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -48,6 +50,12 @@ public class Test extends Script
     // Playground begin (only commit it in sub-branches to test stuff!)
     private void usePlayground(final String[] args)
     {
+        final ClientStorage<UnknownClientStorageStructure> sceneSript =
+                new ClientStorageSelector<UnknownClientStorageStructure>
+                    (UnknownClientStorageStructure.class, ClientStorageStructure.getPathOfFile("SceneScript.db2")).select();
+
+        System.out.println(String.format("DEBUG: %s", Arrays.toString(sceneSript.getFieldTypes())));
+
         final ClientStorage<TaxiNodes> taxiNodes =
                 new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
 
@@ -165,6 +173,10 @@ public class Test extends Script
         final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
 
         System.out.println(myentry);
+
+
+
+
 
         table.close();
     }

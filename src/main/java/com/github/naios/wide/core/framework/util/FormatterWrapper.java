@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.github.naios.wide.core.Constants;
+
 public class FormatterWrapper
 {
     public enum Options
@@ -26,7 +28,9 @@ public class FormatterWrapper
     @Override
     public String toString()
     {
-        if (obj instanceof Integer)
+        if (obj == null)
+            return Constants.STRING_NULL.toString();
+        else if (obj instanceof Integer)
             return obj.toString();
         else if ((obj instanceof Float) && !hasOption(Options.NO_FLOAT_DOUBLE_POSTFIX))
             return obj.toString() + "f";
