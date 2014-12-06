@@ -21,7 +21,9 @@ public class Database implements AutoCloseable
         return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ":"
                 + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get() + "/" + db + "?" + "user="
                 + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() + "&" + "password="
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD).get();
+                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD).get()
+                + "&allowMultiQueries=true"
+                + "&autoReConnect=true";
     }
 
     public Database()
@@ -88,6 +90,7 @@ public class Database implements AutoCloseable
             try
             {
                 final Connection connection = DriverManager.getConnection(con_string);
+
                 connections.put(type, connection);
 
             } catch (final SQLException e)

@@ -2,6 +2,7 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -14,11 +15,20 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
+
+class MalformedHistoryException extends IllegalStateException
+{
+    public MalformedHistoryException()
+    {
+        super("ServerStorageChangeHolder history seems to be corrupted, has no element before STATE_CREATED or STATE_DELETED");
+    }
+}
 
 public class ServerStorageChangeHolder implements Observable
 {
@@ -33,9 +43,17 @@ public class ServerStorageChangeHolder implements Observable
     private final Set<InvalidationListener> listeners = new HashSet<>();
 
     /**
+     * @return The global ServerStorageChangeHolder instance.
+     */
+    public static ServerStorageChangeHolder instance()
+    {
+        return INSTANCE;
+    }
+
+    /**
      * Inserts a new changed value into the history
      */
-    public void insert(final ObservableValueStorageInfo storage, final ObservableValue<?> observable, final Object oldValue)
+    protected void insert(final ObservableValueStorageInfo storage, final ObservableValue<?> observable, final Object oldValue)
     {
         pushOnHistory(storage, observable, oldValue);
     }
@@ -43,7 +61,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Marks a ServerStorageStructure as just created
      */
-    public void create(final ServerStorageStructure storage)
+    protected void create(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
             pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
@@ -52,10 +70,14 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Marks a ServerStorageStructure as just deleted
      */
-    public void delete(final ServerStorageStructure storage)
+    protected void delete(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_DELETED);
+        {
+            final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second());
+            insert(info, entry.first(), entry.first().getValue());
+            pushOnHistory(info, entry.first(), StructureState.STATE_DELETED);
+        }
     }
 
     /**
@@ -75,6 +97,18 @@ public class ServerStorageChangeHolder implements Observable
             if (history.getHistory().size() <= 1)
                 removeFromHistory(reference.get(history.getReference()));
         }
+    }
+
+    /**
+     * Clears the history
+     */
+    public void clear()
+    {
+        for (final ObservableValueStorageInfo history : reference.keySet())
+            history.getStructure().setState(StructureState.STATE_IN_SYNC);
+
+        reference.clear();
+        history.clear();
     }
 
     /**
@@ -105,7 +139,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Pushs an object to the history
      */
-    public void pushOnHistory(final ObservableValueStorageInfo storage, final ObservableValue<?> observable,
+    private void pushOnHistory(final ObservableValueStorageInfo storage, final ObservableValue<?> observable,
             final Object oldValue)
     {
         ObservableValue<?> value = reference.get(storage);
@@ -130,30 +164,40 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
-     * Reverts all changes until the point you started the application
-     * @param observable The Observable value you want to edit.
+     * Reverts all changes hard until the point you started the application. <br>
+     * <b> Includes Create/ Inserts, may affect other observable values as well!<b>
+     * @param observable value you want to edit.
      */
     public void revert(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, -1, false);
+        rollback_impl(observable, -1, false, true);
+    }
+
+    /**
+     * Resets all changes until the point you started the application
+     * @param observable value you want to edit.
+     */
+    public void reset(final ObservableValue<?> observable)
+    {
+        rollback_impl(observable, -1, false, false);
     }
 
     /**
      * Drops all changes, so you are in sync with the database
-     * @param observable The Observable value you want to edit.
+     * @param observable value you want to edit.
      */
     public void drop(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, -1, true);
+        rollback_impl(observable, -1, true, true);
     }
 
     /**
      * Reverts the last change made
-     * @param observable The Observable value you want to edit.
+     * @param observable value you want to edit.
      */
     public void rollback(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, 1, false);
+        rollback_impl(observable, 1, false, false);
     }
 
     /**
@@ -163,10 +207,10 @@ public class ServerStorageChangeHolder implements Observable
      */
     public void rollback(final ObservableValue<?> observable, final int times)
     {
-        rollback_impl(observable, times, false);
+        rollback_impl(observable, times, false, false);
     }
 
-    private void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync)
+    private void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync, final boolean hard)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         if (valueHistory == null)
@@ -185,17 +229,31 @@ public class ServerStorageChangeHolder implements Observable
                 else
                     continue;
             }
-            else if (value.equals(StructureState.STATE_CREATED) ||
-                     value.equals(StructureState.STATE_DELETED))
+            else if (value.equals(StructureState.STATE_CREATED)
+                    || value.equals(StructureState.STATE_DELETED))
             {
-                // TODO
+                try
+                {
+                    set(observable, valueHistory.getHistory().pop());
+                }
+                catch (final EmptyStackException e)
+                {
+                    throw new MalformedHistoryException();
+                }
+
+                // TODO Add database connection here
+                final SQLBuilder builder = new SQLBuilder();
+
+                if (value.equals(StructureState.STATE_CREATED))
+                    builder.addDelete(valueHistory.getReference().getStructure());
+                else
+                    builder.addCreate(valueHistory.getReference().getStructure());
+
+                builder.commit();
+                continue;
             }
 
-            // Prevents recursive calls
-            valueHistory.invalidate();
-
-            if (!ServerStorageFieldType.set(observable, value))
-                valueHistory.validateNext();
+            set(observable, value);
         }
 
         // If the history is empty remove the observable from the history
@@ -205,15 +263,17 @@ public class ServerStorageChangeHolder implements Observable
             informListeners();
     }
 
-    public void clear()
+    private void set(final ObservableValue<?> observable, final Object value)
     {
-        reference.clear();
-        history.clear();
-    }
+        final ObservableValueHistory valueHistory = history.get(observable);
+        if (valueHistory == null)
+            return;
 
-    public static ServerStorageChangeHolder instance()
-    {
-        return INSTANCE;
+        // Prevents recursive calls
+        valueHistory.invalidate();
+
+        if (!ServerStorageFieldType.set(observable, value))
+            valueHistory.validateNext();
     }
 
     @Override
@@ -239,19 +299,18 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * @return All Observables that have changed
+     */
+    public Collection<ObservableValue<?>> getAllObservablesChanged()
+    {
+        return reference.values();
+    }
+
+    /**
      * @return All Observables that have changed since the last sync
      */
     public Collection<ObservableValue<?>> getObservablesChanged()
     {
-        return getObservablesChanged(true);
-    }
-
-    public Collection<ObservableValue<?>> getObservablesChanged(final boolean sinceLastSync)
-    {
-        // Do we want to skip the last sync check?
-        if (!sinceLastSync)
-            return reference.values();
-
         final Collection<ObservableValue<?>> set = new HashSet<>();
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
         {

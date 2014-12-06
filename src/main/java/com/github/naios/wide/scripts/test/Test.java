@@ -128,7 +128,7 @@ public class Test extends Script
         System.out.println(ServerStorageChangeHolder.instance());
         System.out.println("Reverting...");
         ServerStorageChangeHolder.instance().rollback(entry.name(), 2);
-        ServerStorageChangeHolder.instance().revert(entry.unit_flags());
+        ServerStorageChangeHolder.instance().reset(entry.unit_flags());
         System.out.println(entry);
         System.out.println(ServerStorageChangeHolder.instance());
 
@@ -169,16 +169,14 @@ public class Test extends Script
         System.out.println(mask.contains(GameBuild.V6_0_3_19103));
         */
 
-
         final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
 
         System.out.println(myentry);
 
+        // Nothing will happen
+        ServerStorageChangeHolder.instance().free();
+
         System.out.println(ServerStorageChangeHolder.instance());
-
-
-
-
         table.close();
     }
 }

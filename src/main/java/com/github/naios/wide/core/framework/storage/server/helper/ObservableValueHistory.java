@@ -13,13 +13,6 @@ public class ObservableValueHistory
      */
     private boolean nextIsValid = true;
 
-    /**
-     * Marks the storage for reinsertion
-     * SQLBuilder needs to write an extra delete/insert query
-     * to verify that our current database state is correct.
-     */
-    private boolean needsReinsert = false;
-
     public ObservableValueHistory(final ObservableValueStorageInfo reference)
     {
         this.reference = reference;
@@ -45,13 +38,5 @@ public class ObservableValueHistory
     public void invalidate()
     {
         nextIsValid = false;
-    }
-
-
-    public boolean reinsertNext()
-    {
-        final boolean cache = needsReinsert;
-        needsReinsert = false;
-        return cache;
     }
 }

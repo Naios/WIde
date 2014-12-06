@@ -1,11 +1,14 @@
 package com.github.naios.wide.core.framework.storage.server.builder;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.util.IdentitySet;
 
 /**
@@ -13,14 +16,25 @@ import com.github.naios.wide.core.framework.util.IdentitySet;
  */
 public class SQLBuilder
 {
-    private static final SQLBuilder INSTANCE = new SQLBuilder();
-
-    private final Collection<ObservableValue<?>> values =
+    private final Collection<ObservableValue<?>> updateValues =
             new IdentitySet<>();
 
-    public SQLBuilder instance()
+    private final Collection<ServerStorageStructure> createStructures =
+            new IdentitySet<>();
+
+    private final Collection<ServerStorageStructure> deleteStructures =
+            new IdentitySet<>();
+
+    private final Connection connection;
+
+    public SQLBuilder()
     {
-        return INSTANCE;
+        this(null);
+    }
+
+    public SQLBuilder(final Connection connection)
+    {
+        this.connection = connection;
     }
 
     /**
@@ -28,7 +42,7 @@ public class SQLBuilder
      */
     public SQLBuilder addRecentChanged()
     {
-        values.addAll(ServerStorageChangeHolder.instance().getObservablesChanged(true));
+        updateValues.addAll(ServerStorageChangeHolder.instance().getObservablesChanged());
         return this;
     }
 
@@ -37,7 +51,7 @@ public class SQLBuilder
      */
     public SQLBuilder addAllChanged()
     {
-        values.addAll(ServerStorageChangeHolder.instance().getObservablesChanged(false));
+        updateValues.addAll(ServerStorageChangeHolder.instance().getAllObservablesChanged());
         return this;
     }
 
@@ -46,7 +60,25 @@ public class SQLBuilder
      */
     public SQLBuilder add(final ObservableValue<?>... value)
     {
-        values.addAll(Arrays.asList(value));
+        updateValues.addAll(Arrays.asList(value));
+        return this;
+    }
+
+    /**
+     * Adds some Structures to the builder to build insert querys
+     */
+    public SQLBuilder addCreate(final ServerStorageStructure... structure)
+    {
+        createStructures.addAll(Arrays.asList(structure));
+        return this;
+    }
+
+    /**
+     * Adds some Structures to the builder to build delete querys
+     */
+    public SQLBuilder addDelete(final ServerStorageStructure... structure)
+    {
+        deleteStructures.addAll(Arrays.asList(structure));
         return this;
     }
 
@@ -55,7 +87,7 @@ public class SQLBuilder
      */
     public SQLBuilder clear()
     {
-        values.clear();
+        updateValues.clear();
         return this;
     }
 
@@ -65,6 +97,13 @@ public class SQLBuilder
     public String build()
     {
         final StringBuilder builder = new StringBuilder();
+
+        // Delete all structures contained in delete from create.
+        createStructures.removeAll(deleteStructures);
+
+
+
+
 
         // ServerStorageChangeHolder.instance()
 
@@ -79,5 +118,26 @@ public class SQLBuilder
         // Write insert querys for all new structures, summary same tables
 
         return builder.toString();
+    }
+
+    /**
+     * Executes our sql batch on the connection
+     */
+    public boolean commit()
+    {
+        if (connection == null)
+            return false;
+
+        try (final Statement statement = connection.createStatement())
+        {
+            statement.execute(build());
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 }
