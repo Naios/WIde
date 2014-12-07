@@ -144,7 +144,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
     public void reset()
     {
         for (final Pair<ObservableValue<?>, Field> value : this)
-            ServerStorageFieldType.loadDefault(value.first());
+            ServerStorageFieldType.setDefault(value.first());
     }
 
     private class ServerStorageIterator implements Iterator<Pair<ObservableValue<?>, Field>>

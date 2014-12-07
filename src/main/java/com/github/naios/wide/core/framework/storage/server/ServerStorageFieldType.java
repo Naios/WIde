@@ -518,7 +518,7 @@ public enum ServerStorageFieldType
     /**
      * Loads the observable values default value
      */
-    public static void loadDefault(final ObservableValue<?> observable)
+    public static void setDefault(final ObservableValue<?> observable)
     {
         if (!isValueWriteable(observable))
             return;

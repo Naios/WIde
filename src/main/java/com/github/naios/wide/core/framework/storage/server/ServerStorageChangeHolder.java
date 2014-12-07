@@ -289,20 +289,12 @@ public class ServerStorageChangeHolder implements Observable
         if (localHistory.isEmpty())
             return;
 
-        boolean touch = true;
+        final Set<ServerStorageStructure> touched =
+                new IdentitySet<>();
+
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : localHistory.entrySet())
         {
             final Stack<Object> stack = entry.getValue().getHistory();
-
-            // If the structure wasn't re-created its not needed to continue
-            if (touch)
-            {
-                if (!stack.contains(StructureState.STATE_CREATED) &&
-                    !stack.contains(StructureState.STATE_DELETED))
-                        return;
-
-                touch = false;
-            }
 
             final int createIDX, deleteIDX, revertIDX;
             if (once)
@@ -328,13 +320,10 @@ public class ServerStorageChangeHolder implements Observable
              */
 
             if (createIDX == -1 && deleteIDX == -1)
-                if (touch)
+                if (touched.contains(entry.getValue().getReference().getStructure()))
                     return;
                 else
                     throw new MalformedHistoryException();
-
-            if (touch)
-                touch = false;
 
             // Select index to revert to
             if (createIDX == -1)
@@ -347,26 +336,25 @@ public class ServerStorageChangeHolder implements Observable
                 else
                     revertIDX = Math.min(createIDX, deleteIDX);
 
-            final boolean isBehindCurrentSync = revertIDX < stack.indexOf(StructureState.STATE_IN_SYNC);
+            // if we are behind the current sync state, rebuild the record in the database
+            if (revertIDX < stack.indexOf(StructureState.STATE_IN_SYNC))
+                reBuild.add(entry.getValue().getReference().getStructure());
 
             // Roll value back
             stack.setSize(revertIDX); // roll 1 step behind idx
             stack.trimToSize();
 
-            // TODO if the structure was loaded and instantly deleted this logic will fail...
-
-            final Object value = stack.peek();
-            // If the structure was deleted the default value must be placed into the observable
-            if (value.equals(StructureState.STATE_DELETED))
-                ServerStorageFieldType.loadDefault(entry.getKey());
-            // After a STATE_CREATED always follows the default value in the stack if it was deleted
-            else if (value.equals(StructureState.STATE_CREATED))
-                throw new MalformedHistoryException();
+            // If the stack is empty the structure was create in the current session, delete it
+            if (stack.isEmpty())
+            {
+                entry.getValue().getReference().getStructure().setState(StructureState.STATE_DELETED);
+                set(entry.getKey(), stack.pop());
+            }
             else
                 set(entry.getKey(), stack.pop());
 
-            if (isBehindCurrentSync)
-                reBuild.add(entry.getValue().getReference().getStructure());
+            // Structure is touched (first checked)
+            touched.add(entry.getValue().getReference().getStructure());
         }
     }
 
@@ -381,6 +369,17 @@ public class ServerStorageChangeHolder implements Observable
 
         if (!ServerStorageFieldType.set(observable, value))
             valueHistory.validateNext();
+    }
+
+    private void setDefault(final ObservableValue<?> observable)
+    {
+        final ObservableValueHistory valueHistory = history.get(observable);
+        if (valueHistory == null)
+            return;
+
+        // Prevents recursive calls
+        valueHistory.invalidate();
+        ServerStorageFieldType.setDefault(observable);
     }
 
     @Override
