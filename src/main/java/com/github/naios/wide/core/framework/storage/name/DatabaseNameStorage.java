@@ -54,7 +54,7 @@ public class DatabaseNameStorage extends NameStorage
             System.out.println(String.format("Loading Database Namstorage: %s", table));
 
         try (final Statement stmt = WIde.getDatabase()
-                .getConnection(DatabaseType.WORLD).createStatement())
+                .connection(DatabaseType.WORLD).get().createStatement())
         {
             final ResultSet result = stmt.executeQuery(String.format(
                     "SELECT %s, %s FROM %s", entry, name, table));

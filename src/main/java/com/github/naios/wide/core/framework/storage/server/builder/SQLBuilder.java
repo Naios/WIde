@@ -1,6 +1,5 @@
 package com.github.naios.wide.core.framework.storage.server.builder;
 
-import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,16 +24,16 @@ public class SQLBuilder
     private final Collection<ServerStorageStructure> deleteStructures =
             new IdentitySet<>();
 
-    private final Connection connection;
+    private final ServerStorageChangeHolder changeholder;
 
     public SQLBuilder()
     {
         this(null);
     }
 
-    public SQLBuilder(final Connection connection)
+    public SQLBuilder(final ServerStorageChangeHolder changeholder)
     {
-        this.connection = connection;
+        this.changeholder = changeholder;
     }
 
     /**
@@ -42,7 +41,7 @@ public class SQLBuilder
      */
     public SQLBuilder addRecentChanged()
     {
-        updateValues.addAll(ServerStorageChangeHolder.instance().getObservablesChanged());
+        updateValues.addAll(changeholder.getObservablesChanged());
         return this;
     }
 
@@ -51,7 +50,7 @@ public class SQLBuilder
      */
     public SQLBuilder addAllChanged()
     {
-        updateValues.addAll(ServerStorageChangeHolder.instance().getAllObservablesChanged());
+        updateValues.addAll(changeholder.getAllObservablesChanged());
         return this;
     }
 
@@ -125,10 +124,10 @@ public class SQLBuilder
      */
     public boolean commit()
     {
-        if (connection == null)
+        if (changeholder.connection().get() == null)
             return false;
 
-        try (final Statement statement = connection.createStatement())
+        try (final Statement statement = changeholder.connection().get().createStatement())
         {
             statement.execute(build());
         }

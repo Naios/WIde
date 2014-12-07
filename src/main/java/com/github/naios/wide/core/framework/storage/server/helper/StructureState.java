@@ -13,6 +13,11 @@ public enum StructureState
     STATE_UPDATED,
 
     /**
+     * Is used if the current database state is unknown. (due to connection lost)
+     */
+    STATE_UNKNOWN,
+
+    /**
      * Is pushed on the history stack so we know if the value was created
      */
     STATE_CREATED,
@@ -21,4 +26,9 @@ public enum StructureState
      * Is pushed on the history stack so we know if the value was deleted
      */
     STATE_DELETED;
+
+    public boolean isInSync()
+    {
+        return this.equals(STATE_IN_SYNC);
+    }
 }

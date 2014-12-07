@@ -15,7 +15,6 @@ import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
-import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
@@ -125,12 +124,12 @@ public class Test extends Script
         entry.name().set("Sec Test");
         entry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE);
         System.out.println(entry);
-        System.out.println(ServerStorageChangeHolder.instance());
+        System.out.println(table.getChangeHolder());
         System.out.println("Reverting...");
-        ServerStorageChangeHolder.instance().rollback(entry.name(), 2);
-        ServerStorageChangeHolder.instance().tryReset(entry.unit_flags());
+        table.getChangeHolder().rollback(entry.name(), 2);
+        table.getChangeHolder().tryReset(entry.unit_flags());
         System.out.println(entry);
-        System.out.println(ServerStorageChangeHolder.instance());
+        System.out.println(table.getChangeHolder());
 
         System.out.println(String.format("%s", NameStorageHolder.instance().get("creature_name").getStorage().request(41378)));
         System.out.println(String.format("%s", NameStorageHolder.instance().get("spell_name").getStorage().request(13480)));
@@ -174,13 +173,13 @@ public class Test extends Script
         System.out.println(myentry);
 
         // Nothing will happen
-        ServerStorageChangeHolder.instance().free();
+        table.getChangeHolder().free();
 
-        System.out.println(ServerStorageChangeHolder.instance());
+        System.out.println(table.getChangeHolder());
 
-        ServerStorageChangeHolder.instance().revert(myentry);
+        table.getChangeHolder().revert(myentry);
 
-        System.out.println(ServerStorageChangeHolder.instance());
+        System.out.println(table.getChangeHolder());
 
         table.close();
 

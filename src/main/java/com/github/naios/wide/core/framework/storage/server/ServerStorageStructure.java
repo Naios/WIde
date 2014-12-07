@@ -15,6 +15,15 @@ import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.session.database.DatabaseType;
+
+class IllegalStorageName extends ServerStorageException
+{
+    public IllegalStorageName()
+    {
+        super("Storage name is not valid. [id:table or table]!");
+    }
+}
 
 public abstract class ServerStorageStructure extends StorageStructure implements Iterable<Pair<ObservableValue<?>, Field>>
 {
@@ -104,6 +113,24 @@ public abstract class ServerStorageStructure extends StorageStructure implements
             return annotation.name();
         else
             return field.getName();
+    }
+
+    public static String getTableNameFromStructure(final Class<? extends StorageStructure> type) throws ServerStorageException
+    {
+        final String[] name = StorageStructure.getStorageName(type).split(":");
+        if (name.length < 1)
+            throw new IllegalStorageName();
+
+        return name[name.length - 1];
+    }
+
+    public static DatabaseType getTableTypeFromStructure(final Class<? extends StorageStructure> type) throws ServerStorageException
+    {
+        final String[] name = StorageStructure.getStorageName(type).split(":");
+        if (name.length < 2)
+            throw new IllegalStorageName();
+
+        return DatabaseType.getFromId(name[0]);
     }
 
     @SuppressWarnings("unchecked")

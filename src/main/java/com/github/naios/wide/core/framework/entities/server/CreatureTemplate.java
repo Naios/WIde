@@ -12,7 +12,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageStructur
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
-@StorageName(name="creature_template")
+@StorageName(name="world:creature_template")
 public abstract class CreatureTemplate extends ServerStorageStructure
 {
     public CreatureTemplate(final ServerStorage<CreatureTemplate> owner)

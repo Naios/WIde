@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.session.hooks.Hook;
@@ -14,7 +17,7 @@ import com.github.naios.wide.core.session.hooks.HookListener;
 
 public class Database implements AutoCloseable
 {
-    private final Map<DatabaseType, Connection> connections = new HashMap<>();
+    private final Map<DatabaseType, ObjectProperty<Connection>> connections = new HashMap<>();
 
     private static String getConnectionStringForDatabase(final String db)
     {
@@ -65,11 +68,11 @@ public class Database implements AutoCloseable
         if (connections.size() != DatabaseType.values().length)
             return false;
 
-        final Collection<Connection> con_list = connections.values();
-        for (final Connection con : con_list)
+        final Collection<ObjectProperty<Connection>> con_list = connections.values();
+        for (final ObjectProperty<Connection> con : con_list)
             try
             {
-                if (con.isClosed())
+                if (con.get().isClosed())
                     return false;
 
             } catch (final SQLException e)
@@ -91,7 +94,7 @@ public class Database implements AutoCloseable
             {
                 final Connection connection = DriverManager.getConnection(con_string);
 
-                connections.put(type, connection);
+                connections.put(type, new SimpleObjectProperty<Connection>(connection));
 
             } catch (final SQLException e)
             {
@@ -111,11 +114,11 @@ public class Database implements AutoCloseable
      // Hook.ON_DATABASE_CLOSE
         WIde.getHooks().fire(Hook.ON_DATABASE_CLOSED);
 
-        final Collection<Connection> con_list = connections.values();
-        for (final Connection con : con_list)
+        final Collection<ObjectProperty<Connection>> con_list = connections.values();
+        for (final ObjectProperty<Connection> con : con_list)
             try
             {
-                con.close();
+                con.get().close();
 
             } catch (final SQLException e)
             {
@@ -124,7 +127,7 @@ public class Database implements AutoCloseable
         connections.clear();
     }
 
-    public Connection getConnection(final DatabaseType type)
+    public ObjectProperty<Connection> connection(final DatabaseType type)
     {
         return connections.get(type);
     }

@@ -11,10 +11,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
-import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.ClassUtil;
@@ -105,23 +107,33 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
-    private final DatabaseType database;
+    private final ObjectProperty<Connection> connection
+        = new SimpleObjectProperty<Connection>();
+
+    private final DatabaseType databaseType;
 
     private final String statementFormat, selectLowPart, tableName;
+
+    private final ServerStorageChangeHolder changeHolder;
 
     private PreparedStatement preparedStatement;
 
     private Statement statement;
 
-    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database) throws ServerStorageException
+    public ServerStorage(final Class<? extends ServerStorageStructure> type) throws ServerStorageException
     {
-        this (type, database, StorageStructure.getStorageName(type));
+        this (type, ServerStorageStructure.getTableTypeFromStructure(type), ServerStorageStructure.getTableNameFromStructure(type));
     }
 
-    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType database, final String tableName) throws ServerStorageException
+    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType databaseType) throws ServerStorageException
+    {
+        this (type, databaseType, ServerStorageStructure.getTableNameFromStructure(type));
+    }
+
+    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType databaseType, final String tableName) throws ServerStorageException
     {
         this.type = type;
-        this.database = database;
+        this.databaseType = databaseType;
         this.tableName = tableName;
 
         // Store keys into this.keys
@@ -148,12 +160,35 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
 
-        initStatements();
+        this.connection.addListener(new ChangeListener<Connection>()
+        {
+            @Override
+            public void changed(
+                    final ObservableValue<? extends Connection> observable,
+                    final Connection oldValue, final Connection newValue)
+            {
+                initStatements();
+            }
+        });
+
+        this.connection.bind(WIde.getDatabase().connection(databaseType));
+
+        this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseType);
     }
 
     public String getTableName()
     {
         return tableName;
+    }
+
+    public DatabaseType getDatabaseType()
+    {
+        return databaseType;
+    }
+
+    public ServerStorageChangeHolder getChangeHolder()
+    {
+        return changeHolder;
     }
 
     public boolean isOpen()
@@ -233,10 +268,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         try
         {
-            final Connection con = WIde.getDatabase().getConnection(database);
-
-            statement = con.createStatement();
-            preparedStatement = con.prepareStatement(statementFormat);
+            statement = connection.get().createStatement();
+            preparedStatement = connection.get().prepareStatement(statementFormat);
 
         }
         catch (final SQLException e)
@@ -433,19 +466,19 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
         storage.state().set(StructureState.STATE_UPDATED);
-        ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
+        changeHolder.insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
     {
         storage.state().set(StructureState.STATE_CREATED);
-        ServerStorageChangeHolder.instance().create(storage);
+        changeHolder.create(storage);
     }
 
     protected void onStructureDeleted(final ServerStorageStructure storage)
     {
         storage.state().set(StructureState.STATE_DELETED);
-        ServerStorageChangeHolder.instance().delete(storage);
+        changeHolder.delete(storage);
 
         storage.reset();
     }

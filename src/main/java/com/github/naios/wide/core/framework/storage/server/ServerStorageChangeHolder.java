@@ -1,6 +1,7 @@
 package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,14 +13,19 @@ import java.util.Stack;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.IdentitySet;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.session.database.DatabaseType;
 
 @SuppressWarnings("serial")
 class MalformedHistoryException extends IllegalStateException
@@ -32,7 +38,8 @@ class MalformedHistoryException extends IllegalStateException
 
 public class ServerStorageChangeHolder implements Observable
 {
-    private static final ServerStorageChangeHolder INSTANCE = new ServerStorageChangeHolder();
+    private final ObjectProperty<Connection> connection =
+            new SimpleObjectProperty<>();
 
     private final Map<ObservableValueStorageInfo, ObservableValue<?>> reference =
             new HashMap<>();
@@ -48,12 +55,20 @@ public class ServerStorageChangeHolder implements Observable
 
     private final static int TIMES_UNLIMITED = -1;
 
-    /**
-     * @return The global ServerStorageChangeHolder instance.
-     */
-    public static ServerStorageChangeHolder instance()
+    protected ServerStorageChangeHolder(final DatabaseType databaseType)
     {
-        return INSTANCE;
+        this.connection.bind(WIde.getDatabase().connection(databaseType));
+        this.connection.addListener(new ChangeListener<Connection>()
+        {
+            @Override
+            public void changed(
+                    final ObservableValue<? extends Connection> observable,
+                    final Connection oldValue, final Connection newValue)
+            {
+                // if the conenction change invalidate all changes
+                invalidate();
+            }
+        });
     }
 
     /**
@@ -127,6 +142,21 @@ public class ServerStorageChangeHolder implements Observable
             h.getHistory().remove(StructureState.STATE_IN_SYNC);
             h.getHistory().push(StructureState.STATE_IN_SYNC);
         }
+
+        for (final ObservableValueStorageInfo structure : reference.keySet())
+            structure.getStructure().state().set(StructureState.STATE_IN_SYNC);
+    }
+
+    /**
+     * Invalidates the sync state
+     */
+    protected void invalidate()
+    {
+        for (final ObservableValueHistory h : history.values())
+            h.getHistory().remove(StructureState.STATE_IN_SYNC);
+
+        for (final ObservableValueStorageInfo structure : reference.keySet())
+            structure.getStructure().state().set(StructureState.STATE_UNKNOWN);
     }
 
     /**
@@ -451,7 +481,14 @@ public class ServerStorageChangeHolder implements Observable
     {
 
 
+
+
         update();
+    }
+
+    public ObjectProperty<Connection> connection()
+    {
+        return connection;
     }
 
     private void informListeners()
