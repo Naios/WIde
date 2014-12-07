@@ -3,17 +3,17 @@ package com.github.naios.wide.core.framework.storage.server.helper;
 public enum StructureState
 {
     /**
-     * Is pushed on the history stack so we know the time when the value is in sync with the database
+     * The structure is in sync with the database
      */
     STATE_IN_SYNC,
 
     /**
-     * Is used in the Structure to mark that it has changed.
+     * The structure was updated, and is not in sync of the database anymore.
      */
     STATE_UPDATED,
 
     /**
-     * Is used if the current database state is unknown. (due to connection lost)
+     * The current state of th structure is unknown (caused by database connection lost).
      */
     STATE_UNKNOWN,
 
@@ -23,12 +23,18 @@ public enum StructureState
     STATE_CREATED,
 
     /**
-     * Is pushed on the history stack so we know if the value was deleted
+     * The structure was deleted and is not useable anymore.<br>
+     * <b>Further access will cause exceptions</b>
      */
     STATE_DELETED;
 
     public boolean isInSync()
     {
         return this.equals(STATE_IN_SYNC);
+    }
+
+    public boolean isAlive()
+    {
+        return !this.equals(STATE_DELETED);
     }
 }

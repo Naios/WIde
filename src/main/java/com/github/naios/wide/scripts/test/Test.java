@@ -17,7 +17,6 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
-import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
 /**
@@ -66,7 +65,7 @@ public class Test extends Script
                 System.out.println(nodes);
 
         final ServerStorage<CreatureTemplate> table =
-                new ServerStorage<>(CreatureTemplateStructure.class, DatabaseType.WORLD);
+                new ServerStorage<>(CreatureTemplateStructure.class);
 
         final CreatureTemplate entry = table.get(CreatureTemplate.createKey(41378));
 
@@ -170,16 +169,36 @@ public class Test extends Script
 
         final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
 
-        System.out.println(myentry);
+        for (int step = 0; step < 7; ++step)
+        {
+            switch (step)
+            {
+                case 0:
+                    myentry.name().set("Test King");
+                    myentry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_DISARMED);
+                    myentry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
+                    break;
+                case 1:
+                    myentry.getOwner().getChangeHolder().drop(myentry.unit_flags());
+                    break;
+                case 2:
+                    myentry.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IN_COMBAT);
+                    break;
+                case 4:
+                    // Nothing will happen
+                    table.getChangeHolder().free();
+                    break;
+                case 5:
+                    myentry.getOwner().getChangeHolder().reset(myentry);
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+            }
 
-        // Nothing will happen
-        table.getChangeHolder().free();
-
-        System.out.println(table.getChangeHolder());
-
-        table.getChangeHolder().revert(myentry);
-
-        System.out.println(table.getChangeHolder());
+            System.out.println(table.getChangeHolder());
+        }
 
         table.close();
 

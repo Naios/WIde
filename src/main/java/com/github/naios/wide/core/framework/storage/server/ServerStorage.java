@@ -98,6 +98,15 @@ class StorageClosedException extends ServerStorageException
     }
 }
 
+@SuppressWarnings("serial")
+class AccessedDeletedStructureException extends ServerStorageException
+{
+    public AccessedDeletedStructureException(final ServerStorageStructure structure)
+    {
+        super(String.format("Tried to access deleted Structure %s", structure));
+    }
+}
+
 public class ServerStorage<T extends ServerStorageStructure> implements AutoCloseable
 {
     private final Class<? extends ServerStorageStructure> type;
@@ -463,20 +472,32 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
                 ServerStorageEntry.class, true);
     }
 
+    private void checkInvalidAccess(final ServerStorageStructure storage)
+    {
+        if (!storage.state().get().isAlive())
+            throw new AccessedDeletedStructureException(storage);
+    }
+
     protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
+        checkInvalidAccess(storage);
+
         storage.state().set(StructureState.STATE_UPDATED);
         changeHolder.insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
     {
+        checkInvalidAccess(storage);
+
         storage.state().set(StructureState.STATE_CREATED);
         changeHolder.create(storage);
     }
 
     protected void onStructureDeleted(final ServerStorageStructure storage)
     {
+        checkInvalidAccess(storage);
+
         storage.state().set(StructureState.STATE_DELETED);
         changeHolder.delete(storage);
 

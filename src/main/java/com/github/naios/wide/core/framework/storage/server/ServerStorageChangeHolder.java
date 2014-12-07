@@ -322,6 +322,9 @@ public class ServerStorageChangeHolder implements Observable
         final Set<ServerStorageStructure> touched =
                 new IdentitySet<>();
 
+        final Set<ServerStorageStructure> delete =
+                new IdentitySet<>();
+
         for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : localHistory.entrySet())
         {
             final Stack<Object> stack = entry.getValue().getHistory();
@@ -377,7 +380,7 @@ public class ServerStorageChangeHolder implements Observable
             // If the stack is empty the structure was create in the current session, delete it
             if (stack.isEmpty())
             {
-                entry.getValue().getReference().getStructure().state().set(StructureState.STATE_DELETED);
+                delete.add(entry.getValue().getReference().getStructure());
                 setDefault(entry.getKey());
             }
             else
@@ -389,6 +392,8 @@ public class ServerStorageChangeHolder implements Observable
             if (entry.getValue().empty())
                 erase(entry.getKey());
         }
+
+        delete.forEach((struc) -> struc.state().set(StructureState.STATE_DELETED));
     }
 
     private void set(final ObservableValue<?> observable, final Object value)
