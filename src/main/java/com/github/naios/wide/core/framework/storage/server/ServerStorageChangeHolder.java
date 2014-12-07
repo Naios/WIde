@@ -25,6 +25,7 @@ import com.github.naios.wide.core.framework.storage.server.helper.StructureState
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.IdentitySet;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 
 @SuppressWarnings("serial")
@@ -433,10 +434,9 @@ public class ServerStorageChangeHolder implements Observable
 
             final Stack<Object> stack = history.get(entry.getValue()).getHistory();
 
-            for (final Object obj : stack)
-                builder.append(String.format("%s -> ", new FormatterWrapper(obj)));
+            builder.append(StringUtil.concat(getHistory(entry.getValue()), " -> "));
 
-            builder.append(String.format("Now: %s", new FormatterWrapper(entry.getValue().getValue())));
+            builder.append(String.format(" -> Now: %s", new FormatterWrapper(entry.getValue().getValue())));
         }
 
         return builder.toString();
@@ -489,6 +489,20 @@ public class ServerStorageChangeHolder implements Observable
 
 
         update();
+    }
+
+    /**
+     * Returns the whole history of an ObservableValue
+     * @param value The ObservableValue you want to get the history
+     * @return An array containing all versioned objects.
+     */
+    public Object[] getHistory(final ObservableValue<?> value)
+    {
+        final ObservableValueHistory valueHistory = history.get(value);
+        if (valueHistory == null)
+            return null;
+
+        return valueHistory.getHistory().toArray();
     }
 
     public ObjectProperty<Connection> connection()
