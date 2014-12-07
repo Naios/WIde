@@ -28,6 +28,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
@@ -51,6 +52,7 @@ public enum ServerStorageFieldType
                 return IntegerProperty.class.equals(type) ||
                        SimpleIntegerProperty.class.equals(type);
             },
+            new Integer(0),
             (result, field) ->
             {
                 try
@@ -76,6 +78,7 @@ public enum ServerStorageFieldType
                 return ReadOnlyIntegerProperty.class.equals(type) ||
                        ReadOnlyIntegerWrapper.class.equals(type);
             },
+            new Integer(0),
             (result, field) ->
             {
                 try
@@ -103,6 +106,7 @@ public enum ServerStorageFieldType
                 return BooleanProperty.class.equals(type) ||
                        SimpleBooleanProperty.class.equals(type);
             },
+            new Boolean(false),
             (result, field) ->
             {
                 try
@@ -128,6 +132,7 @@ public enum ServerStorageFieldType
                 return ReadOnlyBooleanProperty.class.equals(type) ||
                        ReadOnlyBooleanWrapper.class.equals(type);
             },
+            new Boolean(false),
             (result, field) ->
             {
                 try
@@ -154,6 +159,7 @@ public enum ServerStorageFieldType
                 return FloatProperty.class.equals(type) ||
                        SimpleFloatProperty.class.equals(type);
             },
+            new Float(0f),
             (result, field) ->
             {
                 try
@@ -179,6 +185,7 @@ public enum ServerStorageFieldType
                 return ReadOnlyFloatProperty.class.equals(type) ||
                        ReadOnlyFloatWrapper.class.equals(type);
             },
+            new Float(0f),
             (result, field) ->
             {
                 try
@@ -205,6 +212,7 @@ public enum ServerStorageFieldType
                 return DoubleProperty.class.equals(type) ||
                        SimpleDoubleProperty.class.equals(type);
             },
+            new Double(0),
             (result, field) ->
             {
                 try
@@ -230,6 +238,7 @@ public enum ServerStorageFieldType
                 return ReadOnlyDoubleProperty.class.equals(type) ||
                        ReadOnlyDoubleWrapper.class.equals(type);
             },
+            new Double(0),
             (result, field) ->
             {
                 try
@@ -256,6 +265,7 @@ public enum ServerStorageFieldType
                 return StringProperty.class.equals(type) ||
                        SimpleStringProperty.class.equals(type);
             },
+            new String(),
             (result, field) ->
             {
                 try
@@ -281,6 +291,7 @@ public enum ServerStorageFieldType
                 return ReadOnlyStringProperty.class.equals(type) ||
                        ReadOnlyStringWrapper.class.equals(type);
             },
+            new String(),
             (result, field) ->
             {
                try
@@ -308,6 +319,7 @@ public enum ServerStorageFieldType
             {
                 return EnumProperty.class.equals(type);
             },
+            new Integer(0),
             (result, field) ->
             {
                 final Class<?> type = getEnumClassHelper(field);
@@ -336,6 +348,7 @@ public enum ServerStorageFieldType
             {
                 return FlagProperty.class.equals(type);
             },
+            new Integer(0),
             (result, field) ->
             {
                 final Class<?> type = getEnumClassHelper(field);
@@ -361,6 +374,8 @@ public enum ServerStorageFieldType
 
     private final Predicate<Class<?>> instanceOfCheck;
 
+    private final Object defaultValue;
+
     private final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult;
 
     /// Only possible primary keys must declare this function
@@ -369,11 +384,13 @@ public enum ServerStorageFieldType
     private final BiConsumer<ObservableValue<?>, Object> set;
 
     private ServerStorageFieldType(final Predicate<Class<?>> instanceOfCheck,
-                                final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult,
-                                    final BiFunction<Object, Field, ObservableValue<?>> createFromObjectOrEmpty,
-                                        final BiConsumer<ObservableValue<?>, Object> set)
+                                       final Object defaultValue,
+                                           final BiFunction<ResultSet, Field, ObservableValue<?>> createFromResult,
+                                               final BiFunction<Object, Field, ObservableValue<?>> createFromObjectOrEmpty,
+                                                   final BiConsumer<ObservableValue<?>, Object> set)
     {
         this.instanceOfCheck = instanceOfCheck;
+        this.defaultValue = defaultValue;
         this.createFromResult = createFromResult;
         this.createFromObjectOrEmpty = createFromObjectOrEmpty;
         this.set = set;
@@ -477,6 +494,9 @@ public enum ServerStorageFieldType
         return observable.getValue();
     }
 
+    /**
+     * Sets an observable value
+     */
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
         System.out.println(String.format("DEBUG: %s %s", observable, value));
@@ -486,5 +506,20 @@ public enum ServerStorageFieldType
 
         storageType.set.accept(observable, value);
         return true;
+    }
+
+    /**
+     * Loads the observable values default value
+     */
+    public static void loadDefault(final ObservableValue<?> observable)
+    {
+        if (!(observable instanceof WritableValue))
+            return;
+
+        final ServerStorageFieldType storageType = getType(observable.getClass());
+        if (storageType == null)
+            return;
+
+        set(observable, storageType.defaultValue);
     }
 }
