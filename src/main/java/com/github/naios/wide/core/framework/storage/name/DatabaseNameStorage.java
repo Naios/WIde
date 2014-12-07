@@ -34,7 +34,7 @@ public class DatabaseNameStorage extends NameStorage
             }
         });
 
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSED, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSE, this)
         {
             @Override
             public void informed()

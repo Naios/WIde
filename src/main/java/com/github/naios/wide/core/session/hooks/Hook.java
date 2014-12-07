@@ -22,7 +22,7 @@ public enum Hook
     ON_DATABASE_ESTABLISHED,    // Database
     ON_DATABASE_ERROR,          // Database
     ON_DATABASE_LOST,           // Database
-    ON_DATABASE_CLOSED,          // Database
+    ON_DATABASE_CLOSE,          // Database
 
     ON_UNKNOWN
 }

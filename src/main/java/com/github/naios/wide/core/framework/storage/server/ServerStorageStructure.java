@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -154,7 +155,12 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         return this.state.get().equals(state);
     }
 
-    public ObjectProperty<StructureState> state()
+    public ReadOnlyObjectProperty<StructureState> state()
+    {
+        return state;
+    }
+
+    public ObjectProperty<StructureState> writeableState()
     {
         return state;
     }

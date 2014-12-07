@@ -3,11 +3,12 @@ package com.github.naios.wide.core.session.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import com.github.naios.wide.core.Constants;
@@ -31,6 +32,9 @@ public class Database implements AutoCloseable
 
     public Database()
     {
+        for (final DatabaseType type : DatabaseType.values())
+            connections.put(type, new SimpleObjectProperty<Connection>());
+
         // Try connect after the config was updated
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
         {
@@ -65,17 +69,16 @@ public class Database implements AutoCloseable
 
     public boolean isConnected()
     {
-        if (connections.size() != DatabaseType.values().length)
-            return false;
-
-        final Collection<ObjectProperty<Connection>> con_list = connections.values();
-        for (final ObjectProperty<Connection> con : con_list)
+        for (final ObjectProperty<Connection> connection : connections.values())
             try
             {
-                if (con.get().isClosed())
+                if (connection.get() == null)
                     return false;
 
-            } catch (final SQLException e)
+                if (connection.get().isClosed())
+                    return false;
+            }
+            catch (final SQLException e)
             {
                 return false;
             }
@@ -85,18 +88,16 @@ public class Database implements AutoCloseable
 
     private void connect()
     {
-        for (final DatabaseType type : DatabaseType.values())
+        for (final Entry<DatabaseType, ObjectProperty<Connection>> connection : connections.entrySet())
         {
-            final String con_string = getConnectionStringForDatabase(
-                    WIde.getConfig().getProperty(type.getConfigEntry()).get());
+            final String connectionString = getConnectionStringForDatabase(
+                    WIde.getConfig().getProperty(connection.getKey().getConfigEntry()).get());
 
             try
             {
-                final Connection connection = DriverManager.getConnection(con_string);
-
-                connections.put(type, new SimpleObjectProperty<Connection>(connection));
-
-            } catch (final SQLException e)
+                connection.getValue().set(DriverManager.getConnection(connectionString));
+            }
+            catch (final SQLException e)
             {
                 e.printStackTrace();
                 close();
@@ -111,23 +112,22 @@ public class Database implements AutoCloseable
     @Override
     public void close()
     {
-     // Hook.ON_DATABASE_CLOSE
-        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSED);
+        // Hook.ON_DATABASE_CLOSE
+        WIde.getHooks().fire(Hook.ON_DATABASE_CLOSE);
 
-        final Collection<ObjectProperty<Connection>> con_list = connections.values();
-        for (final ObjectProperty<Connection> con : con_list)
+        for (final ObjectProperty<Connection> connection : connections.values())
             try
             {
-                con.get().close();
+                if (connection.get() != null)
+                    connection.get().close();
 
-            } catch (final SQLException e)
+            }
+            catch (final SQLException e)
             {
             }
-
-        connections.clear();
     }
 
-    public ObjectProperty<Connection> connection(final DatabaseType type)
+    public ReadOnlyObjectProperty<Connection> connection(final DatabaseType type)
     {
         return connections.get(type);
     }

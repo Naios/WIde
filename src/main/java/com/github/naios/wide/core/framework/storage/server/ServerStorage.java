@@ -260,7 +260,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         });
 
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSED, this)
+        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSE, this)
         {
             @Override
             public void informed()
@@ -444,7 +444,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new BadMappingException(type);
         }
 
-        record.state().set(StructureState.STATE_CREATED);
+        record.writeableState().set(StructureState.STATE_CREATED);
 
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
@@ -474,7 +474,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private void checkInvalidAccess(final ServerStorageStructure storage)
     {
-        if (!storage.state().get().isAlive())
+        if (!storage.writeableState().get().isAlive())
             throw new AccessedDeletedStructureException(storage);
     }
 
@@ -482,7 +482,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        storage.state().set(StructureState.STATE_UPDATED);
+        storage.writeableState().set(StructureState.STATE_UPDATED);
         changeHolder.insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
@@ -490,7 +490,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        storage.state().set(StructureState.STATE_CREATED);
+        storage.writeableState().set(StructureState.STATE_CREATED);
         changeHolder.create(storage);
     }
 
@@ -498,7 +498,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        storage.state().set(StructureState.STATE_DELETED);
+        storage.writeableState().set(StructureState.STATE_DELETED);
         changeHolder.delete(storage);
 
         storage.reset();
