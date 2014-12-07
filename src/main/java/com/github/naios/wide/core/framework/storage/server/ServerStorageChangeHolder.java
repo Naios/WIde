@@ -101,7 +101,7 @@ public class ServerStorageChangeHolder implements Observable
                 history.getHistory().remove(0);
 
             if (history.empty())
-                removeFromHistory(reference.get(history.getReference()));
+                erase(reference.get(history.getReference()));
         }
     }
 
@@ -111,7 +111,7 @@ public class ServerStorageChangeHolder implements Observable
     public void clear()
     {
         for (final ObservableValueStorageInfo history : reference.keySet())
-            history.getStructure().setState(StructureState.STATE_IN_SYNC);
+            history.getStructure().state().set(StructureState.STATE_IN_SYNC);
 
         reference.clear();
         history.clear();
@@ -133,7 +133,7 @@ public class ServerStorageChangeHolder implements Observable
      * Force removes all references of the observable from the holder
      * You need to check if there are references before you call this method!
      */
-    private void removeFromHistory(final ObservableValue<?> observable)
+    private void erase(final ObservableValue<?> observable)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         reference.remove(valueHistory.getReference());
@@ -264,7 +264,7 @@ public class ServerStorageChangeHolder implements Observable
 
         // If the history is empty remove the observable from the history
         if (valueHistory.empty())
-            removeFromHistory(observable);
+            erase(observable);
         else
             informListeners();
     }
@@ -347,14 +347,17 @@ public class ServerStorageChangeHolder implements Observable
             // If the stack is empty the structure was create in the current session, delete it
             if (stack.isEmpty())
             {
-                entry.getValue().getReference().getStructure().setState(StructureState.STATE_DELETED);
-                set(entry.getKey(), stack.pop());
+                entry.getValue().getReference().getStructure().state().set(StructureState.STATE_DELETED);
+                setDefault(entry.getKey());
             }
             else
                 set(entry.getKey(), stack.pop());
 
             // Structure is touched (first checked)
             touched.add(entry.getValue().getReference().getStructure());
+
+            if (entry.getValue().empty())
+                erase(entry.getKey());
         }
     }
 

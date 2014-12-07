@@ -402,7 +402,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new BadMappingException(type);
         }
 
-        record.setState(StructureState.STATE_CREATED);
+        record.state().set(StructureState.STATE_CREATED);
 
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
@@ -432,19 +432,19 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
     {
-        storage.setState(StructureState.STATE_UPDATED);
+        storage.state().set(StructureState.STATE_UPDATED);
         ServerStorageChangeHolder.instance().insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
     {
-        storage.setState(StructureState.STATE_CREATED);
+        storage.state().set(StructureState.STATE_CREATED);
         ServerStorageChangeHolder.instance().create(storage);
     }
 
     protected void onStructureDeleted(final ServerStorageStructure storage)
     {
-        storage.setState(StructureState.STATE_DELETED);
+        storage.state().set(StructureState.STATE_DELETED);
         ServerStorageChangeHolder.instance().delete(storage);
 
         storage.reset();

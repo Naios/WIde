@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.StorageStructure;
@@ -18,7 +20,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 {
     final private ServerStorage<?> owner;
 
-    private StructureState state = StructureState.STATE_IN_SYNC;
+    private final ObjectProperty<StructureState> state = new SimpleObjectProperty<>(StructureState.STATE_IN_SYNC);
 
     private ServerStorageKey<?> key = null;
 
@@ -122,12 +124,12 @@ public abstract class ServerStorageStructure extends StorageStructure implements
 
     public boolean hasState(final StructureState state)
     {
-        return this.state.equals(state);
+        return this.state.get().equals(state);
     }
 
-    protected void setState(final StructureState state)
+    public ObjectProperty<StructureState> state()
     {
-        this.state = state;
+        return state;
     }
 
     /**

@@ -177,6 +177,11 @@ public class Test extends Script
         ServerStorageChangeHolder.instance().free();
 
         System.out.println(ServerStorageChangeHolder.instance());
+
+        ServerStorageChangeHolder.instance().revert(myentry);
+
+        System.out.println(ServerStorageChangeHolder.instance());
+
         table.close();
 
         System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
