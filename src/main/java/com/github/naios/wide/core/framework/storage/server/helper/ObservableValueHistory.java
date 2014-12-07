@@ -39,4 +39,9 @@ public class ObservableValueHistory
     {
         nextIsValid = false;
     }
+
+    public boolean empty()
+    {
+        return history.size() <= ((history.contains(StructureState.STATE_IN_SYNC)) ? 1 : 0);
+    }
 }

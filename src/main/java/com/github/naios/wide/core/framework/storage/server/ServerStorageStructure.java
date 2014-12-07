@@ -130,9 +130,21 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         this.state = state;
     }
 
+    /**
+     * Deletes the structure
+     */
     public void delete()
     {
         owner.onStructureDeleted(this);
+    }
+
+    /**
+     * Loads default value to non key fields
+     */
+    public void reset()
+    {
+        for (final Pair<ObservableValue<?>, Field> value : this)
+            ServerStorageFieldType.loadDefault(value.first());
     }
 
     private class ServerStorageIterator implements Iterator<Pair<ObservableValue<?>, Field>>
@@ -160,12 +172,12 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         {
             try
             {
-                final Pair<ObservableValue<?>, Field> pair = new Pair<>(storage.getObservableValue(fields[i]), fields[i]);
-                i += 1;
+                final Pair<ObservableValue<?>, Field> pair = new Pair<>(storage.getObservableValue(fields[i]), fields[i++]);
                 return pair;
             }
             catch (final Exception e)
             {
+                e.printStackTrace();
                 return null;
             }
         }

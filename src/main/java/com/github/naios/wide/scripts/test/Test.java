@@ -128,7 +128,7 @@ public class Test extends Script
         System.out.println(ServerStorageChangeHolder.instance());
         System.out.println("Reverting...");
         ServerStorageChangeHolder.instance().rollback(entry.name(), 2);
-        ServerStorageChangeHolder.instance().reset(entry.unit_flags());
+        ServerStorageChangeHolder.instance().reset(entry);
         System.out.println(entry);
         System.out.println(ServerStorageChangeHolder.instance());
 

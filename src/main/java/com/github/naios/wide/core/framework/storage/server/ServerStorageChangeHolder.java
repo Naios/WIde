@@ -93,7 +93,7 @@ public class ServerStorageChangeHolder implements Observable
             while (0 < idx--)
                 history.getHistory().remove(0);
 
-            if (empty(history))
+            if (history.empty())
                 removeFromHistory(reference.get(history.getReference()));
         }
     }
@@ -113,7 +113,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Updates the current database sync of all history stacks to now
      */
-    public void update()
+    protected void update()
     {
         for (final ObservableValueHistory h : history.values())
         {
@@ -163,31 +163,32 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
-     * Reverts changes hard, may affect whole structure<br>
-     * <b> Includes Create/ Inserts<b>
+     * Reverts structure <b>hard</b> to last state.<br>
+     * Recovers deleted structures!<br>
+     * <b>Will erase all changes made on the structure.</b>
      * @param observable value you want to edit.
      */
-    public void revert(final ObservableValue<?> observable)
+    public void revert(final ServerStorageStructure structure)
     {
-        rollback_impl(observable, -1, false, true);
+
     }
 
     /**
      * Resets all changes until the point you started the application
      * @param observable value you want to edit.
      */
-    public void reset(final ObservableValue<?> observable)
+    public void reset(final ServerStorageStructure structure)
     {
-        rollback_impl(observable, -1, false, true);
+        revertImplementation(structure, false);
     }
 
     /**
-     * Drops all changes, so you are in sync with the database
+     * Drop all changes, made since the last sync.<br>
      * @param observable value you want to edit.
      */
     public void drop(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, -1, true, true);
+        rollbackImplementation(observable, -1, true);
     }
 
     /**
@@ -196,7 +197,7 @@ public class ServerStorageChangeHolder implements Observable
      */
     public void rollback(final ObservableValue<?> observable)
     {
-        rollback_impl(observable, 1, false, false);
+        rollbackImplementation(observable, 1, false);
     }
 
     /**
@@ -207,27 +208,34 @@ public class ServerStorageChangeHolder implements Observable
      */
     public void rollback(final ObservableValue<?> observable, final int times)
     {
-        rollback_impl(observable, times, false, false);
+        rollbackImplementation(observable, times, false);
     }
 
-    private void rollback_impl(final ObservableValue<?> observable, int times, final boolean toCurrentSync, final boolean hard)
+    /**
+     * Rolls back the history<br>
+     * <b>Can't roll back behind deletion/ insertion</b>
+     * @param observable you want to roll back
+     * @param times of steps you want to roll back
+     * @param soft shall we only revert to the current database sync (drop changes made after the last sync)?
+     */
+    private void rollbackImplementation(final ObservableValue<?> observable, int times, final boolean soft)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
         if (valueHistory == null)
             return;
 
-        if (valueHistory.getHistory().empty())
-            removeFromHistory(observable);
-
-        while ((0 != times--) && (!valueHistory.getHistory().empty()))
+        while ((0 != times--) && (!valueHistory.empty()))
         {
             final Object value = valueHistory.getHistory().peek();
             if (value.equals(StructureState.STATE_IN_SYNC))
             {
-                if (toCurrentSync)
+                if (soft)
                     break;
                 else
+                {
+                    valueHistory.getHistory().pop();
                     continue;
+                }
             }
             else if (value.equals(StructureState.STATE_CREATED)
                     || value.equals(StructureState.STATE_DELETED))
@@ -241,10 +249,20 @@ public class ServerStorageChangeHolder implements Observable
         }
 
         // If the history is empty remove the observable from the history
-        if (empty(valueHistory))
+        if (valueHistory.empty())
             removeFromHistory(observable);
         else
             informListeners();
+    }
+
+    /**
+     * Reverts the structure hard.
+     * @param structure you want to revert.
+     * @param once shall we only revert one state?
+     */
+    private void revertImplementation(final ServerStorageStructure structure, final boolean once)
+    {
+
     }
 
     private void set(final ObservableValue<?> observable, final Object value)
@@ -258,11 +276,6 @@ public class ServerStorageChangeHolder implements Observable
 
         if (!ServerStorageFieldType.set(observable, value))
             valueHistory.validateNext();
-    }
-
-    private boolean empty(final ObservableValueHistory history)
-    {
-        return history.getHistory().size() <= 1;
     }
 
     @Override
@@ -322,6 +335,16 @@ public class ServerStorageChangeHolder implements Observable
             return h.getReference();
         else
             return null;
+    }
+
+    /**
+     * Commits all changes to the database
+     */
+    public void commit()
+    {
+
+
+        update();
     }
 
     private void informListeners()

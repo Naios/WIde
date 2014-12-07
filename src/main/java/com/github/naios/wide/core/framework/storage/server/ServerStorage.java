@@ -446,6 +446,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         storage.setState(StructureState.STATE_DELETED);
         ServerStorageChangeHolder.instance().delete(storage);
+
+        storage.reset();
     }
 
     @Override
