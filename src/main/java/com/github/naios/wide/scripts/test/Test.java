@@ -128,7 +128,7 @@ public class Test extends Script
         System.out.println(ServerStorageChangeHolder.instance());
         System.out.println("Reverting...");
         ServerStorageChangeHolder.instance().rollback(entry.name(), 2);
-        ServerStorageChangeHolder.instance().reset(entry);
+        ServerStorageChangeHolder.instance().tryReset(entry.unit_flags());
         System.out.println(entry);
         System.out.println(ServerStorageChangeHolder.instance());
 
@@ -178,5 +178,7 @@ public class Test extends Script
 
         System.out.println(ServerStorageChangeHolder.instance());
         table.close();
+
+        System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
     }
 }

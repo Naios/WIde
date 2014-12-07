@@ -494,12 +494,19 @@ public enum ServerStorageFieldType
         return observable.getValue();
     }
 
+    public static boolean isValueWriteable(final ObservableValue<?> observable)
+    {
+        return observable instanceof WritableValue;
+    }
+
     /**
      * Sets an observable value
      */
     public static boolean set(final ObservableValue<?> observable, final Object value)
     {
-        System.out.println(String.format("DEBUG: %s %s", observable, value));
+        if (!isValueWriteable(observable))
+            throw new IllegalStateException(String.format("%s tried to write to a readonly value!", observable.getClass()));
+
         final ServerStorageFieldType storageType = getType(observable.getClass());
         if (storageType == null)
             return false;
@@ -513,7 +520,7 @@ public enum ServerStorageFieldType
      */
     public static void loadDefault(final ObservableValue<?> observable)
     {
-        if (!(observable instanceof WritableValue))
+        if (!isValueWriteable(observable))
             return;
 
         final ServerStorageFieldType storageType = getType(observable.getClass());
