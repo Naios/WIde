@@ -19,6 +19,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.server.builder.LazySQLBuilder;
+import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
@@ -484,11 +486,17 @@ public class ServerStorageChangeHolder implements Observable
      */
     public void commit()
     {
-
-
-
-
         update();
+    }
+
+    public String getQuery()
+    {
+        final SQLBuilder builder = new LazySQLBuilder(this, true);
+
+        builder.addRecentChanged();
+
+
+        return builder.toString();
     }
 
     /**

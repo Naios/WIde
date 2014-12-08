@@ -29,6 +29,7 @@ public enum GameBuild
     V6_0_3_19103("6.0.3", Expansion.WARLORDS_OF_DRAENOR);
 
     private final String version;
+
     private final Expansion expansion;
 
     private GameBuild(final String version, final Expansion expansion)

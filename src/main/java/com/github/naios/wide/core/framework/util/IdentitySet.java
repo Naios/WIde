@@ -43,6 +43,7 @@ public class IdentitySet<T> implements Set<T>
         return storage.keySet().toArray();
     }
 
+    @SuppressWarnings({ "unchecked", "hiding" })
     @Override
     public <T> T[] toArray(final T[] a)
     {

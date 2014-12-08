@@ -16,7 +16,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.server.builder.LazySQLBuilder;
+import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 import com.github.naios.wide.core.framework.util.ClassUtil;
@@ -502,6 +505,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         changeHolder.delete(storage);
 
         storage.reset();
+    }
+
+    public SQLBuilder createBuilder()
+    {
+        return new LazySQLBuilder(getChangeHolder(), WIde.getConfig().getProperty(Constants.PROPERTY_SQL_VARIABLES).equals("true"));
     }
 
     @Override

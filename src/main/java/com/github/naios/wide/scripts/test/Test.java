@@ -200,6 +200,8 @@ public class Test extends Script
             System.out.println(table.getChangeHolder());
         }
 
+        System.out.println(table.getChangeHolder().getQuery());
+
         table.close();
 
         System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
