@@ -14,7 +14,6 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
-import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.session.database.DatabaseType;
 
@@ -70,8 +69,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
     {
         final List<Field> list = new LinkedList<>();
 
-        final Field[] fields = ClassUtil.getAnnotatedDeclaredFields(type,
-                ServerStorageEntry.class, true);
+        final Field[] fields = StorageStructure.getAllFields(type, ServerStorageEntry.class);
 
         for (final Field field : fields)
             if (field.getAnnotation(ServerStorageEntry.class).key())
@@ -193,7 +191,7 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         protected ServerStorageIterator(final ServerStorageStructure storage)
         {
             this.storage = storage;
-            fields = storage.getAllFields();
+            fields = storage.getAllFieldsFromThis();
         }
 
         @Override

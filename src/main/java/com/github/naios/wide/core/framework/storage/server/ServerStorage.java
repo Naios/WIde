@@ -18,11 +18,11 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.storage.server.builder.LazySQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
-import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
@@ -423,7 +423,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         try
         {
-            for (final Field field : record.getAllFields())
+            for (final Field field : record.getAllFieldsFromThis())
                 ServerStorageFieldType.doMapFieldToRecordFromResult(field, record, result);
         }
         catch (final Exception e)
@@ -452,7 +452,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
 
-        for (final Field field : record.getAllFields())
+        for (final Field field : record.getAllFieldsFromThis())
         {
             if (primaryFields.contains(field))
             {
@@ -471,8 +471,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private Field[] getAllAnnotatedFields()
     {
-        return ClassUtil.getAnnotatedDeclaredFields(type,
-                ServerStorageEntry.class, true);
+        return StorageStructure.getAllFields(type, ServerStorageEntry.class);
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)

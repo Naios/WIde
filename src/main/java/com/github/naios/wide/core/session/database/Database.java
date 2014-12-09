@@ -112,7 +112,8 @@ public class Database implements AutoCloseable
                 return;
             }
 
-            System.out.println(String.format("Database Type %s loaded: %s", connection.getKey(), name));
+            if (WIde.getEnviroment().isTraceEnabled())
+                System.out.println(String.format("Database Type %s loaded: %s", connection.getKey(), name));
         }
 
         // Hook.ON_DATABASE_ESTABLISHED

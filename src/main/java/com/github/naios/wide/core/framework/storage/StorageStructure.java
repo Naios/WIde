@@ -2,7 +2,9 @@ package com.github.naios.wide.core.framework.storage;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +14,6 @@ import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.framework.game.GameBuildMask;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
-import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
@@ -67,16 +68,36 @@ public abstract class StorageStructure
         return getStorageNameRecursively(base, type.getSuperclass());
     }
 
-    public Field[] getAllFields()
+    public Field[] getAllFieldsFromThis()
     {
-        return ClassUtil.getAnnotatedDeclaredFields(getClass(),
-                getSpecificAnnotation(), true);
+        return getAllFields(getClass(), getSpecificAnnotation());
+    }
+
+    public static Field[] getAllFields(final Class<? extends StorageStructure> type,
+            final Class<? extends Annotation> annotation)
+    {
+        final Collection<Field> container = new ArrayList<>();
+        getFieldsRecursively(container, type, annotation);
+        return container.toArray(new Field[container.size()]);
+    }
+
+    private static void getFieldsRecursively(final Collection<Field> container, final Class<?> type,
+            final Class<? extends Annotation> annotation)
+    {
+        if (type == null)
+            return;
+
+        for (final Field field : type.getDeclaredFields())
+            if (field.isAnnotationPresent(annotation))
+                container.add(field);
+
+        getFieldsRecursively(container, type.getSuperclass(), annotation);
     }
 
     @Override
     public String toString()
     {
-        final Field[] all_fields = getAllFields();
+        final Field[] all_fields = getAllFieldsFromThis();
 
         final List<String> list = new LinkedList<String>();
 

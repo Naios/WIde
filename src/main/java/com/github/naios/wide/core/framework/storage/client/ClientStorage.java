@@ -16,7 +16,6 @@ import java.util.Map;
 
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
-import com.github.naios.wide.core.framework.util.ClassUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
@@ -406,8 +405,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     private Field[] getAllAnnotatedFields()
     {
-        return ClassUtil.getAnnotatedDeclaredFields(type,
-                ClientStorageEntry.class, true);
+        return StorageStructure.getAllFields(type, ClientStorageEntry.class);
     }
 
     private Field getFieldForColumn(final int column)
