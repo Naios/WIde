@@ -14,6 +14,9 @@ public enum Constants
     ////////////////////////////////////////////////////////
     // Property Names
     // Database
+    PROPERTY_DATABASE_DRIVER("core.session.database.driver"),
+    PROPERTY_DATABASE_DRIVER_STRING("core.session.database.driver_string"),
+
     PROPERTY_DATABASE_USER("core.session.database.user"),
     PROPERTY_DATABASE_HOST("core.session.database.host"),
     PROPERTY_DATABASE_PORT("core.session.database.port"),

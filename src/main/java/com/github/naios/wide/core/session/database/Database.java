@@ -20,16 +20,6 @@ public class Database implements AutoCloseable
 {
     private final Map<DatabaseType, ObjectProperty<Connection>> connections = new HashMap<>();
 
-    private static String getConnectionStringForDatabase(final String db)
-    {
-        return "jdbc:mysql://" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ":"
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get() + "/" + db + "?" + "user="
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() + "&" + "password="
-                + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD).get()
-                + "&allowMultiQueries=true"
-                + "&autoReConnect=true";
-    }
-
     public Database()
     {
         for (final DatabaseType type : DatabaseType.values())
@@ -41,6 +31,14 @@ public class Database implements AutoCloseable
             @Override
             public void informed()
             {
+                try
+                {
+                    // Try to load our driver
+                    Class.forName(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_DRIVER).get());
+                } catch (final ClassNotFoundException e)
+                {
+                }
+
                 if (!isConnected())
                     connect();
             }
@@ -86,16 +84,26 @@ public class Database implements AutoCloseable
         return true;
     }
 
+    private String getConnectionString(final String database)
+    {
+        return String.format(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_DRIVER_STRING).get(),
+                WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get(), // Host
+                    WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get(), // Port
+                        database); // Database
+    }
+
     private void connect()
     {
         for (final Entry<DatabaseType, ObjectProperty<Connection>> connection : connections.entrySet())
         {
-            final String connectionString = getConnectionStringForDatabase(
-                    WIde.getConfig().getProperty(connection.getKey().getConfigEntry()).get());
+            final String name = WIde.getConfig().getProperty(connection.getKey().getConfigEntry()).get();
 
             try
             {
-                connection.getValue().set(DriverManager.getConnection(connectionString));
+                connection.getValue().set(DriverManager.getConnection(
+                        getConnectionString(name), // Connection String
+                            WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get(), // User
+                                WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PASSWORD).get())); // Password
             }
             catch (final SQLException e)
             {
@@ -103,6 +111,8 @@ public class Database implements AutoCloseable
                 close();
                 return;
             }
+
+            System.out.println(String.format("Database Type %s loaded: %s", connection.getKey(), name));
         }
 
         // Hook.ON_DATABASE_ESTABLISHED

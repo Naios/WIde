@@ -48,9 +48,10 @@ public interface SQLBuilder
      * @return true on success
      */
     public boolean commit();
-    
+
     /**
      * @return The query
      */
+    @Override
     public String toString();
 }
