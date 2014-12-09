@@ -1,0 +1,13 @@
+Apache 2 License:
+    Apache
+        commons-io
+        commons-cli
+        commons-math3
+        log4j
+    Google
+        guava
+        gson
+
+LGPL 2.1 License
+    MariaDB
+        java-client (jdbc driver)
