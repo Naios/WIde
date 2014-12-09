@@ -1,5 +1,6 @@
 # WIde - MMORPG Framework IDE #
 ---------------------------------
+[![Build Status](https://travis-ci.org/Naios/WIde.svg)](https://travis-ci.org/Naios/WIde)
 
 WIde helps you to edit multiple MMORPG Framework entities.
 Currently WIde works with TrinityCore.
@@ -8,7 +9,7 @@ WIde is mainly written in **Java** and makes heavily use of the **JavaFX** libra
 
 License
 -------------
-WIde is licensed under the [**Attribution-NonCommercial-ShareAlike 4.0 International**](http://creativecommons.org/licenses/by-nc-sa/4.0/) license.
+WIde is licensed under the [**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**](http://creativecommons.org/licenses/by-nc-sa/4.0/) license.
 
 The License prohibits Commecial use, this also includes projects where you get donations or money through sells **(== private servers)**!
 
@@ -42,7 +43,8 @@ Console Mode Examples
 - Simple help message: `java -jar target/wide* -e "help printdbc"`
 
 - Shows the content of TaxiNodes.db2 (or any other .dbc, .db2 or .adb storage):
-  `java -jar target/wide* -e "printdbc TaxiNodes.db2"`
+
+    `java -jar target/wide* -e "printdbc TaxiNodes.db2"`
 
 Dependencys
 --------------
