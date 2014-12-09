@@ -4,7 +4,7 @@
 WIde helps you to edit multiple MMORPG Framework entities.
 Currently WIde works with TrinityCore.
 
-WIde WIde is mainly written in **Java** and makes heavily use the **JavaFX** library.
+WIde is mainly written in **Java** and makes heavily use of the **JavaFX** library.
 
 License
 -------------
