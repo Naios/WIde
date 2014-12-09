@@ -1,13 +1,11 @@
 package com.github.naios.wide.modules;
 
 import com.github.naios.wide.core.framework.extensions.modules.Module;
-import com.github.naios.wide.modules.gui.GUI;
 import com.github.naios.wide.modules.terminal.Terminal;
 
 public enum ModuleDefinition
 {
     // Define new Modules here
-    MODULE_GUI("gui", GUI.class),
     MODULE_TERMINAL("terminal", Terminal.class);
 
     private final String uuid;
