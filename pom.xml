@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios</groupId>
     <artifactId>wide</artifactId>
-    <version>1.0</version>
+    <version>0.3a</version>
     <packaging>jar</packaging>
     <name>WIde</name>
     <url>https://github.com/Naios/WIde</url>
