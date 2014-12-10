@@ -524,6 +524,21 @@ public class ServerStorageChangeHolder implements Observable
             return null;
     }
 
+    public String getScopeOfObservable(final ObservableValue<?> observable)
+    {
+        final ObservableValueHistory h = history.get(observable);
+        if (h != null)
+            return h.getScope();
+        else
+            return new String();
+    }
+
+    public String getScopeOfStructure(final ServerStorageStructure structure)
+    {
+        // TODO
+        return "";
+    }
+
     /**
      * Commits all changes to the database
      */

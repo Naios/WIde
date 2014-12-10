@@ -13,18 +13,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
-import com.github.naios.wide.core.framework.util.IdentitySet;
+import com.github.naios.wide.core.framework.util.Pair;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
@@ -35,13 +39,13 @@ public class LazySQLBuilder implements SQLBuilder
             new HashMap<>();
 
     private final Collection<ServerStorageStructure> insert =
-            new IdentitySet<>();
+            new ArrayList<>();
 
     private final Collection<ServerStorageStructure> delete =
-            new IdentitySet<>();
+            new ArrayList<>();
 
-    private final Collection<ObservableValue<?>> update =
-            new IdentitySet<>();
+    private final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update =
+            new ArrayList<>();
 
     private final ServerStorageChangeHolder changeholder;
 
@@ -85,7 +89,7 @@ public class LazySQLBuilder implements SQLBuilder
     @Override
     public SQLBuilder addRecentChanged()
     {
-        update.addAll(changeholder.getObservablesChanged());
+        addUpdates(changeholder.getObservablesChanged());
         return this;
     }
 
@@ -95,7 +99,7 @@ public class LazySQLBuilder implements SQLBuilder
     @Override
     public SQLBuilder addAllChanged()
     {
-        update.addAll(changeholder.getAllObservablesChanged());
+        addUpdates(changeholder.getAllObservablesChanged());
         return this;
     }
 
@@ -105,8 +109,24 @@ public class LazySQLBuilder implements SQLBuilder
     @Override
     public SQLBuilder add(final ObservableValue<?>... value)
     {
-        update.addAll(Arrays.asList(value));
+        addUpdates(Arrays.asList(value));
         return this;
+    }
+
+    private void addUpdates(final Collection<ObservableValue<?>> values)
+    {
+        values.forEach((value) ->
+        {
+            final ObservableValueStorageInfo info =
+                    changeholder.getStorageInformationOfObservable(value);
+
+            // Observable hasn't changed, do nothing
+            // TODO maybe we want to add support to build querys from non changed records later
+            if (info == null)
+                return;
+
+            update.add(new Pair<>(value, info));
+        });
     }
 
     /**
@@ -178,6 +198,11 @@ public class LazySQLBuilder implements SQLBuilder
 
         // Delete all structures contained in delete from create.
         insert.removeAll(delete);
+
+        final Set<SQLVariable> vars = new HashSet<>();
+
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(changeholder, update, insert, delete);
+
 
         // Pre calculate stuff
         if (variablize)
