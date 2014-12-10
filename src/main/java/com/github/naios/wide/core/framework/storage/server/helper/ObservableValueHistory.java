@@ -16,6 +16,8 @@ public class ObservableValueHistory
 
     private final Stack<Object> history = new Stack<>();
 
+    private String scope = new String();
+
     /**
      *  Prevents recursive calls from Rollbacks that inform changelisteners
      */
@@ -34,6 +36,16 @@ public class ObservableValueHistory
     public Stack<Object> getHistory()
     {
         return history;
+    }
+
+    public String getScope()
+    {
+        return scope;
+    }
+
+    public void setScope(final String scope)
+    {
+        this.scope = scope;
     }
 
     public boolean validateNext()

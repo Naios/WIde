@@ -23,6 +23,8 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -66,6 +68,9 @@ public class ServerStorageChangeHolder implements Observable
 
     private final static int TIMES_UNLIMITED = -1;
 
+    private final StringProperty scope =
+            new SimpleStringProperty();
+
     protected ServerStorageChangeHolder(final DatabaseType databaseType)
     {
         this.connection.bind(WIde.getDatabase().connection(databaseType));
@@ -80,6 +85,32 @@ public class ServerStorageChangeHolder implements Observable
                 invalidate();
             }
         });
+    }
+
+    /**
+     * @return Our scope property
+     */
+    public StringProperty scope()
+    {
+        return scope;
+    }
+
+    /**
+     * Sets our current scope
+     * @param scope unique Scope identifier
+     */
+    public void setScope(final String scope)
+    {
+        this.scope.set(scope);
+    }
+
+    /**
+     * Releases the scope<br>
+     * Equal to setScope("")
+     */
+    public void releaseScope()
+    {
+        scope.set("");
     }
 
     /**
@@ -199,13 +230,17 @@ public class ServerStorageChangeHolder implements Observable
             assert(value == observable);
 
         ObservableValueHistory valueHistory = history.get(value);
+
         if (valueHistory == null)
         {
             valueHistory = new ObservableValueHistory(storage);
             history.put(value, valueHistory);
         }
+
         if (valueHistory.validateNext())
             valueHistory.getHistory().push(oldValue);
+
+        valueHistory.setScope(scope.get());
 
         informListeners();
     }
