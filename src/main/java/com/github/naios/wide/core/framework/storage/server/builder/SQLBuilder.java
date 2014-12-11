@@ -157,7 +157,7 @@ public class SQLBuilder
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars));
+            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, variablize));
 
         vars.writeQuery(writer);
 

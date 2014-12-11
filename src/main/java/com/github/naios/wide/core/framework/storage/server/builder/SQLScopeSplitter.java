@@ -22,7 +22,7 @@ public abstract class SQLScopeSplitter<T> implements Consumer<T>
 
     private final Map<String, SQLScope> scopes;
 
-    public SQLScopeSplitter(final ServerStorageChangeHolder holder, final Map<String, SQLScope> scopes)
+    protected SQLScopeSplitter(final ServerStorageChangeHolder holder, final Map<String, SQLScope> scopes)
     {
         this.holder = holder;
 

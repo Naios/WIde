@@ -11,6 +11,7 @@ package com.github.naios.wide.core.framework.storage.server.builder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javafx.beans.value.ObservableValue;
 
@@ -19,6 +20,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHo
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.framework.util.SQLUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -28,21 +30,21 @@ public class SQLScope
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
-    public SQLScope()
+    protected SQLScope()
     {
     }
 
-    public Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
+    protected Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
     {
         return update;
     }
 
-    public Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
+    protected Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
     {
         return insert;
     }
 
-    public Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
+    protected Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
     {
         return delete;
     }
@@ -50,7 +52,7 @@ public class SQLScope
     /**
      * Splits collections containing update, insert & delete structures into its scopes
      */
-    public static Map<String, SQLScope> split(final ServerStorageChangeHolder holder,
+    protected static Map<String, SQLScope> split(final ServerStorageChangeHolder holder,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
@@ -111,8 +113,40 @@ public class SQLScope
         return scopes;
     }
 
-    public String buildQuery(final String key, final SQLVariableHolder vars)
+    protected String buildQuery(final String key, final SQLVariableHolder vars, final boolean variablize)
     {
-        return "not implemented query";
+        final StringBuilder builder = new StringBuilder();
+
+        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
+            buildUpdates(builder, structure.getValue(), vars, variablize);
+
+        return builder.toString();
+    }
+
+    private void buildUpdates(final StringBuilder builder, final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
+            final SQLVariableHolder vars, final boolean variablize)
+    {
+        // TODO Group updates by key or updates
+        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, ObservableValueStorageInfo>> observableGroup = HashMultimap.create();
+        values.forEach((value) ->
+        {
+            observableGroup.put(value.second().getStructure(), value);
+        });
+
+        final Multimap<String /*changes*/, ServerStorageStructure> changesPerStructure = HashMultimap.create();
+
+        // Build Changeset (updates without key)
+        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> entry
+                : observableGroup.asMap().entrySet())
+            changesPerStructure.put(SQLUtil.createUpdateFields(vars, entry.getValue()), entry.getKey());
+
+        for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
+        {
+            final String tableName = null;
+
+            final String keyPart = ""; // SQLUtil.createKeyPart(change.getValue())
+
+            builder.append(SQLUtil.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
+        }
     }
 }

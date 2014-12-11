@@ -514,7 +514,7 @@ public class ServerStorageChangeHolder implements Observable
 
             final Stack<Object> stack = history.get(entry.getValue()).getHistory();
 
-            builder.append(StringUtil.concat(getHistory(entry.getValue()), " -> "));
+            builder.append(StringUtil.concat(" -> ", getHistory(entry.getValue())));
 
             builder.append(String.format(" -> Now: %s", new FormatterWrapper(entry.getValue().getValue())));
         }

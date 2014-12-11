@@ -8,8 +8,14 @@
 
 package com.github.naios.wide.core.framework.util;
 
+import java.util.Iterator;
+
 public class StringUtil
 {
+    final private static String SPACE = " ";
+
+    final private static String COMMA = ",";
+
     public static String convertStringToVarName(final String str)
     {
         // TODO Find a better regex for this
@@ -27,12 +33,47 @@ public class StringUtil
                 .replaceAll("[()'@\"]", "");
     }
 
-    public static String concat(final Object[] array, final String delemiter)
+    public static String fillWithSpaces(final Object... array)
+    {
+        return concat(SPACE, array);
+    }
+
+    public static String fillWithComma(final Object... array)
+    {
+        return concat(COMMA, array);
+    }
+
+    public static String concat(final String delemiter, final Object... array)
+    {
+        return concat(delemiter, new Iterator<String>()
+        {
+            int pos = 0;
+
+            @Override
+            public boolean hasNext()
+            {
+                return pos < array.length;
+            }
+
+            @Override
+            public String next()
+            {
+                return array[pos++].toString();
+            }
+        });
+    }
+
+    public static String concat(final String delemiter, final Iterable<String> iterable)
+    {
+        return concat(delemiter, iterable.iterator());
+    }
+
+    public static String concat(final String delemiter, final Iterator<String> iterator)
     {
         final StringBuilder builder = new StringBuilder();
 
-        for (final Object obj : array)
-            builder.append(obj.toString()).append(delemiter);
+        while (iterator.hasNext())
+            builder.append(iterator.next()).append(delemiter);
 
         if (builder.length() >= delemiter.length())
             builder.delete(builder.length() - delemiter.length(), builder.length());

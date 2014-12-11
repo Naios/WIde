@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.SQLUtil;
 
 public class SQLVariableHolder
 {
@@ -74,7 +75,7 @@ public class SQLVariableHolder
                 writer.println();
             }
 
-            writer.println(String.format("SET %s := %s;", key, variables.get(key)));
+            writer.println(SQLUtil.createVariable(key, variables.get(key)));
         }
     }
 }

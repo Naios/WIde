@@ -210,7 +210,7 @@ public class Test extends Script
             System.out.println(table.getChangeHolder());
         }
 
-        System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
+        System.out.println(String.format(StringUtil.concat(" ",  new Object[] {"This", "is", "a", "test."})));
 
         System.out.println(SQLUtil.createComment("single line comment."));
 
