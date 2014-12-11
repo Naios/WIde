@@ -48,7 +48,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry
-    @EnumValue("com.github.naios.wide.core.framework.game.UnitFlags")
+    @EnumValue("UnitFlags")
     private FlagProperty<UnitFlags> unit_flags;
 
     @Override
@@ -58,7 +58,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry
-    @EnumValue("com.github.naios.wide.core.framework.game.UnitClass")
+    @EnumValue("UnitClass")
     private EnumProperty<UnitClass> unit_class;
 
     @Override

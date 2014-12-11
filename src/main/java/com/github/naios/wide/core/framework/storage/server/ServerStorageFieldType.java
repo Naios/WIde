@@ -38,6 +38,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WritableValue;
 
+import com.github.naios.wide.core.framework.game.Classes;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
@@ -437,10 +438,7 @@ public enum ServerStorageFieldType
     {
         final EnumValue annotation = field.getAnnotation(EnumValue.class);
         if (annotation == null)
-        {
-            System.out.println(String.format("DEBUG: %s", "novalue"));
             throw new NoMetaEnumException(field);
-        }
 
 
         Class<?> type = null;
@@ -448,7 +446,7 @@ public enum ServerStorageFieldType
         if (!annotation.value().isEmpty())
             try
             {
-                type = Class.forName(annotation.value());
+                type = Class.forName(Classes.class.getPackage().getName() + "." + annotation.value());
             }
             catch (final Exception e)
             {
@@ -456,10 +454,7 @@ public enum ServerStorageFieldType
             }
 
         if (type == null || !type.isEnum())
-        {
-            System.out.println(String.format("DEBUG: %s", "no enum"));
             throw new NoMetaEnumException(field);
-        }
 
         return type;
     }
