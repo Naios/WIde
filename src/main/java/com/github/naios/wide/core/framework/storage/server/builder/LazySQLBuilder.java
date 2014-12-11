@@ -188,6 +188,12 @@ public class LazySQLBuilder implements SQLBuilder
     {
     }
 
+    private void cleanStores()
+    {
+        // Delete all structures contained in delete from create.
+        insert.removeAll(delete);
+    }
+
     /**
      * Builds our SQL query
      */
@@ -196,8 +202,7 @@ public class LazySQLBuilder implements SQLBuilder
     {
         final StringWriter writer = new StringWriter();
 
-        // Delete all structures contained in delete from create.
-        insert.removeAll(delete);
+        cleanStores();
 
         final Set<SQLVariable> vars = new HashSet<>();
 
