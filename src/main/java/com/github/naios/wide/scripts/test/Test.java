@@ -219,6 +219,8 @@ public class Test extends Script
         table.getChangeHolder().setScope("scope1", "this blubs...");
         entry.name().set("blub");
 
+        e4.name().set("blub");
+
         table.getChangeHolder().setScope("scope2", "creates a new creature template...");
         final CreatureTemplate myqueryentry = table.newStructureFromKey(CreatureTemplate.createKey(100010));
         myqueryentry.name().set("my test name");

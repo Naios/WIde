@@ -22,38 +22,37 @@ import com.github.naios.wide.core.framework.storage.server.helper.ObservableValu
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.StringUtil;
-import com.github.naios.wide.core.framework.util.FormatterWrapper.Options;
 
 public class SQLMaker
 {
-    public static final String DELEMITER = ";";
+    protected static final String DELEMITER = ";";
 
-    public static final String SPACE = " ";
+    protected static final String SPACE = " ";
 
-    public static final String WHERE = "WHERE";
+    protected static final String WHERE = "WHERE";
 
-    public static final String UPDATE = "UPDATE";
+    protected static final String UPDATE = "UPDATE";
 
-    public static final String DELETE = "DELETE";
+    protected static final String DELETE = "DELETE";
 
-    public static final String SET = "SET";
+    protected static final String SET = "SET";
 
-    public static final String OR = "OR";
+    protected static final String OR = "OR";
 
-    public static final String AND = "AND";
+    protected static final String AND = "AND";
 
-    public static final String IN = "IN";
+    protected static final String IN = "IN";
 
-    public static final String ASSIGN = ":=";
+    protected static final String ASSIGN = ":=";
 
-    public static final String EQUAL = "=";
+    protected static final String EQUAL = "=";
 
-    public static final String NAME_ENCLOSURE = "`";
+    protected static final String NAME_ENCLOSURE = "`";
 
     /**
      * Adds the delemiter to a query
      */
-    public static String addDelemiter(final String query)
+    protected static String addDelemiter(final String query)
     {
         return query + DELEMITER;
     }
@@ -72,15 +71,20 @@ public class SQLMaker
     /**
      * Creates a table name
      */
-    public static String createName(final String table)
+    protected static String createName(final String table)
     {
         return NAME_ENCLOSURE + table + NAME_ENCLOSURE;
+    }
+
+    protected static String createName(final Field field)
+    {
+        return createName(field.getName());
     }
 
     /**
      * Creates a sql variable.
      */
-    public static String createVariable(final String name, final String value)
+    protected static String createVariable(final String name, final String value)
     {
         return addDelemiter(StringUtil.fillWithSpaces(SET, name, ASSIGN, value));
     }
@@ -88,24 +92,53 @@ public class SQLMaker
     /**
      * Creates a sql in clause.
      */
-    public static String createInClause(final String query)
+    protected static String createInClause(final Field field, final String query)
     {
-        return IN + "(" + query + ")";
+        return createName(field) + SPACE + IN + "(" + query + ")";
+    }
+
+    /**
+     * Creates name equals value clause.
+     */
+    protected static String createNameEqualsName(final String name, final String value)
+    {
+        return StringUtil.fillWithSpaces(name, EQUAL, value);
+    }
+
+    private static ObservableValue<?> getObservableValueByFieldAndStructure(final Field field, final ServerStorageStructure structure)
+    {
+        final ObservableValue<?> value;
+        try
+        {
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            return (ObservableValue<?>)field.get(structure);
+
+        } catch (final Exception e)
+        {
+            return null;
+        }
     }
 
     /**
      * Creates field equals value clause.
      */
-    public static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
+    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
+    {
+        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, value));
+    }
+
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ObservableValue<?> value)
     {
         // TODO implement variables here
-        return StringUtil.fillWithSpaces(field.getName(), EQUAL, new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX));
+        return new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
     }
 
     /**
      * creates the key part of an structure
      */
-    public static String createKeyPart(final SQLVariableHolder vars, final ServerStorageStructure... structures)
+    protected static String createKeyPart(final SQLVariableHolder vars, final ServerStorageStructure... structures)
     {
         if (structures.length == 0)
             return "";
@@ -116,8 +149,7 @@ public class SQLMaker
         // otherwise we use nestes AND/ OR clauses
         if (keys.size() == 1 && (structures.length > 1))
         {
-            return keys.get(0)
-                    + createInClause(StringUtil.concat(", ",
+            return createInClause(keys.get(0), StringUtil.concat(", ",
                             new Iterator<String>()
                             {
                                 int i = 0;
@@ -131,7 +163,7 @@ public class SQLMaker
                                 @Override
                                 public String next()
                                 {
-                                    return structures[i].getKey().get()[0].toString();
+                                    return createValueOfObservableValue(vars, getObservableValueByFieldAndStructure(keys.get(0), structures[i++]));
                                 }
                             }));
         }
@@ -166,28 +198,8 @@ public class SQLMaker
                                 @Override
                                 public String next()
                                 {
-                                    ++keyI;
-
-                                    final ObservableValue<?> value;
-                                    try
-                                    {
-                                        final Field field = keys.get(keyI - 1);
-
-                                        if (!field.isAccessible())
-                                            field.setAccessible(true);
-
-                                        value = (ObservableValue<?>)field.get(structures[strucI - 1]);
-                                    } catch (final IllegalArgumentException e)
-                                    {
-                                        e.printStackTrace();
-                                        return "";
-                                    } catch (final IllegalAccessException e)
-                                    {
-                                        e.printStackTrace();
-                                        return "";
-                                    }
-
-                                    return createFieldEqualsValue(vars, keys.get(keyI - 1), value);
+                                    final Field field = keys.get(keyI++);
+                                    return createFieldEqualsValue(vars, field, getObservableValueByFieldAndStructure(field, structures[strucI - 1]));
                                 }
                             }) + ")";
                 }
@@ -198,7 +210,7 @@ public class SQLMaker
     /**
      * Creates only the update fields part of a collection containing observables with storage infos
      */
-    public static String createUpdateFields(final SQLVariableHolder vars,
+    protected static String createUpdateFields(final SQLVariableHolder vars,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> fields)
     {
         final Set<String> statements = new TreeSet<>();
@@ -212,7 +224,7 @@ public class SQLMaker
     /**
      * Creates an update querz from tablename, updateFields and keyPart.
      */
-    public static String createUpdateQuery(final String tablename, final String updateFields, final String keyPart)
+    protected static String createUpdateQuery(final String tablename, final String updateFields, final String keyPart)
     {
         return addDelemiter(StringUtil.fillWithSpaces(UPDATE, createName(tablename), SET, updateFields, WHERE, keyPart));
     }
