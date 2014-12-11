@@ -39,6 +39,8 @@ public class SQLUtil
 
     public static final String AND = "AND";
 
+    public static final String IN = "IN";
+
     public static final String ASSIGN = ":=";
 
     public static final String EQUAL = "=";
@@ -81,47 +83,110 @@ public class SQLUtil
     }
 
     /**
+     * Creates a sql in clause.
+     */
+    public static String createInClause(final String query)
+    {
+        return IN + "(" + query + ")";
+    }
+
+    /**
      * Creates field equals value clause.
      */
-    public static String createFieldEqualsValue(final String field, final Object value)
+    public static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
     {
-        return StringUtil.fillWithSpaces(field, EQUAL, new FormatterWrapper(value, FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX));
+        // TODO implement variables here
+        return StringUtil.fillWithSpaces(field.getName(), EQUAL, new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX));
     }
 
     /**
      * creates the key part of an structure
      */
-    public static String createKeyPart(final ServerStorageStructure... structures)
+    public static String createKeyPart(final SQLVariableHolder vars, final ServerStorageStructure... structures)
     {
         if (structures.length == 0)
             return "";
 
-        final List<Field> fields = structures[0].getPrimaryFields();
+        final List<Field> keys = structures[0].getPrimaryFields();
 
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nestes AND/ OR clauses
-        if (fields.size() == 1)
+        if (keys.size() == 1 && (structures.length > 1))
         {
+            return keys.get(0)
+                    + createInClause(StringUtil.concat(", ",
+                            new Iterator<String>()
+                            {
+                                int i = 0;
 
+                                @Override
+                                public boolean hasNext()
+                                {
+                                    return i < structures.length;
+                                }
 
-            return "";
+                                @Override
+                                public String next()
+                                {
+                                    return structures[i].getKey().get()[0].toString();
+                                }
+                            }));
         }
         else
         {
+            // Yay, nested concat iterator!
             return StringUtil.concat(SPACE + OR + SPACE, new Iterator<String>()
             {
-                int i = 0;
+                private int strucI = 0;
 
                 @Override
                 public boolean hasNext()
                 {
-                    return i < fields.size();
+                    return strucI < structures.length;
                 }
 
                 @Override
                 public String next()
                 {
-                    return createFieldEqualsValue(fields.get(i).getName(), structures[i]);
+                    ++strucI;
+                    return "(" + StringUtil.concat(SPACE + AND + SPACE,
+                            new Iterator<String>()
+                            {
+                                private int keyI = 0;
+
+                                @Override
+                                public boolean hasNext()
+                                {
+                                    return keyI < keys.size();
+                                }
+
+                                @Override
+                                public String next()
+                                {
+                                    ++keyI;
+
+                                    final ObservableValue<?> value;
+                                    try
+                                    {
+                                        final Field field = keys.get(keyI - 1);
+
+                                        if (!field.isAccessible())
+                                            field.setAccessible(true);
+
+                                        value = (ObservableValue<?>)field.get(structures[strucI - 1]);
+                                    } catch (final IllegalArgumentException e)
+                                    {
+                                        e.printStackTrace();
+                                        return "";
+                                    } catch (final IllegalAccessException e)
+                                    {
+                                        e.printStackTrace();
+                                        return "";
+                                    }
+
+                                    return createFieldEqualsValue(vars, keys.get(keyI - 1), value);
+                                }
+                            }) + ")";
                 }
             });
         }
@@ -136,7 +201,7 @@ public class SQLUtil
         final Set<String> statements = new TreeSet<>();
 
         for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
-            statements.add(createFieldEqualsValue(value.second().getField().getName(), value.first().getValue()));
+            statements.add(createFieldEqualsValue(vars, value.second().getField(), value.first()));
 
         return StringUtil.concat(", ", statements.iterator());
     }

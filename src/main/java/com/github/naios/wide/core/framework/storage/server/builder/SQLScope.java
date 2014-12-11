@@ -142,9 +142,9 @@ public class SQLScope
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
-            final String tableName = null;
+            final String tableName = change.getValue().iterator().next().getOwner().getTableName();
 
-            final String keyPart = ""; // SQLUtil.createKeyPart(change.getValue())
+            final String keyPart = SQLUtil.createKeyPart(vars, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
 
             builder.append(SQLUtil.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
