@@ -132,7 +132,7 @@ public class SQLMaker
         return createNameEqualsName(createName(field), createValueOfObservableValue(vars, field, value));
     }
 
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value)
     {
         // Namestorage alias
         if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NamestorageAlias.class))
