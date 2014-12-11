@@ -27,7 +27,6 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
-import com.github.naios.wide.core.framework.storage.server.builder.LazySQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
@@ -516,7 +515,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     public SQLBuilder createBuilder()
     {
-        return new LazySQLBuilder(getChangeHolder(), WIde.getConfig().getProperty(Constants.PROPERTY_SQL_VARIABLES).equals("true"));
+        return new SQLBuilder(getChangeHolder(), WIde.getConfig().getProperty(Constants.PROPERTY_SQL_VARIABLES).equals("true"));
     }
 
     @Override
