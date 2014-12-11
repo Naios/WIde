@@ -15,6 +15,8 @@ public enum NameStorageType
     MAP_NAME("map_name", "MAP", new ClientNameStorage("Map.dbc", 0, 1)),
     SPELL_NAME("spell_name", "SPELL", new ClientNameStorage("Spell.dbc", 0, 1));
 
+    private final String PREFIX_DELEMITER= "_";
+
     final String id, prefix;
 
     final NameStorage storage;
@@ -33,7 +35,7 @@ public enum NameStorageType
 
     public String getPrefix()
     {
-        return prefix;
+        return prefix + PREFIX_DELEMITER;
     }
 
     public NameStorage getStorage()

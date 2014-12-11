@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class SQLVariableHolder
 {
@@ -24,9 +25,9 @@ public class SQLVariableHolder
 
     private final static String PREFIX_NONE = "";
 
-    private String addVariable(final String id, final Object value)
+    public String addVariable(final String id, final Object value)
     {
-        return addVariable(id, value, 1);
+        return addVariable(StringUtil.convertStringToVarName(id), value, 1);
     }
 
     private String addVariable(final String id, final Object value, final int run)

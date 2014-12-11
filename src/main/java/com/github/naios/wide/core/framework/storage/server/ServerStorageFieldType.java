@@ -38,7 +38,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WritableValue;
 
-import com.github.naios.wide.core.framework.game.Classes;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
@@ -331,7 +330,7 @@ public enum ServerStorageFieldType
             new Integer(0),
             (result, field) ->
             {
-                final Class<?> type = getEnumClassHelper(field);
+                final Class<?> type = AliasUtil.getEnum(field);
 
                 try
                 {
@@ -345,7 +344,7 @@ public enum ServerStorageFieldType
             },
             (object, field) ->
             {
-                return (new EnumProperty(getEnumClassHelper(field)));
+                return (new EnumProperty(AliasUtil.getEnum(field)));
             },
             (me, value) ->
             {
@@ -360,7 +359,7 @@ public enum ServerStorageFieldType
             new Integer(0),
             (result, field) ->
             {
-                final Class<?> type = getEnumClassHelper(field);
+                final Class<?> type = AliasUtil.getEnum(field);
 
                 try
                 {
@@ -374,7 +373,7 @@ public enum ServerStorageFieldType
             },
             (object, field) ->
             {
-                return (new FlagProperty(getEnumClassHelper(field)));
+                return (new FlagProperty(AliasUtil.getEnum(field)));
             },
             (me, value) ->
             {
@@ -432,31 +431,6 @@ public enum ServerStorageFieldType
                 return me;
 
         return null;
-    }
-
-    private static Class<?> getEnumClassHelper(final Field field)
-    {
-        final EnumValue annotation = field.getAnnotation(EnumValue.class);
-        if (annotation == null)
-            throw new NoMetaEnumException(field);
-
-
-        Class<?> type = null;
-
-        if (!annotation.value().isEmpty())
-            try
-            {
-                type = Class.forName(Classes.class.getPackage().getName() + "." + annotation.value());
-            }
-            catch (final Exception e)
-            {
-                e.printStackTrace();
-            }
-
-        if (type == null || !type.isEnum())
-            throw new NoMetaEnumException(field);
-
-        return type;
     }
 
     // The Mapping process

@@ -15,8 +15,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.AliasUtil;
+import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
@@ -131,7 +134,14 @@ public class SQLMaker
 
     private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
     {
-        // TODO implement variables here
+        // Namestorage alias
+        if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NamestorageAlias.class))
+        {
+            final String name = AliasUtil.getNamstorageEntry(field, (int)value.getValue());
+            if (name != null)
+                return vars.addVariable(name, value.getValue());
+        }
+
         return new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
     }
 

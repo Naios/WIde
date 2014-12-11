@@ -14,8 +14,8 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
-import com.github.naios.wide.core.framework.storage.server.EnumValue;
-import com.github.naios.wide.core.framework.storage.server.Namestorage;
+import com.github.naios.wide.core.framework.storage.server.EnumAlias;
+import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
@@ -29,7 +29,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry(key=true)
-    @Namestorage("creature_name")
+    @NamestorageAlias("creature_name")
     private ReadOnlyIntegerProperty entry;
 
     @Override
@@ -48,7 +48,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry
-    @EnumValue("UnitFlags")
+    @EnumAlias("UnitFlags")
     private FlagProperty<UnitFlags> unit_flags;
 
     @Override
@@ -58,7 +58,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry
-    @EnumValue("UnitClass")
+    @EnumAlias("UnitClass")
     private EnumProperty<UnitClass> unit_class;
 
     @Override
