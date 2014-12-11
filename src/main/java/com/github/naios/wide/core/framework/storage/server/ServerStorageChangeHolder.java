@@ -147,6 +147,24 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * Gets our value that is currently present in the origin
+     * @param value we want to get the state of
+     * @return the state that is present at the origin
+     */
+    public Object getValueAtOrigin(final ObservableValue<?> value)
+    {
+        final ObservableValueHistory valueHistory = history.get(value);
+        if (valueHistory == null)
+            return null;
+
+        final int idx = valueHistory.getHistory().indexOf(StructureState.STATE_IN_SYNC);
+        if(idx == -1)
+            return valueHistory.getHistory().firstElement();
+        else
+            return valueHistory.getHistory().get(idx - 1);
+    }
+
+    /**
      * Inserts a new changed value into the history
      */
     protected void insert(final ObservableValueStorageInfo storage, final ObservableValue<?> observable, final Object oldValue)
