@@ -19,9 +19,12 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
+import com.github.naios.wide.core.framework.storage.server.EnumAlias;
 import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
+import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
+import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.StringUtil;
@@ -127,19 +130,35 @@ public class SQLMaker
     /**
      * Creates field equals value clause.
      */
-    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
+    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value, final boolean variablize)
     {
-        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, field, value));
+        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, field, value, variablize));
     }
 
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value)
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
     {
-        // Namestorage alias
-        if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NamestorageAlias.class))
+        if (variablize)
         {
-            final String name = AliasUtil.getNamstorageEntry(field, (int)value.getValue());
-            if (name != null)
-                return vars.addVariable(name, value.getValue());
+            // Enum alias
+            if (field.isAnnotationPresent(EnumAlias.class))
+            {
+                @SuppressWarnings("rawtypes")
+                final Class<? extends Enum> enumeration = AliasUtil.getEnum(field);
+
+                if (value instanceof EnumProperty)
+                    return vars.addVariable(enumeration.getEnumConstants()[(int)value.getValue()].name(), value.getValue());
+                else if (value instanceof FlagProperty)
+                {
+
+                }
+            }
+            // Namestorage alias
+            else if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NamestorageAlias.class))
+            {
+                final String name = AliasUtil.getNamstorageEntry(field, (int)value.getValue());
+                if (name != null)
+                    return vars.addVariable(name, value.getValue());
+            }
         }
 
         return new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
@@ -174,7 +193,7 @@ public class SQLMaker
                                 public String next()
                                 {
                                     return createValueOfObservableValue(vars, keys.get(0),
-                                            getObservableValueByFieldAndStructure(keys.get(0), structures[i++]));
+                                            getObservableValueByFieldAndStructure(keys.get(0), structures[i++]), true);
                                 }
                             }));
         }
@@ -210,7 +229,8 @@ public class SQLMaker
                                 public String next()
                                 {
                                     final Field field = keys.get(keyI++);
-                                    return createFieldEqualsValue(vars, field, getObservableValueByFieldAndStructure(field, structures[strucI - 1]));
+                                    return createFieldEqualsValue(vars, field,
+                                            getObservableValueByFieldAndStructure(field, structures[strucI - 1]), true);
                                 }
                             }) + ")";
                 }
@@ -227,7 +247,7 @@ public class SQLMaker
         final Set<String> statements = new TreeSet<>();
 
         for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
-            statements.add(createFieldEqualsValue(vars, value.second().getField(), value.first()));
+            statements.add(createFieldEqualsValue(vars, value.second().getField(), value.first(), true));
 
         return StringUtil.concat(", ", statements.iterator());
     }

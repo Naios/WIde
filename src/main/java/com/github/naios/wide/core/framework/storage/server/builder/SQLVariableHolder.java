@@ -53,6 +53,9 @@ public class SQLVariableHolder
 
     public void writeQuery(final PrintWriter writer)
     {
+        if (variables.isEmpty())
+            return;
+
         final Set<String> keys = new TreeSet<String>(variables.keySet());
 
         String prefix = PREFIX_NONE;
@@ -77,5 +80,7 @@ public class SQLVariableHolder
 
             writer.println(SQLMaker.createVariable(key, variables.get(key)));
         }
+
+        writer.println();
     }
 }

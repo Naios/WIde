@@ -16,7 +16,8 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 
 public class AliasUtil
 {
-    public static Class<?> getEnum(final Field field)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Class<? extends Enum> getEnum(final Field field)
     {
         final EnumAlias annotation = field.getAnnotation(EnumAlias.class);
         if (annotation == null)
@@ -37,7 +38,7 @@ public class AliasUtil
         if (type == null || !type.isEnum())
             throw new NoMetaEnumException(field);
 
-        return type;
+        return (Class<? extends Enum>) type;
     }
 
     public static String getNamstorageEntry(final Field field, final int entry)
@@ -50,6 +51,10 @@ public class AliasUtil
         if (storage == null)
             return null;
 
-        return storage.getPrefix() + storage.getStorage().request(entry);
+        final String name = storage.getStorage().request(entry);
+        if (name == null)
+            return null;
+        else
+            return storage.getPrefix() + name;
     }
 }

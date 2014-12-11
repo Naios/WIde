@@ -14,6 +14,7 @@ import java.util.List;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
+import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
@@ -216,16 +217,23 @@ public class Test extends Script
 
         System.out.println(SQLMaker.createComment("this is\na multiline\ncomment."));
 
-        table.getChangeHolder().setScope("scope1", "this blubs...");
-        entry.name().set("blub");
+        final CreatureTemplate ct1 = table.get(CreatureTemplate.createKey(491));
+        final CreatureTemplate ct2 = table.get(CreatureTemplate.createKey(41378));
+        final CreatureTemplate ct3 = table.get(CreatureTemplate.createKey(151));
 
-        e4.name().set("blub");
+        table.getChangeHolder().setScope("test scope", "test comment");
+
+        ct1.name().set("blub");
+        ct2.name().set("blub");
+
+        ct3.unit_class().set(UnitClass.CLASS_ROGUE);
+
+        System.out.println(table.getChangeHolder().getQuery());
+
 
         table.getChangeHolder().setScope("scope2", "creates a new creature template...");
         final CreatureTemplate myqueryentry = table.newStructureFromKey(CreatureTemplate.createKey(100010));
         myqueryentry.name().set("my test name");
-
-        System.out.println(table.getChangeHolder().getQuery());
 
         table.close();
     }
