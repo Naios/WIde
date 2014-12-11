@@ -9,25 +9,21 @@
 package com.github.naios.wide.core.framework.storage.server.builder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
-import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
 
 /**
@@ -35,9 +31,6 @@ import com.github.naios.wide.core.framework.util.Pair;
  */
 public class LazySQLBuilder implements SQLBuilder
 {
-    private final Map<String /*id*/, String /*value*/> variables =
-            new HashMap<>();
-
     private final Collection<ServerStorageStructure> insert =
             new ArrayList<>();
 
@@ -55,32 +48,6 @@ public class LazySQLBuilder implements SQLBuilder
     {
         this.changeholder = changeholder;
         this.variablize = variablize;
-    }
-
-    private String addVariable(final String id, final Object value)
-    {
-        return addVariable(id, value, 1);
-    }
-
-    private String addVariable(final String id, final Object value, final int run)
-    {
-        final String svalue = new FormatterWrapper(value, FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
-        final String sid = (run == 1) ? String.format("@%s", id) : String.format("@%s_V%s", id, run);
-
-        // If the variable is already contained in the variables with a different value rename it to id + "_V" + run
-        final String containing_value = variables.get(sid);
-        if (containing_value != null)
-        {
-            if (containing_value.equals(svalue))
-                return sid;
-            else
-                return addVariable(id, value, run + 1);
-        }
-        else
-        {
-            variables.put(sid, svalue);
-            return sid;
-        }
     }
 
     /**
@@ -161,37 +128,22 @@ public class LazySQLBuilder implements SQLBuilder
         return this;
     }
 
-    private void calculateVariables()
-    {
-    }
-
-    private void calculateInserts()
-    {
-    }
-
-    private void calculateDeletes()
-    {
-    }
-
-    private void writeVariables(final StringWriter writer)
-    {
-        // TODO Sort variables
-        for (final Entry<String, String> entry : variables.entrySet())
-            writer.write(String.format("SET %s := %s;", entry.getKey(), entry.getValue()));
-    }
-
-    private void writeInserts(final StringWriter writer)
-    {
-    }
-
-    private void writeDeletes(final StringWriter writer)
-    {
-    }
-
+    /**
+     * Cleans our storage & value collections of invalid entrys
+     */
     private void cleanStores()
     {
         // Delete all structures contained in delete from create.
         insert.removeAll(delete);
+
+        // Delete all values from update querys that are inserted in insert statements anyway
+        update.removeIf((value) ->
+        {
+            final ObservableValueStorageInfo info = value.second();
+            return insert.contains(info) ||
+                   // value should never exist in delete structures but we handle it.
+                   delete.contains(info);
+        });
     }
 
     /**
@@ -200,48 +152,32 @@ public class LazySQLBuilder implements SQLBuilder
     @Override
     public void write(final OutputStream stream)
     {
-        final StringWriter writer = new StringWriter();
+        final PrintWriter writer = new PrintWriter(stream);
 
+        // Clean our stores of bad entrys
         cleanStores();
 
-        final Set<SQLVariable> vars = new HashSet<>();
-
+        // Pre calculate everything
+        final SQLVariableHolder vars = new SQLVariableHolder();
         final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(changeholder, update, insert, delete);
+        final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
+        for (final Entry<String, SQLScope> entry : scopes.entrySet())
+            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars));
 
-        // Pre calculate stuff
-        if (variablize)
-            calculateVariables();
+        vars.writeQuery(writer);
 
-        calculateInserts();
-        calculateDeletes();
-
-        // Write SQL
-        if (variablize)
-            writeVariables(writer);
-
-        writeDeletes(writer);
-        writeInserts(writer);
-
-        // Iterate through all changed ObservableValues
-
-
-        // Replace namestorage, enum and flag fields through sql variables
-
-        // Write "Changesets" for all updated ObservableValues & deleted structures
-
-        // Summary update/delete Changesets that target the same table but different keys
-
-        // Write insert querys for all new structures, summary same tables
-
-        try
+        for (final Entry<String, String> entry : querys.entrySet())
         {
-            writer.close();
+            final String comment = changeholder.getScopeComment(entry.getKey());
+            if (!comment.isEmpty())
+                writer.println(entry.getValue());
+
+            // The actual scope querys
+            writer.println(entry.getValue());
         }
-        catch (final IOException e)
-        {
-            e.printStackTrace();
-        }
+
+        writer.close();
     }
 
     /**

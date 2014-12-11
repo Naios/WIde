@@ -8,89 +8,41 @@
 
 package com.github.naios.wide.core.framework.storage.server.builder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.Pair;
-
-/**
- * Helps us to split scopes of multiple collections
- */
-abstract class Splitter<T> implements Consumer<T>
-{
-    private final ServerStorageChangeHolder holder;
-
-    private final Map<String, SQLScope> scopes;
-
-    public Splitter(final ServerStorageChangeHolder holder, final Map<String, SQLScope> scopes)
-    {
-        this.holder = holder;
-
-        this.scopes = scopes;
-    }
-
-    @Override
-    public void accept(final T entry)
-    {
-        final String name = getScope(entry);
-
-        SQLScope scope = scopes.get(name);
-        if (scope == null)
-        {
-            scope = new SQLScope();
-            scopes.put(name, scope);
-        }
-
-        addObservable(scope, entry);
-    }
-
-    public abstract String getScope(T entry);
-
-    public abstract void addObservable(SQLScope scope, T entry);
-}
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public class SQLScope
 {
-    private final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update;
+    private final Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> update = HashMultimap.create();
 
-    private final Collection<ServerStorageStructure> insert, delete;
+    private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
     public SQLScope()
     {
-        this.update = new ArrayList<Pair<ObservableValue<?>, ObservableValueStorageInfo>>();
-        this.insert = new ArrayList<ServerStorageStructure>();
-        this.delete = new ArrayList<ServerStorageStructure>();
     }
 
-    public SQLScope(
-            final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update,
-            final Collection<ServerStorageStructure> insert,
-            final Collection<ServerStorageStructure> delete)
-    {
-        this.update = update;
-        this.insert = insert;
-        this.delete = delete;
-    }
-
-    public Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
+    public Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
     {
         return update;
     }
 
-    public Collection<ServerStorageStructure> getInsert()
+    public Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
     {
         return insert;
     }
 
-    public Collection<ServerStorageStructure> getDelete()
+    public Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
     {
         return delete;
     }
@@ -105,7 +57,7 @@ public class SQLScope
     {
         final Map<String, SQLScope> scopes = new HashMap<>();
 
-        update.forEach(new Splitter<Pair<ObservableValue<?>, ObservableValueStorageInfo>>(holder, scopes)
+        update.forEach(new SQLScopeSplitter<Pair<ObservableValue<?>, ObservableValueStorageInfo>>(holder, scopes)
         {
             @Override
             public String getScope(
@@ -118,11 +70,11 @@ public class SQLScope
             public void addObservable(final SQLScope scope,
                     final Pair<ObservableValue<?>, ObservableValueStorageInfo> entry)
             {
-                scope.update.add(entry);
+                scope.update.put(entry.second().getStructure().getOwner(), entry);
             }
         });
 
-        insert.forEach(new Splitter<ServerStorageStructure>(holder, scopes)
+        insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(holder, scopes)
         {
             @Override
             public String getScope(
@@ -135,11 +87,11 @@ public class SQLScope
             public void addObservable(final SQLScope scope,
                     final ServerStorageStructure entry)
             {
-                scope.insert.add(entry);
+                scope.insert.put(entry.getOwner(), entry);
             }
         });
 
-        delete.forEach(new Splitter<ServerStorageStructure>(holder, scopes)
+        delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(holder, scopes)
         {
             @Override
             public String getScope(
@@ -152,10 +104,15 @@ public class SQLScope
             public void addObservable(final SQLScope scope,
                     final ServerStorageStructure entry)
             {
-                scope.delete.add(entry);
+                scope.delete.put(entry.getOwner(), entry);
             }
         });
 
         return scopes;
+    }
+
+    public String buildQuery(final String key, final SQLVariableHolder vars)
+    {
+        return "";
     }
 }

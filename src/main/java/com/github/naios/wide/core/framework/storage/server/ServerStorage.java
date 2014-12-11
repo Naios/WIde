@@ -531,4 +531,39 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         final ConcurrentMap<Integer, ServerStorageStructure> map = cache.asMap();
         return Arrays.toString(map.entrySet().toArray()).replace("],", "],\n");
     }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((databaseType == null) ? 0 : databaseType.hashCode());
+        result = prime * result
+                + ((tableName == null) ? 0 : tableName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        @SuppressWarnings("rawtypes")
+        final ServerStorage other = (ServerStorage) obj;
+        if (databaseType != other.databaseType)
+            return false;
+        if (tableName == null)
+        {
+            if (other.tableName != null)
+                return false;
+        }
+        else if (!tableName.equals(other.tableName))
+            return false;
+        return true;
+    }
 }

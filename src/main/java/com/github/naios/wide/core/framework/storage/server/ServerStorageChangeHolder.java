@@ -68,8 +68,13 @@ public class ServerStorageChangeHolder implements Observable
 
     private final static int TIMES_UNLIMITED = -1;
 
+    public final static String DEFAULT_SCOPE = "";
+
     private final StringProperty scope =
-            new SimpleStringProperty();
+            new SimpleStringProperty(DEFAULT_SCOPE);
+
+    private final Map<String, String> scopeComments =
+            new HashMap<>();
 
     protected ServerStorageChangeHolder(final DatabaseType databaseType)
     {
@@ -105,12 +110,41 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * Sets our current scope
+     * @param scope unique Scope identifier
+     * @param comment our comment we want to set
+     */
+    public void setScope(final String scope, final String comment)
+    {
+        scopeComments.put(scope, comment);
+        setScope(scope);
+    }
+
+    /**
      * Releases the scope<br>
-     * Equal to setScope("")
+     * Equal to setScope(DEFAULT_SCOPE)
      */
     public void releaseScope()
     {
-        scope.set("");
+        scope.set(DEFAULT_SCOPE);
+    }
+
+    /**
+     * Returns a scope comment for the given scope
+     * @return A scope comment (never null)
+     */
+    public String getScopeComment(final String scope)
+    {
+        return scopeComments.getOrDefault(scope, "");
+    }
+
+    /**
+     * Sets the comment of the current scope
+     * @param comment the comment you want to set
+     */
+    public void setScopeComment(final String comment)
+    {
+        scopeComments.put(scope.get(), comment);
     }
 
     /**
@@ -172,6 +206,8 @@ public class ServerStorageChangeHolder implements Observable
 
         reference.clear();
         history.clear();
+        releaseScope();
+        scopeComments.clear();
     }
 
     /**

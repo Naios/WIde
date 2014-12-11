@@ -24,6 +24,7 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.SQLUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -175,6 +176,7 @@ public class Test extends Script
         System.out.println(mask.contains(GameBuild.V6_0_3_19103));
         */
 
+        table.getChangeHolder().setScope("myscope","a simple create test comment.");
         final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
 
         for (int step = 0; step < 7; ++step)
@@ -208,10 +210,21 @@ public class Test extends Script
             System.out.println(table.getChangeHolder());
         }
 
+        System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
+
+        System.out.println(SQLUtil.createComment("single line comment."));
+
+        System.out.println(SQLUtil.createComment("this is\na multiline\ncomment."));
+
+        table.getChangeHolder().setScope("scope1", "this blubs...");
+        entry.name().set("blub");
+
+        table.getChangeHolder().setScope("scope2", "creates a new creature template...");
+        final CreatureTemplate myqueryentry = table.newStructureFromKey(CreatureTemplate.createKey(100010));
+        myqueryentry.name().set("my test name");
+
         System.out.println(table.getChangeHolder().getQuery());
 
         table.close();
-
-        System.out.println(String.format(StringUtil.concat(new Object[] {"This", "is", "a", "test."}, " ")));
     }
 }
