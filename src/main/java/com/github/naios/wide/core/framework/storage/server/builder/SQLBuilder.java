@@ -25,7 +25,6 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHo
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.Pair;
-import com.github.naios.wide.core.framework.util.SQLUtil;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
@@ -166,7 +165,7 @@ public class SQLBuilder
             final String comment = changeholder.getScopeComment(entry.getKey());
 
             if (!comment.isEmpty())
-                writer.println(SQLUtil.createComment(comment));
+                writer.println(SQLMaker.createComment(comment));
 
             // The actual scope querys
             writer.println(entry.getValue());

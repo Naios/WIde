@@ -20,7 +20,6 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHo
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.Pair;
-import com.github.naios.wide.core.framework.util.SQLUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -138,15 +137,15 @@ public class SQLScope
         // Build Changeset (updates without key)
         for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> entry
                 : observableGroup.asMap().entrySet())
-            changesPerStructure.put(SQLUtil.createUpdateFields(vars, entry.getValue()), entry.getKey());
+            changesPerStructure.put(SQLMaker.createUpdateFields(vars, entry.getValue()), entry.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = change.getValue().iterator().next().getOwner().getTableName();
 
-            final String keyPart = SQLUtil.createKeyPart(vars, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
+            final String keyPart = SQLMaker.createKeyPart(vars, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
 
-            builder.append(SQLUtil.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
+            builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
     }
 }

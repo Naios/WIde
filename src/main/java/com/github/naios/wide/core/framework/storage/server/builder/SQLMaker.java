@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.util;
+package com.github.naios.wide.core.framework.storage.server.builder;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -18,10 +18,13 @@ import java.util.TreeSet;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.core.framework.storage.server.builder.SQLVariableHolder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.framework.util.StringUtil;
+import com.github.naios.wide.core.framework.util.FormatterWrapper.Options;
 
-public class SQLUtil
+public class SQLMaker
 {
     public static final String DELEMITER = ";";
 

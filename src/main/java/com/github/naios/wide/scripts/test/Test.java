@@ -23,8 +23,8 @@ import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
+import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.SQLUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -212,9 +212,9 @@ public class Test extends Script
 
         System.out.println(String.format(StringUtil.concat(" ",  new Object[] {"This", "is", "a", "test."})));
 
-        System.out.println(SQLUtil.createComment("single line comment."));
+        System.out.println(SQLMaker.createComment("single line comment."));
 
-        System.out.println(SQLUtil.createComment("this is\na multiline\ncomment."));
+        System.out.println(SQLMaker.createComment("this is\na multiline\ncomment."));
 
         table.getChangeHolder().setScope("scope1", "this blubs...");
         entry.name().set("blub");
