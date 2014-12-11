@@ -113,6 +113,6 @@ public class SQLScope
 
     public String buildQuery(final String key, final SQLVariableHolder vars)
     {
-        return "";
+        return "not implemented query";
     }
 }
