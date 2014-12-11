@@ -11,13 +11,18 @@ package com.github.naios.wide.core.framework.storage.server.builder;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 public class SQLVariableHolder
 {
     private final Map<String, String> variables = new HashMap<>();
+
+    private final static String PREFIX_DELIMITER = "_";
+
+    private final static String PREFIX_NONE = "";
 
     private String addVariable(final String id, final Object value)
     {
@@ -47,8 +52,29 @@ public class SQLVariableHolder
 
     public void writeQuery(final PrintWriter writer)
     {
-        // TODO Sort variables
-        for (final Entry<String, String> entry : variables.entrySet())
-            writer.println(String.format("SET %s := %s;", entry.getKey(), entry.getValue()));
+        final Set<String> keys = new TreeSet<String>(variables.keySet());
+
+        String prefix = PREFIX_NONE;
+
+        // Orders variables by name
+        for (final String key : keys)
+        {
+            // Inserts newlines after prefix changed, useful to group enums or namestorage declarations
+            final int prefixIdx = key.indexOf(PREFIX_DELIMITER);
+
+            final String keyPrefix;
+            if (prefixIdx == -1)
+                keyPrefix = PREFIX_NONE;
+            else
+                keyPrefix = key.substring(0, prefixIdx);
+
+            if (!keyPrefix.equals(prefix))
+            {
+                prefix = keyPrefix;
+                writer.println();
+            }
+
+            writer.println(String.format("SET %s := %s;", key, variables.get(key)));
+        }
     }
 }
