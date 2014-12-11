@@ -14,6 +14,8 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
+import com.github.naios.wide.core.framework.storage.server.EnumValue;
+import com.github.naios.wide.core.framework.storage.server.Namestorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
@@ -26,7 +28,8 @@ public class CreatureTemplateStructure extends CreatureTemplate
         super(owner);
     }
 
-    @ServerStorageEntry(key=true, metanamestorage="creature_name")
+    @ServerStorageEntry(key=true)
+    @Namestorage("creature_name")
     private ReadOnlyIntegerProperty entry;
 
     @Override
@@ -44,8 +47,8 @@ public class CreatureTemplateStructure extends CreatureTemplate
         return name;
     }
 
-    // TODO is there a way to get the canonical name directly from the class?
-    @ServerStorageEntry(metaenum="com.github.naios.wide.core.framework.game.UnitFlags")
+    @ServerStorageEntry
+    @EnumValue("com.github.naios.wide.core.framework.game.UnitFlags")
     private FlagProperty<UnitFlags> unit_flags;
 
     @Override
@@ -54,7 +57,8 @@ public class CreatureTemplateStructure extends CreatureTemplate
         return unit_flags;
     }
 
-    @ServerStorageEntry(metaenum="com.github.naios.wide.core.framework.game.UnitClass")
+    @ServerStorageEntry
+    @EnumValue("com.github.naios.wide.core.framework.game.UnitClass")
     private EnumProperty<UnitClass> unit_class;
 
     @Override

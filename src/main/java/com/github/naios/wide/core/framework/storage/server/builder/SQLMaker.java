@@ -126,10 +126,10 @@ public class SQLMaker
      */
     protected static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
     {
-        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, value));
+        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, field, value));
     }
 
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ObservableValue<?> value)
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value)
     {
         // TODO implement variables here
         return new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
@@ -163,7 +163,8 @@ public class SQLMaker
                                 @Override
                                 public String next()
                                 {
-                                    return createValueOfObservableValue(vars, getObservableValueByFieldAndStructure(keys.get(0), structures[i++]));
+                                    return createValueOfObservableValue(vars, keys.get(0),
+                                            getObservableValueByFieldAndStructure(keys.get(0), structures[i++]));
                                 }
                             }));
         }

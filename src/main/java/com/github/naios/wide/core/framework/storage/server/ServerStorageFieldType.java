@@ -435,20 +435,31 @@ public enum ServerStorageFieldType
 
     private static Class<?> getEnumClassHelper(final Field field)
     {
-        final ServerStorageEntry annotation = field.getAnnotation(ServerStorageEntry.class);
+        final EnumValue annotation = field.getAnnotation(EnumValue.class);
+        if (annotation == null)
+        {
+            System.out.println(String.format("DEBUG: %s", "novalue"));
+            throw new NoMetaEnumException(field);
+        }
+
+
         Class<?> type = null;
 
-        if (!annotation.metaenum().isEmpty())
+        if (!annotation.value().isEmpty())
             try
             {
-                type = Class.forName(annotation.metaenum());
+                type = Class.forName(annotation.value());
             }
             catch (final Exception e)
             {
+                e.printStackTrace();
             }
 
         if (type == null || !type.isEnum())
+        {
+            System.out.println(String.format("DEBUG: %s", "no enum"));
             throw new NoMetaEnumException(field);
+        }
 
         return type;
     }
