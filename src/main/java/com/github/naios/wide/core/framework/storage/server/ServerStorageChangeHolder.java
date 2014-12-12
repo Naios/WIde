@@ -69,6 +69,8 @@ public class ServerStorageChangeHolder implements Observable
 
     public final static String DEFAULT_SCOPE = "";
 
+    public final static String DEFAULT_VARIABLE = null;
+
     private final StringProperty scope =
             new SimpleStringProperty(DEFAULT_SCOPE);
 
@@ -135,6 +137,45 @@ public class ServerStorageChangeHolder implements Observable
     public String getScopeComment(final String scope)
     {
         return scopeComments.getOrDefault(scope, "");
+    }
+
+    /**
+     * Sets an observable value as custom variable<br>
+     * Value is wrapped into the variable then
+     */
+    public void setCustomVariable(final ObservableValue<?> value, final String name)
+    {
+        final ObservableValueHistory valueHistory = history.get(value);
+        if (valueHistory == null)
+            return;
+
+        valueHistory.setCustomVariable(name);
+    }
+
+    /**
+     * Releases a custom variable of an observable value
+     */
+    public void releaseCustomVariable(final ObservableValue<?> value)
+    {
+        final ObservableValueHistory valueHistory = history.get(value);
+        if (valueHistory == null)
+            return;
+
+        valueHistory.setCustomVariable(DEFAULT_VARIABLE);
+    }
+
+    /**
+     * Gets the custom variable of the observable value
+     * @param value The observable value we want to get the variable name of
+     * @return null if not existing, variable name otherwise
+     */
+    public String getCustomVariable(final ObservableValue<?> value)
+    {
+        final ObservableValueHistory valueHistory = history.get(value);
+        if (valueHistory == null)
+            return null;
+
+        return valueHistory.getCustomVariable();
     }
 
     /**

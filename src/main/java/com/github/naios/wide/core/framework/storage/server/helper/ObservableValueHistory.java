@@ -10,13 +10,17 @@ package com.github.naios.wide.core.framework.storage.server.helper;
 
 import java.util.Stack;
 
+import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
+
 public class ObservableValueHistory
 {
     private final ObservableValueStorageInfo reference;
 
     private final Stack<Object> history = new Stack<>();
 
-    private String scope = new String();
+    private String scope = ServerStorageChangeHolder.DEFAULT_SCOPE;
+
+    private String customVariable = ServerStorageChangeHolder.DEFAULT_VARIABLE;
 
     /**
      *  Prevents recursive calls from Rollbacks that inform changelisteners
@@ -46,6 +50,16 @@ public class ObservableValueHistory
     public void setScope(final String scope)
     {
         this.scope = scope;
+    }
+
+    public String getCustomVariable()
+    {
+        return customVariable;
+    }
+
+    public void setCustomVariable(final String customVariable)
+    {
+        this.customVariable = customVariable;
     }
 
     public boolean validateNext()

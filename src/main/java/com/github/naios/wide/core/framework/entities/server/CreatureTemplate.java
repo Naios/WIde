@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.core.framework.entities.server;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
@@ -31,6 +32,8 @@ public abstract class CreatureTemplate extends ServerStorageStructure
     public abstract ReadOnlyIntegerProperty entry();
 
     public abstract StringProperty name();
+
+    public abstract IntegerProperty kill_credit1();
 
     public abstract FlagProperty<UnitFlags> unit_flags();
 

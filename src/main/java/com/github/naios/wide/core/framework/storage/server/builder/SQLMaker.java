@@ -146,6 +146,11 @@ public class SQLMaker
     {
         if (variablize)
         {
+            // If the observable has a custom var use it
+            final String customVar = changeHolder.getCustomVariable(value);
+            if (customVar != null)
+                return vars.addVariable(customVar, value.getValue());
+
             // Enum alias
             if (field.isAnnotationPresent(EnumAlias.class))
             {

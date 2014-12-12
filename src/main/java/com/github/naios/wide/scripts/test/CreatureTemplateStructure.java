@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.scripts.test;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
@@ -45,6 +46,15 @@ public class CreatureTemplateStructure extends CreatureTemplate
     public StringProperty name()
     {
         return name;
+    }
+
+    @ServerStorageEntry
+    private IntegerProperty KillCredit1;
+
+    @Override
+    public IntegerProperty kill_credit1()
+    {
+        return KillCredit1;
     }
 
     @ServerStorageEntry

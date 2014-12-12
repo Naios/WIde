@@ -228,6 +228,9 @@ public class Test extends Script
 
         ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
+        ct3.kill_credit1().set(123456);
+        table.getChangeHolder().setCustomVariable(ct3.kill_credit1(), "my test custom credit");
+
         table.getChangeHolder().setScope(
                 "test flag scope",
                 "some flag tests\nadds some strange flags to maloriak\n"
@@ -244,7 +247,8 @@ public class Test extends Script
         System.out.println(table.getChangeHolder().getQuery());
 
 
-        table.getChangeHolder().setScope("scope2", "creates a new creature template...");
+        // table.getChangeHolder().setScope("scope2", "creates a new creature template...");
+        table.getChangeHolder().releaseScope();
         final CreatureTemplate myqueryentry = table.newStructureFromKey(CreatureTemplate.createKey(100010));
         myqueryentry.name().set("my test name");
 
