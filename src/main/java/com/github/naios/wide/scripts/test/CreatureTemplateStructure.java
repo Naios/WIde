@@ -15,7 +15,7 @@ import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.server.EnumAlias;
-import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
+import com.github.naios.wide.core.framework.storage.server.NameAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageEntry;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
@@ -29,7 +29,7 @@ public class CreatureTemplateStructure extends CreatureTemplate
     }
 
     @ServerStorageEntry(key=true)
-    @NamestorageAlias("creature_name")
+    @NameAlias("creature_name")
     private ReadOnlyIntegerProperty entry;
 
     @Override

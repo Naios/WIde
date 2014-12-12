@@ -21,7 +21,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.EnumAlias;
-import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
+import com.github.naios.wide.core.framework.storage.server.NameAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
@@ -209,7 +209,7 @@ public class SQLMaker
                 }
             }
             // Namestorage alias
-            else if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NamestorageAlias.class))
+            else if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NameAlias.class))
             {
                 final String name = AliasUtil.getNamstorageEntry(field, (int)value.getValue());
                 if (name != null)

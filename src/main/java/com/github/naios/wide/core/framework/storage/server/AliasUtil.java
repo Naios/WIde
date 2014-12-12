@@ -43,7 +43,7 @@ public class AliasUtil
 
     public static String getNamstorageEntry(final Field field, final int entry)
     {
-        final NamestorageAlias annotation = field.getAnnotation(NamestorageAlias.class);
+        final NameAlias annotation = field.getAnnotation(NameAlias.class);
         if (annotation == null)
             return null;
 
