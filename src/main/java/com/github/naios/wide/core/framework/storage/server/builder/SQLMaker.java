@@ -167,8 +167,8 @@ public class SQLMaker
                         oldFlagValue = (int) oldValue;
 
                     // Get flag values of flags in database and in the current observable
-                    final List<Enum> currentFlags = FlagUtil.getFlagList(enumeration, currentFlagValue);
-                    final List<Enum> oldFlags = FlagUtil.getFlagList(enumeration, oldFlagValue);
+                    final List<? extends Enum> currentFlags = FlagUtil.getFlagList(enumeration, currentFlagValue);
+                    final List<? extends Enum> oldFlags = FlagUtil.getFlagList(enumeration, oldFlagValue);
 
                     // Now we calculate the difference
                     // Add Flags:
@@ -223,8 +223,8 @@ public class SQLMaker
     /**
      * Helper to concat a list of flags as variables
      */
-    @SuppressWarnings("unchecked")
-    private static String concatFlags(final SQLVariableHolder vars, final List<Enum> flags)
+    @SuppressWarnings({ "rawtypes" })
+    private static String concatFlags(final SQLVariableHolder vars, final List<? extends Enum> currentFlags)
     {
         return StringUtil.concat(FLAG_DELEMITER, new Iterator<String>()
         {
@@ -233,14 +233,14 @@ public class SQLMaker
             @Override
             public boolean hasNext()
             {
-                return i < flags.size();
+                return i < currentFlags.size();
             }
 
             @Override
             public String next()
             {
-                return vars.addVariable(flags.get(i).name(),
-                        StringUtil.asHex(FlagUtil.createFlag(flags.get(i++))));
+                return vars.addVariable(currentFlags.get(i).name(),
+                        StringUtil.asHex(FlagUtil.createFlag(currentFlags.get(i++))));
             }
         });
     }
