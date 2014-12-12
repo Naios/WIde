@@ -112,17 +112,17 @@ public class SQLScope
         return scopes;
     }
 
-    protected String buildQuery(final String key, final SQLVariableHolder vars, final boolean variablize)
+    protected String buildQuery(final String key, final SQLVariableHolder vars,  final ServerStorageChangeHolder changeHolder, final boolean variablize)
     {
         final StringBuilder builder = new StringBuilder();
 
         for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
-            buildUpdates(builder, structure.getValue(), vars, variablize);
+            buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
 
         return builder.toString();
     }
 
-    private void buildUpdates(final StringBuilder builder, final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
+    private void buildUpdates(final StringBuilder builder,  final ServerStorageChangeHolder changeHolder, final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
             final SQLVariableHolder vars, final boolean variablize)
     {
         // TODO Group updates by key or updates
@@ -137,13 +137,13 @@ public class SQLScope
         // Build Changeset (updates without key)
         for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> entry
                 : observableGroup.asMap().entrySet())
-            changesPerStructure.put(SQLMaker.createUpdateFields(vars, entry.getValue()), entry.getKey());
+            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeHolder, entry.getValue()), entry.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = change.getValue().iterator().next().getOwner().getTableName();
 
-            final String keyPart = SQLMaker.createKeyPart(vars, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
+            final String keyPart = SQLMaker.createKeyPart(vars, changeHolder, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }

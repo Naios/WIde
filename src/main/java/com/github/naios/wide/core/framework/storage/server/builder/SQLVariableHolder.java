@@ -32,7 +32,8 @@ public class SQLVariableHolder
 
     private String addVariable(final String id, final Object value, final int run)
     {
-        final String svalue = new FormatterWrapper(value, FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
+        final String svalue =new FormatterWrapper(value,
+                FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX, FormatterWrapper.Options.NO_HEX_AND_BIN_ENCLOSE).toString();
         final String sid = (run == 1) ? String.format("@%s", id) : String.format("@%s_V%s", id, run);
 
         // If the variable is already contained in the variables with a different value rename it to id + "_V" + run

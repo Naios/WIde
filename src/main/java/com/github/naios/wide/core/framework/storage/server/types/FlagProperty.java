@@ -14,6 +14,7 @@ import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
 {
@@ -63,7 +64,7 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
 
     public String asHex()
     {
-        return "0x" + Integer.toHexString(get());
+        return StringUtil.asHex(get());
     }
 
     @Override

@@ -228,6 +228,19 @@ public class Test extends Script
 
         ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
+        table.getChangeHolder().setScope(
+                "test flag scope",
+                "some flag tests\nadds some strange flags to maloriak\n"
+                        + "it only updates flags that have changed");
+
+        ct2.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_UNK_6);
+
+        // This flag is not present in the database and won't lead to changes
+        ct2.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
+
+        ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
+        ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
+
         System.out.println(table.getChangeHolder().getQuery());
 
 

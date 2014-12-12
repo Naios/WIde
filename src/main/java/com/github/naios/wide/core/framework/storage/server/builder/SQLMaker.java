@@ -9,6 +9,7 @@
 package com.github.naios.wide.core.framework.storage.server.builder;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -21,10 +22,12 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.EnumAlias;
 import com.github.naios.wide.core.framework.storage.server.NamestorageAlias;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
+import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.StringUtil;
@@ -54,6 +57,8 @@ public class SQLMaker
     protected static final String EQUAL = "=";
 
     protected static final String NAME_ENCLOSURE = "`";
+
+    protected static final String FLAG_DELEMITER = " | ";
 
     /**
      * Adds the delemiter to a query
@@ -130,26 +135,77 @@ public class SQLMaker
     /**
      * Creates field equals value clause.
      */
-    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final Field field, final ObservableValue<?> value, final boolean variablize)
+    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+            final Field field, final ObservableValue<?> value, final boolean variablize)
     {
-        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, field, value, variablize));
+        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, changeHolder, field, value, variablize));
     }
 
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
     {
         if (variablize)
         {
             // Enum alias
             if (field.isAnnotationPresent(EnumAlias.class))
             {
-                @SuppressWarnings("rawtypes")
                 final Class<? extends Enum> enumeration = AliasUtil.getEnum(field);
 
+                // Enum Property (Absolute value)
                 if (value instanceof EnumProperty)
                     return vars.addVariable(enumeration.getEnumConstants()[(int)value.getValue()].name(), value.getValue());
+                // Flag Property (Relative value)
                 else if (value instanceof FlagProperty)
                 {
+                    // FlagProperties only occur in set statements
+                    final int currentFlagValue = ((FlagProperty) value).get();
+                    final int oldFlagValue;
+                    final Object oldValue = changeHolder.getValueAtOrigin(value);
+                    if (oldValue == null || !(oldValue instanceof Integer))
+                        oldFlagValue = 0;
+                    else
+                        oldFlagValue = (int) oldValue;
 
+                    // Get flag values of flags in database and in the current observable
+                    final List<Enum> currentFlags = FlagUtil.getFlagList(enumeration, currentFlagValue);
+                    final List<Enum> oldFlags = FlagUtil.getFlagList(enumeration, oldFlagValue);
+
+                    // Now we calculate the difference
+                    // Add Flags:
+                    final List<Enum> addFlags = new ArrayList<>();
+                    addFlags.addAll(currentFlags);
+                    addFlags.removeAll(oldFlags);
+
+                    // Remove Flags:
+                    final List<Enum> removeFlags = new ArrayList<>();
+                    removeFlags.addAll(oldFlags);
+                    removeFlags.removeAll(currentFlags);
+
+                    if ((!addFlags.isEmpty()) || (!removeFlags.isEmpty()))
+                    {
+                        final StringBuilder builder = new StringBuilder();
+
+                        if (!removeFlags.isEmpty())
+                            builder.append("(");
+
+                        builder.append(createName(field));
+
+                        if (!removeFlags.isEmpty())
+                        {
+                            builder.append(" &~ (");
+
+                            builder.append(concatFlags(vars, removeFlags));
+
+                            builder.append("))");
+                        }
+
+                        if (!addFlags.isEmpty())
+                            builder.append(FLAG_DELEMITER).append(concatFlags(vars, addFlags));
+
+                        return builder.toString();
+                    }
+                    else // If Values are not diffe
+                        return concatFlags(vars, currentFlags);
                 }
             }
             // Namestorage alias
@@ -165,9 +221,34 @@ public class SQLMaker
     }
 
     /**
+     * Helper to concat a list of flags as variables
+     */
+    @SuppressWarnings("unchecked")
+    private static String concatFlags(final SQLVariableHolder vars, final List<Enum> flags)
+    {
+        return StringUtil.concat(FLAG_DELEMITER, new Iterator<String>()
+        {
+            int i = 0;
+
+            @Override
+            public boolean hasNext()
+            {
+                return i < flags.size();
+            }
+
+            @Override
+            public String next()
+            {
+                return vars.addVariable(flags.get(i).name(),
+                        StringUtil.asHex(FlagUtil.createFlag(flags.get(i++))));
+            }
+        });
+    }
+
+    /**
      * creates the key part of an structure
      */
-    protected static String createKeyPart(final SQLVariableHolder vars, final ServerStorageStructure... structures)
+    protected static String createKeyPart(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder, final ServerStorageStructure... structures)
     {
         if (structures.length == 0)
             return "";
@@ -192,7 +273,7 @@ public class SQLMaker
                                 @Override
                                 public String next()
                                 {
-                                    return createValueOfObservableValue(vars, keys.get(0),
+                                    return createValueOfObservableValue(vars, changeHolder, keys.get(0),
                                             getObservableValueByFieldAndStructure(keys.get(0), structures[i++]), true);
                                 }
                             }));
@@ -229,7 +310,7 @@ public class SQLMaker
                                 public String next()
                                 {
                                     final Field field = keys.get(keyI++);
-                                    return createFieldEqualsValue(vars, field,
+                                    return createFieldEqualsValue(vars, changeHolder, field,
                                             getObservableValueByFieldAndStructure(field, structures[strucI - 1]), true);
                                 }
                             }) + ")";
@@ -241,13 +322,13 @@ public class SQLMaker
     /**
      * Creates only the update fields part of a collection containing observables with storage infos
      */
-    protected static String createUpdateFields(final SQLVariableHolder vars,
+    protected static String createUpdateFields(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> fields)
     {
         final Set<String> statements = new TreeSet<>();
 
         for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
-            statements.add(createFieldEqualsValue(vars, value.second().getField(), value.first(), true));
+            statements.add(createFieldEqualsValue(vars, changeHolder, value.second().getField(), value.first(), true));
 
         return StringUtil.concat(", ", statements.iterator());
     }

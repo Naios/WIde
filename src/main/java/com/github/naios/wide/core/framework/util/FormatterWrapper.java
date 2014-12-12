@@ -20,6 +20,7 @@ public class FormatterWrapper
     {
         NO_STRING_ENCLOSURE,
         NO_FLOAT_DOUBLE_POSTFIX,
+        NO_HEX_AND_BIN_ENCLOSE
     }
 
     final Object obj;
@@ -45,7 +46,12 @@ public class FormatterWrapper
         else if ((obj instanceof Double) && !hasOption(Options.NO_FLOAT_DOUBLE_POSTFIX))
             return obj.toString() + "d";
         else if ((obj instanceof String) && !hasOption(Options.NO_STRING_ENCLOSURE))
-            return "\"" + obj.toString() + "\"";
+        {
+            if (hasOption(Options.NO_HEX_AND_BIN_ENCLOSE) && (obj.toString().startsWith("0x") || obj.toString().startsWith("0b")))
+                return obj.toString();
+            else
+                return "\"" + obj.toString() + "\"";
+        }
         else
             return obj.toString();
     }

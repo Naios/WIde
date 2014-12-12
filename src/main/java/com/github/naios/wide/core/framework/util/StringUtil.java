@@ -80,4 +80,9 @@ public class StringUtil
 
         return builder.toString();
     }
+
+    public static String asHex(final int value)
+    {
+        return "0x" + Integer.toHexString(value);
+    }
 }

@@ -156,7 +156,7 @@ public class SQLBuilder
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, variablize));
+            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, changeholder, variablize));
 
         vars.writeQuery(writer);
 
@@ -169,9 +169,6 @@ public class SQLBuilder
 
             // The actual scope querys
             writer.println(entry.getValue());
-
-            // newline after every scope
-            writer.println();
         }
 
         writer.close();
