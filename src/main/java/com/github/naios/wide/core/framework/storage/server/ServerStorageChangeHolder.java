@@ -69,6 +69,8 @@ public class ServerStorageChangeHolder implements Observable
 
     public final static String DEFAULT_SCOPE = "";
 
+    public final static String DEFAULT_SCOPE_COMMENT = "";
+
     public final static String DEFAULT_VARIABLE = null;
 
     private final StringProperty scope =
@@ -136,7 +138,7 @@ public class ServerStorageChangeHolder implements Observable
      */
     public String getScopeComment(final String scope)
     {
-        return scopeComments.getOrDefault(scope, "");
+        return scopeComments.getOrDefault(scope, DEFAULT_SCOPE_COMMENT);
     }
 
     /**
@@ -624,12 +626,19 @@ public class ServerStorageChangeHolder implements Observable
         if (h != null)
             return h.getScope();
         else
-            return new String();
+            return "";
     }
 
     public String getScopeOfStructure(final ServerStorageStructure structure)
     {
-        // TODO
+        // Try to get 1 scope of any observable value.
+        for (final Pair<ObservableValue<?>, Field> entry : structure)
+        {
+            final String scope = getScopeOfObservable(entry.first());
+            if (!scope.isEmpty())
+                return scope;
+        }
+
         return "";
     }
 
