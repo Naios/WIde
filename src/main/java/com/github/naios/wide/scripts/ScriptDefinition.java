@@ -13,6 +13,8 @@ import com.github.naios.wide.scripts.fetch.Fetch;
 import com.github.naios.wide.scripts.hello.HelloWorld;
 import com.github.naios.wide.scripts.help.Help;
 import com.github.naios.wide.scripts.printdbc.PrintDBC;
+import com.github.naios.wide.scripts.printenum.PrintEnum;
+import com.github.naios.wide.scripts.printflag.PrintFlags;
 import com.github.naios.wide.scripts.test.Test;
 
 public enum ScriptDefinition
@@ -22,7 +24,9 @@ public enum ScriptDefinition
     SCRIPT_HELLO("hello", HelloWorld.class),
     SCRIPT_TEST("test", Test.class),
     SCRIPT_FETCH("fetch", Fetch.class),
-    SCRIPT_PRINTDBC("printdbc", PrintDBC.class);
+    SCRIPT_PRINTDBC("printdbc", PrintDBC.class),
+    SCRIPT_PRINTENUM("printenum", PrintEnum.class),
+    SCRIPT_PRINTFLAGS("printflags", PrintFlags.class);
 
     private final String uuid;
 

@@ -41,15 +41,6 @@ import javafx.beans.value.WritableValue;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
-@SuppressWarnings("serial")
-class NoMetaEnumException extends ServerStorageException
-{
-    public NoMetaEnumException(final Field field)
-    {
-        super(String.format("Field %s defines no valid metaenum!", field.getName()));
-    }
-}
-
 public enum ServerStorageFieldType
 {
     // TODO Find another unhacky way fix this generetic shit problem...

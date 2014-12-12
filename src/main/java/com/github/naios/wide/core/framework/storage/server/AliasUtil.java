@@ -14,6 +14,15 @@ import com.github.naios.wide.core.framework.game.Classes;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 
+@SuppressWarnings("serial")
+class NoMetaEnumException extends ServerStorageException
+{
+    public NoMetaEnumException(final String name)
+    {
+        super(String.format("Field %s defines no valid metaenum!", name));
+    }
+}
+
 public class AliasUtil
 {
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -21,22 +30,29 @@ public class AliasUtil
     {
         final EnumAlias annotation = field.getAnnotation(EnumAlias.class);
         if (annotation == null)
-            throw new NoMetaEnumException(field);
+            throw new NoMetaEnumException(field.getName());
 
+        return getEnum(annotation.value());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static Class<? extends Enum> getEnum(final String name)
+    {
         Class<?> type = null;
 
-        if (!annotation.value().isEmpty())
+        if (!name.isEmpty())
             try
             {
-                type = Class.forName(Classes.class.getPackage().getName() + "." + annotation.value());
+                type = Class.forName(Classes.class.getPackage().getName() + "." + name);
             }
             catch (final Exception e)
             {
                 e.printStackTrace();
+                throw new NoMetaEnumException(name);
             }
 
         if (type == null || !type.isEnum())
-            throw new NoMetaEnumException(field);
+            throw new NoMetaEnumException(name);
 
         return (Class<? extends Enum>) type;
     }
