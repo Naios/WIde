@@ -209,7 +209,9 @@ public class SQLMaker
 
                         return builder.toString();
                     }
-                    else // If Values are not diffe
+                    else if (currentFlags.isEmpty())
+                        return "0";
+                    else // If Values are not different
                         return concatFlags(vars, currentFlags);
                 }
             }
