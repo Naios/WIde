@@ -506,11 +506,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     protected void onStructureDeleted(final ServerStorageStructure storage)
     {
         checkInvalidAccess(storage);
-
-        storage.writeableState().set(StructureState.STATE_DELETED);
         changeHolder.delete(storage);
 
         storage.reset();
+
+        storage.writeableState().set(StructureState.STATE_DELETED);
     }
 
     public SQLBuilder createBuilder()
