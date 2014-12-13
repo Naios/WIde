@@ -220,6 +220,7 @@ public class Test extends Script
         final CreatureTemplate ct1 = table.get(CreatureTemplate.createKey(491));
         final CreatureTemplate ct2 = table.get(CreatureTemplate.createKey(41378));
         final CreatureTemplate ct3 = table.get(CreatureTemplate.createKey(151));
+        final CreatureTemplate ct4 = table.get(CreatureTemplate.createKey(69));
 
         table.getChangeHolder().setScope("test scope", "test comment");
 
@@ -229,7 +230,7 @@ public class Test extends Script
         ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
         ct3.kill_credit1().set(123456);
-        table.getChangeHolder().setCustomVariable(ct3.kill_credit1(), "my test custom credit");
+        table.getChangeHolder().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
 
         table.getChangeHolder().setScope(
                 "test flag scope",
@@ -244,8 +245,10 @@ public class Test extends Script
         ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
         ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
 
-        System.out.println(table.getChangeHolder().getQuery());
+        table.getChangeHolder().setScope("delete scope", "deletes a creature template");
+        ct4.delete();
 
+        System.out.println(table.getChangeHolder().getQuery());
 
         // table.getChangeHolder().setScope("scope2", "creates a new creature template...");
         table.getChangeHolder().releaseScope();

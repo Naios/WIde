@@ -10,10 +10,12 @@ package com.github.naios.wide.core.framework.storage.server;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -89,7 +91,7 @@ public class ServerStorageChangeHolder implements Observable
                     final ObservableValue<? extends Connection> observable,
                     final Connection oldValue, final Connection newValue)
             {
-                // if the conenction change invalidate all changes
+                // if the connection change invalidate all changes
                 invalidate();
             }
         });
@@ -586,11 +588,36 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * @return Returns the latest known state of an observable value
+     */
+    public StructureState getObservablesLatestState(final ObservableValue<?> observable)
+    {
+        final ObservableValueHistory h = history.get(observable);
+        if (h != null)
+        {
+            final ListIterator<Object> i = h.getHistory().listIterator(h.getHistory().size());
+            while (i.hasPrevious())
+            {
+                final Object cur = i.previous();
+                if (cur instanceof StructureState)
+                    return (StructureState) cur;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return All Observables that have changed
      */
     public Collection<ObservableValue<?>> getAllObservablesChanged()
     {
-        return reference.values();
+        final Collection<ObservableValue<?>> col = new ArrayList<>(reference.values());
+        col.removeIf((entry) ->
+        {
+            return StructureState.STATE_DELETED.equals(getObservablesLatestState(entry));
+        });
+
+        return col;
     }
 
     /**
@@ -598,16 +625,17 @@ public class ServerStorageChangeHolder implements Observable
      */
     public Collection<ObservableValue<?>> getObservablesChanged()
     {
-        final Collection<ObservableValue<?>> set = new HashSet<>();
-        for (final Entry<ObservableValue<?>, ObservableValueHistory> entry : history.entrySet())
+        final Collection<ObservableValue<?>> col = getAllObservablesChanged();
+        col.removeIf((entry) ->
         {
-            final int current_sync_pos = entry.getValue().getHistory().indexOf(StructureState.STATE_IN_SYNC);
-            final int current_size = entry.getValue().getHistory().size();
-            if (current_sync_pos < (current_size - 1))
-                set.add(entry.getKey());
-        }
+            final ObservableValueHistory h = history.get(entry);
+            if (h == null)
+                return true;
 
-        return set;
+            return StructureState.STATE_IN_SYNC.equals(getObservablesLatestState(entry)) &&
+                    (h.getHistory().indexOf(StructureState.STATE_IN_SYNC) != (h.getHistory().size() - 1));
+        });
+        return col;
     }
 
     /**
