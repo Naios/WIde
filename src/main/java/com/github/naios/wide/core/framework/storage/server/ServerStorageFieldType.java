@@ -36,7 +36,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WritableValue;
 
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
@@ -475,7 +474,8 @@ public enum ServerStorageFieldType
 
     public static boolean isValueWriteable(final ObservableValue<?> observable)
     {
-        return observable instanceof WritableValue;
+        final ServerStorageFieldType type = getType(observable.getClass());
+        return (type != null) && (!type.isPossibleKey());
     }
 
     /**

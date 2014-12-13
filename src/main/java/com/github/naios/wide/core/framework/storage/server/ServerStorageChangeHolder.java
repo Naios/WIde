@@ -221,7 +221,8 @@ public class ServerStorageChangeHolder implements Observable
     protected void create(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-            pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
+            if (ServerStorageFieldType.isValueWriteable(entry.first()))
+                pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
     }
 
     /**
@@ -230,11 +231,12 @@ public class ServerStorageChangeHolder implements Observable
     protected void delete(final ServerStorageStructure storage)
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
-        {
-            final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second());
-            insert(info, entry.first(), entry.first().getValue());
-            pushOnHistory(info, entry.first(), StructureState.STATE_DELETED);
-        }
+            if (ServerStorageFieldType.isValueWriteable(entry.first()))
+            {
+                final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second());
+                insert(info, entry.first(), entry.first().getValue());
+                pushOnHistory(info, entry.first(), StructureState.STATE_DELETED);
+            }
     }
 
     /**
