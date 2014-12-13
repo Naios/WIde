@@ -10,10 +10,38 @@ package com.github.naios.wide.core.framework.storage.name;
 
 public enum NameStorageType
 {
-    CREATURE_NAME("creature_name", "NPC", new DatabaseNameStorage("creature_template", "entry", "name")),
-    GAMEOBJECT_NAME("gameobject_name", "GOB", new DatabaseNameStorage("gameobject_template", "entry", "name")),
-    MAP_NAME("map_name", "MAP", new ClientNameStorage("Map.dbc", 0, 1)),
-    SPELL_NAME("spell_name", "SPELL", new ClientNameStorage("Spell.dbc", 0, 1));
+    CREATURE_NAME("creature_name", "NPC", new DatabaseNameStorage("creature_template", "entry", "name")
+    {
+        @Override
+        public String fail(final int entry)
+        {
+            return "unk " + String.valueOf(entry);
+        }
+    }),
+    GAMEOBJECT_NAME("gameobject_name", "GOB", new DatabaseNameStorage("gameobject_template", "entry", "name")
+    {
+        @Override
+        public String fail(final int entry)
+        {
+            return "unk " + String.valueOf(entry);
+        }
+    }),
+    MAP_NAME("map_name", "MAP", new ClientNameStorage("Map.dbc", 0, 1)
+    {
+        @Override
+        public String fail(final int entry)
+        {
+            return "unk " + String.valueOf(entry);
+        }
+    }),
+    SPELL_NAME("spell_name", "SPELL", new ClientNameStorage("Spell.dbc", 0, 1)
+    {
+        @Override
+        public String fail(final int entry)
+        {
+            return "unk " + String.valueOf(entry);
+        }
+    });
 
     private final String PREFIX_DELEMITER= "_";
 

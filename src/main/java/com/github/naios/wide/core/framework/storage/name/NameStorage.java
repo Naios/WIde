@@ -19,14 +19,24 @@ public abstract class NameStorage
 {
     protected final Map<Integer, String> storage = new HashMap<>();
 
-    public String request(final int entry)
-    {
-        return storage.get(entry);
-    }
-
     // Setups some storage specific stuff
     public void setup()
     {
+    }
+
+    public String request(final int entry)
+    {
+        final String name = storage.get(entry);
+        if (name == null)
+            return fail(entry);
+        else
+            return name;
+    }
+
+    // Return a string on fail (example: unknown item 2625)
+    public String fail(final int entry)
+    {
+        return null;
     }
 
     // Loads the storage into the cache
