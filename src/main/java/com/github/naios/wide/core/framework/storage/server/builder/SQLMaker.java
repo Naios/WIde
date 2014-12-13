@@ -94,10 +94,12 @@ public class SQLMaker
 
     /**
      * Creates a sql variable.
+     * @param varMaxLength
      */
-    protected static String createVariable(final String name, final String value)
+    protected static String createVariable(final int varMaxLength, final String name, final String value)
     {
-        return addDelemiter(StringUtil.fillWithSpaces(SET, name, ASSIGN, value));
+        final String fmt = " %-" + varMaxLength + "s := %s";
+        return addDelemiter(SET + String.format(fmt, name, value));
     }
 
     /**

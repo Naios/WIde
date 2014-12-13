@@ -21,7 +21,7 @@ public enum StructureState
     STATE_UPDATED,
 
     /**
-     * The current state of th structure is unknown (caused by database connection lost).
+     * The current state of the structure is unknown (caused by database connection lost).
      */
     STATE_UNKNOWN,
 

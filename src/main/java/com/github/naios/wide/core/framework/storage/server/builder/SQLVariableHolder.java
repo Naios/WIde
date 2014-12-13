@@ -32,7 +32,7 @@ public class SQLVariableHolder
 
     private String addVariable(final String id, final Object value, final int run)
     {
-        final String svalue =new FormatterWrapper(value,
+        final String svalue = new FormatterWrapper(value,
                 FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX, FormatterWrapper.Options.NO_HEX_AND_BIN_ENCLOSE).toString();
         final String sid = (run == 1) ? String.format("@%s", id) : String.format("@%s_V%s", id, run);
 
@@ -59,6 +59,11 @@ public class SQLVariableHolder
 
         final Set<String> keys = new TreeSet<String>(variables.keySet());
 
+        // Get the max length (used to format the var declaration)
+        int varMaxLength = 0;
+        for (final String var : keys)
+            varMaxLength = Math.max(var.length(), varMaxLength);
+
         String prefix = PREFIX_NONE;
 
         // Orders variables by name
@@ -79,7 +84,7 @@ public class SQLVariableHolder
                 writer.println();
             }
 
-            writer.println(SQLMaker.createVariable(key, variables.get(key)));
+            writer.println(SQLMaker.createVariable(varMaxLength, key, variables.get(key)));
         }
 
         writer.println();
