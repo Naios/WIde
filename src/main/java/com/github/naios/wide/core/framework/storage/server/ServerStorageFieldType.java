@@ -497,15 +497,15 @@ public enum ServerStorageFieldType
     /**
      * Loads the observable values default value
      */
-    public static void setDefault(final ObservableValue<?> observable)
+    public static boolean setDefault(final ObservableValue<?> observable)
     {
         if (!isValueWriteable(observable))
-            return;
+            return false;
 
         final ServerStorageFieldType storageType = getType(observable.getClass());
         if (storageType == null)
-            return;
+            return false;
 
-        set(observable, storageType.defaultValue);
+        return set(observable, storageType.defaultValue);
     }
 }

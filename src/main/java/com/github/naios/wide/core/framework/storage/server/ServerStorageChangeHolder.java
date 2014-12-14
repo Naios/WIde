@@ -237,8 +237,17 @@ public class ServerStorageChangeHolder implements Observable
             {
                 final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second());
                 insert(info, entry.first(), entry.first().getValue());
-                pushOnHistory(info, entry.first(), StructureState.STATE_DELETED);
+                insert(info, entry.first(), StructureState.STATE_DELETED);
             }
+    }
+
+    /**
+     * Resets the structure, sets all non key values to its default values
+     */
+    protected void reset(final ServerStorageStructure storage)
+    {
+        for (final Pair<ObservableValue<?>, Field> value : storage)
+            setDefault(value.first());
     }
 
     /**
@@ -360,7 +369,7 @@ public class ServerStorageChangeHolder implements Observable
      * Resets all changes until the point you started the application
      * @param structure value you want to edit.
      */
-    public void reset(final ServerStorageStructure structure)
+    public void drop(final ServerStorageStructure structure)
     {
         revertImplementation(structure, false);
     }

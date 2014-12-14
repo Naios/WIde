@@ -200,7 +200,7 @@ public class Test extends Script
                     table.getChangeHolder().free();
                     break;
                 case 5:
-                    myentry.getOwner().getChangeHolder().reset(myentry);
+                    myentry.getOwner().getChangeHolder().drop(myentry);
                     break;
                 case 6:
                     break;
@@ -247,6 +247,8 @@ public class Test extends Script
 
         table.getChangeHolder().setScope("delete scope", "deletes a creature template");
         ct4.delete();
+
+        System.out.println(table.getChangeHolder());
 
         System.out.println(table.getChangeHolder().getQuery());
 

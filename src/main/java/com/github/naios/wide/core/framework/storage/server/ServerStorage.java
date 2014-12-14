@@ -513,6 +513,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         storage.writeableState().set(StructureState.STATE_DELETED);
     }
 
+
+    protected void onStructureReset(final ServerStorageStructure storage)
+    {
+        checkInvalidAccess(storage);
+        changeHolder.reset(storage);
+    }
+
     public SQLBuilder createBuilder()
     {
         return new SQLBuilder(getChangeHolder(), WIde.getConfig().getProperty(Constants.PROPERTY_SQL_VARIABLES).equals("true"));
