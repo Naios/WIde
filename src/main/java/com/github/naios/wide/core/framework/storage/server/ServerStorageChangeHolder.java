@@ -683,17 +683,16 @@ public class ServerStorageChangeHolder implements Observable
      */
     public Collection<ServerStorageStructure> getStructuresRecentlyDeleted()
     {
-        final Collection<ObservableValue<?>> observables = new ArrayList<>(reference.values());
+        final Collection<Entry<ObservableValue<?>, ObservableValueHistory>> observables = history.entrySet();
         final Collection<ServerStorageStructure> structures = new IdentitySet<>();
 
         observables.forEach((entry) ->
         {
-            final ObservableValueHistory h = history.get(entry);
-            if (h == null || h.getHistory().isEmpty())
+            if (entry.getValue().getHistory().isEmpty())
                 return;
 
-            if (StructureState.STATE_CREATED.equals(h.getHistory().peek()))
-                structures.add(h.getReference().getStructure());
+            if (StructureState.STATE_DELETED.equals(entry.getValue().getHistory().peek()))
+                structures.add(entry.getValue().getReference().getStructure());
         });
 
         return structures;
