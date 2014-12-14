@@ -1,83 +1,70 @@
 {
-	"title" : "WIde framework main configuration file.",
-	"description" : "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
-
-	"active_enviroment" : "default",
-
-	"enviroments" :
-	[
-		{
-			"name" : "default",
-			"build" : "V6_0_3_19103",
-			"client_storages": "data/dbc",
-			"databases":
-			[
-				{
-					"id": "auth",
-					"name": "auth",
-					"host": "localhost:3306",
-					"user": "root",
-					"password": "",
-					"schema": "schematics/default_auth.json"
-				},
-				{
-					"id": "character",
-					"name": "char",
-					"host": "localhost:3306",
-					"user": "root",
-					"password": "",
-					"schema": "schematics/default_character.json"
-				},
-				{
-					"id": "world",
-					"name": "world",
-					"host": "localhost:3306",
-					"user": "root",
-					"password": "",
-					"schema": "schematics/default_world_6x.json"
-				}
-			]
-		}
-	],
-
-	"querys":
-	{
-		"compress": false,
-		"type":
-		[
-			{
-				"id": "INSERT",
-				"variablize":
-				{
-					"custom": true,
-					"names": true,
-					"enums": false,
-					"flags": false
-				},
-				"relative_flags": false
-			},
-			{
-				"id": "DELETE",
-				"variablize":
-				{
-					"custom": true,
-					"names": true,
-					"enums": false,
-					"flags": false
-				},
-				"relative_flags": false
-			},
-			{
-				"id": "UPDATE",
-				"variablize":
-				{
-					"custom": true,
-					"names": true,
-					"enums": true,
-					"flags": true
-				},
-				"relative_flags": true
-			}
-		]
-	}
+  "title": "WIde framework main configuration file.",
+  "description": "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
+  "active_enviroment": "default",
+  "enviroments": [
+    {
+      "name": "default",
+      "client_storages": "data/dbc",
+      "build": "V6_0_3_19103",
+      "databases": [
+        {
+          "id": "auth",
+          "name": "auth",
+          "host": "localhost:3306",
+          "user": "root",
+          "password": "",
+          "schema": "schematics/default_auth.json"
+        },
+        {
+          "id": "character",
+          "name": "char",
+          "host": "localhost:3306",
+          "user": "root",
+          "password": "",
+          "schema": "schematics/default_character.json"
+        },
+        {
+          "id": "world",
+          "name": "world",
+          "host": "localhost:3306",
+          "user": "root",
+          "password": "",
+          "schema": "schematics/default_world_6x.json"
+        }
+      ]
+    }
+  ],
+  "querys": {
+    "compress": false,
+    "type": [
+      {
+        "type": "INSERT",
+        "variablize": {
+          "custom": true,
+          "names": true,
+          "enums": false,
+          "flags": false
+        }
+      },
+      {
+        "type": "DELETE",
+        "variablize": {
+          "custom": true,
+          "names": true,
+          "enums": false,
+          "flags": false
+        }
+      },
+      {
+        "type": "UPDATE",
+        "variablize": {
+          "custom": true,
+          "names": true,
+          "enums": true,
+          "flags": true
+        }
+      }
+    ]
+  }
 }
