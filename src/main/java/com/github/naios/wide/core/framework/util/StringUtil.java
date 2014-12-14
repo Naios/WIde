@@ -16,6 +16,8 @@ public class StringUtil
 
     final private static String COMMA = ",";
 
+    final private static String NEWLINE = "\n";
+
     public static String convertStringToVarName(final String str)
     {
         // TODO Find a better regex for this
@@ -41,6 +43,11 @@ public class StringUtil
     public static String fillWithComma(final Object... array)
     {
         return concat(COMMA, array);
+    }
+
+    public static String fillWithNewLines(final Object... array)
+    {
+        return concat(NEWLINE, array);
     }
 
     public static String concat(final String delemiter, final Object... array)

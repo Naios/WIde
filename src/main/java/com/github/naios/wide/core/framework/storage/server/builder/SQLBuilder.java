@@ -150,9 +150,9 @@ public class SQLBuilder
         update.removeIf((value) ->
         {
             final ObservableValueStorageInfo info = value.second();
-            return insert.contains(info) ||
+            return insert.contains(info.getStructure()) ||
                    // value should never exist in delete structures but we handle it.
-                   delete.contains(info);
+                   delete.contains(info.getStructure());
         });
     }
 

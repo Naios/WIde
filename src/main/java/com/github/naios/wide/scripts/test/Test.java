@@ -26,6 +26,7 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -256,9 +257,20 @@ public class Test extends Script
                 deleteMe.delete();
         }
 
-        table.getChangeHolder().setScope("create scope 1", "creates a new creature template...");
-        final CreatureTemplate myqueryentry = table.create(CreatureTemplate.createKey(100010));
+        table.getChangeHolder().setScope("create scope 1", "creates one new creature template...");
+        final CreatureTemplate myqueryentry = table.create(CreatureTemplate.createKey(1000000));
         myqueryentry.name().set("my test name");
+
+        table.getChangeHolder().setScope("create scope 2", "creates 5 templates with random values");
+        for (int i = 2000000; i < 2000005; ++i)
+        {
+            final CreatureTemplate template = table.create(CreatureTemplate.createKey(i));
+
+            template.unit_class().set(RandomUtil.getInt(0, 3));
+            template.unit_flags().set(RandomUtil.getInt(0, 30));
+            template.kill_credit1().set(RandomUtil.getInt(0, 10000));
+            template.name().set(RandomUtil.getString(RandomUtil.getInt(3, 15)));
+        }
 
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());

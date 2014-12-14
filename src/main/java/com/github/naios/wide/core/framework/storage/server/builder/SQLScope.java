@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.core.framework.storage.server.builder;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,11 @@ public class SQLScope
     protected Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
     {
         return delete;
+    }
+
+    protected boolean isEmpty()
+    {
+        return update.isEmpty() && insert.isEmpty() && delete.isEmpty();
     }
 
     /**
@@ -117,11 +123,17 @@ public class SQLScope
     {
         final StringBuilder builder = new StringBuilder();
 
-        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
-            buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
-
+        // Build delete querys for each structure
         for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
             buildDeletes(builder, changeHolder, structure, vars, variablize);
+
+        // Build insert querys for each structure
+        for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : insert.asMap().entrySet())
+            buildInserts(builder, changeHolder, structure, vars, variablize);
+
+        // Build upate querys for each structure
+        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
+            buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
 
         return builder.toString();
     }
@@ -169,5 +181,21 @@ public class SQLScope
                 structures.getValue().toArray(new ServerStorageStructure[structures.getValue().size()]));
 
         builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
+    }
+
+    private void buildInserts(
+            final StringBuilder builder,
+            final ServerStorageChangeHolder changeHolder,
+            final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
+            final SQLVariableHolder vars, final boolean variablize)
+    {
+        // Build delete before insert querys
+        buildDeletes(builder, changeHolder, structures, vars, variablize);
+
+        final ServerStorageStructure anyStructure = Iterables.get(structures.getValue(), 0);
+        final String valuePart = SQLMaker.createInsertValuePart(vars, changeHolder, structures.getValue());
+
+        builder.append(SQLMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
+                Arrays.asList(anyStructure.getAllFieldsFromThis()), valuePart)).append("\n");
     }
 }

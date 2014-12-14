@@ -27,6 +27,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageStructur
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
+import com.github.naios.wide.core.framework.util.CrossIterator;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
@@ -38,11 +39,19 @@ public class SQLMaker
 
     protected static final String SPACE = " ";
 
+    protected static final String COMMA = ",";
+
     protected static final String WHERE = "WHERE";
 
     protected static final String UPDATE = "UPDATE";
 
     protected static final String DELETE = "DELETE";
+
+    protected static final String INSERT = "INSERT";
+
+    protected static final String INTO = "INTO";
+
+    protected static final String VALUES = "VALUES";
 
     protected static final String FROM = "FROM";
 
@@ -62,6 +71,8 @@ public class SQLMaker
 
     protected static final String FLAG_DELEMITER = " | ";
 
+    protected static final String NEWLINE = "\n";
+
     /**
      * Adds the delemiter to a query
      */
@@ -75,8 +86,8 @@ public class SQLMaker
      */
     public static String createComment(final String text)
     {
-        if (text.contains("\n"))
-            return "/*\n * " + text.replaceAll("\n", "\n * ") + "\n */";
+        if (text.contains(NEWLINE))
+            return "/*\n * " + text.replaceAll(NEWLINE, "\n * ") + "\n */";
         else
             return "-- " + text;
     }
@@ -278,7 +289,7 @@ public class SQLMaker
         // otherwise we use nested AND/ OR clauses
         if (keys.size() == 1 && (structures.length > 1))
         {
-            return createInClause(keys.get(0), StringUtil.concat(", ",
+            return createInClause(keys.get(0), StringUtil.concat(COMMA + SPACE,
                             new Iterator<String>()
                             {
                                 int i = 0;
@@ -349,7 +360,7 @@ public class SQLMaker
         for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
             statements.add(createFieldEqualsValue(vars, changeHolder, value.second().getField(), value.first(), true));
 
-        return StringUtil.concat(", ", statements.iterator());
+        return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }
 
     /**
@@ -363,8 +374,44 @@ public class SQLMaker
     /**
      * Creates an delete query from table name and keyPart.
      */
-    public static Object createDeleteQuery(final String tableName, final String keyPart)
+    public static String createDeleteQuery(final String tableName, final String keyPart)
     {
         return addDelemiter(StringUtil.fillWithSpaces(DELETE, FROM, createName(tableName), WHERE, keyPart));
+    }
+
+    private static String createInsertHeaderPart(final String tableName, final List<Field> fields)
+    {
+        return StringUtil.fillWithSpaces(INSERT, INTO, createName(tableName), createInsertDeclareValuesPart(fields), VALUES);
+    }
+
+    private static String createInsertDeclareValuesPart(final List<Field> fields)
+    {
+        return "(" + StringUtil.concat(COMMA + SPACE,
+                new CrossIterator<Field, String>(fields, (field) -> createName(field))) + ")";
+    }
+
+    public static String createInsertValuePart(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+            final Collection<ServerStorageStructure> structures)
+    {
+        return StringUtil.concat(COMMA + NEWLINE,
+                new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
+                {
+                                    return "(" + StringUtil.concat(COMMA + SPACE,
+                                            new CrossIterator<Pair<ObservableValue<?>, Field>, String>(structure,
+                                                    (entry) -> createValueOfObservableValue(vars, changeHolder, entry.second(), entry.first(), true)))
+                                                    + ")";
+                }));
+
+        /*
+         for (final  entry : structure)
+                    {
+
+                    }
+         */
+    }
+
+    public static String createInsertQuery(final String tableName, final List<Field> fields, final String valuePart)
+    {
+        return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, fields), valuePart));
     }
 }

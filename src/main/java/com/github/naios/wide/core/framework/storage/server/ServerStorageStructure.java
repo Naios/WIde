@@ -239,11 +239,20 @@ public abstract class ServerStorageStructure extends StorageStructure implements
         if (getClass() != obj.getClass())
             return false;
         final ServerStorageStructure other = (ServerStorageStructure) obj;
+        if (getKey() == null)
+        {
+            if (other.getKey() != null)
+                return false;
+        }
+        else if (!getKey().equals(other.getKey()))
+            return false;
         if (owner == null)
         {
             if (other.owner != null)
                 return false;
         }
+        else if (!owner.equals(other.owner))
+            return false;
         return true;
     }
 
