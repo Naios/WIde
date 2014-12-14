@@ -8,21 +8,31 @@
 
 package com.github.naios.wide.core.session.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.game.GameBuild;
 
 public class EnviromentConfig
 {
-    private StringProperty name;
+    private final StringProperty name;
 
-    private GameBuild build;
+    private final GameBuild build;
 
-    private ClientStorageConfig client_storages;
+    private final ClientStorageConfig client_storages;
 
-    private List<DatabaseConfig> databases;
+    private final List<DatabaseConfig> databases;
+
+    public EnviromentConfig(final GameBuild build, final ClientStorageConfig client_storages)
+    {
+        this.name = new SimpleStringProperty();
+        this.build = build;
+        this.client_storages = client_storages;
+        this.databases = new ArrayList<>();
+    }
 
     public StringProperty name()
     {

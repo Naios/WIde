@@ -8,11 +8,22 @@
 
 package com.github.naios.wide.core.session.config;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 class DatabaseConfig
 {
-    private StringProperty id, name, host, user, password, schema;
+    private final StringProperty id, name, host, user, password, schema;
+
+    public DatabaseConfig()
+    {
+        this.id = new SimpleStringProperty();
+        this.name = new SimpleStringProperty();
+        this.host = new SimpleStringProperty();
+        this.user = new SimpleStringProperty();
+        this.password = new SimpleStringProperty();
+        this.schema = new SimpleStringProperty();
+    }
 
     public StringProperty id()
     {

@@ -8,11 +8,19 @@
 
 package com.github.naios.wide.core.session.config;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class ClientStorageConfig
 {
-    private StringProperty path, schema;
+    private final StringProperty path;
+    private final StringProperty schema;
+
+    public ClientStorageConfig()
+    {
+        this.path = new SimpleStringProperty();
+        this.schema = new SimpleStringProperty();
+    }
 
     public StringProperty path()
     {

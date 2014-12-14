@@ -8,15 +8,23 @@
 
 package com.github.naios.wide.core.session.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 public class QueryConfig
 {
-    private BooleanProperty compress;
+    private final BooleanProperty compress;
 
-    private List<QueryTypeConfig> type;
+    private final List<QueryTypeConfig> type;
+
+    public QueryConfig()
+    {
+        this.compress = new SimpleBooleanProperty();
+        this.type = new ArrayList<>();
+    }
 
     public BooleanProperty compress()
     {

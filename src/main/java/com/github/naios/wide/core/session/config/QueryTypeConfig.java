@@ -12,9 +12,15 @@ import com.github.naios.wide.core.framework.storage.server.builder.QueryType;
 
 public class QueryTypeConfig
 {
-    private QueryType type;
+    private final QueryType type;
 
-    private VariablizeConfig variablize;
+    private final VariablizeConfig variablize;
+
+    public QueryTypeConfig(final QueryType type, final VariablizeConfig variablize)
+    {
+        this.type = type;
+        this.variablize = variablize;
+    }
 
     public QueryType getType()
     {
