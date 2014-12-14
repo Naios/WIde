@@ -7,6 +7,8 @@ Currently WIde works with TrinityCore.
 
 WIde is mainly written in **Java** and makes heavily use of the **JavaFX** library.
 
+**See an example output [here](https://gist.github.com/Naios/634b0bfbc04e56165f96).**
+
 License
 -------------
 WIde is licensed under the [**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**](http://creativecommons.org/licenses/by-nc-sa/4.0/) license.
