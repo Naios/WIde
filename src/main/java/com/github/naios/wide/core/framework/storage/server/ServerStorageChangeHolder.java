@@ -639,6 +639,58 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * @return All Structures that have changed
+     */
+    public Collection<ServerStorageStructure> getAllStructuresChanged()
+    {
+        final Collection<ServerStorageStructure> col = new HashSet<>();
+        reference.keySet().forEach(entry -> col.add(entry.getStructure()));
+        return col;
+    }
+
+    /**
+     * @return All Structures recently created (since the last database sync)
+     */
+    public Collection<ServerStorageStructure> getStructuresRecentlyCreated()
+    {
+        final Collection<ObservableValue<?>> observables = getAllObservablesChanged();
+        final Collection<ServerStorageStructure> structures = new IdentitySet<>();
+
+        observables.forEach((entry) ->
+        {
+            final ObservableValueHistory h = history.get(entry);
+            if (h == null)
+                return;
+
+            if (StructureState.STATE_CREATED.equals(getObservablesLatestState(entry)))
+                structures.add(h.getReference().getStructure());
+        });
+
+        return structures;
+    }
+
+    /**
+     * @return All Structures recently deleted (since the last database sync)
+     */
+    public Collection<ServerStorageStructure> getStructuresRecentlyDeleted()
+    {
+        final Collection<ObservableValue<?>> observables = new ArrayList<>(reference.values());
+        final Collection<ServerStorageStructure> structures = new IdentitySet<>();
+
+        observables.forEach((entry) ->
+        {
+            final ObservableValueHistory h = history.get(entry);
+            if (h == null || h.getHistory().isEmpty())
+                return;
+
+            if (StructureState.STATE_CREATED.equals(h.getHistory().peek()))
+                structures.add(h.getReference().getStructure());
+        });
+
+        return structures;
+    }
+
+    /**
      * @return The ObservableValueStorageInfo of an observable stored in the Changeholder
      */
     public ObservableValueStorageInfo getStorageInformationOfObservable(final ObservableValue<?> observable)
@@ -685,7 +737,8 @@ public class ServerStorageChangeHolder implements Observable
         final SQLBuilder builder = new SQLBuilder(this, true);
 
         builder.addRecentChanged();
-
+        builder.addCreate(getStructuresRecentlyCreated());
+        builder.addDelete(getStructuresRecentlyDeleted());
 
         return builder.toString();
     }

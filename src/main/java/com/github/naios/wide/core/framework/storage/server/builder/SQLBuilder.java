@@ -98,7 +98,15 @@ public class SQLBuilder
      */
     public SQLBuilder addCreate(final ServerStorageStructure... structure)
     {
-        insert.addAll(Arrays.asList(structure));
+        return addCreate(Arrays.asList(structure));
+    }
+
+    /**
+     * Adds some Structures to the builder to build insert querys
+     */
+    public SQLBuilder addCreate(final Collection<ServerStorageStructure> structures)
+    {
+        insert.addAll(structures);
         return this;
     }
 
@@ -107,7 +115,15 @@ public class SQLBuilder
      */
     public SQLBuilder addDelete(final ServerStorageStructure... structure)
     {
-        delete.addAll(Arrays.asList(structure));
+        return addDelete(Arrays.asList(structure));
+    }
+
+    /**
+     * Adds some Structures to the builder to build insert querys
+     */
+    public SQLBuilder addDelete(final Collection<ServerStorageStructure> structures)
+    {
+        delete.addAll(structures);
         return this;
     }
 
