@@ -377,8 +377,6 @@ public class Test extends Script
 
             final BaseConfig config = gson.fromJson(reader, BaseConfig.class);
 
-            System.out.println(String.format("DEBUG: %s", config.getEnviroments().get(0).build));
-
             System.out.println();
             System.out.println(gson.toJson(config));
         }

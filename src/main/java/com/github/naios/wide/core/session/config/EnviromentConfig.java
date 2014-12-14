@@ -16,9 +16,11 @@ import com.github.naios.wide.core.framework.game.GameBuild;
 
 public class EnviromentConfig
 {
-    private StringProperty name, client_storages;
+    private StringProperty name;
 
-    public GameBuild build;
+    private GameBuild build;
+
+    private ClientStorageConfig client_storages;
 
     private List<DatabaseConfig> databases;
 
@@ -27,9 +29,14 @@ public class EnviromentConfig
         return name;
     }
 
-    public StringProperty client_storages()
+    public ClientStorageConfig client_storages()
     {
         return client_storages;
+    }
+
+    public GameBuild getBuild()
+    {
+        return build;
     }
 
     public List<DatabaseConfig> getDatabases()

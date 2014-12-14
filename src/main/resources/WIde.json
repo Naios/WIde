@@ -5,8 +5,11 @@
   "enviroments": [
     {
       "name": "default",
-      "client_storages": "data/dbc",
       "build": "V6_0_3_19103",
+      "client_storages": {
+        "path": "data/dbc",
+        "schema": "schematics/default_dbc_6x.json"
+      },
       "databases": [
         {
           "id": "auth",
