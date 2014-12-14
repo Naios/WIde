@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.scripts.test;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -35,6 +37,7 @@ import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.scripts.ScriptDefinition;
+import com.google.gson.Gson;
 
 /**
  * Simple testing script, use this as playground.
@@ -54,7 +57,8 @@ public class Test extends Script
                 toString(), Arrays.toString(args)));
 
         // testStorages(args);
-        testProxy(args);
+        // testProxy(args);
+        testJSON(args);
     }
 
     @Override
@@ -284,7 +288,12 @@ public class Test extends Script
         table.close();
     }
 
-    interface MyTemplate
+    interface MyTemplatePre
+    {
+        public StringProperty pre_name();
+    }
+
+    interface MyTemplate extends MyTemplatePre
     {
         public StringProperty name();
 
@@ -296,12 +305,11 @@ public class Test extends Script
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
         {
-            /*
-            for (final Method m : proxy.getClass().getMethods())
+            for (final Method m : method.getDeclaringClass().getMethods())
             {
                 System.out.println(m.getName());
             }
-             */
+
             // method.invoke(this.object, args);
 
             return new SimpleStringProperty(method.getName());
@@ -317,5 +325,35 @@ public class Test extends Script
 
         System.out.println(template.name());
         System.out.println(template.subname());
+
+        System.out.println(((MyTemplatePre)template).pre_name());
+    }
+
+    class Config
+    {
+        public String title;
+    }
+
+    private void testJSON(final String[] args)
+    {
+        try (Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("WIde.json")))
+        {
+            final Gson gson = new Gson();
+            final Config config = gson.fromJson(reader, Config.class);
+
+            System.out.println(String.format("DEBUG: %s", config.title));
+
+            System.out.println();
+            System.out.println(gson.toJson(config));
+        }
+        catch(final Throwable throwable)
+        {
+            throwable.printStackTrace();
+        }
+
+        // final BufferedReader br = new BufferedReader();
+        //
+        //
+
     }
 }
