@@ -13,6 +13,8 @@ import java.util.List;
 
 public class FlagUtil
 {
+    public static final int DEFAULT_VALUE = 0;
+
     @SuppressWarnings("rawtypes")
     public static <T extends Enum> int createFlag(final T flag)
     {

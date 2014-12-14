@@ -201,7 +201,11 @@ public class SQLMaker
                         if (!removeFlags.isEmpty())
                             builder.append("(");
 
-                        builder.append(createName(field));
+                        // TODO check this
+                        if (oldFlags.isEmpty())
+                            builder.append(FlagUtil.DEFAULT_VALUE);
+                        else
+                            builder.append(createName(field));
 
                         if (!removeFlags.isEmpty())
                         {
@@ -218,7 +222,7 @@ public class SQLMaker
                         return builder.toString();
                     }
                     else if (currentFlags.isEmpty())
-                        return "0";
+                        return String.valueOf(FlagUtil.DEFAULT_VALUE);
                     else // If Values are not different
                         return concatFlags(vars, currentFlags);
                 }
