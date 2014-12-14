@@ -11,6 +11,7 @@ package com.github.naios.wide.core.framework.storage.server.builder;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,9 +61,14 @@ public class SQLVariableHolder
         final Set<String> keys = new TreeSet<String>(variables.keySet());
 
         // Get the max length (used to format the var declaration)
-        int varMaxLength = 0;
-        for (final String var : keys)
-            varMaxLength = Math.max(var.length(), varMaxLength);
+        int varNameMaxLength = 0, varValueMaxLength = 0;
+        for (final Entry<String, String> entry : variables.entrySet())
+        {
+            varNameMaxLength = Math.max(entry.getKey().length(), varNameMaxLength);
+            varValueMaxLength = Math.max(entry.getValue().length(), varValueMaxLength);
+        }
+
+        final String format = SQLMaker.createVariableFormat(varNameMaxLength, varValueMaxLength);
 
         String prefix = PREFIX_NONE;
 
@@ -84,7 +90,7 @@ public class SQLVariableHolder
                 writer.println();
             }
 
-            writer.println(SQLMaker.createVariable(varMaxLength, key, variables.get(key)));
+            writer.println(SQLMaker.createVariable(format, key, variables.get(key)));
         }
 
         writer.println();

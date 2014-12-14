@@ -94,14 +94,18 @@ public class SQLMaker
         return createName(field.getName());
     }
 
+    protected static String createVariableFormat(final int varNameMaxLength, final int varValueMaxLength)
+    {
+        return " %-" + varNameMaxLength + "s := %" + varValueMaxLength + "s";
+    }
+
     /**
      * Creates a sql variable.
-     * @param varMaxLength
+     * @param varNameMaxLength
      */
-    protected static String createVariable(final int varMaxLength, final String name, final String value)
+    protected static String createVariable(final String format, final String name, final String value)
     {
-        final String fmt = " %-" + varMaxLength + "s := %s";
-        return addDelemiter(SET + String.format(fmt, name, value));
+        return addDelemiter(SET + String.format(format, name, value));
     }
 
     /**

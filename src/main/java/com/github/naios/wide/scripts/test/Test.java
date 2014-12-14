@@ -222,7 +222,7 @@ public class Test extends Script
         final CreatureTemplate ct3 = table.get(CreatureTemplate.createKey(151));
         final CreatureTemplate ct4 = table.get(CreatureTemplate.createKey(69));
 
-        table.getChangeHolder().setScope("test scope", "test comment");
+        table.getChangeHolder().setScope("test scope", "simple modify test");
 
         ct1.name().set("blub");
         ct2.name().set("blub");
@@ -247,6 +247,15 @@ public class Test extends Script
 
         table.getChangeHolder().setScope("delete scope", "deletes a creature template");
         ct4.delete();
+
+        table.getChangeHolder().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
+        for (int i = 115; i < 120; ++i)
+        {
+            final CreatureTemplate deleteMe = table.get(CreatureTemplate.createKey(i));
+            if (deleteMe != null)
+                deleteMe.delete();
+        }
+
 
         System.out.println(table.getChangeHolder());
 
