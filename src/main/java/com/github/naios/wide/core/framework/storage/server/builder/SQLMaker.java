@@ -212,10 +212,7 @@ public class SQLMaker
                         if (!removeFlags.isEmpty())
                             builder.append("(");
 
-                        // TODO check this
-                        if (oldFlags.isEmpty())
-                            builder.append(FlagUtil.DEFAULT_VALUE);
-                        else
+                        if (!oldFlags.isEmpty())
                             builder.append(createName(field));
 
                         if (!removeFlags.isEmpty())
@@ -228,7 +225,12 @@ public class SQLMaker
                         }
 
                         if (!addFlags.isEmpty())
-                            builder.append(FLAG_DELEMITER).append(concatFlags(vars, addFlags));
+                        {
+                            if (!oldFlags.isEmpty())
+                                builder.append(FLAG_DELEMITER);
+
+                            builder.append(concatFlags(vars, addFlags));
+                        }
 
                         return builder.toString();
                     }
@@ -396,18 +398,10 @@ public class SQLMaker
         return StringUtil.concat(COMMA + NEWLINE,
                 new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
                 {
-                                    return "(" + StringUtil.concat(COMMA + SPACE,
-                                            new CrossIterator<Pair<ObservableValue<?>, Field>, String>(structure,
-                                                    (entry) -> createValueOfObservableValue(vars, changeHolder, entry.second(), entry.first(), true)))
-                                                    + ")";
+                    return "(" + StringUtil.concat(COMMA + SPACE,
+                            new CrossIterator<Pair<ObservableValue<?>, Field>, String>(structure,
+                                    (entry) -> createValueOfObservableValue(vars, changeHolder, entry.second(), entry.first(), true))) + ")";
                 }));
-
-        /*
-         for (final  entry : structure)
-                    {
-
-                    }
-         */
     }
 
     public static String createInsertQuery(final String tableName, final List<Field> fields, final String valuePart)
