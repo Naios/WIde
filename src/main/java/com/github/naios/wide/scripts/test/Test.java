@@ -8,8 +8,14 @@
 
 package com.github.naios.wide.scripts.test;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
@@ -47,7 +53,8 @@ public class Test extends Script
         System.out.println(String.format("Running %s script with args %s.",
                 toString(), Arrays.toString(args)));
 
-        usePlayground(args);
+        // testStorages(args);
+        testProxy(args);
     }
 
     @Override
@@ -57,7 +64,7 @@ public class Test extends Script
     }
 
     // Playground begin (only commit it in sub-branches to test stuff!)
-    private void usePlayground(final String[] args)
+    private void testStorages(final String[] args)
     {
         final ClientStorage<UnknownClientStorageStructure> sceneSript =
                 new ClientStorageSelector<UnknownClientStorageStructure>
@@ -275,5 +282,40 @@ public class Test extends Script
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());
         table.close();
+    }
+
+    interface MyTemplate
+    {
+        public StringProperty name();
+
+        public StringProperty subname();
+    }
+
+    class ProxyHandler implements InvocationHandler
+    {
+        @Override
+        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
+        {
+            /*
+            for (final Method m : proxy.getClass().getMethods())
+            {
+                System.out.println(m.getName());
+            }
+             */
+            // method.invoke(this.object, args);
+
+            return new SimpleStringProperty(method.getName());
+        }
+    }
+
+    private void testProxy(final String[] args)
+    {
+        final ProxyHandler handler = new ProxyHandler();
+
+        final MyTemplate template =
+                (MyTemplate) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { MyTemplate.class }, handler);
+
+        System.out.println(template.name());
+        System.out.println(template.subname());
     }
 }
