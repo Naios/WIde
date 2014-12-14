@@ -44,6 +44,8 @@ public class SQLMaker
 
     protected static final String DELETE = "DELETE";
 
+    protected static final String FROM = "FROM";
+
     protected static final String SET = "SET";
 
     protected static final String OR = "OR";
@@ -265,7 +267,7 @@ public class SQLMaker
         final List<Field> keys = structures[0].getPrimaryFields();
 
         // If only 1 primary key exists its possible to use IN clauses
-        // otherwise we use nestes AND/ OR clauses
+        // otherwise we use nested AND/ OR clauses
         if (keys.size() == 1 && (structures.length > 1))
         {
             return createInClause(keys.get(0), StringUtil.concat(", ",
@@ -343,10 +345,18 @@ public class SQLMaker
     }
 
     /**
-     * Creates an update querz from tablename, updateFields and keyPart.
+     * Creates an update query from table name, updateFields and keyPart.
      */
-    protected static String createUpdateQuery(final String tablename, final String updateFields, final String keyPart)
+    protected static String createUpdateQuery(final String tableName, final String updateFields, final String keyPart)
     {
-        return addDelemiter(StringUtil.fillWithSpaces(UPDATE, createName(tablename), SET, updateFields, WHERE, keyPart));
+        return addDelemiter(StringUtil.fillWithSpaces(UPDATE, createName(tableName), SET, updateFields, WHERE, keyPart));
+    }
+
+    /**
+     * Creates an delete query from table name and keyPart.
+     */
+    public static Object createDeleteQuery(final String tableName, final String keyPart)
+    {
+        return addDelemiter(StringUtil.fillWithSpaces(DELETE, FROM, createName(tableName), WHERE, keyPart));
     }
 }

@@ -21,6 +21,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageStructur
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
 public class SQLScope
@@ -119,10 +120,16 @@ public class SQLScope
         for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
             buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
 
+        for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
+            buildDeletes(builder, changeHolder, structure, vars, variablize);
+
         return builder.toString();
     }
 
-    private void buildUpdates(final StringBuilder builder,  final ServerStorageChangeHolder changeHolder, final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
+    private void buildUpdates(
+            final StringBuilder builder,
+            final ServerStorageChangeHolder changeHolder,
+            final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
             final SQLVariableHolder vars, final boolean variablize)
     {
         // TODO Group updates by key or updates
@@ -141,11 +148,26 @@ public class SQLScope
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
-            final String tableName = change.getValue().iterator().next().getOwner().getTableName();
+            final String tableName = Iterables.get(change.getValue(), 0).getOwner().getTableName();
 
-            final String keyPart = SQLMaker.createKeyPart(vars, changeHolder, change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
+            final String keyPart = SQLMaker.createKeyPart(vars, changeHolder,
+                    change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
+    }
+
+    private void buildDeletes(
+            final StringBuilder builder,
+            final ServerStorageChangeHolder changeHolder,
+            final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
+            final SQLVariableHolder vars, final boolean variablize)
+    {
+        final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
+
+        final String keyPart = SQLMaker.createKeyPart(vars, changeHolder,
+                structures.getValue().toArray(new ServerStorageStructure[structures.getValue().size()]));
+
+        builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
     }
 }
