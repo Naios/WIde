@@ -8,7 +8,7 @@
       "build": "V6_0_3_19103",
       "client_storages": {
         "path": "data/dbc",
-        "schema": "schematics/default_dbc_6x.json"
+        "schema": "schematics/6.x/dbc.json"
       },
       "databases": [
         {
@@ -17,7 +17,7 @@
           "host": "localhost:3306",
           "user": "root",
           "password": "",
-          "schema": "schematics/default_auth.json"
+          "schema": "schematics/6.x/auth.json"
         },
         {
           "id": "character",
@@ -25,7 +25,7 @@
           "host": "localhost:3306",
           "user": "root",
           "password": "",
-          "schema": "schematics/default_character.json"
+          "schema": "schematics/6.x/character.json"
         },
         {
           "id": "world",
@@ -33,7 +33,7 @@
           "host": "localhost:3306",
           "user": "root",
           "password": "",
-          "schema": "schematics/default_world_6x.json"
+          "schema": "schematics/6.x/world.json"
         }
       ]
     }

@@ -10,9 +10,8 @@ package com.github.naios.wide.core.session.config;
 
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
-
-import com.github.naios.wide.scripts.test.Test;
 
 public class BaseConfig
 {
@@ -22,12 +21,12 @@ public class BaseConfig
 
     private QueryConfig querys;
 
-    public StringProperty title()
+    public ReadOnlyStringProperty title()
     {
         return title;
     }
 
-    public StringProperty description()
+    public ReadOnlyStringProperty description()
     {
         return description;
     }
