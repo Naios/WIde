@@ -11,6 +11,7 @@ package com.github.naios.wide.core.framework.storage.server;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,8 @@ import com.github.naios.wide.core.framework.util.IdentitySet;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 @SuppressWarnings("serial")
 class MalformedHistoryException extends IllegalStateException
@@ -224,7 +227,7 @@ public class ServerStorageChangeHolder implements Observable
     {
         for (final Pair<ObservableValue<?>, Field> entry : storage)
             if (ServerStorageFieldType.isValueWriteable(entry.first()))
-                pushOnHistory(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
+                insert(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
     }
 
     /**
@@ -578,20 +581,24 @@ public class ServerStorageChangeHolder implements Observable
     @Override
     public String toString()
     {
+        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, Field>> values = HashMultimap.create();
+        reference.entrySet().forEach((entry) -> values.put(entry.getKey().getStructure(),
+                new Pair<>(entry.getValue(), entry.getKey().getField())));
+
         final StringBuilder builder = new StringBuilder();
 
         builder.append(String.format("%s Observables were changed.", reference.size()));
 
-        for (final Entry<ObservableValueStorageInfo, ObservableValue<?>> entry : reference.entrySet())
+        values.asMap().forEach((structure, observables) ->
         {
-            builder.append(String.format("\n%-17s (%s) ", entry.getKey().getTableName(), entry.getKey().getField().getName()));
+            builder.append(String.format("\n%s %s", structure.getOwner().getTableName(), Arrays.toString(structure.getKey().get())));
 
-            final Stack<Object> stack = history.get(entry.getValue()).getHistory();
-
-            builder.append(StringUtil.concat(" -> ", getHistory(entry.getValue())));
-
-            builder.append(String.format(" -> Now: %s", new FormatterWrapper(entry.getValue().getValue())));
-        }
+            for (final Pair<ObservableValue<?>, Field> entry : observables)
+                builder
+                    .append(String.format("\n\t%-15s: ", entry.second().getName()))
+                    .append(StringUtil.concat(" -> ", getHistory(entry.first())))
+                    .append(String.format(" -> Now: %s", new FormatterWrapper(entry.first().getValue())));
+        });
 
         return builder.toString();
     }

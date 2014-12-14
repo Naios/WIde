@@ -178,7 +178,7 @@ public class Test extends Script
         */
 
         table.getChangeHolder().setScope("myscope","a simple create test comment.");
-        final CreatureTemplate myentry = table.newStructureFromKey(CreatureTemplate.createKey(100000));
+        final CreatureTemplate myentry = table.create(CreatureTemplate.createKey(100000));
 
         for (int step = 0; step < 7; ++step)
         {
@@ -256,16 +256,12 @@ public class Test extends Script
                 deleteMe.delete();
         }
 
-
-        System.out.println(table.getChangeHolder());
-
-        System.out.println(table.getChangeHolder().getQuery());
-
-        // table.getChangeHolder().setScope("scope2", "creates a new creature template...");
-        table.getChangeHolder().releaseScope();
-        final CreatureTemplate myqueryentry = table.newStructureFromKey(CreatureTemplate.createKey(100010));
+        table.getChangeHolder().setScope("create scope 1", "creates a new creature template...");
+        final CreatureTemplate myqueryentry = table.create(CreatureTemplate.createKey(100010));
         myqueryentry.name().set("my test name");
 
+        System.out.println(table.getChangeHolder());
+        System.out.println(table.getChangeHolder().getQuery());
         table.close();
     }
 }

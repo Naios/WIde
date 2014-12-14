@@ -442,7 +442,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     }
 
     @SuppressWarnings("unchecked")
-    public T newStructureFromKey(final ServerStorageKey<T> key)
+    public T create(final ServerStorageKey<T> key)
     {
         final ServerStorageStructure record;
         try
@@ -453,8 +453,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         {
             throw new BadMappingException(type);
         }
-
-        record.writeableState().set(StructureState.STATE_CREATED);
 
         final List<Field> primaryFields = record.getPrimaryFields();
         assert primaryFields.size() == key.get().length;
