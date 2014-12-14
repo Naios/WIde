@@ -13,11 +13,22 @@ import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.WritableValue;
 
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
@@ -38,6 +49,15 @@ import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.scripts.ScriptDefinition;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Simple testing script, use this as playground.
@@ -329,16 +349,141 @@ public class Test extends Script
         System.out.println(((MyTemplatePre)template).pre_name());
     }
 
+    class Enviroment
+    {
+        private StringProperty name, build, client_storages;
+
+        private List<DatabaseConfig> databases;
+
+        public StringProperty name()
+        {
+            return name;
+        }
+
+        public StringProperty build()
+        {
+            return build;
+        }
+
+        public StringProperty client_storages()
+        {
+            return client_storages;
+        }
+
+        public List<DatabaseConfig> getDatabases()
+        {
+            return databases;
+        }
+    }
+
+    class DatabaseConfig
+    {
+        private StringProperty id, name, host, user, password, schema;
+    }
+
+    class QueryConfig
+    {
+        private BooleanProperty compress;
+
+        private List<QueryTypeConfig> type;
+    }
+
+    class QueryTypeConfig
+    {
+        private StringProperty id;
+
+        private VariablizeConfig variablize;
+    }
+
+    class VariablizeConfig
+    {
+        private BooleanProperty custom, names, enums, flags;
+    }
+
     class Config
     {
-        public String title;
+        private StringProperty title;
+
+        private StringProperty description;
+
+        private StringProperty active_enviroment;
+
+        private List<Enviroment> enviroments;
+
+        private QueryConfig querys;
+    }
+
+    class PropertyJSONAdapter<T extends WritableValue<?>> implements JsonSerializer<T>, JsonDeserializer<T>, InstanceCreator<T>
+    {
+        private final BiConsumer<T, JsonElement> set;
+
+        private final Function<T, JsonElement> get;
+
+        private final Supplier<T> create;
+
+        public PropertyJSONAdapter(final BiConsumer<T, JsonElement> set, final Function<T, JsonElement> get, final Supplier<T> create)
+        {
+            this.set = set;
+            this.get = get;
+            this.create = create;
+        }
+
+        @Override
+        public JsonElement serialize(final T src, final Type type,
+                final JsonSerializationContext context)
+        {
+            return get.apply(src);
+        }
+
+        @Override
+        public T deserialize(final JsonElement json, final Type type,
+                final JsonDeserializationContext context) throws JsonParseException
+        {
+            final T obj = create.get();
+            set.accept(obj, json);
+            return obj;
+        }
+
+        @Override
+        public T createInstance(final Type type)
+        {
+            return create.get();
+        }
     }
 
     private void testJSON(final String[] args)
     {
-        try (Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("WIde.json")))
+        try (final Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("WIde.json")))
         {
-            final Gson gson = new Gson();
+            final Gson gson = new GsonBuilder()
+                // Pretty print
+                .setPrettyPrinting()
+                // StringProperty Adapter
+                .registerTypeAdapter(StringProperty.class,
+                        new PropertyJSONAdapter<>(
+                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsString()),
+                                    (observable) -> new JsonPrimitive(observable.get()),
+                                        () -> new SimpleStringProperty()))
+                // IntegerProperty Adapter
+                .registerTypeAdapter(IntegerProperty.class,
+                        new PropertyJSONAdapter<>(
+                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsInt()),
+                                    (observable) -> new JsonPrimitive(observable.get()),
+                                        () -> new SimpleIntegerProperty()))
+                // FloatProperty Adapter
+                .registerTypeAdapter(FloatProperty.class,
+                        new PropertyJSONAdapter<>(
+                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsFloat()),
+                                    (observable) -> new JsonPrimitive(observable.get()),
+                                        () -> new SimpleFloatProperty()))
+                // BooleanProperty Adapter
+                .registerTypeAdapter(BooleanProperty.class,
+                        new PropertyJSONAdapter<>(
+                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsBoolean()),
+                                    (observable) -> new JsonPrimitive(observable.get()),
+                                        () -> new SimpleBooleanProperty()))
+                .create();
+
             final Config config = gson.fromJson(reader, Config.class);
 
             System.out.println(String.format("DEBUG: %s", config.title));

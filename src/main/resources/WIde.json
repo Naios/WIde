@@ -1,16 +1,16 @@
 {
 	"title" : "WIde framework main configuration file.",
-	"description" : "WIde by Naios <naios-dev@live.de> see https://github.com/Naios/WIde",
+	"description" : "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
 
-	"active enviroment" : "default",
+	"active_enviroment" : "default",
 
 	"enviroments" :
 	[
 		{
 			"name" : "default",
 			"build" : "V6_0_3_19103",
-			"client storages": "data/dbc",
-			"database":
+			"client_storages": "data/dbc",
+			"databases":
 			[
 				{
 					"id": "auth",
@@ -54,7 +54,7 @@
 					"enums": false,
 					"flags": false
 				},
-				"relative flags": false
+				"relative_flags": false
 			},
 			{
 				"id": "DELETE",
@@ -65,7 +65,7 @@
 					"enums": false,
 					"flags": false
 				},
-				"relative flags": false
+				"relative_flags": false
 			},
 			{
 				"id": "UPDATE",
@@ -76,7 +76,7 @@
 					"enums": true,
 					"flags": true
 				},
-				"relative flags": true
+				"relative_flags": true
 			}
 		]
 	}
