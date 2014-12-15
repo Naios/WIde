@@ -14,59 +14,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.Modifier;
 
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
-import com.github.naios.wide.core.framework.util.PropertyJSONAdapter;
+import com.github.naios.wide.core.framework.util.GsonInstance;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonPrimitive;
 
 public class Config
 {
-    private final static Gson GSON = new GsonBuilder()
-        // Pretty print
-        .setPrettyPrinting()
-        // Exclude static fields
-        .excludeFieldsWithModifiers(Modifier.STATIC)
-        // StringProperty Adapter
-        .registerTypeAdapter(StringProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsString()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleStringProperty()))
-        // IntegerProperty Adapter
-        .registerTypeAdapter(IntegerProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsInt()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleIntegerProperty()))
-        // FloatProperty Adapter
-        .registerTypeAdapter(FloatProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsFloat()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleFloatProperty()))
-        // BooleanProperty Adapter
-        .registerTypeAdapter(BooleanProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsBoolean()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleBooleanProperty()))
-        .create();
-
     private BaseConfig config;
 
     private final BooleanProperty loaded =
@@ -101,7 +60,7 @@ public class Config
 	    try (final Reader reader = new InputStreamReader(
 	            new FileInputStream(Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
         {
-            config = GSON.fromJson(reader, BaseConfig.class);
+            config = GsonInstance.INSTANCE.fromJson(reader, BaseConfig.class);
         }
         catch(final Throwable throwable)
         {
@@ -109,7 +68,7 @@ public class Config
                     getClass().getClassLoader().getResourceAsStream(
                             Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
             {
-                config = GSON.fromJson(reader, BaseConfig.class);
+                config = GsonInstance.INSTANCE.fromJson(reader, BaseConfig.class);
             }
             catch (final Throwable throwable2)
             {
@@ -126,7 +85,7 @@ public class Config
 	    try (final Writer writer = new OutputStreamWriter(
                 new FileOutputStream(Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
         {
-	        writer.write(GSON.toJson(config));
+	        writer.write(GsonInstance.INSTANCE.toJson(config));
         }
         catch(final Throwable throwable)
         {

@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.scripts.test;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -55,6 +57,7 @@ public class Test extends Script
 
         testStorages(args);
         // testProxy(args);
+        testMapping(args);
     }
 
     @Override
@@ -324,4 +327,22 @@ public class Test extends Script
 
         System.out.println(((MyTemplatePre)template).pre_name());
     }
+
+    class Schema
+    {
+        String name;
+    }
+
+    private void testMapping(final String[] args)
+    {
+        try (final Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("schematics/6.x/world.json")))
+        {
+
+        }
+        catch (final Throwable throwable)
+        {
+
+        }
+    }
+
 }
