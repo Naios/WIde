@@ -10,34 +10,67 @@ package com.github.naios.wide.core.session.config;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Modifier;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 
 import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
-import com.github.naios.wide.core.framework.game.GameBuild;
+import com.github.naios.wide.core.framework.util.PropertyJSONAdapter;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
 
 public class Config
 {
-	private final Properties storage = new Properties();
+    private final static Gson GSON = new GsonBuilder()
+        // Pretty print
+        .setPrettyPrinting()
+        // Exclude static fields
+        .excludeFieldsWithModifiers(Modifier.STATIC)
+        // StringProperty Adapter
+        .registerTypeAdapter(StringProperty.class,
+                new PropertyJSONAdapter<>(
+                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsString()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleStringProperty()))
+        // IntegerProperty Adapter
+        .registerTypeAdapter(IntegerProperty.class,
+                new PropertyJSONAdapter<>(
+                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsInt()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleIntegerProperty()))
+        // FloatProperty Adapter
+        .registerTypeAdapter(FloatProperty.class,
+                new PropertyJSONAdapter<>(
+                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsFloat()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleFloatProperty()))
+        // BooleanProperty Adapter
+        .registerTypeAdapter(BooleanProperty.class,
+                new PropertyJSONAdapter<>(
+                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsBoolean()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleBooleanProperty()))
+        .create();
 
-	private final HashMap<String, StringProperty> properties = new HashMap<>();
+    private BaseConfig config;
 
-	private boolean hasChanged = false;
-
-	private boolean isLoaded = false;
-
-	private final ObjectProperty<GameBuild> cachedBuild =
-	        new SimpleObjectProperty<GameBuild>();
+    private final BooleanProperty loaded =
+            new SimpleBooleanProperty();
 
 	public Config()
 	{
@@ -64,120 +97,50 @@ public class Config
 
 	private void load()
 	{
-	    properties.clear();
-	    storage.clear();
-
-	    try
+	    // If the config file could not be loaded use the default predefined file.
+	    try (final Reader reader = new InputStreamReader(
+	            new FileInputStream(Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
         {
-	        storage.load(getClass().getClassLoader().getResourceAsStream(Constants.PATH_DEFAULT_PROPERTIES_CREATE.toString()));
-
-        } catch (final Exception e)
-	    {
+            config = GSON.fromJson(reader, BaseConfig.class);
+        }
+        catch(final Throwable throwable)
+        {
+            try (final Reader reader = new InputStreamReader(
+                    getClass().getClassLoader().getResourceAsStream(
+                            Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
+            {
+                config = GSON.fromJson(reader, BaseConfig.class);
+            }
+            catch (final Throwable throwable2)
+            {
+                throwable2.printStackTrace();
+            }
         }
 
-        try
-        {
-            // We dont use the default method of properties...
-            storage.load(new FileInputStream(WIde.getEnviroment().getConfigName()));
-
-        } catch (final IOException e)
-        {
-            hasChanged = true;
-        }
-
-        // Init GameBuilds
-        getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).addListener((ChangeListener<String>) (observable, oldValue, newValue) -> recalculateGameBuild());
-
-        isLoaded = true;
-
-        // Hooks.ON_CONFIG_LOADED
+	    // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
 	}
 
 	public void save()
 	{
-	    if (!hasChanged)
-	        return;
-
-	    synchronized (properties)
+	    try (final Writer writer = new OutputStreamWriter(
+                new FileOutputStream(Constants.STRING_DEFAULT_CONFIG_NAME.toString())))
         {
-    		try
-    		{
-    			final FileOutputStream out = new FileOutputStream(WIde.getEnviroment().getConfigName());
-    			storage.store(out, "WIde Config");
-    			out.close();
-
-    			hasChanged = false;
-
-    		} catch (final IOException e)
-    		{
-    		    hasChanged = false;
-    		}
+	        writer.write(GSON.toJson(config));
         }
-	}
+        catch(final Throwable throwable)
+        {
+            throwable.printStackTrace();
+        }
+    }
 
-	public StringProperty getPropertyWithDefault(final String key, final String def)
-	{
-	    final StringProperty property = getProperty(key);
-	    if (property.get().isEmpty())
-	        property.set(def);
+    public boolean isLoaded()
+    {
+        return loaded.get();
+    }
 
-	    return property;
-	}
-
-	public StringProperty getProperty(final Object key)
-	{
-	    return getProperty(key.toString());
-	}
-
-	public StringProperty getProperty(final String key)
-	{
-		synchronized (properties)
-		{
-			StringProperty property = properties.get(key);
-
-			if (property == null)
-			{
-			    final String value = storage.getProperty(key);
-
-			    property = new SimpleStringProperty(value);
-			    property.addListener((ChangeListener<String>) (observable, oldValue, newValue) ->
-                {
-                	storage.setProperty(key, newValue);
-
-                	if (!hasChanged)
-                	    hasChanged = true;
-
-                	// Hook.ON_CONFIG_CHANGED
-                	WIde.getHooks().fire(Hook.ON_CONFIG_CHANGED);
-                });
-
-				properties.put(key, property);
-			}
-			return property;
-		}
-	}
-
-	public ObjectProperty<GameBuild> getGameBuild()
-	{
-        return cachedBuild;
-	}
-
-	private void recalculateGameBuild()
-	{
-	    final String configVersion = getProperty(Constants.PROPERTY_ENVIROMENT_VERSION).get();
-	    for (final GameBuild build : GameBuild.values())
-	        if (build.getVersion().equals(configVersion))
-	        {
-	            cachedBuild.set(build);
-	            return;
-	        }
-
-	    cachedBuild.set(null);
-	}
-
-	public boolean isLoaded()
-	{
-	    return isLoaded;
-	}
+    public BaseConfig get()
+    {
+        return config;
+    }
 }

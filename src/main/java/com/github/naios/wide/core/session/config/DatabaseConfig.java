@@ -11,7 +11,7 @@ package com.github.naios.wide.core.session.config;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-class DatabaseConfig
+public class DatabaseConfig
 {
     private final StringProperty id, name, host, user, password, schema;
 
@@ -53,5 +53,10 @@ class DatabaseConfig
     public StringProperty schema()
     {
         return schema;
+    }
+
+    public String getEndpointString()
+    {
+        return String.format("%s@%s", user.get(), host.get());
     }
 }

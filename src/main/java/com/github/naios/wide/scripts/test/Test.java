@@ -8,21 +8,12 @@
 
 package com.github.naios.wide.scripts.test;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -41,14 +32,9 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.PropertyJSONAdapter;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
-import com.github.naios.wide.core.session.config.BaseConfig;
 import com.github.naios.wide.scripts.ScriptDefinition;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonPrimitive;
 
 /**
  * Simple testing script, use this as playground.
@@ -67,9 +53,8 @@ public class Test extends Script
         System.out.println(String.format("Running %s script with args %s.",
                 toString(), Arrays.toString(args)));
 
-        // testStorages(args);
+        testStorages(args);
         // testProxy(args);
-        testJSON(args);
     }
 
     @Override
@@ -338,56 +323,5 @@ public class Test extends Script
         System.out.println(template.subname());
 
         System.out.println(((MyTemplatePre)template).pre_name());
-    }
-
-    private void testJSON(final String[] args)
-    {
-        try (final Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("WIde.json")))
-        {
-            final Gson gson = new GsonBuilder()
-                // Pretty print
-                .setPrettyPrinting()
-                // Exclude static fields
-                .excludeFieldsWithModifiers(Modifier.STATIC)
-                // StringProperty Adapter
-                .registerTypeAdapter(StringProperty.class,
-                        new PropertyJSONAdapter<>(
-                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsString()),
-                                    (observable) -> new JsonPrimitive(observable.get()),
-                                        () -> new SimpleStringProperty()))
-                // IntegerProperty Adapter
-                .registerTypeAdapter(IntegerProperty.class,
-                        new PropertyJSONAdapter<>(
-                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsInt()),
-                                    (observable) -> new JsonPrimitive(observable.get()),
-                                        () -> new SimpleIntegerProperty()))
-                // FloatProperty Adapter
-                .registerTypeAdapter(FloatProperty.class,
-                        new PropertyJSONAdapter<>(
-                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsFloat()),
-                                    (observable) -> new JsonPrimitive(observable.get()),
-                                        () -> new SimpleFloatProperty()))
-                // BooleanProperty Adapter
-                .registerTypeAdapter(BooleanProperty.class,
-                        new PropertyJSONAdapter<>(
-                                (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsBoolean()),
-                                    (observable) -> new JsonPrimitive(observable.get()),
-                                        () -> new SimpleBooleanProperty()))
-                .create();
-
-            final BaseConfig config = gson.fromJson(reader, BaseConfig.class);
-
-            System.out.println();
-            System.out.println(gson.toJson(config));
-        }
-        catch(final Throwable throwable)
-        {
-            throwable.printStackTrace();
-        }
-
-        // final BufferedReader br = new BufferedReader();
-        //
-        //
-
     }
 }

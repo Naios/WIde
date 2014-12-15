@@ -24,11 +24,11 @@ public class ClientStorageConfig
 
     public StringProperty path()
     {
-        return path();
+        return path;
     }
 
     public StringProperty schema()
     {
-        return path();
+        return schema;
     }
 }

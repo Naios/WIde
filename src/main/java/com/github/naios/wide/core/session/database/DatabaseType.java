@@ -8,32 +8,32 @@
 
 package com.github.naios.wide.core.session.database;
 
-import com.github.naios.wide.core.Constants;
-
 public enum DatabaseType
 {
-    AUTH(Constants.PROPERTY_DATABASE_AUTH, "auth"),
-    CHARACTER(Constants.PROPERTY_DATABASE_CHARACTER, "character"),
-    WORLD(Constants.PROPERTY_DATABASE_WORLD, "world");
-
-    private final Constants entry;
+    AUTH("auth", true),
+    LOGON("logon", false),
+    CHARACTER("character", true),
+    WORLD("world", true),
+    WPP("wpp", false);
 
     private final String id;
 
-    DatabaseType(final Constants entry, final String id)
-    {
-        this.entry = entry;
-        this.id  = id;
-    }
+    private final boolean required;
 
-    public Constants getConfigEntry()
+    private DatabaseType(final String id, final boolean required)
     {
-        return entry;
+        this.id  = id;
+        this.required = required;
     }
 
     public String getId()
     {
         return id;
+    }
+
+    public boolean isRequired()
+    {
+        return required;
     }
 
     public static DatabaseType getFromId(final String id)

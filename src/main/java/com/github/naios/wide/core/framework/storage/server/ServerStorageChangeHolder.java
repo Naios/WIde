@@ -86,7 +86,7 @@ public class ServerStorageChangeHolder implements Observable
 
     protected ServerStorageChangeHolder(final DatabaseType databaseType)
     {
-        this.connection.bind(WIde.getDatabase().connection(databaseType));
+        this.connection.bind(WIde.getDatabase().connection(databaseType.getId()));
         this.connection.addListener(new ChangeListener<Connection>()
         {
             @Override

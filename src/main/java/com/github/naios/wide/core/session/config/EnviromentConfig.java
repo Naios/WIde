@@ -16,6 +16,14 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.game.GameBuild;
 
+class MissingDatabaseConfig extends RuntimeException
+{
+    public MissingDatabaseConfig(final String name)
+    {
+        super(String.format("Requested database (%s) is not present in the config!", name));
+    }
+}
+
 public class EnviromentConfig
 {
     private final StringProperty name;
@@ -39,7 +47,7 @@ public class EnviromentConfig
         return name;
     }
 
-    public ClientStorageConfig client_storages()
+    public ClientStorageConfig getClientStorageConfig()
     {
         return client_storages;
     }
@@ -52,5 +60,23 @@ public class EnviromentConfig
     public List<DatabaseConfig> getDatabases()
     {
         return databases;
+    }
+
+    public boolean isDatabasePresent(final String name)
+    {
+        for (final DatabaseConfig db : databases)
+            if (db.id().get().equals(name))
+                return true;
+
+        return false;
+    }
+
+    public DatabaseConfig getDatabaseConfig(final String name)
+    {
+        for (final DatabaseConfig db : databases)
+            if (db.id().get().equals(name))
+                return db;
+
+        throw new MissingDatabaseConfig(name);
     }
 }

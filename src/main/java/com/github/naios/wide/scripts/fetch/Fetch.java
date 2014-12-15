@@ -18,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.scripts.ScriptDefinition;
@@ -106,7 +105,8 @@ public class Fetch extends Script
             return;
         }
 
-        String targetdir = WIde.getEnviroment().getPath() + "/" + WIde.getConfig().getProperty(Constants.PROPERTY_DIR_CACHE).get();
+        String targetdir = WIde.getEnviroment().getPath() + "/" +
+                WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get();
 
         WIde.getEnviroment().createDirectory(targetdir);
 

@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.scripts.printdbc;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
@@ -27,7 +26,7 @@ public class PrintDBC extends Script
     public void run(final String[] args)
     {
         final String path =
-                WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + args[0];
+                WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + args[0];
 
         try
         {

@@ -10,7 +10,6 @@ package com.github.naios.wide.core.framework.storage.client;
 
 import java.lang.annotation.Annotation;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageException;
 import com.github.naios.wide.core.framework.storage.StorageName;
@@ -39,6 +38,6 @@ public abstract class ClientStorageStructure extends StorageStructure
 
     public static String getPathOfFile(final String path)
     {
-        return WIde.getConfig().getProperty(Constants.PROPERTY_DIR_DBC).get() + "/" + path;
+        return WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
     }
 }

@@ -12,26 +12,31 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.session.config.DatabaseConfig;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
 
 public class Database implements AutoCloseable
 {
-    private final Map<DatabaseType, ObjectProperty<Connection>> connections = new HashMap<>();
+    private final static String DRIVER = "org.mariadb.jdbc.Driver";
+
+    private final static String DRIVER_FORMAT = "jdbc:mariadb://%s/%s";
+
+    private final Map<String/*database*/, ObjectProperty<Connection>> connections = new HashMap<>();
 
     public Database()
     {
         for (final DatabaseType type : DatabaseType.values())
-            connections.put(type, new SimpleObjectProperty<Connection>());
+            if (type.isRequired())
+                connections.put(type.getId(), new SimpleObjectProperty<Connection>());
 
         // Try connect after the config was updated
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
@@ -42,7 +47,7 @@ public class Database implements AutoCloseable
                 try
                 {
                     // Try to load our driver
-                    Class.forName(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_DRIVER).get());
+                    Class.forName(DRIVER);
                 } catch (final ClassNotFoundException e)
                 {
                 }
@@ -92,16 +97,43 @@ public class Database implements AutoCloseable
         return true;
     }
 
-    private String getConnectionString(final String database)
+    private static String getConnectionString(final String host, final String database)
     {
-        return String.format(WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_DRIVER_STRING).get(),
-                WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get(), // Host
-                    WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_PORT).get(), // Port
-                        database); // Database
+        return String.format(DRIVER_FORMAT, host, database); // Database
     }
 
     private void connect()
     {
+        final List<DatabaseConfig> dbList = WIde.getConfig().get().getActiveEnviroment().getDatabases();
+        for (final DatabaseConfig config : dbList)
+        {
+            try
+            {
+                final Connection con = DriverManager.getConnection(
+                        getConnectionString(config.host().get(), config.name().get()),
+                            config.user().get(), config.password().get());
+
+                ObjectProperty<Connection> property = connections.get(config.id().get());
+                if (property == null)
+                {
+                    property = new SimpleObjectProperty<>();
+                    connections.put(config.id().get(), property);
+                }
+
+                property.set(con);
+            }
+            catch (final SQLException e)
+            {
+                e.printStackTrace();
+                close();
+                return;
+            }
+
+            if (WIde.getEnviroment().isTraceEnabled())
+                System.out.println(String.format("Database Type %s loaded: %s", config.id().get(), config.name().get()));
+        }
+
+        /*
         for (final Entry<DatabaseType, ObjectProperty<Connection>> connection : connections.entrySet())
         {
             final String name = WIde.getConfig().getProperty(connection.getKey().getConfigEntry()).get();
@@ -123,7 +155,7 @@ public class Database implements AutoCloseable
             if (WIde.getEnviroment().isTraceEnabled())
                 System.out.println(String.format("Database Type %s loaded: %s", connection.getKey(), name));
         }
-
+    */
         // Hook.ON_DATABASE_ESTABLISHED
         WIde.getHooks().fire(Hook.ON_DATABASE_ESTABLISHED);
     }
@@ -146,7 +178,7 @@ public class Database implements AutoCloseable
             }
     }
 
-    public ReadOnlyObjectProperty<Connection> connection(final DatabaseType type)
+    public ReadOnlyObjectProperty<Connection> connection(final String type)
     {
         return connections.get(type);
     }

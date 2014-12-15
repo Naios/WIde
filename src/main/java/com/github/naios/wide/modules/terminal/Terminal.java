@@ -13,10 +13,11 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.extensions.modules.Module;
 import com.github.naios.wide.core.framework.extensions.modules.type.UIModule;
+import com.github.naios.wide.core.session.config.DatabaseConfig;
+import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.modules.ModuleDefinition;
 
 public class Terminal extends Module implements UIModule
@@ -48,18 +49,17 @@ public class Terminal extends Module implements UIModule
     public void show()
     {
         final Console console = System.console();
-        final String cmdString = WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() +
-                "@" + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get() + ": ";
+
+        final DatabaseConfig config =
+                WIde.getConfig().get().getActiveEnviroment().getDatabaseConfig(DatabaseType.WORLD.getId());
+
+        final String cmdString = config.getEndpointString() + ": ";
 
         final String singleCommand = WIde.getEnviroment().getParameter("execute");
 
         if (!WIde.getDatabase().isConnected())
         {
-            System.out.println("Sorry, could not connect to: "
-                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_USER).get() + "@"
-                    + WIde.getConfig().getProperty(Constants.PROPERTY_DATABASE_HOST).get()
-                    + ", closed.");
-
+            System.out.println(String.format("Sorry, could not connect to: %s, closed.", config.getEndpointString()));
             return;
         }
 

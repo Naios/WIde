@@ -169,7 +169,7 @@ public class Enviroment
     public String getConfigName()
     {
         if (!hasArgument("config"))
-            return Constants.STRING_DEFAULT_PROPERTIES.toString();
+            return Constants.STRING_DEFAULT_CONFIG_NAME.toString();
         else
             return cmd.getOptionValue("config");
     }

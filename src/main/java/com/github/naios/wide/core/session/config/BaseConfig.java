@@ -13,6 +13,14 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
+class MissingActiveEnviroment extends RuntimeException
+{
+    public MissingActiveEnviroment()
+    {
+        super("Active enviroment config is missing!");
+    }
+}
+
 public class BaseConfig
 {
     private StringProperty title, description, active_enviroment;
@@ -44,5 +52,14 @@ public class BaseConfig
     public QueryConfig getQuerys()
     {
         return querys;
+    }
+
+    public EnviromentConfig getActiveEnviroment()
+    {
+        for (final EnviromentConfig env : enviroments)
+            if (env.name().get().equals(active_enviroment.get()))
+                return env;
+
+        throw new MissingActiveEnviroment();
     }
 }

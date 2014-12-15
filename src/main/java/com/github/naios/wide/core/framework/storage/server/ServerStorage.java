@@ -24,7 +24,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.core.Constants;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
@@ -190,7 +189,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         });
 
-        this.connection.bind(WIde.getDatabase().connection(databaseType));
+        this.connection.bind(WIde.getDatabase().connection(databaseType.getId()));
 
         this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseType);
     }
@@ -520,7 +519,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     public SQLBuilder createBuilder()
     {
-        return new SQLBuilder(getChangeHolder(), WIde.getConfig().getProperty(Constants.PROPERTY_SQL_VARIABLES).equals("true"));
+        // TODO
+        return new SQLBuilder(getChangeHolder(), true);
     }
 
     @Override
