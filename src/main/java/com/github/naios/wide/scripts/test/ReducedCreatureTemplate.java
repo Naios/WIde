@@ -14,9 +14,10 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.storage.mapping.Mapping;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageBase;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 
-public interface ReducedCreatureTemplate extends ServerTable, Mapping<ObservableValue<?>>
+public interface ReducedCreatureTemplate extends ServerStorageBase, Mapping<ObservableValue<?>>
 {
     public abstract ReadOnlyIntegerProperty entry();
 

@@ -35,6 +35,7 @@ import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageBaseImplementation;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
@@ -299,7 +300,7 @@ public class Test extends Script
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
                 new JsonMapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>>
                     (mySchema, SQLToPropertyMappingAdapterHolder.INSTANCE,
-                            ReducedCreatureTemplate.class, ServerTableImplementation.class);
+                            ReducedCreatureTemplate.class, ServerStorageBaseImplementation.class);
 
         final Connection con = WIde.getDatabase().connection("world").get();
 

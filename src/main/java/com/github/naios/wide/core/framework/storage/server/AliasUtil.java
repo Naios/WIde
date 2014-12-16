@@ -8,8 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.server;
 
-import java.lang.reflect.Field;
-
 import com.github.naios.wide.core.framework.game.Classes;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -25,16 +23,6 @@ class NoMetaEnumException extends ServerStorageException
 
 public class AliasUtil
 {
-    @SuppressWarnings({ "rawtypes" })
-    public static Class<? extends Enum> getEnum(final Field field)
-    {
-        final EnumAlias annotation = field.getAnnotation(EnumAlias.class);
-        if (annotation == null)
-            throw new NoMetaEnumException(field.getName());
-
-        return getEnum(annotation.value());
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Class<? extends Enum> getEnum(final String name)
     {
@@ -57,20 +45,16 @@ public class AliasUtil
         return (Class<? extends Enum>) type;
     }
 
-    public static String getNamstorageEntry(final Field field, final int entry)
+    public static String getNamstorage(final String name, final int entry)
     {
-        final NameAlias annotation = field.getAnnotation(NameAlias.class);
-        if (annotation == null)
-            return null;
-
-        final NameStorageType storage = NameStorageHolder.instance().get(annotation.value());
+        final NameStorageType storage = NameStorageHolder.instance().get(name);
         if (storage == null)
             return null;
 
-        final String name = storage.getStorage().request(entry);
-        if (name == null)
+        final String value = storage.getStorage().request(entry);
+        if (value == null)
             return null;
         else
-            return storage.getPrefix() + name;
+            return storage.getPrefix() + value;
     }
 }

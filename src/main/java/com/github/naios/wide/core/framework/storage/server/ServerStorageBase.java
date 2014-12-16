@@ -8,18 +8,17 @@
 
 package com.github.naios.wide.core.framework.storage.server;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.core.framework.storage.mapping.Mapping;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public interface ServerStorageStructure extends ServerStorageBase, Mapping<ObservableValue<?>>
+public interface ServerStorageBase
 {
     public ServerStorage<?> getOwner();
 
     public ReadOnlyObjectProperty<StructureState> state();
 
-    ObjectProperty<StructureState> writeableState();
+    public void delete();
+
+    public void reset();
 }
