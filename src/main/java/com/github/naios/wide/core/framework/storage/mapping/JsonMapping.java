@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,42 +19,60 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 {
     private final MappingPlan plan;
 
-    private final List<Pair<? extends BASE, MappingMetadata>> content;
+    private final List<Pair<? extends BASE, MappingMetadata>> values;
+
+    private final List<Pair<? extends BASE, MappingMetadata>> keys;
 
     public JsonMapping(final MappingPlan plan,
-            final List<Pair<? extends BASE, MappingMetadata>> content)
+            final List<Pair<? extends BASE, MappingMetadata>> values)
     {
         this.plan = plan;
 
-        this.content = content;
+        this.values = Collections.unmodifiableList(values);
+
+        final List<Pair<? extends BASE, MappingMetadata>> keys = new ArrayList<>();
+        values.forEach((entry) ->
+        {
+            if (entry.second().isKey())
+                keys.add(entry);
+        });
+
+        this.keys = Collections.unmodifiableList(keys);
     }
 
     @Override
     public Iterator<Pair<? extends BASE, MappingMetadata>> iterator()
     {
-        return content.iterator();
+        return values.iterator();
     }
 
     @Override
-    public List<Pair<BASE, MappingMetadata>> getKeys()
+    public List<Pair<? extends BASE, MappingMetadata>> getKeys()
     {
-        return null;
+        return keys;
     }
 
     @Override
-    public List<Pair<BASE, MappingMetadata>> getValues()
+    public List<Pair<? extends BASE, MappingMetadata>> getValues()
     {
-        return null;
+        return values;
     }
 
     @Override
     public void setDefaultValues()
     {
+
     }
 
     @Override
     public Pair<? extends BASE, MappingMetadata> getEntryByName(final String name)
     {
-        return content.get(plan.getOrdinalOfName(name));
+        try
+        {
+            return values.get(plan.getOrdinalOfName(name));
+        } catch (final OrdinalNotFoundException e)
+        {
+            throw new UnknownMappingEntryException(name);
+        }
     }
 }

@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -40,7 +41,6 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
@@ -302,38 +302,51 @@ public class Test extends Script
 
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
                 new JsonMapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>>
-                    (mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, ServerTableImplementation.class)
+                    (mySchema, ReducedCreatureTemplate.class, ServerTableImplementation.class);
+
+        mapper
+            .registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
                 {
                     @Override
-                    public void testInsertList(
-                            final List<Pair<? extends ObservableValue<?>, MappingMetadata>> content)
+                    public StringProperty create()
                     {
-                        content.add(new Pair<>(new SimpleStringProperty("my eeentryyy"), null));
-                        content.add(new Pair<>(new SimpleStringProperty("teeeeest"), null));
+                        return new SimpleStringProperty();
                     }
-                };
 
-        mapper.registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
-        {
-            @Override
-            public StringProperty create()
-            {
-                return new SimpleStringProperty();
-            }
+                    @Override
+                    public StringProperty map(final ResultSet from, final MappingMetadata metaData,
+                            final StringProperty base)
+                    {
+                        return null;
+                    }
 
-            @Override
-            public StringProperty map(final ResultSet from, final MappingMetadata metaData,
-                    final StringProperty base)
-            {
-                return null;
-            }
+                    @Override
+                    public void setDefault(final StringProperty value)
+                    {
+                        value.set("");
+                    }
+                })
+            .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
+                {
+                    @Override
+                    public ReadOnlyIntegerProperty create()
+                    {
+                        return null;
+                    }
 
-            @Override
-            public void setDefault(final StringProperty value)
-            {
-                value.set("");
-            }
-        });
+                    @Override
+                    public ReadOnlyIntegerProperty map(final ResultSet from,
+                            final MappingMetadata metaData,
+                            final ReadOnlyIntegerProperty base)
+                    {
+                        return null;
+                    }
+
+                    @Override
+                    public void setDefault(final ReadOnlyIntegerProperty value)
+                    {
+                    }
+                });
 
         final Connection con = WIde.getDatabase().connection("world").get();
 

@@ -10,6 +10,8 @@ package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.util.List;
 
+import com.google.common.reflect.TypeToken;
+
 public interface MappingPlan
 {
     public int getNumberOfElements();
@@ -20,5 +22,7 @@ public interface MappingPlan
 
     public String getNameOfOrdinal(final int ordinal);
 
-    public int getOrdinalOfName(final String name);
+    public int getOrdinalOfName(final String name) throws OrdinalNotFoundException;
+
+    public List<TypeToken<?>> getMappedType();
 }

@@ -14,9 +14,9 @@ import com.github.naios.wide.core.framework.util.Pair;
 
 public interface Mapping<BASE> extends Iterable<Pair<? extends BASE, MappingMetadata>>
 {
-    public List<Pair<BASE, MappingMetadata>> getKeys();
+    public List<Pair<? extends BASE, MappingMetadata>> getKeys();
 
-    public List<Pair<BASE, MappingMetadata>> getValues();
+    public List<Pair<? extends BASE, MappingMetadata>> getValues();
 
     public Pair<? extends BASE, MappingMetadata> getEntryByName(String name) throws UnknownMappingEntryException;
 

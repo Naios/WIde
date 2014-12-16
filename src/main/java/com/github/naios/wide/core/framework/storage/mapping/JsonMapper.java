@@ -8,27 +8,29 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.google.common.reflect.TypeToken;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
     private final JsonMappingPlan plan;
 
-    public JsonMapper(final TableSchema schema, final Class<? extends TO> target, final Class<?>[] interfaces, final Class<?> implementation)
+    public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
+            final Class<?> implementation)
     {
-        this(schema, target, Arrays.asList(interfaces), implementation);
+        this(new MappingAdapterHolder<>(), schema , target, implementation);
     }
 
-    public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
-            final List<Class<?>> interfaces, final Class<?> implementation)
+    public JsonMapper(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
+            final TableSchema schema, final Class<? extends TO> target, final Class<?> implementation)
     {
-        super(target, interfaces, implementation);
-        this.plan = new JsonMappingPlan(schema);
+        super(adapterHolder, target, implementation);
+        this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
     }
 
     @Override
@@ -37,13 +39,24 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         final List<Pair<? extends BASE, MappingMetadata>> content =
                 new ArrayList<>();
 
-        testInsertList(content);
+        for (final Method method : getTarget().getMethods())
+        {
+            final int ordinal;
+            try
+            {
+                ordinal = plan.getOrdinalOfName(method.getName());
+            }
+            catch (final OrdinalNotFoundException e)
+            {
+                continue;
+            }
+
+            final MappingAdapter<FROM, ? extends BASE> adapter =
+                    getAdapterOf(TypeToken.of(method.getReturnType()));
+
+            System.out.println(String.format("\tMethod: %s", method.getName()));
+        }
 
         return new JsonMapping<>(plan, content);
-    }
-
-    public void testInsertList(final List<Pair<? extends BASE, MappingMetadata>> content)
-    {
-
     }
 }
