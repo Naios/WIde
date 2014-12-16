@@ -8,9 +8,14 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import com.github.naios.wide.core.framework.util.Pair;
+import java.util.List;
+import java.util.Map.Entry;
 
-public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetadata>>
+public interface Mapping<BASE> extends Iterable<Entry<BASE, MappingMetadata>>
 {
+    public List<Entry<BASE, MappingMetadata>> getKeys();
 
+    public List<Entry<BASE, MappingMetadata>> getValues();
+
+    public void setDefaultValues();
 }

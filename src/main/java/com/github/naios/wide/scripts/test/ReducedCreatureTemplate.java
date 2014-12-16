@@ -14,7 +14,6 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
-import com.github.naios.wide.core.framework.storage.mapping.schema.ServerTable;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 

@@ -29,6 +29,8 @@ import com.github.naios.wide.core.framework.storage.client.ClientStorageStructur
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
+import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
+import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -37,6 +39,7 @@ import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
+import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
 /**
@@ -331,7 +334,9 @@ public class Test extends Script
 
     private void testMapping(final String[] args)
     {
+        final Schema mySchema = SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId());
+
         final Mapper<ResultSet, ReducedCreatureTemplate> mapper =
-                new JsonMapper<>();
+                new JsonMapper<>(mySchema);
     }
 }

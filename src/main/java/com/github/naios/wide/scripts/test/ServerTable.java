@@ -6,15 +6,13 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.mapping.schema;
-
-import com.github.naios.wide.core.framework.storage.mapping.Mapping;
+package com.github.naios.wide.scripts.test;
 
 import javafx.beans.value.ObservableValue;
+
+import com.github.naios.wide.core.framework.storage.mapping.Mapping;
 
 public interface ServerTable extends Mapping<ObservableValue<?>>
 {
     void delete();
-
-    void reset();
 }

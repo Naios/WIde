@@ -8,8 +8,17 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
+
 public class JsonMapper<FROM, TO extends Mapping<?>> extends MapperBase<FROM, TO>
 {
+    private final Schema schema;
+
+    public JsonMapper(final Schema schema)
+    {
+        this.schema = schema;
+    }
+
     @Override
     public TO map(final FROM from)
     {

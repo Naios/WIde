@@ -8,9 +8,11 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import com.google.common.reflect.TypeToken;
+
 public interface Mapper<FROM, TO extends Mapping<?>>
 {
     public TO map(FROM from);
 
-    public Mapper<FROM, TO> registerAdapter(final MappingAdapter adapter);
+    public Mapper<FROM, TO> registerAdapter(final TypeToken<?> type, final MappingAdapter adapter);
 }

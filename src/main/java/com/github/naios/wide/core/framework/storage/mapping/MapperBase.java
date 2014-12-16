@@ -8,12 +8,13 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import com.google.common.reflect.TypeToken;
+
 public abstract class MapperBase<FROM, TO extends Mapping<?>> implements Mapper<FROM, TO>
 {
     @Override
-    public Mapper<FROM, TO> registerAdapter(final MappingAdapter adapter)
+    public Mapper<FROM, TO> registerAdapter(final TypeToken<?> type, final MappingAdapter adapter)
     {
-
         return this;
     }
 }
