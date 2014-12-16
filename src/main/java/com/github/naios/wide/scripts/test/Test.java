@@ -308,6 +308,7 @@ public class Test extends Script
                     public void testInsertList(
                             final List<Pair<? extends ObservableValue<?>, MappingMetadata>> content)
                     {
+                        content.add(new Pair<>(new SimpleStringProperty("my eeentryyy"), null));
                         content.add(new Pair<>(new SimpleStringProperty("teeeeest"), null));
                     }
                 };

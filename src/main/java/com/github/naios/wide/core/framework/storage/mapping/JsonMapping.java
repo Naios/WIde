@@ -13,16 +13,16 @@ import java.util.List;
 
 import com.github.naios.wide.core.framework.util.Pair;
 
-public class JsonMappingImplementation<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
+public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
-    private final JsonMapper<FROM, TO, BASE> mapper;
+    private final MappingPlan plan;
 
     private final List<Pair<? extends BASE, MappingMetadata>> content;
 
-    public JsonMappingImplementation(final JsonMapper<FROM, TO, BASE> mapper,
+    public JsonMapping(final MappingPlan plan,
             final List<Pair<? extends BASE, MappingMetadata>> content)
     {
-        this.mapper = mapper;
+        this.plan = plan;
 
         this.content = content;
     }
@@ -53,6 +53,6 @@ public class JsonMappingImplementation<FROM, TO extends Mapping<BASE>, BASE> imp
     @Override
     public Pair<? extends BASE, MappingMetadata> getEntryByName(final String name)
     {
-        return content.get(mapper.getOrdinalOfName(name));
+        return content.get(plan.getOrdinalOfName(name));
     }
 }

@@ -17,7 +17,7 @@ public class MappingProxy implements InvocationHandler
 {
     private final Object implementation;
 
-    final Mapping<?> mapping;
+    private final Mapping<?> mapping;
 
     public MappingProxy(final Object implementation, final Mapping<?> mapping)
     {

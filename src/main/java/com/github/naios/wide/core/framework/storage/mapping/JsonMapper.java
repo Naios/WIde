@@ -10,19 +10,14 @@ package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.util.Pair;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
-    private final Map<String, Integer> nameToOrdinal =
-            new HashMap<>();
-
-    private final TableSchema schema;
+    private final JsonMappingPlan plan;
 
     public JsonMapper(final TableSchema schema, final Class<? extends TO> target, final Class<?>[] interfaces, final Class<?> implementation)
     {
@@ -33,7 +28,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final List<Class<?>> interfaces, final Class<?> implementation)
     {
         super(target, interfaces, implementation);
-        this.schema = schema;
+        this.plan = new JsonMappingPlan(schema);
     }
 
     @Override
@@ -44,17 +39,11 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 
         testInsertList(content);
 
-        return new JsonMappingImplementation<>(this, content);
+        return new JsonMapping<>(plan, content);
     }
 
     public void testInsertList(final List<Pair<? extends BASE, MappingMetadata>> content)
     {
 
-    }
-
-    protected int getOrdinalOfName(final String name)
-    {
-        // throw new UnknownMappingEntryException(name)
-        return 0;
     }
 }
