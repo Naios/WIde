@@ -3,12 +3,12 @@ WIde.json
 git.properties
 data/
 cache/
+schematics/
 
 # Maven
 target/
 
-# IDE's
-#   Eclipse
+# Eclipse
 .project
 .classpath
 .settings/
