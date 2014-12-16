@@ -8,9 +8,6 @@
 
 package com.github.naios.wide.scripts.test;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,18 +32,20 @@ import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
 import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
-import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
+import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
+import com.google.common.collect.Iterables;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -67,7 +66,6 @@ public class Test extends Script
                 toString(), Arrays.toString(args)));
 
         // testStorages(args);
-        // testProxy(args);
         testMapping(args);
     }
 
@@ -298,53 +296,21 @@ public class Test extends Script
         table.close();
     }
 
-    interface MyTemplatePre
-    {
-        public StringProperty pre_name();
-    }
-
-    interface MyTemplate extends MyTemplatePre
-    {
-        public StringProperty name();
-
-        public StringProperty subname();
-    }
-
-    class ProxyHandler implements InvocationHandler
-    {
-        @Override
-        public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
-        {
-            for (final Method m : method.getDeclaringClass().getMethods())
-            {
-                System.out.println(m.getName());
-            }
-
-            // method.invoke(this.object, args);
-
-            return new SimpleStringProperty(method.getName());
-        }
-    }
-
-    private void testProxy(final String[] args)
-    {
-        final ProxyHandler handler = new ProxyHandler();
-
-        final MyTemplate template =
-                (MyTemplate) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { MyTemplate.class }, handler);
-
-        System.out.println(template.name());
-        System.out.println(template.subname());
-
-        System.out.println(((MyTemplatePre)template).pre_name());
-    }
-
     private void testMapping(final String[] args)
     {
-        final Schema mySchema = SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId());
+        final TableSchema mySchema = Iterables.get(SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId()).getTables(), 0);
 
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
-                new JsonMapper<>(mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, ServerTableImplementation.class);
+                new JsonMapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>>
+                    (mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, ServerTableImplementation.class)
+                {
+                    @Override
+                    public void testInsertList(
+                            final List<Pair<? extends ObservableValue<?>, MappingMetadata>> content)
+                    {
+                        content.add(new Pair<>(new SimpleStringProperty("teeeeest"), null));
+                    }
+                };
 
         mapper.registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
         {

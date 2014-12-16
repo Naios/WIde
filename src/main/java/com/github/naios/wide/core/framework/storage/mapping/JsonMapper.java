@@ -8,34 +8,53 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
+import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.core.framework.util.Pair;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
-    private final Schema schema;
+    private final Map<String, Integer> nameToOrdinal =
+            new HashMap<>();
 
-    public JsonMapper(final Schema schema, final Class<? extends TO> target, final Class<?>[] interfaces, final Class<?> implementation)
+    private final TableSchema schema;
+
+    public JsonMapper(final TableSchema schema, final Class<? extends TO> target, final Class<?>[] interfaces, final Class<?> implementation)
     {
         this(schema, target, Arrays.asList(interfaces), implementation);
     }
 
-    public JsonMapper(final Schema schema, final Class<? extends TO> target,
+    public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
             final List<Class<?>> interfaces, final Class<?> implementation)
     {
         super(target, interfaces, implementation);
         this.schema = schema;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public TO map(final FROM from)
+    protected Mapping<BASE> newMappingBasedOn(final FROM from)
     {
-        final MappingProxy proxy = new MappingProxy(newImplementation());
+        final List<Pair<? extends BASE, MappingMetadata>> content =
+                new ArrayList<>();
 
-        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), getInterfacesAsArray(), proxy);
+        testInsertList(content);
+
+        return new JsonMappingImplementation<>(this, content);
+    }
+
+    public void testInsertList(final List<Pair<? extends BASE, MappingMetadata>> content)
+    {
+
+    }
+
+    protected int getOrdinalOfName(final String name)
+    {
+        // throw new UnknownMappingEntryException(name)
+        return 0;
     }
 }

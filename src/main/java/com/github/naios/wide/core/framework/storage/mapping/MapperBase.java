@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         return implementation;
     }
 
-    protected Object newImplementation()
+    private Object newImplementation()
     {
         try
         {
@@ -75,5 +76,17 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         {
             return new Error(e.getMessage());
         }
+    }
+
+    protected abstract Mapping<BASE> newMappingBasedOn(final FROM from);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public TO map(final FROM from)
+    {
+        final Mapping<BASE> mapping = newMappingBasedOn(from);
+        final MappingProxy proxy = new MappingProxy(newImplementation(), mapping);
+
+        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), getInterfacesAsArray(), proxy);
     }
 }

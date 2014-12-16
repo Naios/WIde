@@ -9,13 +9,16 @@
 package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.util.List;
-import java.util.Map.Entry;
 
-public interface Mapping<BASE> extends Iterable<Entry<BASE, MappingMetadata>>
+import com.github.naios.wide.core.framework.util.Pair;
+
+public interface Mapping<BASE> extends Iterable<Pair<? extends BASE, MappingMetadata>>
 {
-    public List<Entry<BASE, MappingMetadata>> getKeys();
+    public List<Pair<BASE, MappingMetadata>> getKeys();
 
-    public List<Entry<BASE, MappingMetadata>> getValues();
+    public List<Pair<BASE, MappingMetadata>> getValues();
+
+    public Pair<? extends BASE, MappingMetadata> getEntryByName(String name) throws UnknownMappingEntryException;
 
     public void setDefaultValues();
 }
