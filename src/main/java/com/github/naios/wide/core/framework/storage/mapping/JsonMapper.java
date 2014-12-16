@@ -8,17 +8,15 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.util.Pair;
-import com.google.common.reflect.TypeToken;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
-    private final JsonMappingPlan plan;
+    private final MappingPlan plan;
 
     public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
             final Class<?> implementation)
@@ -33,28 +31,19 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Mapping<BASE> newMappingBasedOn(final FROM from)
     {
         final List<Pair<? extends BASE, MappingMetadata>> content =
                 new ArrayList<>();
 
-        for (final Method method : getTarget().getMethods())
+        for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
-            final int ordinal;
-            try
-            {
-                ordinal = plan.getOrdinalOfName(method.getName());
-            }
-            catch (final OrdinalNotFoundException e)
-            {
-                continue;
-            }
+            final MappingAdapter adapter =
+                    getAdapterOf(plan.getMappedType().get(i));
 
-            final MappingAdapter<FROM, ? extends BASE> adapter =
-                    getAdapterOf(TypeToken.of(method.getReturnType()));
-
-            System.out.println(String.format("\tMethod: %s", method.getName()));
+            content.add(new Pair(adapter.map(from, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(plan, content);

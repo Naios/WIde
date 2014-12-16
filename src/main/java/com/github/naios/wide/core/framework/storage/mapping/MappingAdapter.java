@@ -10,9 +10,7 @@ package com.github.naios.wide.core.framework.storage.mapping;
 
 public interface MappingAdapter<FROM, BASE>
 {
-    public BASE create();
-
-    public BASE map(FROM from, MappingMetadata metaData, BASE base);
+    public BASE map(FROM from, MappingMetadata metaData);
 
     public void setDefault(BASE value);
 }

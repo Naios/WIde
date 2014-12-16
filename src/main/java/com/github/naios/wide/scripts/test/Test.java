@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -308,16 +309,16 @@ public class Test extends Script
             .registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
                 {
                     @Override
-                    public StringProperty create()
+                    public StringProperty map(final ResultSet from, final MappingMetadata metaData)
                     {
-                        return new SimpleStringProperty();
-                    }
-
-                    @Override
-                    public StringProperty map(final ResultSet from, final MappingMetadata metaData,
-                            final StringProperty base)
-                    {
-                        return null;
+                        try
+                        {
+                            return new SimpleStringProperty(from.getString(metaData.getName()));
+                        } catch (final SQLException e)
+                        {
+                            e.printStackTrace();
+                            return null;
+                        }
                     }
 
                     @Override
@@ -329,17 +330,16 @@ public class Test extends Script
             .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
                 {
                     @Override
-                    public ReadOnlyIntegerProperty create()
+                    public ReadOnlyIntegerProperty map(final ResultSet from, final MappingMetadata metaData)
                     {
-                        return null;
-                    }
-
-                    @Override
-                    public ReadOnlyIntegerProperty map(final ResultSet from,
-                            final MappingMetadata metaData,
-                            final ReadOnlyIntegerProperty base)
-                    {
-                        return null;
+                        try
+                        {
+                            return new SimpleIntegerProperty(from.getInt(metaData.getName()));
+                        } catch (final SQLException e)
+                        {
+                            e.printStackTrace();
+                            return null;
+                        }
                     }
 
                     @Override
@@ -354,6 +354,8 @@ public class Test extends Script
         try
         {
              result = con.createStatement().executeQuery("select * from creature_template limit 1");
+             result.first();
+
         } catch (final SQLException e)
         {
             e.printStackTrace();
@@ -364,7 +366,7 @@ public class Test extends Script
 
         template.delete();
 
-        System.out.println(String.format("DEBUG: %s", template.name()));
+        template.forEach(entry -> System.out.println(entry));
 
         try
         {

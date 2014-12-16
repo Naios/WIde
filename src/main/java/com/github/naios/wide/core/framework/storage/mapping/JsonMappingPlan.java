@@ -71,14 +71,26 @@ public class JsonMappingPlan implements MappingPlan
             mappedType.add(TypeToken.of(method.getReturnType()));
             data.add(metaData);
             ordinalToName.put(i++, method.getName());
+
+            if (metaData.isKey())
+                keys.add(i);
         }
+
+        // Check if all keys are present in the interface
+        i = 0;
+        for (final MappingMetadata metaData : schema.getEntries())
+            if (metaData.isKey())
+                ++i;
+
+        if (i != keys.size())
+            throw new RuntimeException(String.format("Interface %s defines not all keys present in schema %s.", target, schema.getName()));
 
         this.data = Collections.unmodifiableList(data);
         this.keys = Collections.unmodifiableList(keys);
         this.mappedType = Collections.unmodifiableList(mappedType);
     }
 
-    // TODO Fix this dirty workarround
+    // TODO Fix this dirty workaround
     private boolean methodSignatureEquals(final Method first, final Method second)
     {
         if (first == second)
@@ -107,38 +119,6 @@ public class JsonMappingPlan implements MappingPlan
                 return data;
 
         return null;
-    }
-
-    @Override
-    public boolean equals(final Object obj)
-    {
-
-        if (obj == null)
-            return false;
-
-        final JsonMappingPlan other = (JsonMappingPlan) obj;
-        if (data == null)
-        {
-            if (other.data != null)
-                return false;
-        }
-        else if (!data.equals(other.data))
-            return false;
-        if (keys == null)
-        {
-            if (other.keys != null)
-                return false;
-        }
-        else if (!keys.equals(other.keys))
-            return false;
-        if (ordinalToName == null)
-        {
-            if (other.ordinalToName != null)
-                return false;
-        }
-        else if (!ordinalToName.equals(other.ordinalToName))
-            return false;
-        return true;
     }
 
     @Override

@@ -67,4 +67,13 @@ public class Pair<F, S>
             return false;
         return true;
     }
+
+    @Override
+    public String toString()
+    {
+        final String fs = (first == null) ? null : first.toString();
+        final String ss = (second == null) ? null : second.toString();
+
+        return String.format("Pair(%s, %s)", fs, ss);
+    }
 }
