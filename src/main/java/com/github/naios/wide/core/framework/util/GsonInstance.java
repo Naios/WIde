@@ -55,4 +55,12 @@ public class GsonInstance
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleBooleanProperty()))
         .create();
+
+    public static String toJsonExcludeDefaultValues(final Object obj)
+    {
+        // FIXME produces malformed json querys in some cases
+        return INSTANCE.toJson(obj)
+                // Delete default values (minify .json)
+                .replaceAll(" *\".*\": (0|false|\"\"),?\n?", "");
+    }
 }

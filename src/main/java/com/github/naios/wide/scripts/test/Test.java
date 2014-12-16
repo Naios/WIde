@@ -45,6 +45,7 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.GsonInstance;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
@@ -442,5 +443,7 @@ public class Test extends Script
         {
             e.printStackTrace();
         }
+
+        System.out.println(GsonInstance.toJsonExcludeDefaultValues(mySchema));
     }
 }

@@ -10,6 +10,7 @@ package com.github.naios.wide.core.framework.storage.mapping.schema;
 
 public enum SchemaEntryType
 {
+    UNKNOWN,
     BOOL,
     INT,
     UINT,

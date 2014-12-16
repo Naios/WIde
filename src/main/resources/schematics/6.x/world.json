@@ -7,31 +7,19 @@
       "entries": [
         {
           "name": "entry",
-          "target": "entry",
           "description": "creature entry (primary key).",
-          "type": "UINT",
-          "index": 0,
           "key": true,
           "alias": "creature_name"
         },
         {
           "name": "name",
-          "type": "STRING",
-          "index": 0,
-          "key": false
         },
         {
           "name": "unit_flags",
-          "type": "FLAG",
-          "index": 0,
-          "key": false,
           "alias": "UnitFlags"
         },
         {
           "name": "unit_class",
-          "type": "ENUM",
-          "index": 0,
-          "key": false,
           "alias": "UnitClass"
         }
       ]
