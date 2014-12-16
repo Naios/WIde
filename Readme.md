@@ -1,6 +1,6 @@
 # WIde - MMORPG Framework IDE #
 ---------------------------------
-[![Build Status](https://travis-ci.org/Naios/WIde.svg)](https://travis-ci.org/Naios/WIde)
+[![Build Status](https://travis-ci.org/Naios/WIde.svg?branch=master](https://travis-ci.org/Naios/WIde)
 
 WIde helps you to edit multiple MMORPG Framework entities.
 Currently WIde works with TrinityCore.
