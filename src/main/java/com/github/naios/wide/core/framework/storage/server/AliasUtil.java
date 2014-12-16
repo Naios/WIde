@@ -45,7 +45,7 @@ public class AliasUtil
         return (Class<? extends Enum>) type;
     }
 
-    public static String getNamstorage(final String name, final int entry)
+    public static String getNamstorageEntry(final String name, final int entry)
     {
         final NameStorageType storage = NameStorageHolder.instance().get(name);
         if (storage == null)

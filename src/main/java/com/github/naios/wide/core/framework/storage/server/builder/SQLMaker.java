@@ -165,9 +165,9 @@ public class SQLMaker
                 return vars.addVariable(customVar, value.getValue());
 
             // Enum alias
-            if (mappingMetaData.isAnnotationPresent(EnumAlias.class))
+            if (value instanceof EnumProperty)
             {
-                final Class<? extends Enum> enumeration = AliasUtil.getEnum(mappingMetaData);
+                final Class<? extends Enum> enumeration = AliasUtil.getEnum(mappingMetaData.getAlias());
 
                 // Enum Property (Absolute value)
                 if (value instanceof EnumProperty)
@@ -235,9 +235,9 @@ public class SQLMaker
                 }
             }
             // Namestorage alias
-            else if ((value instanceof ReadOnlyIntegerProperty) && mappingMetaData.isAnnotationPresent(NameAlias.class))
+            else if ((value instanceof ReadOnlyIntegerProperty) && !mappingMetaData.getAlias().isEmpty())
             {
-                final String name = AliasUtil.getNamstorageEntry(mappingMetaData, (int)value.getValue());
+                final String name = AliasUtil.getNamstorageEntry(mappingMetaData.getAlias(), (int)value.getValue());
                 if (name != null)
                     return vars.addVariable(name, value.getValue());
             }
