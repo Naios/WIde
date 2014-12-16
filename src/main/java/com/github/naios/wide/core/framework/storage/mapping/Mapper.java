@@ -8,21 +8,9 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import java.util.List;
-
-public class TableSchema
+public interface Mapper<FROM, TO extends Mapping<?>>
 {
-    private String name;
+    public TO map(FROM from);
 
-    private List<TableEntry> entries;
-
-    public String getName()
-    {
-        return name;
-    }
-
-    public List<TableEntry> getEntries()
-    {
-        return entries;
-    }
+    public Mapper<FROM, TO> registerAdapter(final MappingAdapter adapter);
 }

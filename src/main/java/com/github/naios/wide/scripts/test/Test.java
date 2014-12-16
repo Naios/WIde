@@ -11,6 +11,7 @@ package com.github.naios.wide.scripts.test;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +27,8 @@ import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
+import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
+import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -328,6 +331,7 @@ public class Test extends Script
 
     private void testMapping(final String[] args)
     {
-
+        final Mapper<ResultSet, ReducedCreatureTemplate> mapper =
+                new JsonMapper<>();
     }
 }

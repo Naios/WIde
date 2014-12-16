@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.mapping;
+package com.github.naios.wide.core.framework.storage.mapping.schema;
 
 import java.io.FileReader;
 import java.io.Reader;

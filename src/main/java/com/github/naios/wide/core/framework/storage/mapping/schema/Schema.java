@@ -6,10 +6,11 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.mapping;
+package com.github.naios.wide.core.framework.storage.mapping.schema;
 
 import java.util.List;
 
+@SuppressWarnings("serial")
 class MissingSchemaException extends RuntimeException
 {
     public MissingSchemaException(final String name)

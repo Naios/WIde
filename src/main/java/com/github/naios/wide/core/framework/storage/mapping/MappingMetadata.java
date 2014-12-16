@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2013 - 2014 Naios <naios-dev@live.de>
  *
@@ -8,14 +7,7 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-public enum SchemaEntryType
+public class MappingMetadata
 {
-    BOOL,
-    INT,
-    UINT,
-    FLOAT,
-    DOUBLE,
-    STRING,
-    ENUM,
-    FLAG,
+
 }
