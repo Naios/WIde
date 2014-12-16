@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,18 +24,17 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
 
     private final List<Class<?>> interfaces;
 
-    private final Map<String, Method> methods=
-            new HashMap<>();
+    private final Class<?> implementation;
 
     public MapperBase(final Class<? extends TO> target, final List<Class<?>> interfaces,
-            final List<Class<?>> implementations)
+            final Class<?> implementation)
     {
         this.target = target;
 
         this.interfaces = new ArrayList<>(interfaces);
         this.interfaces.add(target);
 
-        // this.implementations = new ArrayList<>(implementations);
+        this.implementation = implementation;
     }
 
     @Override
@@ -62,9 +60,20 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         return interfaces.toArray(new Class<?>[interfaces.size()]);
     }
 
-    /*
-    protected List<Class<?>> getImplementations()
+    protected Class<?> getImplementation()
     {
-        return implementations;
-    }*/
+        return implementation;
+    }
+
+    protected Object newImplementation()
+    {
+        try
+        {
+            return implementation.newInstance();
+        }
+        catch (final Exception e)
+        {
+            return new Error(e.getMessage());
+        }
+    }
 }

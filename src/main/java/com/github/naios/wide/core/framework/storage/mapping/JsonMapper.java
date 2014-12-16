@@ -18,16 +18,15 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 {
     private final Schema schema;
 
-    public JsonMapper(final Schema schema, final Class<? extends TO> target,
-            final Class<?>[] interfaces, final Class<?>[] implementations)
+    public JsonMapper(final Schema schema, final Class<? extends TO> target, final Class<?>[] interfaces, final Class<?> implementation)
     {
-        this(schema, target, Arrays.asList(interfaces), Arrays.asList(implementations));
+        this(schema, target, Arrays.asList(interfaces), implementation);
     }
 
     public JsonMapper(final Schema schema, final Class<? extends TO> target,
-            final List<Class<?>> interfaces, final List<Class<?>> implementations)
+            final List<Class<?>> interfaces, final Class<?> implementation)
     {
-        super(target, interfaces, implementations);
+        super(target, interfaces, implementation);
         this.schema = schema;
     }
 
@@ -35,7 +34,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     public TO map(final FROM from)
     {
-        final MappingProxy proxy = new MappingProxy();
+        final MappingProxy proxy = new MappingProxy(newImplementation());
 
         return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), getInterfacesAsArray(), proxy);
     }

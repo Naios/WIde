@@ -11,20 +11,30 @@ package com.github.naios.wide.core.framework.storage.mapping;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import javafx.beans.property.SimpleStringProperty;
-
 public class MappingProxy implements InvocationHandler
 {
+    private final Object implementation;
+
+    public MappingProxy(final Object implementation)
+    {
+        this.implementation = implementation;
+    }
+
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
     {
-        System.out.println(String.format("DEBUG: %s", method));
-        System.out.println(method.getName());
-        System.out.println(method.getDeclaringClass());
+        try
+        {
+            implementation.getClass().getMethod(method.getName(), method.getParameterTypes());
+            return method.invoke(implementation, args);
+        }
+        catch (final NoSuchMethodException e)
+        {
+        }
 
+        System.out.println(String.format("Method: %s not found!", method.getName()));
+        System.out.println(String.format("Probably requested %s value.", method.getName()));
 
-        System.out.println();
-
-        return new SimpleStringProperty("hey");
+        return null;
     }
 }

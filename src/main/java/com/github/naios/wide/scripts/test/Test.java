@@ -344,7 +344,7 @@ public class Test extends Script
         final Schema mySchema = SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId());
 
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
-                new JsonMapper<>(mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, new Class<?>[] { ServerTableImplementation.class});
+                new JsonMapper<>(mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, ServerTableImplementation.class);
 
         mapper.registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
         {
