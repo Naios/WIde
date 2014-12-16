@@ -58,9 +58,9 @@ public class GsonInstance
 
     public static String toJsonExcludeDefaultValues(final Object obj)
     {
-        // FIXME produces malformed json querys in some cases
         return INSTANCE.toJson(obj)
                 // Delete default values (minify .json)
-                .replaceAll(" *\".*\": (0|false|\"\"),?\n?", "");
+                .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
+                .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 }
