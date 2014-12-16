@@ -8,8 +8,6 @@
 
 package com.github.naios.wide.scripts.test;
 
-import java.io.FileReader;
-import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -19,7 +17,6 @@ import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
@@ -35,10 +32,8 @@ import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.GsonInstance;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
-import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
 /**
@@ -333,20 +328,6 @@ public class Test extends Script
 
     private void testMapping(final String[] args)
     {
-        final String path = WIde.getConfig().get().getActiveEnviroment()
-                .getDatabaseConfig(DatabaseType.WORLD.getId()).schema().get();
 
-        System.out.println(String.format("DEBUG: %s", path));
-
-        try (final Reader reader = new FileReader(path))
-        {
-            final Schema schema = GsonInstance.INSTANCE.fromJson(reader, Schema.class);
-
-            System.out.println(GsonInstance.INSTANCE.toJson(schema));
-        }
-        catch (final Throwable throwable)
-        {
-            throwable.printStackTrace();
-        }
     }
 }

@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.scripts.test;
+package com.github.naios.wide.core.framework.storage.mapping;
 
 public enum SchemaEntryType
 {
