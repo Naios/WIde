@@ -34,13 +34,16 @@ import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
 import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
+import com.github.naios.wide.core.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
+import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
+import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
@@ -309,7 +312,8 @@ public class Test extends Script
             .registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
                 {
                     @Override
-                    public StringProperty map(final ResultSet from, final MappingMetadata metaData)
+                    public StringProperty map(final ResultSet from, final MappingPlan plan, final int index,
+                            final MappingMetadata metaData)
                     {
                         try
                         {
@@ -322,15 +326,27 @@ public class Test extends Script
                     }
 
                     @Override
-                    public void setDefault(final StringProperty value)
+                    public boolean set(final StringProperty me, final Object value)
                     {
-                        value.set("");
+                        if (!(value instanceof String))
+                            return false;
+
+                        me.set((String)value);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean setDefault(final StringProperty me)
+                    {
+                        me.set("");
+                        return true;
                     }
                 })
             .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
                 {
                     @Override
-                    public ReadOnlyIntegerProperty map(final ResultSet from, final MappingMetadata metaData)
+                    public ReadOnlyIntegerProperty map(final ResultSet from, final MappingPlan plan,
+                            final int index, final MappingMetadata metaData)
                     {
                         try
                         {
@@ -343,8 +359,50 @@ public class Test extends Script
                     }
 
                     @Override
-                    public void setDefault(final ReadOnlyIntegerProperty value)
+                    public boolean set(final ReadOnlyIntegerProperty me, final Object value)
                     {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean setDefault(final ReadOnlyIntegerProperty value)
+                    {
+                        return false;
+                    }
+                })
+            .registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
+                {
+                    @Override
+                    public EnumProperty<?> map(final ResultSet from,
+                            final MappingPlan plan, final int index,
+                            final MappingMetadata metaData)
+                    {
+                        try
+                        {
+                            return new EnumProperty<>(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
+                        }
+                        catch (final SQLException e)
+                        {
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    public boolean set(final EnumProperty<?> me, final Object value)
+                    {
+                        final Class<?> enumeration = me.getEnum();
+                        if (!enumeration.isAssignableFrom(value.getClass()))
+                            return false;
+
+                        // TODO
+                        return true;
+                    }
+
+                    @Override
+                    public boolean setDefault(final EnumProperty<?> me)
+                    {
+                        me.set(0);
+                        return true;
                     }
                 });
 
@@ -353,8 +411,7 @@ public class Test extends Script
         final ResultSet result;
         try
         {
-             result = con.createStatement().executeQuery("select * from creature_template limit 1");
-             result.first();
+             result = con.createStatement().executeQuery("select * from creature_template limit 10");
 
         } catch (final SQLException e)
         {
@@ -362,11 +419,20 @@ public class Test extends Script
             return;
         }
 
-        final ReducedCreatureTemplate template = mapper.map(result);
+        try
+        {
+            while (result.next())
+            {
+                final ReducedCreatureTemplate template = mapper.map(result);
 
-        template.delete();
+                template.forEach(entry -> System.out.println(entry));
+            }
 
-        template.forEach(entry -> System.out.println(entry));
+        }
+        catch (final SQLException e1)
+        {
+            e1.printStackTrace();
+        }
 
         try
         {

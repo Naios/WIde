@@ -43,7 +43,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final MappingAdapter adapter =
                     getAdapterOf(plan.getMappedType().get(i));
 
-            content.add(new Pair(adapter.map(from, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
+            content.add(new Pair(adapter.map(from, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(plan, content);

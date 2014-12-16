@@ -12,7 +12,9 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.storage.mapping.Mapping;
+import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 
 public interface ReducedCreatureTemplate extends ServerTable, Mapping<ObservableValue<?>>
 {
@@ -24,5 +26,5 @@ public interface ReducedCreatureTemplate extends ServerTable, Mapping<Observable
 
     // public abstract FlagProperty<UnitFlags> unit_flags();
 
-    // public abstract EnumProperty<UnitClass> unit_class();
+    public abstract EnumProperty<UnitClass> unit_class();
 }

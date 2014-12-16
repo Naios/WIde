@@ -13,6 +13,5 @@ public class ServerTableImplementation implements ServerTable
     @Override
     public void delete()
     {
-        System.out.println(String.format("DEBUG: %s", "Invoce delete!"));
     }
 }

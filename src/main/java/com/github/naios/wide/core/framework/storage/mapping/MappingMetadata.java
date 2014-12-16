@@ -56,4 +56,13 @@ public class MappingMetadata
     {
         return alias;
     }
+
+    @Override
+    public String toString()
+    {
+        return "MappingMetadata [name=" + name + ", target=" + target
+                + ", description=" + description + ", type=" + type
+                + ", index=" + index + ", key=" + key + ", alias=" + alias
+                + "]";
+    }
 }
