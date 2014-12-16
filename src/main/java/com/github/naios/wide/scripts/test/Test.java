@@ -372,14 +372,15 @@ public class Test extends Script
                 })
             .registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
                 {
+                    @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public EnumProperty<?> map(final ResultSet from,
+                    public EnumProperty map(final ResultSet from,
                             final MappingPlan plan, final int index,
                             final MappingMetadata metaData)
                     {
                         try
                         {
-                            return new EnumProperty<>(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
+                            return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
                         }
                         catch (final SQLException e)
                         {

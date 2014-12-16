@@ -35,8 +35,9 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         this.implementation = implementation;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken<? extends BASE> type,
+    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter)
     {
         adapterHolder.add(type, adapter);

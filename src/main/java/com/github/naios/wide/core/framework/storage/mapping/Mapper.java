@@ -14,6 +14,7 @@ public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 {
     public TO map(FROM from);
 
-    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken<? extends BASE> type,
+    @SuppressWarnings("rawtypes")
+    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter);
 }
