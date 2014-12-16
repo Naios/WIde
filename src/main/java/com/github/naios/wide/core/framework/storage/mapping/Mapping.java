@@ -12,13 +12,15 @@ import java.util.List;
 
 import com.github.naios.wide.core.framework.util.Pair;
 
-public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetadata>>
+public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>
 {
-    public List<Pair<Object, MappingMetadata>> getKeys();
+    public List<Pair<Object, MappingMetaData>> getKeys();
 
-    public List<Pair<BASE, MappingMetadata>> getValues();
+    public List<Object> getKeyObjects();
 
-    public Pair<BASE, MappingMetadata> getEntryByName(String name) throws UnknownMappingEntryException;
+    public List<Pair<BASE, MappingMetaData>> getValues();
+
+    public Pair<BASE, MappingMetaData> getEntryByName(String name) throws UnknownMappingEntryException;
 
     public boolean setDefaultValues();
 }

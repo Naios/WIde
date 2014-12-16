@@ -10,7 +10,7 @@ package com.github.naios.wide.core.framework.storage.mapping;
 
 public interface MappingAdapter<FROM, BASE>
 {
-    public BASE map(FROM from, MappingPlan plan, int index, MappingMetadata metaData);
+    public BASE map(FROM from, MappingPlan plan, int index, MappingMetaData metaData);
 
     public default boolean isPossibleKey()
     {

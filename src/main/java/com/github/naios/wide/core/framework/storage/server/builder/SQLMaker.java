@@ -10,6 +10,7 @@ package com.github.naios.wide.core.framework.storage.server.builder;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -19,9 +20,8 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
-import com.github.naios.wide.core.framework.storage.server.EnumAlias;
-import com.github.naios.wide.core.framework.storage.server.NameAlias;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
@@ -100,9 +100,9 @@ public class SQLMaker
         return NAME_ENCLOSURE + table + NAME_ENCLOSURE;
     }
 
-    protected static String createName(final Field field)
+    protected static String createName(final MappingMetaData metaData)
     {
-        return createName(field.getName());
+        return createName(metaData.getName());
     }
 
     protected static String createVariableFormat(final int varNameMaxLength, final int varValueMaxLength)
@@ -122,9 +122,18 @@ public class SQLMaker
     /**
      * Creates a sql in clause.
      */
-    protected static String createInClause(final Field field, final String query)
+    protected static String createInClause(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+            final MappingMetaData mappingMetaData, final ServerStorageStructure[] structures)
     {
-        return createName(field) + SPACE + IN + "(" + query + ")";
+        final String query = StringUtil.concat(COMMA + SPACE,
+                new CrossIterator<>(Arrays.asList(structures),
+                        (structure) ->
+                {
+                    final ObservableValue<?> value = structure.getValues().get(0).first();
+                    return createValueOfObservableValue(vars, changeHolder, mappingMetaData, value, true);
+                }));
+
+        return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
     }
 
     /**
@@ -135,33 +144,18 @@ public class SQLMaker
         return StringUtil.fillWithSpaces(name, EQUAL, value);
     }
 
-    private static ObservableValue<?> getObservableValueByFieldAndStructure(final Field field, final ServerStorageStructure structure)
-    {
-        final ObservableValue<?> value;
-        try
-        {
-            if (!field.isAccessible())
-                field.setAccessible(true);
-
-            return (ObservableValue<?>)field.get(structure);
-
-        } catch (final Exception e)
-        {
-            return null;
-        }
-    }
-
     /**
      * Creates field equals value clause.
      */
-    protected static String createFieldEqualsValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
-            final Field field, final ObservableValue<?> value, final boolean variablize)
+    protected static String createNameEqualsValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+            final MappingMetaData metaData, final ObservableValue<?> value, final boolean variablize)
     {
-        return createNameEqualsName(createName(field), createValueOfObservableValue(vars, changeHolder, field, value, variablize));
+        return createNameEqualsName(createName(metaData), createValueOfObservableValue(vars, changeHolder, metaData, value, variablize));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder, final Field field, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+            final MappingMetaData mappingMetaData, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
     {
         if (variablize)
         {
@@ -171,9 +165,9 @@ public class SQLMaker
                 return vars.addVariable(customVar, value.getValue());
 
             // Enum alias
-            if (field.isAnnotationPresent(EnumAlias.class))
+            if (mappingMetaData.isAnnotationPresent(EnumAlias.class))
             {
-                final Class<? extends Enum> enumeration = AliasUtil.getEnum(field);
+                final Class<? extends Enum> enumeration = AliasUtil.getEnum(mappingMetaData);
 
                 // Enum Property (Absolute value)
                 if (value instanceof EnumProperty)
@@ -213,7 +207,7 @@ public class SQLMaker
                             builder.append("(");
 
                         if (!oldFlags.isEmpty())
-                            builder.append(createName(field));
+                            builder.append(createName(mappingMetaData));
 
                         if (!removeFlags.isEmpty())
                         {
@@ -241,9 +235,9 @@ public class SQLMaker
                 }
             }
             // Namestorage alias
-            else if ((value instanceof ReadOnlyIntegerProperty) && field.isAnnotationPresent(NameAlias.class))
+            else if ((value instanceof ReadOnlyIntegerProperty) && mappingMetaData.isAnnotationPresent(NameAlias.class))
             {
-                final String name = AliasUtil.getNamstorageEntry(field, (int)value.getValue());
+                final String name = AliasUtil.getNamstorageEntry(mappingMetaData, (int)value.getValue());
                 if (name != null)
                     return vars.addVariable(name, value.getValue());
             }
@@ -285,31 +279,12 @@ public class SQLMaker
         if (structures.length == 0)
             return "";
 
-        final List<Field> keys = structures[0].getPrimaryFields();
+        final List<Pair<Object, MappingMetaData>> keys = structures[0].getKeys();
 
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
         if (keys.size() == 1 && (structures.length > 1))
-        {
-            return createInClause(keys.get(0), StringUtil.concat(COMMA + SPACE,
-                            new Iterator<String>()
-                            {
-                                int i = 0;
-
-                                @Override
-                                public boolean hasNext()
-                                {
-                                    return i < structures.length;
-                                }
-
-                                @Override
-                                public String next()
-                                {
-                                    return createValueOfObservableValue(vars, changeHolder, keys.get(0),
-                                            getObservableValueByFieldAndStructure(keys.get(0), structures[i++]), true);
-                                }
-                            }));
-        }
+            return createInClause(vars, changeHolder, keys.get(0).second(), structures);
         else
         {
             // Yay, nested concat iterator!
@@ -342,7 +317,7 @@ public class SQLMaker
                                 public String next()
                                 {
                                     final Field field = keys.get(keyI++);
-                                    return createFieldEqualsValue(vars, changeHolder, field,
+                                    return createNameEqualsValue(vars, changeHolder, field,
                                             getObservableValueByFieldAndStructure(field, structures[strucI - 1]), true);
                                 }
                             }) + ")";
@@ -360,7 +335,7 @@ public class SQLMaker
         final Set<String> statements = new TreeSet<>();
 
         for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
-            statements.add(createFieldEqualsValue(vars, changeHolder, value.second().getField(), value.first(), true));
+            statements.add(createNameEqualsValue(vars, changeHolder, value.second(), value.first(), true));
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }
@@ -381,15 +356,16 @@ public class SQLMaker
         return addDelemiter(StringUtil.fillWithSpaces(DELETE, FROM, createName(tableName), WHERE, keyPart));
     }
 
-    private static String createInsertHeaderPart(final String tableName, final List<Field> fields)
+    private static String createInsertHeaderPart(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list)
     {
-        return StringUtil.fillWithSpaces(INSERT, INTO, createName(tableName), createInsertDeclareValuesPart(fields), VALUES);
+        return StringUtil.fillWithSpaces(INSERT, INTO, createName(tableName), createInsertDeclareValuesPart(list), VALUES);
     }
 
-    private static String createInsertDeclareValuesPart(final List<Field> fields)
+    private static String createInsertDeclareValuesPart(final List<Pair<ObservableValue<?>, MappingMetaData>> list)
     {
         return "(" + StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<Field, String>(fields, (field) -> createName(field))) + ")";
+                new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(list,
+                        (entry) -> createName(entry.second().getName()))) + ")";
     }
 
     public static String createInsertValuePart(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
@@ -399,13 +375,13 @@ public class SQLMaker
                 new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
                 {
                     return "(" + StringUtil.concat(COMMA + SPACE,
-                            new CrossIterator<Pair<ObservableValue<?>, Field>, String>(structure,
+                            new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(structure,
                                     (entry) -> createValueOfObservableValue(vars, changeHolder, entry.second(), entry.first(), true))) + ")";
                 }));
     }
 
-    public static String createInsertQuery(final String tableName, final List<Field> fields, final String valuePart)
+    public static String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
     {
-        return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, fields), valuePart));
+        return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, list), valuePart));
     }
 }

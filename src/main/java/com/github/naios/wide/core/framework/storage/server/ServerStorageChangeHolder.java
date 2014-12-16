@@ -8,10 +8,8 @@
 
 package com.github.naios.wide.core.framework.storage.server;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +30,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
@@ -224,9 +223,10 @@ public class ServerStorageChangeHolder implements Observable
      */
     protected void create(final ServerStorageStructure storage)
     {
-        for (final Pair<ObservableValue<?>, Field> entry : storage)
-            if (ServerStorageFieldType.isValueWriteable(entry.first()))
-                insert(new ObservableValueStorageInfo(storage, entry.second()), entry.first(), StructureState.STATE_CREATED);
+        for (final Pair<ObservableValue<?>, MappingMetaData> entry : storage)
+            if (!entry.second().isKey())
+                insert(new ObservableValueStorageInfo(storage, entry.second().getName()),
+                        entry.first(), StructureState.STATE_CREATED);
     }
 
     /**
@@ -234,10 +234,10 @@ public class ServerStorageChangeHolder implements Observable
      */
     protected void delete(final ServerStorageStructure storage)
     {
-        for (final Pair<ObservableValue<?>, Field> entry : storage)
-            if (ServerStorageFieldType.isValueWriteable(entry.first()))
+        for (final Pair<ObservableValue<?>, MappingMetaData> entry : storage)
+            if (!entry.second().isKey())
             {
-                final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second());
+                final ObservableValueStorageInfo info = new ObservableValueStorageInfo(storage, entry.second().getName());
                 insert(info, entry.first(), entry.first().getValue());
                 insert(info, entry.first(), StructureState.STATE_DELETED);
             }
@@ -248,7 +248,7 @@ public class ServerStorageChangeHolder implements Observable
      */
     protected void reset(final ServerStorageStructure storage)
     {
-        for (final Pair<ObservableValue<?>, Field> value : storage)
+        for (final Pair<ObservableValue<?>, MappingMetaData> value : storage)
             setDefault(value.first());
     }
 
@@ -277,7 +277,8 @@ public class ServerStorageChangeHolder implements Observable
     public void clear()
     {
         for (final ObservableValueStorageInfo history : reference.keySet())
-            history.getStructure().writeableState().set(StructureState.STATE_IN_SYNC);
+            ((ServerStorageBaseImplementation) history.getStructure())
+                .writeableState().set(StructureState.STATE_IN_SYNC);
 
         reference.clear();
         history.clear();
@@ -297,7 +298,8 @@ public class ServerStorageChangeHolder implements Observable
         }
 
         for (final ObservableValueStorageInfo structure : reference.keySet())
-            structure.getStructure().writeableState().set(StructureState.STATE_IN_SYNC);
+            ((ServerStorageBaseImplementation) structure.getStructure())
+                .writeableState().set(StructureState.STATE_IN_SYNC);
     }
 
     /**
@@ -309,7 +311,8 @@ public class ServerStorageChangeHolder implements Observable
             h.getHistory().remove(StructureState.STATE_IN_SYNC);
 
         for (final ObservableValueStorageInfo structure : reference.keySet())
-            structure.getStructure().writeableState().set(StructureState.STATE_UNKNOWN);
+            ((ServerStorageBaseImplementation) structure.getStructure())
+                .writeableState().set(StructureState.STATE_UNKNOWN);
     }
 
     /**
@@ -550,7 +553,8 @@ public class ServerStorageChangeHolder implements Observable
                 erase(entry.getKey());
         }
 
-        delete.forEach((struc) -> struc.writeableState().set(StructureState.STATE_DELETED));
+        delete.forEach((struc) -> ((ServerStorageBaseImplementation)struc)
+                .writeableState().set(StructureState.STATE_DELETED));
     }
 
     private void set(final ObservableValue<?> observable, final Object value)
@@ -562,7 +566,9 @@ public class ServerStorageChangeHolder implements Observable
         // Prevents recursive calls
         valueHistory.invalidate();
 
-        if (!ServerStorageFieldType.set(observable, value))
+        if (!valueHistory.getReference().getStructure().getOwner()
+                .setValueOfObservable(valueHistory.getReference().getName(),
+                        observable, value))
             valueHistory.validateNext();
     }
 
@@ -574,15 +580,18 @@ public class ServerStorageChangeHolder implements Observable
 
         // Prevents recursive calls
         valueHistory.invalidate();
-        ServerStorageFieldType.setDefault(observable);
+
+        if (!valueHistory.getReference().getStructure().getOwner()
+                .resetValueOfObservable(valueHistory.getReference().getName(), observable))
+            valueHistory.validateNext();
     }
 
     @Override
     public String toString()
     {
-        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, Field>> values = HashMultimap.create();
+        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, String>> values = HashMultimap.create();
         reference.entrySet().forEach((entry) -> values.put(entry.getKey().getStructure(),
-                new Pair<>(entry.getValue(), entry.getKey().getField())));
+                new Pair<>(entry.getValue(), entry.getKey().getName())));
 
         final StringBuilder builder = new StringBuilder();
 
@@ -590,11 +599,11 @@ public class ServerStorageChangeHolder implements Observable
 
         values.asMap().forEach((structure, observables) ->
         {
-            builder.append(String.format("\n%s %s", structure.getOwner().getTableName(), Arrays.toString(structure.getKey().get())));
+            builder.append(String.format("\n%s %s", structure.getOwner().getTableName(), structure.getKeyObjects()));
 
-            for (final Pair<ObservableValue<?>, Field> entry : observables)
+            for (final Pair<ObservableValue<?>, String> entry : observables)
                 builder
-                    .append(String.format("\n\t%-15s: ", entry.second().getName()))
+                    .append(String.format("\n\t%-15s: ", entry.second()))
                     .append(StringUtil.concat(" -> ", getHistory(entry.first())))
                     .append(String.format(" -> Now: %s", new FormatterWrapper(entry.first().getValue())));
         });
@@ -727,7 +736,7 @@ public class ServerStorageChangeHolder implements Observable
     public String getScopeOfStructure(final ServerStorageStructure structure)
     {
         // Try to get 1 scope of any observable value.
-        for (final Pair<ObservableValue<?>, Field> entry : structure)
+        for (final Pair<ObservableValue<?>, MappingMetaData> entry : structure)
         {
             final String scope = getScopeOfObservable(entry.first());
             if (!scope.isEmpty())

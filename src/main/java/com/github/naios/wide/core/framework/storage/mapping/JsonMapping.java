@@ -21,12 +21,14 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
     private final MappingPlan plan;
 
-    private final List<Pair<BASE, MappingMetadata>> values;
+    private final List<Pair<BASE, MappingMetaData>> values;
 
-    private final List<Pair<Object, MappingMetadata>> keys;
+    private final List<Pair<Object, MappingMetaData>> keys;
+
+    private final List<Object> keyObjects;
 
     public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
-            final List<Pair<BASE, MappingMetadata>> values)
+            final List<Pair<BASE, MappingMetaData>> values)
     {
         this.mapper = mapper;
 
@@ -34,7 +36,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
         this.values = Collections.unmodifiableList(values);
 
-        final List<Pair<Object, MappingMetadata>> keys = new ArrayList<>();
+        final List<Pair<Object, MappingMetaData>> keys = new ArrayList<>();
         values.forEach((entry) ->
         {
             Object realValue;
@@ -54,22 +56,33 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         });
 
         this.keys = Collections.unmodifiableList(keys);
+
+        final List<Object> keyObjects = new ArrayList<>();
+        this.keys.forEach(key -> keyObjects.add(key.first()));
+
+        this.keyObjects = Collections.unmodifiableList(keyObjects);
     }
 
     @Override
-    public Iterator<Pair<BASE, MappingMetadata>> iterator()
+    public Iterator<Pair<BASE, MappingMetaData>> iterator()
     {
         return values.iterator();
     }
 
     @Override
-    public List<Pair<Object, MappingMetadata>> getKeys()
+    public List<Pair<Object, MappingMetaData>> getKeys()
     {
         return keys;
     }
 
     @Override
-    public List<Pair<BASE, MappingMetadata>> getValues()
+    public List<Object> getKeyObjects()
+    {
+        return null;
+    }
+
+    @Override
+    public List<Pair<BASE, MappingMetaData>> getValues()
     {
         return values;
     }
@@ -79,23 +92,20 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     {
         boolean success = true;
         for (int i  = 0; i < values.size(); ++i)
-        {
-            final MappingAdapter<FROM, BASE> adapter = mapper.getAdapterOf(plan.getMappedType().get(i));
-            if (!adapter.isPossibleKey())
-                if (!adapter.setDefault(values.get(i).first()))
-                    success = false;
-        }
+            if (!mapper.reset(plan.getNameOfOrdinal(i), values.get(i).first()))
+                success = false;
 
         return success;
     }
 
     @Override
-    public Pair<BASE, MappingMetadata> getEntryByName(final String name)
+    public Pair<BASE, MappingMetaData> getEntryByName(final String name)
     {
         try
         {
             return values.get(plan.getOrdinalOfName(name));
-        } catch (final OrdinalNotFoundException e)
+        }
+        catch (final OrdinalNotFoundException e)
         {
             throw new UnknownMappingEntryException(name);
         }

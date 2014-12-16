@@ -41,7 +41,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     protected Mapping<BASE> newMappingBasedOn(final FROM from)
     {
-        final List<Pair<BASE, MappingMetadata>> content =
+        final List<Pair<BASE, MappingMetaData>> content =
                 new ArrayList<>();
 
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
@@ -60,5 +60,37 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     {
         // TODO
         return null;
+    }
+
+    @Override
+    public boolean set(final String name, final BASE base, final Object value)
+    {
+        MappingAdapter<FROM, BASE> adapter;
+        try
+        {
+            adapter = getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(name)));
+        }
+        catch (final OrdinalNotFoundException e)
+        {
+            throw new Error(e);
+        }
+
+        return adapter.set(base, value);
+    }
+
+    @Override
+    public boolean reset(final String name, final BASE base)
+    {
+        MappingAdapter<FROM, BASE> adapter;
+        try
+        {
+            adapter = getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(name)));
+        }
+        catch (final OrdinalNotFoundException e)
+        {
+            throw new Error(e);
+        }
+
+        return adapter.setDefault(base);
     }
 }

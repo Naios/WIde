@@ -8,20 +8,18 @@
 
 package com.github.naios.wide.core.framework.storage.server.helper;
 
-import java.lang.reflect.Field;
-
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 
 public class ObservableValueStorageInfo
 {
     private final ServerStorageStructure structure;
 
-    private final Field field;
+    private final String name;
 
-    public ObservableValueStorageInfo(final ServerStorageStructure structure, final Field field)
+    public ObservableValueStorageInfo(final ServerStorageStructure structure, final String name)
     {
         this.structure = structure;
-        this.field = field;
+        this.name = name;
     }
 
     public String getTableName()
@@ -34,9 +32,9 @@ public class ObservableValueStorageInfo
         return structure;
     }
 
-    public Field getField()
+    public String getName()
     {
-        return field;
+        return name;
     }
 
     @Override
@@ -49,12 +47,12 @@ public class ObservableValueStorageInfo
         if (getClass() != obj.getClass())
             return false;
         final ObservableValueStorageInfo other = (ObservableValueStorageInfo) obj;
-        if (field == null)
+        if (name == null)
         {
-            if (other.field != null)
+            if (other.name != null)
                 return false;
         }
-        else if (!field.equals(other.field))
+        else if (!name.equals(other.name))
             return false;
         if (structure == null)
         {
@@ -71,7 +69,7 @@ public class ObservableValueStorageInfo
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((field == null) ? 0 : field.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result
                 + ((structure == null) ? 0 : structure.hashCode());
         return result;

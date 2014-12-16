@@ -27,7 +27,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
+import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 import com.github.naios.wide.core.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
@@ -50,7 +50,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public StringProperty map(final ResultSet from, final MappingPlan plan, final int index,
-                            final MappingMetadata metaData)
+                            final MappingMetaData metaData)
                     {
                         try
                         {
@@ -86,7 +86,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public FloatProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
+                            final int index, final MappingMetaData metaData)
                     {
                         try
                         {
@@ -123,7 +123,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public DoubleProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
+                            final int index, final MappingMetaData metaData)
                     {
                         try
                         {
@@ -160,7 +160,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public BooleanProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
+                            final int index, final MappingMetaData metaData)
                     {
                         try
                         {
@@ -197,7 +197,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public IntegerProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
+                            final int index, final MappingMetaData metaData)
                     {
                         try
                         {
@@ -234,7 +234,7 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     @Override
                     public ReadOnlyIntegerProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
+                            final int index, final MappingMetaData metaData)
                     {
                         try
                         {
@@ -265,7 +265,7 @@ public class SQLToPropertyMappingAdapterHolder
                     @Override
                     public EnumProperty map(final ResultSet from,
                             final MappingPlan plan, final int index,
-                            final MappingMetadata metaData)
+                            final MappingMetaData metaData)
                     {
                         try
                         {
@@ -314,7 +314,7 @@ public class SQLToPropertyMappingAdapterHolder
                     @Override
                     public FlagProperty map(final ResultSet from,
                             final MappingPlan plan, final int index,
-                            final MappingMetadata metaData)
+                            final MappingMetaData metaData)
                     {
                         try
                         {

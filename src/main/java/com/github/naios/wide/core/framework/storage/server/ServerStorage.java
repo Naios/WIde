@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.server;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -389,12 +388,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new AccessedDeletedStructureException(storage);
     }
 
-    protected void onValueChanged(final ServerStorageStructure storage, final Field field, final ObservableValue<?> observable, final Object oldValue)
+    protected void onValueChanged(final ServerStorageStructure storage, final String name,
+            final ObservableValue<?> observable, final Object oldValue)
     {
         checkInvalidAccess(storage);
 
         ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_UPDATED);
-        changeHolder.insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
+        changeHolder.insert(new ObservableValueStorageInfo(storage, name), observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
@@ -420,6 +420,17 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
         changeHolder.reset(storage);
+    }
+
+    protected boolean setValueOfObservable(final String name, final ObservableValue<?> observable, final Object value)
+    {
+        return mapper.set(name, observable, value);
+    }
+
+    protected boolean resetValueOfObservable(final String name,
+            final ObservableValue<?> observable)
+    {
+        return mapper.reset(name, observable);
     }
 
     public SQLBuilder createBuilder()

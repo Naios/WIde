@@ -18,6 +18,10 @@ public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 
     public TO createEmpty(List<Object> keys);
 
+    public boolean set(String name, BASE base, Object value);
+
+    public boolean reset(String name, BASE base);
+
     @SuppressWarnings("rawtypes")
     public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter);

@@ -10,7 +10,7 @@ package com.github.naios.wide.core.framework.storage.mapping;
 
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaEntryType;
 
-public class MappingMetadata
+public class MappingMetaData
 {
     private String name, target, description;
 

@@ -24,7 +24,7 @@ public class JsonMappingPlan implements MappingPlan
     private final BiMap<Integer, String> ordinalToName =
             HashBiMap.create();
 
-    private final List<MappingMetadata> data;
+    private final List<MappingMetaData> data;
 
     private final List<TypeToken<?>> mappedType;
 
@@ -35,7 +35,7 @@ public class JsonMappingPlan implements MappingPlan
         // Calculate the plan based on the schema and the target
         // Methods defined in target must be defined in the schema.
         // Non-key Fields defined in the schema must not presented in the target interface
-        final List<MappingMetadata> data = new ArrayList<>();
+        final List<MappingMetaData> data = new ArrayList<>();
         final List<Integer> keys = new ArrayList<>();
         final List<TypeToken<?>> mappedType = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class JsonMappingPlan implements MappingPlan
         int i = 0;
         for (final Method method : methods)
         {
-            final MappingMetadata metaData = getMetaDataInListByName(schema.getEntries(), method.getName());
+            final MappingMetaData metaData = getMetaDataInListByName(schema.getEntries(), method.getName());
             if (metaData == null)
                 throw new RuntimeException(String.format("Structure field %s is not present in the schema!", method.getName()));
 
@@ -78,7 +78,7 @@ public class JsonMappingPlan implements MappingPlan
 
         // Check if all keys are present in the interface
         i = 0;
-        for (final MappingMetadata metaData : schema.getEntries())
+        for (final MappingMetaData metaData : schema.getEntries())
             if (metaData.isKey())
                 ++i;
 
@@ -112,9 +112,9 @@ public class JsonMappingPlan implements MappingPlan
         return true;
     }
 
-    private MappingMetadata getMetaDataInListByName(final List<MappingMetadata> metaData, final String name)
+    private MappingMetaData getMetaDataInListByName(final List<MappingMetaData> metaData, final String name)
     {
-        for (final MappingMetadata data : metaData)
+        for (final MappingMetaData data : metaData)
             if (data.getName().equals(name))
                 return data;
 
@@ -140,7 +140,7 @@ public class JsonMappingPlan implements MappingPlan
     }
 
     @Override
-    public List<MappingMetadata> getMetadata()
+    public List<MappingMetaData> getMetadata()
     {
         return data;
     }
