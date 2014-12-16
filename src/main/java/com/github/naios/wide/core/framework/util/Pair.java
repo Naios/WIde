@@ -49,7 +49,7 @@ public class Pair<F, S>
             return false;
         if (getClass() != obj.getClass())
             return false;
-        @SuppressWarnings({ "rawtypes", "rawtypes" })
+        @SuppressWarnings({ "rawtypes" })
         final Pair other = (Pair) obj;
         if (first == null)
         {

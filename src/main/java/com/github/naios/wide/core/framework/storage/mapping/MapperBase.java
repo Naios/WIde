@@ -40,12 +40,12 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter)
     {
-        adapterHolder.add(type, adapter);
+        adapterHolder.registerAdapter(type, adapter);
         return this;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected MappingAdapter<FROM, ? extends BASE> getAdapterOf(final TypeToken type)
+    protected MappingAdapter<FROM, BASE> getAdapterOf(final TypeToken type)
     {
         return adapterHolder.getAdapterOf(type);
     }

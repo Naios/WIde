@@ -17,20 +17,24 @@ import com.github.naios.wide.core.framework.util.Pair;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
+    private final MapperBase<FROM, TO, BASE> mapper;
+
     private final MappingPlan plan;
 
-    private final List<Pair<? extends BASE, MappingMetadata>> values;
+    private final List<Pair<BASE, MappingMetadata>> values;
 
-    private final List<Pair<? extends BASE, MappingMetadata>> keys;
+    private final List<Pair<BASE, MappingMetadata>> keys;
 
-    public JsonMapping(final MappingPlan plan,
-            final List<Pair<? extends BASE, MappingMetadata>> values)
+    public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
+            final List<Pair<BASE, MappingMetadata>> values)
     {
+        this.mapper = mapper;
+
         this.plan = plan;
 
         this.values = Collections.unmodifiableList(values);
 
-        final List<Pair<? extends BASE, MappingMetadata>> keys = new ArrayList<>();
+        final List<Pair<BASE, MappingMetadata>> keys = new ArrayList<>();
         values.forEach((entry) ->
         {
             if (entry.second().isKey())
@@ -41,31 +45,40 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public Iterator<Pair<? extends BASE, MappingMetadata>> iterator()
+    public Iterator<Pair<BASE, MappingMetadata>> iterator()
     {
         return values.iterator();
     }
 
     @Override
-    public List<Pair<? extends BASE, MappingMetadata>> getKeys()
+    public List<Pair<BASE, MappingMetadata>> getKeys()
     {
         return keys;
     }
 
     @Override
-    public List<Pair<? extends BASE, MappingMetadata>> getValues()
+    public List<Pair<BASE, MappingMetadata>> getValues()
     {
         return values;
     }
 
     @Override
-    public void setDefaultValues()
+    public boolean setDefaultValues()
     {
+        boolean success = true;
+        for (int i  = 0; i < values.size(); ++i)
+        {
+            final MappingAdapter<FROM, BASE> adapter = mapper.getAdapterOf(plan.getMappedType().get(i));
+            if (!adapter.isPossibleKey())
+                if (!adapter.setDefault(values.get(i).first()))
+                    success = false;
+        }
 
+        return success;
     }
 
     @Override
-    public Pair<? extends BASE, MappingMetadata> getEntryByName(final String name)
+    public Pair<BASE, MappingMetadata> getEntryByName(final String name)
     {
         try
         {

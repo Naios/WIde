@@ -27,15 +27,18 @@ public class MappingAdapterHolder<FROM, TO extends Mapping<BASE>, BASE>
     private final Map<TypeToken<? extends BASE>,  MappingAdapter<FROM, ? extends BASE>> adapter =
             new HashMap<>();
 
-    public void add(final TypeToken<? extends BASE> type,
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public MappingAdapterHolder<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter)
     {
         this.adapter.put(type, adapter);
+        return this;
     }
 
-    protected MappingAdapter<FROM, ? extends BASE> getAdapterOf(final TypeToken<? extends BASE> type)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected MappingAdapter<FROM, BASE> getAdapterOf(final TypeToken<? extends BASE> type)
     {
-        final MappingAdapter<FROM, ? extends BASE> adapter = this.adapter.get(type);
+        final MappingAdapter adapter = this.adapter.get(type);
         if (adapter != null)
             return adapter;
         else

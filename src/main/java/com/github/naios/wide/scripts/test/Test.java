@@ -14,10 +14,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
@@ -32,26 +28,20 @@ import com.github.naios.wide.core.framework.storage.client.ClientStorageStructur
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
-import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
-import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
-import com.github.naios.wide.core.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.core.framework.storage.mapping.templates.SQLToPropertyMappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
-import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
-import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.GsonInstance;
 import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 import com.google.common.collect.Iterables;
-import com.google.common.reflect.TypeToken;
 
 /**
  * Simple testing script, use this as playground.
@@ -305,108 +295,11 @@ public class Test extends Script
     {
         final TableSchema mySchema = Iterables.get(SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId()).getTables(), 0);
 
+
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
                 new JsonMapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>>
-                    (mySchema, ReducedCreatureTemplate.class, ServerTableImplementation.class);
-
-        mapper
-            .registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
-                {
-                    @Override
-                    public StringProperty map(final ResultSet from, final MappingPlan plan, final int index,
-                            final MappingMetadata metaData)
-                    {
-                        try
-                        {
-                            return new SimpleStringProperty(from.getString(metaData.getName()));
-                        } catch (final SQLException e)
-                        {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public boolean set(final StringProperty me, final Object value)
-                    {
-                        if (!(value instanceof String))
-                            return false;
-
-                        me.set((String)value);
-                        return true;
-                    }
-
-                    @Override
-                    public boolean setDefault(final StringProperty me)
-                    {
-                        me.set("");
-                        return true;
-                    }
-                })
-            .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
-                {
-                    @Override
-                    public ReadOnlyIntegerProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetadata metaData)
-                    {
-                        try
-                        {
-                            return new SimpleIntegerProperty(from.getInt(metaData.getName()));
-                        } catch (final SQLException e)
-                        {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public boolean set(final ReadOnlyIntegerProperty me, final Object value)
-                    {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean setDefault(final ReadOnlyIntegerProperty value)
-                    {
-                        return false;
-                    }
-                })
-            .registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
-                {
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
-                    @Override
-                    public EnumProperty map(final ResultSet from,
-                            final MappingPlan plan, final int index,
-                            final MappingMetadata metaData)
-                    {
-                        try
-                        {
-                            return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public boolean set(final EnumProperty<?> me, final Object value)
-                    {
-                        final Class<?> enumeration = me.getEnum();
-                        if (!enumeration.isAssignableFrom(value.getClass()))
-                            return false;
-
-                        // TODO
-                        return true;
-                    }
-
-                    @Override
-                    public boolean setDefault(final EnumProperty<?> me)
-                    {
-                        me.set(0);
-                        return true;
-                    }
-                });
+                    (mySchema, SQLToPropertyMappingAdapterHolder.INSTANCE,
+                            ReducedCreatureTemplate.class, ServerTableImplementation.class);
 
         final Connection con = WIde.getDatabase().connection("world").get();
 
@@ -443,7 +336,5 @@ public class Test extends Script
         {
             e.printStackTrace();
         }
-
-        System.out.println(GsonInstance.toJsonExcludeDefaultValues(mySchema));
     }
 }

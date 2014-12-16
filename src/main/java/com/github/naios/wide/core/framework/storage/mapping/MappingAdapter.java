@@ -12,7 +12,18 @@ public interface MappingAdapter<FROM, BASE>
 {
     public BASE map(FROM from, MappingPlan plan, int index, MappingMetadata metaData);
 
-    public boolean set(BASE me, Object value);
+    public default boolean isPossibleKey()
+    {
+        return false;
+    }
 
-    public boolean setDefault(BASE me);
+    public default boolean set(final BASE me, final Object value)
+    {
+        return false;
+    }
+
+    public default boolean setDefault(final BASE me)
+    {
+        return false;
+    }
 }

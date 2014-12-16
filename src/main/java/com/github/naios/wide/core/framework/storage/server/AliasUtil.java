@@ -25,7 +25,7 @@ class NoMetaEnumException extends ServerStorageException
 
 public class AliasUtil
 {
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes" })
     public static Class<? extends Enum> getEnum(final Field field)
     {
         final EnumAlias annotation = field.getAnnotation(EnumAlias.class);

@@ -21,11 +21,11 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
             final Class<?> implementation)
     {
-        this(new MappingAdapterHolder<>(), schema , target, implementation);
+        this(schema, new MappingAdapterHolder<>(), target, implementation);
     }
 
-    public JsonMapper(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
-            final TableSchema schema, final Class<? extends TO> target, final Class<?> implementation)
+    public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
+            final Class<? extends TO> target, final Class<?> implementation)
     {
         super(adapterHolder, target, implementation);
         this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
@@ -35,7 +35,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     protected Mapping<BASE> newMappingBasedOn(final FROM from)
     {
-        final List<Pair<? extends BASE, MappingMetadata>> content =
+        final List<Pair<BASE, MappingMetadata>> content =
                 new ArrayList<>();
 
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
@@ -46,6 +46,6 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             content.add(new Pair(adapter.map(from, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
-        return new JsonMapping<>(plan, content);
+        return new JsonMapping<>(this, plan, content);
     }
 }

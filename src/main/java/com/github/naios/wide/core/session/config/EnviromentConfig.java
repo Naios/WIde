@@ -16,6 +16,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.game.GameBuild;
 
+@SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException
 {
     public MissingDatabaseConfig(final String name)

@@ -13,6 +13,7 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
+@SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
 {
     public MissingActiveEnviroment()
