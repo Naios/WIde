@@ -377,9 +377,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     @SuppressWarnings("unchecked")
     public T create(final ServerStorageKey<T> key)
     {
-        final ServerStorageStructure record = mapper.createEmpty(key.get());
-        onStructureCreated(record);
-        return (T) getAndCache(record);
+        final ServerStorageStructure createdRecord = mapper.createEmpty(key.get()), record;
+
+        record = getAndCache(createdRecord);
+        if (record == createdRecord)
+            onStructureCreated(record);
+
+        return (T) record;
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)

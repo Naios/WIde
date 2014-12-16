@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.server.builder;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -196,6 +195,6 @@ public class SQLScope
         final String valuePart = SQLMaker.createInsertValuePart(vars, changeHolder, structures.getValue());
 
         builder.append(SQLMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
-                Arrays.asList(anyStructure.getAllFieldsFromThis()), valuePart)).append("\n");
+                anyStructure.getValues(), valuePart)).append("\n");
     }
 }
