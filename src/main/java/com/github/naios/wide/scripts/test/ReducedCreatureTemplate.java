@@ -11,13 +11,15 @@ package com.github.naios.wide.scripts.test;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
+import com.github.naios.wide.core.framework.storage.mapping.Mapping;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
-public abstract class ReducedCreatureTemplate implements ServerTable
+public interface ReducedCreatureTemplate extends ServerTable, Mapping<ObservableValue<?>>
 {
     public abstract ReadOnlyIntegerProperty entry();
 

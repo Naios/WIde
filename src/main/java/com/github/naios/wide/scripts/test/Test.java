@@ -11,13 +11,17 @@ package com.github.naios.wide.scripts.test;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
@@ -29,6 +33,8 @@ import com.github.naios.wide.core.framework.storage.client.ClientStorageStructur
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
+import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
+import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
 import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
@@ -41,6 +47,7 @@ import com.github.naios.wide.core.framework.util.RandomUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
+import com.google.common.reflect.TypeToken;
 
 /**
  * Simple testing script, use this as playground.
@@ -336,7 +343,55 @@ public class Test extends Script
     {
         final Schema mySchema = SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId());
 
-        final Mapper<ResultSet, ReducedCreatureTemplate> mapper =
-                new JsonMapper<>(mySchema);
+        final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
+                new JsonMapper<>(mySchema, ReducedCreatureTemplate.class, new Class<?>[] {}, new Class<?>[] { ServerTableImplementation.class});
+
+        mapper.registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
+        {
+            @Override
+            public StringProperty create()
+            {
+                return new SimpleStringProperty();
+            }
+
+            @Override
+            public StringProperty map(final ResultSet from, final MappingMetadata metaData,
+                    final StringProperty base)
+            {
+                return null;
+            }
+
+            @Override
+            public void setDefault(final StringProperty value)
+            {
+                value.set("");
+            }
+        });
+
+        final Connection con = WIde.getDatabase().connection("world").get();
+
+        final ResultSet result;
+        try
+        {
+             result = con.createStatement().executeQuery("select * from creature_template limit 1");
+        } catch (final SQLException e)
+        {
+            e.printStackTrace();
+            return;
+        }
+
+        final ReducedCreatureTemplate template = mapper.map(result);
+
+        template.delete();
+
+        System.out.println(String.format("DEBUG: %s", template.name()));
+
+        try
+        {
+            result.close();
+        } catch (final SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

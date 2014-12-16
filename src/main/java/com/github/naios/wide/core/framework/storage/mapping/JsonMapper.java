@@ -8,20 +8,35 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.List;
+
 import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 
-public class JsonMapper<FROM, TO extends Mapping<?>> extends MapperBase<FROM, TO>
+public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
     private final Schema schema;
 
-    public JsonMapper(final Schema schema)
+    public JsonMapper(final Schema schema, final Class<? extends TO> target,
+            final Class<?>[] interfaces, final Class<?>[] implementations)
     {
+        this(schema, target, Arrays.asList(interfaces), Arrays.asList(implementations));
+    }
+
+    public JsonMapper(final Schema schema, final Class<? extends TO> target,
+            final List<Class<?>> interfaces, final List<Class<?>> implementations)
+    {
+        super(target, interfaces, implementations);
         this.schema = schema;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TO map(final FROM from)
     {
-        return null;
+        final MappingProxy proxy = new MappingProxy();
+
+        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), getInterfacesAsArray(), proxy);
     }
 }

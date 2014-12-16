@@ -10,18 +10,20 @@ package com.github.naios.wide.core.framework.storage.mapping.schema;
 
 import java.util.List;
 
+import com.github.naios.wide.core.framework.storage.mapping.MappingMetadata;
+
 public class TableSchema
 {
     private String name;
 
-    private List<TableEntry> entries;
+    private List<MappingMetadata> entries;
 
     public String getName()
     {
         return name;
     }
 
-    public List<TableEntry> getEntries()
+    public List<MappingMetadata> getEntries()
     {
         return entries;
     }

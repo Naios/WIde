@@ -8,7 +8,11 @@
 
 package com.github.naios.wide.scripts.test;
 
-public interface ServerTable
+public class ServerTableImplementation implements ServerTable
 {
-    void delete();
+    @Override
+    public void delete()
+    {
+        System.out.println(String.format("DEBUG: %s", "Invoce delete!"));
+    }
 }
