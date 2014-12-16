@@ -1,33 +1,40 @@
 {
-  "name": "",
-  "storages": [
-   {
-  	"name": "creature_template",
-  	"entrys": [
-  	 {
-		"name": "entry",
-		"target": "entry",
-		"description": "creature enty (primary key).",
-		"type": "INTEGER",
-		"index": 0,
-  		"key": true,
-  		"alias": "creature_name"
-	 },
-	 {
-		"name": "name",
-		"type": "STRING"
-	 },
-	 {
-		"name": "unit_flags",
-		"type": "FLAG",
-  		"alias": "UnitFlags"
-	 },
-	 {
-		"name": "unit_class",
-		"type": "ENUM",
-  		"alias": "UnitClass"
-	 }
-  	]
-   }
+  "name": "6.x TC database schema",
+  "description": "a simple reduced schema for testing purposes.",
+  "tables": [
+    {
+      "name": "creature_template",
+      "entries": [
+        {
+          "name": "entry",
+          "target": "entry",
+          "description": "creature entry (primary key).",
+          "type": "UINT",
+          "index": 0,
+          "key": true,
+          "alias": "creature_name"
+        },
+        {
+          "name": "name",
+          "type": "STRING",
+          "index": 0,
+          "key": false
+        },
+        {
+          "name": "unit_flags",
+          "type": "FLAG",
+          "index": 0,
+          "key": false,
+          "alias": "UnitFlags"
+        },
+        {
+          "name": "unit_class",
+          "type": "ENUM",
+          "index": 0,
+          "key": false,
+          "alias": "UnitClass"
+        }
+      ]
+    }
   ]
 }

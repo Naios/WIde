@@ -62,21 +62,21 @@ public class EnviromentConfig
         return databases;
     }
 
-    public boolean isDatabasePresent(final String name)
+    public boolean isDatabasePresent(final String id)
     {
         for (final DatabaseConfig db : databases)
-            if (db.id().get().equals(name))
+            if (db.id().get().equals(id))
                 return true;
 
         return false;
     }
 
-    public DatabaseConfig getDatabaseConfig(final String name)
+    public DatabaseConfig getDatabaseConfig(final String id)
     {
         for (final DatabaseConfig db : databases)
-            if (db.id().get().equals(name))
+            if (db.id().get().equals(id))
                 return db;
 
-        throw new MissingDatabaseConfig(name);
+        throw new MissingDatabaseConfig(id);
     }
 }
