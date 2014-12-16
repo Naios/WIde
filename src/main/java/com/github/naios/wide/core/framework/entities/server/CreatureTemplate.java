@@ -20,13 +20,13 @@ import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
 public interface CreatureTemplate extends ServerStorageStructure
 {
-    public abstract ReadOnlyIntegerProperty entry();
+    public ReadOnlyIntegerProperty entry();
 
-    public abstract StringProperty name();
+    public StringProperty name();
 
-    public abstract IntegerProperty kill_credit1();
+    public IntegerProperty kill_credit1();
 
-    public abstract FlagProperty<UnitFlags> unit_flags();
+    public FlagProperty<UnitFlags> unit_flags();
 
-    public abstract EnumProperty<UnitClass> unit_class();
+    public EnumProperty<UnitClass> unit_class();
 }

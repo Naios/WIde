@@ -14,8 +14,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import javafx.beans.value.ObservableValue;
-
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
@@ -26,16 +24,12 @@ import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
-import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
-import com.github.naios.wide.core.framework.storage.mapping.templates.SQLToPropertyMappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
-import com.github.naios.wide.core.framework.storage.server.ServerStorageBaseImplementation;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
@@ -297,11 +291,12 @@ public class Test extends Script
         final TableSchema mySchema = Iterables.get(SchemaCache.INSTANCE.getSchemaOfActiveEnviroment(DatabaseType.WORLD.getId()).getTables(), 0);
 
 
+        /*
         final Mapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> mapper =
                 new JsonMapper<ResultSet, ReducedCreatureTemplate, ObservableValue<?>>
                     (mySchema, SQLToPropertyMappingAdapterHolder.INSTANCE,
                             ReducedCreatureTemplate.class, ServerStorageBaseImplementation.class);
-
+*/
         final Connection con = WIde.getDatabase().connection("world").get();
 
         final ResultSet result;

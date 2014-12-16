@@ -17,6 +17,14 @@ public interface MappingAdapter<FROM, BASE>
         return false;
     }
 
+    /**
+     * If you use the type as key, return its real value for hashing
+     */
+    public default Object getRealValue(final BASE me)
+    {
+        return me;
+    }
+
     public default boolean set(final BASE me, final Object value)
     {
         return false;

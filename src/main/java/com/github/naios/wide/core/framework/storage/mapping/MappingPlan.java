@@ -18,6 +18,8 @@ public interface MappingPlan
 
     public List<Integer> getKeys();
 
+    public int getNumberOfKeys();
+
     public List<MappingMetadata> getMetadata();
 
     public String getNameOfOrdinal(final int ordinal);

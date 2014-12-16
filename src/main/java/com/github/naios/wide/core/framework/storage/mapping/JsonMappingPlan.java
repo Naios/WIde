@@ -134,6 +134,12 @@ public class JsonMappingPlan implements MappingPlan
     }
 
     @Override
+    public int getNumberOfKeys()
+    {
+        return keys.size();
+    }
+
+    @Override
     public List<MappingMetadata> getMetadata()
     {
         return data;

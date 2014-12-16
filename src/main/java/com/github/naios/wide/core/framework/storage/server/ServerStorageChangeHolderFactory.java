@@ -11,20 +11,18 @@ package com.github.naios.wide.core.framework.storage.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.naios.wide.core.session.database.DatabaseType;
-
 public class ServerStorageChangeHolderFactory
 {
-    private static final Map<DatabaseType, ServerStorageChangeHolder> INSTANCES =
+    private static final Map<String, ServerStorageChangeHolder> INSTANCES =
             new HashMap<>();
 
-    public static ServerStorageChangeHolder instance(final DatabaseType databaseType)
+    public static ServerStorageChangeHolder instance(final String databaseId)
     {
-        ServerStorageChangeHolder instance = INSTANCES.get(databaseType);
+        ServerStorageChangeHolder instance = INSTANCES.get(databaseId);
         if (instance == null)
         {
-            instance = new ServerStorageChangeHolder(databaseType);
-            INSTANCES.put(databaseType, instance);
+            instance = new ServerStorageChangeHolder(databaseId);
+            INSTANCES.put(databaseId, instance);
         }
         return instance;
     }

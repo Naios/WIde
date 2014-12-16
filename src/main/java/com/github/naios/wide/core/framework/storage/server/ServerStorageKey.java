@@ -8,27 +8,37 @@
 
 package com.github.naios.wide.core.framework.storage.server;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javafx.beans.value.ObservableValue;
 
 public class ServerStorageKey<T extends ServerStorageStructure>
 {
-    private final Object[] keys;
+    private final List<Object> keys;
 
-    public ServerStorageKey(final Object... keys)
+    public ServerStorageKey(final Object... keyArray)
     {
-        this.keys = new Object[keys.length];
-        for (int i = 0; i < keys.length; ++i)
-            if (keys[i] instanceof ObservableValue<?>)
-                this.keys[i] = ((ObservableValue<?>)keys[i]).getValue();
+        final List<Object> keys = new ArrayList<>(keyArray.length);
+
+        for (int i = 0; i < keyArray.length; ++i)
+            if (keyArray[i] instanceof ObservableValue<?>)
+                keys.set(i, ((ObservableValue<?>)keyArray[i]).getValue());
             else
-                this.keys[i] = keys[i];
+                keys.set(i, keyArray[i]);
+
+        this.keys = Collections.unmodifiableList(keys);
     }
 
-    public Object[] get()
+    public List<Object> get()
     {
         return keys;
+    }
+
+    public Object get(final int index)
+    {
+        return keys.get(index);
     }
 
     @Override
@@ -42,9 +52,8 @@ public class ServerStorageKey<T extends ServerStorageStructure>
             return false;
         @SuppressWarnings("rawtypes")
         final ServerStorageKey other = (ServerStorageKey) obj;
-        if (!Arrays.equals(keys, other.keys))
-            return false;
-        return true;
+
+        return keys.equals(other.get());
     }
 
     @Override
@@ -52,7 +61,7 @@ public class ServerStorageKey<T extends ServerStorageStructure>
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode(keys);
+        result = prime * result + keys.hashCode();
         return result;
     }
 }

@@ -14,7 +14,7 @@ import com.github.naios.wide.core.framework.util.Pair;
 
 public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetadata>>
 {
-    public List<Pair<BASE, MappingMetadata>> getKeys();
+    public List<Pair<Object, MappingMetadata>> getKeys();
 
     public List<Pair<BASE, MappingMetadata>> getValues();
 

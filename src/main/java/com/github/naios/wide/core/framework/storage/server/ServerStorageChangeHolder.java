@@ -40,7 +40,6 @@ import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.IdentitySet;
 import com.github.naios.wide.core.framework.util.Pair;
 import com.github.naios.wide.core.framework.util.StringUtil;
-import com.github.naios.wide.core.session.database.DatabaseType;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -84,9 +83,9 @@ public class ServerStorageChangeHolder implements Observable
     private final Map<String, String> scopeComments =
             new HashMap<>();
 
-    protected ServerStorageChangeHolder(final DatabaseType databaseType)
+    protected ServerStorageChangeHolder(final String databaseId)
     {
-        this.connection.bind(WIde.getDatabase().connection(databaseType.getId()));
+        this.connection.bind(WIde.getDatabase().connection(databaseId));
         this.connection.addListener(new ChangeListener<Connection>()
         {
             @Override

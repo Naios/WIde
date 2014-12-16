@@ -23,7 +23,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
     private final List<Pair<BASE, MappingMetadata>> values;
 
-    private final List<Pair<BASE, MappingMetadata>> keys;
+    private final List<Pair<Object, MappingMetadata>> keys;
 
     public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
             final List<Pair<BASE, MappingMetadata>> values)
@@ -34,11 +34,23 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
         this.values = Collections.unmodifiableList(values);
 
-        final List<Pair<BASE, MappingMetadata>> keys = new ArrayList<>();
+        final List<Pair<Object, MappingMetadata>> keys = new ArrayList<>();
         values.forEach((entry) ->
         {
+            Object realValue;
+            try
+            {
+                realValue = mapper.getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(entry.second().getName())))
+                        .getRealValue(entry.first());
+            }
+            catch (final Exception e)
+            {
+                // Should never happen
+                throw new Error(e);
+            }
+
             if (entry.second().isKey())
-                keys.add(entry);
+                keys.add(new Pair<>(realValue, entry.second()));
         });
 
         this.keys = Collections.unmodifiableList(keys);
@@ -51,7 +63,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public List<Pair<BASE, MappingMetadata>> getKeys()
+    public List<Pair<Object, MappingMetadata>> getKeys()
     {
         return keys;
     }

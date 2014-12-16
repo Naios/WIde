@@ -31,6 +31,12 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
     }
 
+    @Override
+    public MappingPlan getPlan()
+    {
+        return plan;
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Mapping<BASE> newMappingBasedOn(final FROM from)
@@ -47,5 +53,12 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         }
 
         return new JsonMapping<>(this, plan, content);
+    }
+
+    @Override
+    protected Mapping<BASE> newMappingBasedOn(final List<Object> keys)
+    {
+        // TODO
+        return null;
     }
 }

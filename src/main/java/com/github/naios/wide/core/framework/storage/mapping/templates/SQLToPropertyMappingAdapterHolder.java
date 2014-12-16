@@ -33,16 +33,15 @@ import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.scripts.test.ReducedCreatureTemplate;
 import com.google.common.reflect.TypeToken;
 
 public class SQLToPropertyMappingAdapterHolder
 {
-    public final static MappingAdapterHolder<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> INSTANCE = build();
+    public final static MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> INSTANCE = build();
 
-    private static MappingAdapterHolder<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> build()
+    private static MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> build()
     {
-        final MappingAdapterHolder<ResultSet, ReducedCreatureTemplate, ObservableValue<?>> holder =
+        final MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> holder =
                 new MappingAdapterHolder<>();
 
         holder
@@ -251,6 +250,12 @@ public class SQLToPropertyMappingAdapterHolder
                     public boolean isPossibleKey()
                     {
                         return true;
+                    }
+
+                    @Override
+                    public Object getRealValue(final ReadOnlyIntegerProperty me)
+                    {
+                        return me.getValue();
                     }
                 })
             // Enum Property

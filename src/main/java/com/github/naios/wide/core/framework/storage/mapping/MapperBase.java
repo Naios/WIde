@@ -9,6 +9,7 @@
 package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 import com.google.common.reflect.TypeToken;
 
@@ -67,18 +68,30 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         }
     }
 
-    protected abstract Mapping<BASE> newMappingBasedOn(final FROM from);
-
     protected Class<? extends TO> getTarget()
     {
         return target;
     }
 
-    @SuppressWarnings("unchecked")
+    protected abstract Mapping<BASE> newMappingBasedOn(final FROM from);
+
+    protected abstract Mapping<BASE> newMappingBasedOn(List<Object> keys);
+
     @Override
     public TO map(final FROM from)
     {
-        final Mapping<BASE> mapping = newMappingBasedOn(from);
+        return createNewBasedOnMapping(newMappingBasedOn(from));
+    }
+
+    @Override
+    public TO createEmpty(final List<Object> keys)
+    {
+        return createNewBasedOnMapping(newMappingBasedOn(keys));
+    }
+
+    @SuppressWarnings("unchecked")
+    private TO createNewBasedOnMapping(final Mapping<BASE> mapping)
+    {
         final MappingProxy proxy = new MappingProxy(newImplementation(), mapping);
 
         return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {target}, proxy);

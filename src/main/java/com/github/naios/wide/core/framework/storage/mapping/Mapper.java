@@ -8,13 +8,19 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
+import java.util.List;
+
 import com.google.common.reflect.TypeToken;
 
 public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 {
     public TO map(FROM from);
 
+    public TO createEmpty(List<Object> keys);
+
     @SuppressWarnings("rawtypes")
     public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
             final MappingAdapter<FROM, ? extends BASE> adapter);
+
+    public MappingPlan getPlan();
 }

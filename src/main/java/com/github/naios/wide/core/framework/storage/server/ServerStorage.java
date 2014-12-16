@@ -25,11 +25,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.WIde;
-import com.github.naios.wide.core.framework.storage.StorageStructure;
+import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
+import com.github.naios.wide.core.framework.storage.mapping.Mapper;
+import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
+import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
-import com.github.naios.wide.core.session.database.DatabaseType;
+import com.github.naios.wide.core.framework.util.CrossIterator;
+import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
 import com.google.common.cache.Cache;
@@ -120,17 +124,17 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 {
     private final Class<? extends ServerStorageStructure> type;
 
-    private final List<Field> keys;
-
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
-    private final ObjectProperty<Connection> connection
-        = new SimpleObjectProperty<Connection>();
+    private final ObjectProperty<Connection> connection =
+            new SimpleObjectProperty<Connection>();
 
-    private final DatabaseType databaseType;
+    private final String databaseId;
 
     private final String statementFormat, selectLowPart, tableName;
+
+    private final Mapper<ResultSet, T, ObservableValue<?>> mapper;
 
     private final ServerStorageChangeHolder changeHolder;
 
@@ -138,42 +142,15 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private Statement statement;
 
-    public ServerStorage(final Class<? extends ServerStorageStructure> type) throws ServerStorageException
-    {
-        this (type, ServerStorageStructure.getTableTypeFromStructure(type), ServerStorageStructure.getTableNameFromStructure(type));
-    }
-
-    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType databaseType) throws ServerStorageException
-    {
-        this (type, databaseType, ServerStorageStructure.getTableNameFromStructure(type));
-    }
-
-    public ServerStorage(final Class<? extends ServerStorageStructure> type, final DatabaseType databaseType, final String tableName) throws ServerStorageException
+    public ServerStorage(final Class<? extends T> type, final String databaseId, final String tableName) throws ServerStorageException
     {
         this.type = type;
-        this.databaseType = databaseType;
+        this.databaseId = databaseId;
         this.tableName = tableName;
 
-        // Store keys into this.keys
-        keys = ServerStorageStructure.getPrimaryFields(type);
+        final Schema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment().getDatabaseConfig(databaseId).schema().get());
 
-        if (keys.isEmpty())
-            throw new NoKeyException(type);
-
-        for (final Field field : keys)
-        {
-            final ServerStorageFieldType fieldType = ServerStorageFieldType.getType(field);
-            if (fieldType == null)
-                throw new IllegalTypeException(field.getType());
-
-            if (!fieldType.isPossibleKey())
-                throw new IllegalTypeAsKeyException(field.getType());
-        }
-
-        for (final Field field : getAllAnnotatedFields())
-            if (!ObservableValue.class.isAssignableFrom(field.getType()))
-                throw new WrongDatabaseStructureException
-                    (type,  String.format("Field %s isn't an ObservableValue!", field.getName()));
+        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema.getSchemaOf(tableName), type, ServerStorageBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -189,9 +166,9 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         });
 
-        this.connection.bind(WIde.getDatabase().connection(databaseType.getId()));
+        this.connection.bind(WIde.getDatabase().connection(databaseId));
 
-        this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseType);
+        this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }
 
     public String getTableName()
@@ -199,9 +176,9 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return tableName;
     }
 
-    public DatabaseType getDatabaseType()
+    public String getDatabaseId()
     {
-        return databaseType;
+        return databaseId;
     }
 
     public ServerStorageChangeHolder getChangeHolder()
@@ -223,39 +200,15 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private String createSelectFormat()
     {
-        final StringBuilder builder = new StringBuilder("SELECT ");
-        for (final Field field : getAllAnnotatedFields())
-        {
-            builder
-                .append(ServerStorageStructure.getNameOfField(field))
-                .append(", ");
-        }
-
-        builder.setLength(builder.length() - 2);
-        builder.trimToSize();
-
-        builder
-            .append(" FROM ")
-            .append(tableName)
-            .append(" WHERE ");
-
-        return builder.toString();
+        return StringUtil.fillWithSpaces("SELECT",
+                StringUtil.concat(", ", new CrossIterator<>(mapper.getPlan().getMetadata(), metadata -> metadata.getName())),
+                    "FROM", tableName, "WHERE ");
     }
 
     private String createStatementFormat()
     {
-        final StringBuilder builder = new StringBuilder(selectLowPart);
-        for (final Field field : keys)
-        {
-            builder
-                .append(ServerStorageStructure.getNameOfField(field))
-                .append("=?, ");
-        }
-
-        builder.setLength(builder.length() - 2);
-        builder.trimToSize();
-
-        return builder.toString();
+        return selectLowPart +
+                StringUtil.concat(" ", new CrossIterator<>(mapper.getPlan().getMetadata(), metadata -> metadata.getName() + "=?"));
     }
 
     private void initStatements()
@@ -337,8 +290,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkOpen();
 
-        if (key.get().length != keys.size())
-            throw new BadKeyException(key.get().length, keys.size());
+        if (key.get().size() != mapper.getPlan().getNumberOfKeys())
+            throw new BadKeyException(key.get().size(), mapper.getPlan().getNumberOfKeys());
 
         return (T) getAndCache(newStructureFromResult(createResultSetFromKey(key)));
     }
@@ -379,10 +332,10 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         if (preparedStatement == null)
             throw new DatabaseConnectionException("Statement is null");
 
-        for (int i = 0; i < key.get().length; ++i)
+        for (int i = 0; i < key.get().size(); ++i)
                 try
                 {
-                    preparedStatement.setString(i + 1, key.get()[i].toString());
+                    preparedStatement.setString(i + 1, key.get(i).toString());
 
                 } catch (final SQLException e)
                 {
@@ -392,9 +345,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         final ResultSet result;
         try
         {
-            if (WIde.getEnviroment().isTraceEnabled())
-                System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
-
             result = preparedStatement.executeQuery();
         }
         catch (final Exception e)
@@ -417,70 +367,25 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new WrongDatabaseStructureException(type, e.getMessage());
         }
 
-        final ServerStorageStructure record;
-        try
-        {
-            record = type.getConstructor(getClass()).newInstance(this);
-        }
-        catch (final Exception e)
-        {
-            throw new BadMappingException(type);
-        }
+        if (WIde.getEnviroment().isTraceEnabled())
+            System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
 
-        try
-        {
-            for (final Field field : record.getAllFieldsFromThis())
-                ServerStorageFieldType.doMapFieldToRecordFromResult(field, record, result);
-        }
-        catch (final Exception e)
-        {
-            throw new WrongDatabaseStructureException(type, e.getMessage());
-        }
-
+        final ServerStorageStructure record = mapper.map(result);
+        onStructureCreated(record);
         return record;
     }
 
     @SuppressWarnings("unchecked")
     public T create(final ServerStorageKey<T> key)
     {
-        final ServerStorageStructure record;
-        try
-        {
-            record = type.getConstructor(getClass()).newInstance(this);
-        }
-        catch (final Exception e)
-        {
-            throw new BadMappingException(type);
-        }
-
-        final List<Field> primaryFields = record.getPrimaryFields();
-        assert primaryFields.size() == key.get().length;
-
-        for (final Field field : record.getAllFieldsFromThis())
-        {
-            if (primaryFields.contains(field))
-            {
-                final int idx = primaryFields.indexOf(field);
-                ServerStorageFieldType.doMapFieldToRecordFromObject(field, record, key.get()[idx]);
-            }
-            else
-            {
-                ServerStorageFieldType.doMapFieldToRecordFromObject(field, record, null);
-            }
-        }
-
+        final ServerStorageStructure record = mapper.createEmpty(key.get());
         onStructureCreated(record);
-        return (T) record;
-    }
-
-    private Field[] getAllAnnotatedFields()
-    {
-        return StorageStructure.getAllFields(type, ServerStorageEntry.class);
+        return (T) getAndCache(record);
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)
     {
-        if (!storage.writeableState().get().isAlive())
+        if (!((ServerStorageBaseImplementation)storage).writeableState().get().isAlive())
             throw new AccessedDeletedStructureException(storage);
     }
 
@@ -488,7 +393,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        storage.writeableState().set(StructureState.STATE_UPDATED);
+        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_UPDATED);
         changeHolder.insert(new ObservableValueStorageInfo(storage, field), observable, oldValue);
     }
 
@@ -496,7 +401,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        storage.writeableState().set(StructureState.STATE_CREATED);
+        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_CREATED);
         changeHolder.create(storage);
     }
 
@@ -507,7 +412,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         storage.reset();
 
-        storage.writeableState().set(StructureState.STATE_DELETED);
+        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_DELETED);
     }
 
 
@@ -542,7 +447,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         final int prime = 31;
         int result = 1;
         result = prime * result
-                + ((databaseType == null) ? 0 : databaseType.hashCode());
+                + ((databaseId == null) ? 0 : databaseId.hashCode());
         result = prime * result
                 + ((tableName == null) ? 0 : tableName.hashCode());
         return result;
@@ -559,7 +464,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             return false;
         @SuppressWarnings("rawtypes")
         final ServerStorage other = (ServerStorage) obj;
-        if (databaseType != other.databaseType)
+        if (databaseId != other.databaseId)
             return false;
         if (tableName == null)
         {
