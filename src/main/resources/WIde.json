@@ -75,7 +75,7 @@
       "name": "6.x",
       "build": "V6_0_3_19103",
       "client_storages": {
-        "path": "data/dbc",
+        "path": "data/6.x/dbc",
         "schema": "schematics/6.x/dbc.json"
       },
       "databases": [
