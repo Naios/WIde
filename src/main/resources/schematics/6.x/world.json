@@ -1,0 +1,33 @@
+{
+  "name": "",
+  "storages": [
+   {
+  	"name": "creature_template",
+  	"entrys": [
+  	 {
+		"name": "entry",
+		"target": "entry",
+		"description": "creature enty (primary key).",
+		"type": "INTEGER",
+		"index": 0,
+  		"key": true,
+  		"alias": "creature_name"
+	 },
+	 {
+		"name": "name",
+		"type": "STRING"
+	 },
+	 {
+		"name": "unit_flags",
+		"type": "FLAG",
+  		"alias": "UnitFlags"
+	 },
+	 {
+		"name": "unit_class",
+		"type": "ENUM",
+  		"alias": "UnitClass"
+	 }
+  	]
+   }
+  ]
+}
