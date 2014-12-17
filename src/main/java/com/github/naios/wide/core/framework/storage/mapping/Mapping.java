@@ -23,6 +23,4 @@ public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>
     public Pair<BASE, MappingMetaData> getEntryByName(String name) throws UnknownMappingEntryException;
 
     public Pair<BASE, MappingMetaData> getEntryByTarget(String name) throws UnknownMappingEntryException;
-
-    public boolean setDefaultValues();
 }

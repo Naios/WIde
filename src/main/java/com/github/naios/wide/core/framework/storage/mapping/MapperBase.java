@@ -22,11 +22,12 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
 
     private final Class<?>[] interfaces;
 
-    private final Class<?> implementation;
+    @SuppressWarnings("rawtypes")
+    private final Class<? extends MappingImplementation> implementation;
 
     public MapperBase(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final Class<? extends TO> target, final List<Class<?>> interfaces,
-                final Class<?> implementation)
+                @SuppressWarnings("rawtypes") final Class<? extends MappingImplementation> implementation)
     {
         this.adapterHolder = adapterHolder;
 
@@ -70,7 +71,8 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         return implementation;
     }
 
-    private Object newImplementation()
+    @SuppressWarnings("unchecked")
+    private MappingImplementation<TO> newImplementation()
     {
         try
         {
@@ -78,7 +80,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         }
         catch (final Exception e)
         {
-            return new Error(e.getMessage());
+            throw new Error(e.getMessage());
         }
     }
 
@@ -101,8 +103,13 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     @SuppressWarnings("unchecked")
     private TO createNewBasedOnMapping(final Mapping<BASE> mapping)
     {
-        final MappingProxy proxy = new MappingProxy(newImplementation(), mapping);
+        final MappingImplementation<TO> implementation = newImplementation();
 
-        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
+        final MappingProxy proxy = new MappingProxy(implementation, mapping);
+
+        final TO to = (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
+
+        implementation.callback(to);
+        return to;
     }
 }

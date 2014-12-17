@@ -12,12 +12,22 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import com.github.naios.wide.core.framework.storage.mapping.MappingImplementation;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public class ServerStorageBaseImplementation implements ServerStoragePrivateBase
+public class ServerStorageBaseImplementation
+    implements ServerStoragePrivateBase, MappingImplementation<ServerStorageStructure>
 {
     private final ObjectProperty<StructureState> state =
             new SimpleObjectProperty<>(StructureState.STATE_UNKNOWN);
+
+    private ServerStorageStructure structure;
+
+    @Override
+    public void callback(final ServerStorageStructure structure)
+    {
+        this.structure = structure;
+    }
 
     private ServerStorage<?> owner;
 
@@ -48,12 +58,12 @@ public class ServerStorageBaseImplementation implements ServerStoragePrivateBase
     @Override
     public void delete()
     {
-        // TODO
+        getOwner().onStructureDeleted(structure);
     }
 
     @Override
     public void reset()
     {
-        // TODO
+        getOwner().onStructureReset(structure);
     }
 }

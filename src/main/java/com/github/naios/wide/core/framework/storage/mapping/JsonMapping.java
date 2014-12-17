@@ -96,17 +96,6 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public boolean setDefaultValues()
-    {
-        boolean success = true;
-        for (int i  = 0; i < values.size(); ++i)
-            if (!mapper.reset(plan.getNameOfOrdinal(i), values.get(i).first()))
-                success = false;
-
-        return success;
-    }
-
-    @Override
     public Pair<BASE, MappingMetaData> getEntryByName(final String name)
     {
         try
