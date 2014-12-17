@@ -48,7 +48,7 @@ public class MappingProxy implements InvocationHandler
             }
         }
 
-        final Pair<?, MappingMetaData> result = mapping.getEntryByName(method.getName());
+        final Pair<?, MappingMetaData> result = mapping.getEntryByTarget(method.getName());
         if (result != null)
             return result.first();
         else

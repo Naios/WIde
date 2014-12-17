@@ -13,14 +13,14 @@ import java.lang.ref.WeakReference;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-public class ServerStoragedChangeListener implements ChangeListener<Object>
+public class ServerStorageChangeListener implements ChangeListener<Object>
 {
     // TODO Find out whether gc cleans up the cached ServerStorageStructure correctly
     private final WeakReference<ServerStorageStructure> record;
 
     private final String name;
 
-    protected ServerStoragedChangeListener(final ServerStorageStructure record, final String name)
+    protected ServerStorageChangeListener(final ServerStorageStructure record, final String name)
     {
         this.record = new WeakReference<ServerStorageStructure>(record);
         this.name = name;

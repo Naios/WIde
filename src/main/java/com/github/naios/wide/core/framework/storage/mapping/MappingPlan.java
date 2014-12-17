@@ -16,7 +16,7 @@ public interface MappingPlan
 {
     public int getNumberOfElements();
 
-    public List<Integer> getKeys();
+    public List<MappingMetaData> getKeys();
 
     public int getNumberOfKeys();
 
@@ -26,5 +26,7 @@ public interface MappingPlan
 
     public int getOrdinalOfName(final String name) throws OrdinalNotFoundException;
 
-    public List<TypeToken<?>> getMappedType();
+    public int getOrdinalOfTarget(final String name) throws OrdinalNotFoundException;
+
+    public List<TypeToken<?>> getMappedTypes();
 }

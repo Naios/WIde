@@ -47,7 +47,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
             final MappingAdapter adapter =
-                    getAdapterOf(plan.getMappedType().get(i));
+                    getAdapterOf(plan.getMappedTypes().get(i));
 
             content.add(new Pair(adapter.map(from, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
@@ -68,7 +68,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         MappingAdapter<FROM, BASE> adapter;
         try
         {
-            adapter = getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(name)));
+            adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));
         }
         catch (final OrdinalNotFoundException e)
         {
@@ -84,7 +84,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         MappingAdapter<FROM, BASE> adapter;
         try
         {
-            adapter = getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(name)));
+            adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));
         }
         catch (final OrdinalNotFoundException e)
         {

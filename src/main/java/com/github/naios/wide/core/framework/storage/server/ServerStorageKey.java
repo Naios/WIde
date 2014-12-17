@@ -24,9 +24,9 @@ public class ServerStorageKey<T extends ServerStorageStructure>
 
         for (int i = 0; i < keyArray.length; ++i)
             if (keyArray[i] instanceof ObservableValue<?>)
-                keys.set(i, ((ObservableValue<?>)keyArray[i]).getValue());
+                keys.add(((ObservableValue<?>)keyArray[i]).getValue());
             else
-                keys.set(i, keyArray[i]);
+                keys.add(keyArray[i]);
 
         this.keys = Collections.unmodifiableList(keys);
     }

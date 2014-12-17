@@ -44,8 +44,11 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
             Object realValue;
             try
             {
-                realValue = mapper.getAdapterOf(plan.getMappedType().get(plan.getOrdinalOfName(entry.second().getName())))
-                        .getRealValue(entry.first());
+                realValue = mapper.getAdapterOf(
+                                plan.getMappedTypes().get(
+                                        plan.getOrdinalOfName(
+                                                entry.second().getName())))
+                                    .getRealValue(entry.first());
             }
             catch (final Exception e)
             {
@@ -105,6 +108,20 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         try
         {
             return values.get(plan.getOrdinalOfName(name));
+        }
+        catch (final OrdinalNotFoundException e)
+        {
+            throw new UnknownMappingEntryException(name);
+        }
+    }
+
+    @Override
+    public Pair<BASE, MappingMetaData> getEntryByTarget(final String name)
+            throws UnknownMappingEntryException
+    {
+        try
+        {
+            return values.get(plan.getOrdinalOfTarget(name));
         }
         catch (final OrdinalNotFoundException e)
         {

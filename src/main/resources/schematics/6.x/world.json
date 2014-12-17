@@ -12,7 +12,12 @@
           "alias": "creature_name"
         },
         {
-          "name": "name",
+          "name": "KillCredit1",
+          "target": "kill_credit1",
+          "alias": "creature_name"
+        },
+        {
+          "name": "name"
         },
         {
           "name": "unit_flags",

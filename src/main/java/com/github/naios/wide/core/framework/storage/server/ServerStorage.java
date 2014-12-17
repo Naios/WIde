@@ -26,8 +26,10 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
+import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
+import com.github.naios.wide.core.framework.storage.mapping.templates.SQLToPropertyMappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
@@ -149,7 +151,12 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         final Schema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment().getDatabaseConfig(databaseId).schema().get());
 
-        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema.getSchemaOf(tableName), type, ServerStorageBaseImplementation.class);
+        @SuppressWarnings("unchecked")
+        final MappingAdapterHolder<ResultSet, T, ObservableValue<?>> adapter =
+                (MappingAdapterHolder<ResultSet, T, ObservableValue<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
+
+        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema.getSchemaOf(tableName), adapter,
+                type, ServerStorageBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -207,7 +214,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     private String createStatementFormat()
     {
         return selectLowPart +
-                StringUtil.concat(" ", new CrossIterator<>(mapper.getPlan().getMetadata(), metadata -> metadata.getName() + "=?"));
+                StringUtil.concat(" ", new CrossIterator<>(mapper.getPlan().getKeys(), metadata -> metadata.getName() + "=?"));
     }
 
     private void initStatements()
