@@ -164,7 +164,8 @@ public class SQLMaker
                 return vars.addVariable(customVar, value.getValue());
 
             // Enum alias
-            if (value instanceof EnumProperty)
+            if ((value instanceof EnumProperty || value instanceof FlagProperty)
+                    && !mappingMetaData.getAlias().isEmpty())
             {
                 final Class<? extends Enum> enumeration = AliasUtil.getEnum(mappingMetaData.getAlias());
 
