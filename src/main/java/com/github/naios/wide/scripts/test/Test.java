@@ -49,7 +49,8 @@ public class Test extends Script
         System.out.println(String.format("Running %s script with args %s.",
                 toString(), Arrays.toString(args)));
 
-        testStorages(args);
+        testClientStorages(args);
+        // testServerStorages(args);
     }
 
     @Override
@@ -58,8 +59,7 @@ public class Test extends Script
         return "";
     }
 
-    // Playground begin (only commit it in sub-branches to test stuff!)
-    private void testStorages(final String[] args)
+    private void testClientStorages(final String[] args)
     {
         final ClientStorage<UnknownClientStorageStructure> sceneSript =
                 new ClientStorageSelector<UnknownClientStorageStructure>
@@ -74,7 +74,10 @@ public class Test extends Script
                 break;
             else
                 System.out.println(nodes);
+    }
 
+    private void testServerStorages(final String[] args)
+    {
         final ServerStorage<CreatureTemplate> table =
                 new ServerStorage<>(DatabaseType.WORLD.getId(), "creature_template");
 

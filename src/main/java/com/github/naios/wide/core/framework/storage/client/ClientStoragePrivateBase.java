@@ -8,11 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-import javafx.beans.value.ObservableValue;
-
-import com.github.naios.wide.core.framework.storage.mapping.Mapping;
-
-public interface ClientStorageStructure
-    extends ClientStoragePublicBase, Mapping<ObservableValue<?>>
+public interface ClientStoragePrivateBase extends ClientStoragePublicBase
 {
 }

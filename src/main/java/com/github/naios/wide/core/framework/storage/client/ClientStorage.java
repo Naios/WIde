@@ -22,8 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.naios.wide.core.framework.storage.StorageException;
-import com.github.naios.wide.core.framework.storage.StorageStructure;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
@@ -158,7 +156,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     final static int STRING_CHECK_MAX_RECORDS = 5;
 
-    private final ClientStorageFieldType[] fieldType;
+    private final ClientStoragePossibleFieldChecker[] fieldType;
 
     private final Class<? extends ClientStorageStructure> type;
 
@@ -192,11 +190,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
                 return null;
             }
         }
-    }
-
-    public ClientStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
-    {
-        this (type, ClientStorageStructure.getPathThroughStorageName(type));
     }
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
@@ -319,8 +312,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         }
 
         // Calculate field types
-        fieldType = new ClientStorageFieldType[fieldsCount];
-        Arrays.fill(fieldType, ClientStorageFieldType.UNKNOWN);
+        fieldType = new ClientStoragePossibleFieldChecker[fieldsCount];
+        Arrays.fill(fieldType, ClientStoragePossibleFieldChecker.UNKNOWN);
 
         // Pre calculate type based on given mapping structure
         for (int x = 0; x < fieldsCount; ++x)
@@ -328,7 +321,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             final Field field = getFieldForColumn(x);
             if (field != null)
             {
-                for (final ClientStorageFieldType t : ClientStorageFieldType.values())
+                for (final ClientStoragePossibleFieldChecker t : ClientStoragePossibleFieldChecker.values())
                     if (field.getType().isAssignableFrom(t.getType()))
                     {
                         fieldType[x] = t;
@@ -337,13 +330,13 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
                 // If the column is a string but the given structure is wrong throw
                 // an exception
-                if (fieldType[x].equals(ClientStorageFieldType.STRING))
-                    if (ClientStorageFieldType.STRING.check.test(this, x))
+                if (fieldType[x].equals(ClientStoragePossibleFieldChecker.STRING))
+                    if (ClientStoragePossibleFieldChecker.STRING.check(this, x))
                         throw new WrongStructureException(type, path);
             }
             else
-                for (final ClientStorageFieldType f : ClientStorageFieldType.values())
-                    if (f.check.test(this, x))
+                for (final ClientStoragePossibleFieldChecker f : ClientStoragePossibleFieldChecker.values())
+                    if (f.check(this, x))
                     {
                         fieldType[x] = f;
                         break;
@@ -401,12 +394,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return getDataBlockOffset() + getRecordsCount() * getRecordSize();
     }
 
-    protected ClientStorageFieldType getFieldType(final int field)
+    protected ClientStoragePossibleFieldChecker getFieldType(final int field)
     {
         return fieldType[field];
     }
 
-    public ClientStorageFieldType[] getFieldTypes()
+    public ClientStoragePossibleFieldChecker[] getFieldTypes()
     {
         return fieldType;
     }

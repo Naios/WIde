@@ -8,19 +8,20 @@
 
 package com.github.naios.wide.core.framework.entities.client;
 
-import com.github.naios.wide.core.framework.storage.StorageName;
+import javafx.beans.property.ReadOnlyFloatProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 
-@StorageName(name="TaxiNodes.db2")
-public abstract class TaxiNodes extends ClientStorageStructure
+public interface TaxiNodes extends ClientStorageStructure
 {
-    public abstract int getEntry();
+    public ReadOnlyIntegerProperty getEntry();
 
-    public abstract int getMap();
+    public ReadOnlyIntegerProperty getMap();
 
-    public abstract float getX();
+    public ReadOnlyFloatProperty getX();
 
-    public abstract float getY();
+    public ReadOnlyFloatProperty getY();
 
-    public abstract float getZ();
+    public ReadOnlyFloatProperty getZ();
 }

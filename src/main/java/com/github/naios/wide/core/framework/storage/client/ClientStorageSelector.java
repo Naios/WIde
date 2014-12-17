@@ -14,11 +14,6 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 
     private final Class<? extends ClientStorageStructure> type;
 
-    public ClientStorageSelector(final Class<? extends ClientStorageStructure> type)
-    {
-        this (type, ClientStorageStructure.getPathThroughStorageName(type));
-    }
-
     public ClientStorageSelector(final Class<? extends ClientStorageStructure> type, final String path)
     {
         this.path = path;
