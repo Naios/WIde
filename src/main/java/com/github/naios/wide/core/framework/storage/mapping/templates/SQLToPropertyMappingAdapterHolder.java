@@ -85,7 +85,7 @@ public class SQLToPropertyMappingAdapterHolder
                     public StringProperty create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new SimpleStringProperty(""), value);
+                        return createHelper(new SimpleStringProperty(), value);
                     }
                 })
              // FloatProperty
@@ -261,7 +261,7 @@ public class SQLToPropertyMappingAdapterHolder
                     public IntegerProperty create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new SimpleIntegerProperty(), value);
+                        return createHelper(new SimpleIntegerProperty(-1), value);
                     }
                 })
             // ReadOnlyIntegerProperty

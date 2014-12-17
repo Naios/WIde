@@ -20,9 +20,9 @@ public abstract class MappingAdapter<FROM, BASE>
     public BASE createHelper(final BASE me, final Object value)
     {
         if (value != null)
-            assert set(me, value);
+            set(me, value);
         else
-            assert setDefault(me);
+            setDefault(me);
 
         return me;
     }
