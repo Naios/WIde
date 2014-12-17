@@ -19,19 +19,32 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 {
     private final MappingPlan plan;
 
-    public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
+    public JsonMapper(final TableSchema schema, final List<Class<?>> interfaces,
+                final Class<? extends MappingImplementation> implementation)
+    {
+        this(schema, new MappingAdapterHolder<>(), interfaces, implementation);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final List<Class<?>> interfaces,
                 final Class<? extends MappingImplementation> implementation)
     {
-        this(schema, new MappingAdapterHolder<>(), target, interfaces, implementation);
+        super(adapterHolder, getTargetOfSchema(schema), interfaces, implementation);
+        this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
     }
 
-    public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
-            final Class<? extends TO> target, final List<Class<?>> interfaces,
-                final Class<? extends MappingImplementation> implementation)
+    @SuppressWarnings("rawtypes")
+    private static Class getTargetOfSchema(final TableSchema schema)
     {
-        super(adapterHolder, target, interfaces, implementation);
-        this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
+        try
+        {
+            return schema.getClass().getClassLoader().loadClass(schema.getStructure());
+        }
+        catch (final ClassNotFoundException e)
+        {
+            throw new Error(e);
+        }
     }
 
     @Override

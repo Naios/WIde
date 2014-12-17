@@ -24,7 +24,6 @@ import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
-import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
@@ -51,7 +50,6 @@ public class Test extends Script
                 toString(), Arrays.toString(args)));
 
         testStorages(args);
-        // testNull(args);
     }
 
     @Override
@@ -78,7 +76,7 @@ public class Test extends Script
                 System.out.println(nodes);
 
         final ServerStorage<CreatureTemplate> table =
-                new ServerStorage<>(CreatureTemplate.class, DatabaseType.WORLD.getId(), "creature_template");
+                new ServerStorage<>(DatabaseType.WORLD.getId(), "creature_template");
 
         // TODO readd type save version of new ServerStorageKey<CreatureTemplate>
         final CreatureTemplate entry = table.get(new ServerStorageKey<CreatureTemplate>(41378));
@@ -254,25 +252,6 @@ public class Test extends Script
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());
 
-        table.close();
-    }
-
-    private void testNull(final String[] args)
-    {
-        final ServerStorage<CreatureTemplate> table =
-                new ServerStorage<>(CreatureTemplate.class, DatabaseType.WORLD.getId(), "creature_template");
-
-        final ServerStorageChangeHolder holder = table.getChangeHolder();
-
-        final CreatureTemplate e1 = table.get(new ServerStorageKey<CreatureTemplate>(41378));
-        final CreatureTemplate e2 = table.get(new ServerStorageKey<CreatureTemplate>(1));
-
-        e1.name().set("hey");
-        e2.name().set("hey");
-
-        holder.rollback(e1.name());
-
-        System.out.println(holder);
         table.close();
     }
 }

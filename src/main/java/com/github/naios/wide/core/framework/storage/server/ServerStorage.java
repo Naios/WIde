@@ -27,8 +27,8 @@ import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
+import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.storage.mapping.templates.SQLToPropertyMappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
@@ -97,9 +97,9 @@ class DatabaseConnectionException extends ServerStorageException
 @SuppressWarnings("serial")
 class WrongDatabaseStructureException extends ServerStorageException
 {
-    public WrongDatabaseStructureException(final Class<?> type, final String msg)
+    public WrongDatabaseStructureException(final String name, final String msg)
     {
-        super(String.format("Your database structure dosn't match to %s (%s)!", type.getName(), msg));
+        super(String.format("Your database structure dosn't match to %s (%s)!", name, msg));
     }
 }
 
@@ -123,8 +123,6 @@ class AccessedDeletedStructureException extends ServerStorageException
 
 public class ServerStorage<T extends ServerStorageStructure> implements AutoCloseable
 {
-    private final Class<? extends ServerStorageStructure> type;
-
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
@@ -139,24 +137,28 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private final ServerStorageChangeHolder changeHolder;
 
+    private final String structureName;
+
     private PreparedStatement preparedStatement;
 
     private Statement statement;
 
-    public ServerStorage(final Class<? extends T> type, final String databaseId, final String tableName) throws ServerStorageException
+    public ServerStorage(final String databaseId, final String tableName) throws ServerStorageException
     {
-        this.type = type;
         this.databaseId = databaseId;
         this.tableName = tableName;
 
-        final Schema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment().getDatabaseConfig(databaseId).schema().get());
+        final TableSchema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
+                .getDatabaseConfig(databaseId).schema().get()).getSchemaOf(tableName);
+
+        this.structureName = schema.getStructure();
 
         @SuppressWarnings("unchecked")
         final MappingAdapterHolder<ResultSet, T, ObservableValue<?>> adapter =
                 (MappingAdapterHolder<ResultSet, T, ObservableValue<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
 
-        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema.getSchemaOf(tableName), adapter,
-                type, Arrays.asList(ServerStoragePrivateBase.class), ServerStorageBaseImplementation.class);
+        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema, adapter,
+                Arrays.asList(ServerStoragePrivateBase.class), ServerStorageBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -344,7 +346,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
         catch (final Exception e)
         {
-            throw new WrongDatabaseStructureException(type, e.getMessage());
+            throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
 
         return result;
@@ -359,11 +361,11 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
         catch (final Exception e)
         {
-            throw new WrongDatabaseStructureException(type, e.getMessage());
+            throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
 
         if (WIde.getEnviroment().isTraceEnabled())
-            System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
+            System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, structureName));
 
         return initStructure(mapper.map(result), false);
     }
@@ -429,7 +431,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_DELETED);
     }
-
 
     protected void onStructureReset(final ServerStorageStructure storage)
     {
