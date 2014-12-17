@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
-import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
+import com.github.naios.wide.core.framework.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
