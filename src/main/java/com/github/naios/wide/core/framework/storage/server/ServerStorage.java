@@ -396,6 +396,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         ((ServerStoragePrivateBase)structure).setOwner(this);
         ((ServerStoragePrivateBase)structure).writeableState().set(StructureState.STATE_CREATED);
+
+        changeHolder.register(structure);
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)

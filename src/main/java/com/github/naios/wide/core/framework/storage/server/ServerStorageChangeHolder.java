@@ -99,6 +99,16 @@ public class ServerStorageChangeHolder implements Observable
     }
 
     /**
+     * Registers a structure to the changeholder so its changes getting tracked.
+     */
+    protected void register(final ServerStorageStructure structure)
+    {
+        structure.forEach(entry ->
+            entry.first().addListener(
+                    new ServerStorageChangeListener(structure, entry.second().getName())));
+    }
+
+    /**
      * @return Our scope property
      */
     public StringProperty scope()
