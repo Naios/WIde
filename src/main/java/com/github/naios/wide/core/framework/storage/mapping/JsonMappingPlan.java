@@ -65,12 +65,11 @@ public class JsonMappingPlan implements MappingPlan
         });
 
         int i = 0;
-        for (final Method method : methods)
+        for (final MappingMetaData metaData : schema.getEntries())
         {
-            // TODO serve ordinals based on order in schema
-            final MappingMetaData metaData = getMetaDataInListOfTarget(schema.getEntries(), method.getName());
-            if (metaData == null)
-                throw new RuntimeException(String.format("Structure field %s is not present in the schema!", method.getName()));
+            final Method method = getMethodInListByName(methods, metaData.getTarget());
+            if (method == null)
+                continue;
 
             mappedType.add(TypeToken.of(method.getReturnType()));
             data.add(metaData);
@@ -82,6 +81,9 @@ public class JsonMappingPlan implements MappingPlan
 
             ++i;
         }
+
+        if (!methods.isEmpty())
+            throw new RuntimeException(String.format("Structure fields %s are not present in the schema!", methods));
 
         // Check if all keys are present in the interface
         i = 0;
@@ -95,8 +97,18 @@ public class JsonMappingPlan implements MappingPlan
         this.data = Collections.unmodifiableList(data);
         this.keys = Collections.unmodifiableList(keys);
         this.mappedType = Collections.unmodifiableList(mappedType);
+    }
 
-        System.out.println(String.format("DEBUG: %s", nameToOrdinal));
+    public Method getMethodInListByName(final List<Method> methods, final String name)
+    {
+        for (final Method method : methods)
+            if (method.getName().equals(name))
+            {
+                methods.remove(method);
+                return method;
+            }
+
+        return null;
     }
 
     // TODO Fix this dirty workaround
@@ -119,15 +131,6 @@ public class JsonMappingPlan implements MappingPlan
             return false;
 
         return true;
-    }
-
-    private MappingMetaData getMetaDataInListOfTarget(final List<MappingMetaData> metaData, final String name)
-    {
-        for (final MappingMetaData data : metaData)
-            if (data.getTarget().equals(name))
-                return data;
-
-        return null;
     }
 
     @Override
