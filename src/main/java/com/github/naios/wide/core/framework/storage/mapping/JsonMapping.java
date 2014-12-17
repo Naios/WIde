@@ -163,9 +163,10 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     @Override
     public String toString()
     {
-        return "{" + StringUtil.concat(", ",
-                new CrossIterator<>(this, entry->
-                    entry.second().getName() + " = " +
-                        new FormatterWrapper(entry.first()).toString())) + "}";
+        return "{" + Arrays.toString(getHashableKeys().toArray()) + " -> " +
+                    StringUtil.concat(", ",
+                            new CrossIterator<>(this, entry->
+                                entry.second().getName() + " = " +
+                                    new FormatterWrapper(entry.first()).toString())) + "}";
     }
 }
