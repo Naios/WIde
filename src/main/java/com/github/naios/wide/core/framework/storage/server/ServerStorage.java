@@ -284,6 +284,10 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         if (key.get().size() != mapper.getPlan().getNumberOfKeys())
             throw new BadKeyException(key.get().size(), mapper.getPlan().getNumberOfKeys());
 
+        final ServerStorageStructure result = cache.getIfPresent(key.hashCode());
+        if (result != null)
+            return (T) result;
+
         return (T) newStructureFromResult(createResultSetFromKey(key));
     }
 
@@ -368,9 +372,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     public T create(final ServerStorageKey<T> key)
     {
         final ServerStorageStructure record = mapper.createEmpty(key.get());
-
-        System.out.println(String.format("DEBUG: %s", record));
-        System.out.println(String.format("DEBUG: %s", record.getHashableKeys()));
         return (T) initStructure(record, true);
     }
 

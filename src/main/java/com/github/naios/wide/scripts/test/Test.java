@@ -67,8 +67,6 @@ public class Test extends Script
                 new ClientStorageSelector<UnknownClientStorageStructure>
                     (UnknownClientStorageStructure.class, ClientStorageStructure.getPathOfFile("SceneScript.db2")).select();
 
-        System.out.println(String.format("DEBUG: %s", Arrays.toString(sceneSript.getFieldTypes())));
-
         final ClientStorage<TaxiNodes> taxiNodes =
                 new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
 
@@ -204,9 +202,6 @@ public class Test extends Script
         final CreatureTemplate ct4 = table.get(new ServerStorageKey<CreatureTemplate>(69));
 
         table.getChangeHolder().setScope("test scope", "simple modify test");
-
-        System.out.println(String.format("DEBUG: %s", ct1));
-        System.out.println(String.format("DEBUG: %s", ct1.name()));
 
         ct1.name().set("blub");
 
