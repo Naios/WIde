@@ -13,23 +13,22 @@ import java.lang.ref.WeakReference;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
+
 public class ServerStorageChangeListener implements ChangeListener<Object>
 {
     // TODO Find out whether gc cleans up the cached ServerStorageStructure correctly
-    private final WeakReference<ServerStorageStructure> record;
+    private final WeakReference<ObservableValueStorageInfo> info;
 
-    private final String name;
-
-    protected ServerStorageChangeListener(final ServerStorageStructure record, final String name)
+    protected ServerStorageChangeListener(final ServerStorageStructure storage, final String name)
     {
-        this.record = new WeakReference<ServerStorageStructure>(record);
-        this.name = name;
+        this.info = new WeakReference<>(new ObservableValueStorageInfo(storage, name));
     }
 
     @Override
     public void changed(final ObservableValue<?> observable,
             final Object oldValue, final Object newValue)
     {
-        record.get().getOwner().onValueChanged(record.get(), name, observable, oldValue);
+        info.get().getStructure().getOwner().onValueChanged(info.get(), observable, oldValue);
     }
 }

@@ -66,7 +66,7 @@ public class ServerStorageChangeHolder implements Observable
             new HashSet<>();
 
     private final Set<ServerStorageStructure> reBuild =
-            new IdentitySet<>();
+            new HashSet<>();
 
     private final static int TIMES_UNLIMITED = -1;
 

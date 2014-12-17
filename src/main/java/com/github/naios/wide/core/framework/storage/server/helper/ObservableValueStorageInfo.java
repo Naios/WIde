@@ -38,6 +38,12 @@ public class ObservableValueStorageInfo
     }
 
     @Override
+    public String toString()
+    {
+        return String.format("ObservableValueStorageInfo(%s, %s)", structure, name);
+    }
+
+    @Override
     public boolean equals(final Object obj)
     {
         if (this == obj)
@@ -61,6 +67,7 @@ public class ObservableValueStorageInfo
         }
         else if (!structure.equals(other.structure))
             return false;
+
         return true;
     }
 

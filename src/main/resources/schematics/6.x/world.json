@@ -4,6 +4,7 @@
   "tables": [
     {
       "name": "creature_template",
+      "structure": "com.github.naios.wide.core.framework.entities.server.CreatureTemplate",
       "entries": [
         {
           "name": "entry",

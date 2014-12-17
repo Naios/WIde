@@ -141,23 +141,26 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
             return true;
         if (obj == null)
             return false;
-        if (getClass() != obj.getClass())
+
+        if (!(obj instanceof Mapping))
             return false;
-        final JsonMapping other = (JsonMapping) obj;
+
+        final Mapping other = (Mapping) obj;
         if (rawHashableKeys == null)
         {
-            if (other.rawHashableKeys != null)
+            if (other.getHashableKeys() != null)
                 return false;
         }
-        else if (!rawHashableKeys.equals(other.rawHashableKeys))
+        else if (!rawHashableKeys.equals(other.getHashableKeys()))
             return false;
+
         return true;
     }
 
     @Override
     public int hashCode()
     {
-        return Arrays.hashCode(getHashableKeys().toArray());
+        return getHashableKeys().hashCode();
     }
 
     @Override

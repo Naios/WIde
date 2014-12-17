@@ -24,6 +24,7 @@ import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
@@ -50,6 +51,7 @@ public class Test extends Script
                 toString(), Arrays.toString(args)));
 
         testStorages(args);
+        // testNull(args);
     }
 
     @Override
@@ -153,8 +155,9 @@ public class Test extends Script
             if (name != null)
                 System.out.println(String.format("SET @%s%s := %s;", mapType.getPrefix(), StringUtil.convertStringToVarName(name), i));
         }
-
+        System.out.println(table.getChangeHolder());
         table.getChangeHolder().setScope("myscope","a simple create test comment.");
+        System.out.println(table.getChangeHolder());
         final CreatureTemplate myentry = table.create(new ServerStorageKey<CreatureTemplate>(100000));
 
         for (int step = 0; step < 7; ++step)
@@ -174,10 +177,10 @@ public class Test extends Script
                     break;
                 case 4:
                     // Nothing will happen
-                    table.getChangeHolder().free();
+                    // table.getChangeHolder().free();
                     break;
                 case 5:
-                    myentry.getOwner().getChangeHolder().drop(myentry);
+                    // myentry.getOwner().getChangeHolder().drop(myentry);
                     break;
                 case 6:
                     break;
@@ -185,8 +188,12 @@ public class Test extends Script
                     break;
             }
 
+            System.out.println("Step: " + step);
             System.out.println(table.getChangeHolder());
         }
+
+        if (1 == 1)
+            return;
 
         System.out.println(String.format(StringUtil.concat(" ",  new Object[] {"This", "is", "a", "test."})));
 
@@ -251,6 +258,25 @@ public class Test extends Script
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());
 
+        table.close();
+    }
+
+    private void testNull(final String[] args)
+    {
+        final ServerStorage<CreatureTemplate> table =
+                new ServerStorage<>(CreatureTemplate.class, DatabaseType.WORLD.getId(), "creature_template");
+
+        final ServerStorageChangeHolder holder = table.getChangeHolder();
+
+        final CreatureTemplate e1 = table.get(new ServerStorageKey<CreatureTemplate>(41378));
+        final CreatureTemplate e2 = table.get(new ServerStorageKey<CreatureTemplate>(1));
+
+        e1.name().set("hey");
+        e2.name().set("hey");
+
+        holder.rollback(e1.name());
+
+        System.out.println(holder);
         table.close();
     }
 }

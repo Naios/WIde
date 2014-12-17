@@ -34,7 +34,7 @@ public class MappingMetaData
 
     public String getDescription()
     {
-        return description;
+        return (description == null) ? "" : description;
     }
 
     public SchemaEntryType getType()
@@ -54,7 +54,7 @@ public class MappingMetaData
 
     public String getAlias()
     {
-        return alias;
+        return (alias == null) ? "" : alias;
     }
 
     @Override

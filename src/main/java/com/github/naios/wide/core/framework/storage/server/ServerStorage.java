@@ -276,21 +276,6 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
     }
 
-    /**
-     * @param record
-     * @return The record in cache if exists or the record itself and cache it.
-     */
-    private ServerStorageStructure getAndCache(final ServerStorageStructure record)
-    {
-        final int hash = record.hashCode();
-        final ServerStorageStructure inCache = cache.getIfPresent(hash);
-        if (inCache != null)
-            return inCache;
-
-        cache.put(hash, record);
-        return record;
-    }
-
     @SuppressWarnings("unchecked")
     public T get(final ServerStorageKey<T> key)
     {
@@ -299,7 +284,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         if (key.get().size() != mapper.getPlan().getNumberOfKeys())
             throw new BadKeyException(key.get().size(), mapper.getPlan().getNumberOfKeys());
 
-        return (T) getAndCache(newStructureFromResult(createResultSetFromKey(key)));
+        return (T) newStructureFromResult(createResultSetFromKey(key));
     }
 
     public List<T> getWhere(final String where, final Object... args)
@@ -323,7 +308,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             result = statement.executeQuery(selectLowPart + where);
 
             while (result.next())
-                list.add((T) getAndCache(newStructureFromResult(result)));
+                list.add((T) newStructureFromResult(result));
 
         } catch (final SQLException e)
         {
@@ -376,28 +361,40 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
 
-        final ServerStorageStructure record = mapper.map(result);
-        initStructure(record);
-        return record;
+        return initStructure(mapper.map(result), false);
     }
 
     @SuppressWarnings("unchecked")
     public T create(final ServerStorageKey<T> key)
     {
-        final ServerStorageStructure createdRecord = mapper.createEmpty(key.get()), record;
-        initStructure(createdRecord);
+        final ServerStorageStructure record = mapper.createEmpty(key.get());
 
-        record = getAndCache(createdRecord);
-        onStructureCreated(record);
-        return (T) record;
+        System.out.println(String.format("DEBUG: %s", record));
+        System.out.println(String.format("DEBUG: %s", record.getHashableKeys()));
+        return (T) initStructure(record, true);
     }
 
-    private void initStructure(final ServerStorageStructure structure)
+    /**
+     * @param structure
+     * @return The record in cache if exists or the record itself and cache it.
+     */
+    private ServerStorageStructure initStructure(final ServerStorageStructure structure, final boolean created)
     {
+        final ServerStorageStructure inCache = cache.getIfPresent(structure.hashCode());
+        if (inCache != null)
+            return inCache;
+
+        cache.put(structure.hashCode(), structure);
+
         ((ServerStoragePrivateBase)structure).setOwner(this);
-        ((ServerStoragePrivateBase)structure).writeableState().set(StructureState.STATE_CREATED);
+        ((ServerStoragePrivateBase)structure).writeableState().set(created ? StructureState.STATE_CREATED : StructureState.STATE_IN_SYNC);
 
         changeHolder.register(structure);
+
+        if (created)
+            onStructureCreated(structure);
+
+        return structure;
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)
@@ -406,13 +403,12 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new AccessedDeletedStructureException(storage);
     }
 
-    protected void onValueChanged(final ServerStorageStructure storage, final String name,
-            final ObservableValue<?> observable, final Object oldValue)
+    protected void onValueChanged(final ObservableValueStorageInfo info, final ObservableValue<?> observable, final Object oldValue)
     {
-        checkInvalidAccess(storage);
+        checkInvalidAccess(info.getStructure());
 
-        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_UPDATED);
-        changeHolder.insert(new ObservableValueStorageInfo(storage, name), observable, oldValue);
+        ((ServerStoragePrivateBase)info.getStructure()).writeableState().set(StructureState.STATE_UPDATED);
+        changeHolder.insert(info, observable, oldValue);
     }
 
     protected void onStructureCreated(final ServerStorageStructure storage)
