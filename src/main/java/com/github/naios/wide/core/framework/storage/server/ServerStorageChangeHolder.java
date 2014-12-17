@@ -287,7 +287,7 @@ public class ServerStorageChangeHolder implements Observable
     public void clear()
     {
         for (final ObservableValueStorageInfo history : reference.keySet())
-            ((ServerStorageBaseImplementation) history.getStructure())
+            ((ServerStoragePrivateBase) history.getStructure())
                 .writeableState().set(StructureState.STATE_IN_SYNC);
 
         reference.clear();
@@ -308,7 +308,7 @@ public class ServerStorageChangeHolder implements Observable
         }
 
         for (final ObservableValueStorageInfo structure : reference.keySet())
-            ((ServerStorageBaseImplementation) structure.getStructure())
+            ((ServerStoragePrivateBase) structure.getStructure())
                 .writeableState().set(StructureState.STATE_IN_SYNC);
     }
 
@@ -321,7 +321,7 @@ public class ServerStorageChangeHolder implements Observable
             h.getHistory().remove(StructureState.STATE_IN_SYNC);
 
         for (final ObservableValueStorageInfo structure : reference.keySet())
-            ((ServerStorageBaseImplementation) structure.getStructure())
+            ((ServerStoragePrivateBase) structure.getStructure())
                 .writeableState().set(StructureState.STATE_UNKNOWN);
     }
 
@@ -563,7 +563,7 @@ public class ServerStorageChangeHolder implements Observable
                 erase(entry.getKey());
         }
 
-        delete.forEach((struc) -> ((ServerStorageBaseImplementation)struc)
+        delete.forEach((struc) -> ((ServerStoragePrivateBase)struc)
                 .writeableState().set(StructureState.STATE_DELETED));
     }
 

@@ -177,10 +177,10 @@ public class Test extends Script
                     break;
                 case 4:
                     // Nothing will happen
-                    // table.getChangeHolder().free();
+                    table.getChangeHolder().free();
                     break;
                 case 5:
-                    // myentry.getOwner().getChangeHolder().drop(myentry);
+                    myentry.getOwner().getChangeHolder().drop(myentry);
                     break;
                 case 6:
                     break;
@@ -191,9 +191,6 @@ public class Test extends Script
             System.out.println("Step: " + step);
             System.out.println(table.getChangeHolder());
         }
-
-        if (1 == 1)
-            return;
 
         System.out.println(String.format(StringUtil.concat(" ",  new Object[] {"This", "is", "a", "test."})));
 
@@ -208,7 +205,11 @@ public class Test extends Script
 
         table.getChangeHolder().setScope("test scope", "simple modify test");
 
+        System.out.println(String.format("DEBUG: %s", ct1));
+        System.out.println(String.format("DEBUG: %s", ct1.name()));
+
         ct1.name().set("blub");
+
         ct2.name().set("blub");
 
         ct3.unit_class().set(UnitClass.CLASS_ROGUE);

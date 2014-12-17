@@ -14,7 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public class ServerStorageBaseImplementation implements ServerStoragePublicBase, ServerStoragePrivateBase
+public class ServerStorageBaseImplementation implements ServerStoragePrivateBase
 {
     private final ObjectProperty<StructureState> state =
             new SimpleObjectProperty<>(StructureState.STATE_UNKNOWN);

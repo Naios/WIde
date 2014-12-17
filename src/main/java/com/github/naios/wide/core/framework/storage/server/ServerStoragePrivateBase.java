@@ -12,7 +12,7 @@ import javafx.beans.property.ObjectProperty;
 
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public interface ServerStoragePrivateBase
+public interface ServerStoragePrivateBase extends ServerStoragePublicBase
 {
     public void setOwner(final ServerStorage<?> owner);
 
