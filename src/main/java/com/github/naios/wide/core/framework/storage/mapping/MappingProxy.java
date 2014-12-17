@@ -29,23 +29,26 @@ public class MappingProxy implements InvocationHandler
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
     {
-        // First try to get the implementation in the general implementation
+        // First try to get the mapping implementation
         try
         {
-            implementation.getClass().getMethod(method.getName(), method.getParameterTypes());
-            return method.invoke(implementation, args);
-        }
-        catch (final NoSuchMethodException e)
+            mapping.getClass().getMethod(method.getName(),
+                    method.getParameterTypes());
+
+            return method.invoke(mapping, args);
+        } catch (final NoSuchMethodException e1)
         {
-            // Then try to get it in the mapping implementation
-            try
-            {
-                mapping.getClass().getMethod(method.getName(), method.getParameterTypes());
-                return method.invoke(mapping, args);
-            }
-            catch (final NoSuchMethodException e1)
-            {
-            }
+        }
+
+        // Then try to get it in the general implementation
+        try
+        {
+            implementation.getClass().getMethod(method.getName(),
+                    method.getParameterTypes());
+
+            return method.invoke(implementation, args);
+        } catch (final NoSuchMethodException e)
+        {
         }
 
         final Pair<?, MappingMetaData> result = mapping.getEntryByTarget(method.getName());

@@ -56,10 +56,4 @@ public class ServerStorageBaseImplementation implements ServerStoragePublicBase,
     {
         // TODO
     }
-
-    @Override
-    public String toString()
-    {
-        return "hey";
-    }
 }

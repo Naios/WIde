@@ -13,7 +13,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.github.naios.wide.core.framework.util.CrossIterator;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
@@ -126,6 +129,26 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         catch (final OrdinalNotFoundException e)
         {
             throw new UnknownMappingEntryException(name);
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public String toString()
+    {
+        try
+        {
+            return "[" + StringUtil.concat(", ",
+                    new CrossIterator<>(this, entry->
+                    {
+                        return entry.second().getName() + " = " + new FormatterWrapper(entry.first()).toString();
+                    })) + "]";
+
+        } catch (final Throwable e)
+        {
+            // TODO: handle exception
+            e.printStackTrace();
+            throw new Error(e);
         }
     }
 }

@@ -57,6 +57,6 @@ public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
             enumName = Constants.STRING_MISSIN_ENTRY.toString();
         }
 
-        return String.format("%s(%s)", enumName, get());
+        return String.format("EnumProperty [value: %s (%s)]", enumName, get());
     }
 }

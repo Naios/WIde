@@ -70,6 +70,6 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
     @Override
     public String toString()
     {
-        return String.format("%s(%s)", Arrays.toString(getFlagList().toArray()), asHex());
+        return String.format("FlagProperty [value: %s (%s)]", Arrays.toString(getFlagList().toArray()), asHex());
     }
 }
