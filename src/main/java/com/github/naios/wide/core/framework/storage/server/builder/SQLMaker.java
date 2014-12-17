@@ -128,7 +128,7 @@ public class SQLMaker
                 new CrossIterator<>(Arrays.asList(structures),
                         (structure) ->
                 {
-                    final ObservableValue<?> value = structure.getValues().get(0).first();
+                    final ObservableValue<?> value = structure.getKeys().get(0).first();
                     return createValueOfObservableValue(vars, changeHolder, mappingMetaData, value, true);
                 }));
 
