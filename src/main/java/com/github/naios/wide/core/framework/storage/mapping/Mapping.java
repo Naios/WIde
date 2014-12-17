@@ -16,7 +16,7 @@ public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>
 {
     public List<Pair<BASE, MappingMetaData>> getKeys();
 
-    public List<Object> getKeyObjects();
+    public List<Object> getHashableKeys();
 
     public List<Pair<BASE, MappingMetaData>> getValues();
 

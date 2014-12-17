@@ -253,7 +253,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public Object getRealValue(final ReadOnlyIntegerProperty me)
+                    public Object getRawHashableValue(final ReadOnlyIntegerProperty me)
                     {
                         return me.getValue();
                     }

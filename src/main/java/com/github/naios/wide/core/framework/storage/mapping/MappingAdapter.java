@@ -20,7 +20,7 @@ public interface MappingAdapter<FROM, BASE>
     /**
      * If you use the type as key, return its real value for hashing
      */
-    public default Object getRealValue(final BASE me)
+    public default Object getRawHashableValue(final BASE me)
     {
         return me;
     }

@@ -599,7 +599,7 @@ public class ServerStorageChangeHolder implements Observable
 
         values.asMap().forEach((structure, observables) ->
         {
-            builder.append(String.format("\n%s %s", structure.getOwner().getTableName(), structure.getKeyObjects()));
+            builder.append(String.format("\n%s %s", structure.getOwner().getTableName(), structure.getHashableKeys()));
 
             for (final Pair<ObservableValue<?>, String> entry : observables)
                 builder
