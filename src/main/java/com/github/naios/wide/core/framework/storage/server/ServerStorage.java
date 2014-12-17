@@ -377,7 +377,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, type.getName()));
 
         final ServerStorageStructure record = mapper.map(result);
-        onStructureCreated(record);
+        initStructure(record);
         return record;
     }
 
@@ -385,12 +385,17 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     public T create(final ServerStorageKey<T> key)
     {
         final ServerStorageStructure createdRecord = mapper.createEmpty(key.get()), record;
+        initStructure(createdRecord);
 
         record = getAndCache(createdRecord);
-        if (record == createdRecord)
-            onStructureCreated(record);
-
+        onStructureCreated(record);
         return (T) record;
+    }
+
+    private void initStructure(final ServerStorageStructure structure)
+    {
+        ((ServerStoragePrivateBase)structure).setOwner(this);
+        ((ServerStoragePrivateBase)structure).writeableState().set(StructureState.STATE_CREATED);
     }
 
     private void checkInvalidAccess(final ServerStorageStructure storage)

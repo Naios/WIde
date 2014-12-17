@@ -23,12 +23,12 @@ public class ClientNameStorage extends NameStorage
 
     private final String name;
 
-    public ClientNameStorage(final String name, final int entryColumn, final int nameColumn)
+    public ClientNameStorage(final String name, final int entryColumn,
+            final int nameColumn)
     {
         this.name = ClientStorageStructure.getPathOfFile(name);
         this.entryColumn = entryColumn;
         this.nameColumn = nameColumn;
-
 
         setup();
     }

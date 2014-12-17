@@ -14,12 +14,21 @@ import java.util.List;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
+import com.github.naios.wide.core.framework.game.UnitClass;
+import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
+import com.github.naios.wide.core.framework.storage.name.NameStorage;
+import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
+import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
+import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
+import com.github.naios.wide.core.framework.util.FlagUtil;
+import com.github.naios.wide.core.framework.util.RandomUtil;
+import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -108,8 +117,6 @@ public class Test extends Script
         */
 
         // Change Listener test
-
-        /*
 
         System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED));
         System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE));
@@ -243,7 +250,7 @@ public class Test extends Script
 
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());
-        */
+
         table.close();
     }
 }

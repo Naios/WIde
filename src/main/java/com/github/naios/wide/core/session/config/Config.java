@@ -76,6 +76,8 @@ public class Config
             }
         }
 
+	    loaded.set(true);
+
 	    // Hooks.ON_CONFIG_LOADED
         WIde.getHooks().fire(Hook.ON_CONFIG_LOADED);
 	}
