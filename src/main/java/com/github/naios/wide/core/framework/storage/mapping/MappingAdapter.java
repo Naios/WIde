@@ -8,11 +8,26 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-public interface MappingAdapter<FROM, BASE>
+public abstract class MappingAdapter<FROM, BASE>
 {
-    public BASE map(FROM from, MappingPlan plan, int index, MappingMetaData metaData);
+    public abstract BASE map(FROM from, MappingPlan plan, int index, MappingMetaData metaData);
 
-    public default boolean isPossibleKey()
+    /**
+     * @param value is null if the default value needs to be set
+     */
+    public abstract BASE create(MappingPlan plan, int index, MappingMetaData metaData, Object value);
+
+    public BASE createHelper(final BASE me, final Object value)
+    {
+        if (value != null)
+            assert set(me, value);
+        else
+            assert setDefault(me);
+
+        return me;
+    }
+
+    public boolean isPossibleKey()
     {
         return false;
     }
@@ -20,17 +35,17 @@ public interface MappingAdapter<FROM, BASE>
     /**
      * If you use the type as key, return its real value for hashing
      */
-    public default Object getRawHashableValue(final BASE me)
+    public Object getRawHashableValue(final BASE me)
     {
         return me;
     }
 
-    public default boolean set(final BASE me, final Object value)
+    public boolean set(final BASE me, final Object value)
     {
         return false;
     }
 
-    public default boolean setDefault(final BASE me)
+    public boolean setDefault(final BASE me)
     {
         return false;
     }

@@ -80,6 +80,13 @@ public class SQLToPropertyMappingAdapterHolder
                         me.set("");
                         return true;
                     }
+
+                    @Override
+                    public StringProperty create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new SimpleStringProperty(), value);
+                    }
                 })
              // FloatProperty
             .registerAdapter(TypeToken.of(FloatProperty.class), new MappingAdapter<ResultSet, FloatProperty>()
@@ -116,6 +123,13 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         me.set(0.f);
                         return true;
+                    }
+
+                    @Override
+                    public FloatProperty create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new SimpleFloatProperty(), value);
                     }
                 })
             // DoubleProperty
@@ -154,6 +168,13 @@ public class SQLToPropertyMappingAdapterHolder
                         me.set(0.d);
                         return true;
                     }
+
+                    @Override
+                    public DoubleProperty create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new SimpleDoubleProperty(), value);
+                    }
                 })
             // BooleanProperty
             .registerAdapter(TypeToken.of(BooleanProperty.class), new MappingAdapter<ResultSet, BooleanProperty>()
@@ -190,6 +211,13 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         me.set(false);
                         return true;
+                    }
+
+                    @Override
+                    public BooleanProperty create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new SimpleBooleanProperty(), value);
                     }
                 })
             // IntegerProperty
@@ -228,6 +256,13 @@ public class SQLToPropertyMappingAdapterHolder
                         me.set(0);
                         return true;
                     }
+
+                    @Override
+                    public IntegerProperty create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new SimpleIntegerProperty(), value);
+                    }
                 })
             // ReadOnlyIntegerProperty
             .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
@@ -256,6 +291,16 @@ public class SQLToPropertyMappingAdapterHolder
                     public Object getRawHashableValue(final ReadOnlyIntegerProperty me)
                     {
                         return me.getValue();
+                    }
+
+                    @Override
+                    public ReadOnlyIntegerProperty create(final MappingPlan plan,
+                            final int index, final MappingMetaData metaData, final Object value)
+                    {
+                        if (value instanceof Integer)
+                            return new ReadOnlyIntegerWrapper((int)value);
+                        else
+                            return null;
                     }
                 })
             // Enum Property
@@ -306,6 +351,14 @@ public class SQLToPropertyMappingAdapterHolder
                         me.set(0);
                         return true;
                     }
+
+                    @SuppressWarnings({ "unchecked", "rawtypes" })
+                    @Override
+                    public EnumProperty<?> create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new EnumProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                    }
                 })
             // Flag Property
             .registerAdapter(TypeToken.of(FlagProperty.class), new MappingAdapter<ResultSet, FlagProperty<?>>()
@@ -343,6 +396,14 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         me.set(FlagUtil.DEFAULT_VALUE);
                         return true;
+                    }
+
+                    @SuppressWarnings({ "unchecked", "rawtypes" })
+                    @Override
+                    public FlagProperty<?> create(final MappingPlan plan, final int index,
+                            final MappingMetaData metaData, final Object value)
+                    {
+                        return createHelper(new FlagProperty(AliasUtil.getEnum(metaData.getAlias())), value);
                     }
                 });
 

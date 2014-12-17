@@ -9,6 +9,7 @@
 package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
@@ -55,11 +56,26 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         return new JsonMapping<>(this, plan, content);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Mapping<BASE> newMappingBasedOn(final List<Object> keys)
     {
-        // TODO
-        return null;
+        final List<Pair<BASE, MappingMetaData>> content =
+                new ArrayList<>();
+
+        final Iterator<Object> iterator = keys.iterator();
+        for (int i = 0; i < plan.getNumberOfElements(); ++i)
+        {
+            final MappingAdapter<FROM, BASE> adapter =
+                    getAdapterOf(plan.getMappedTypes().get(i));
+
+            final MappingMetaData metaData = plan.getMetadata().get(i);
+            final BASE base = adapter.create(plan, i, metaData, metaData.isKey() ? iterator.next() : null);
+
+            content.add(new Pair(base, plan.getMetadata().get(i)));
+        }
+
+        return new JsonMapping<>(this, plan, content);
     }
 
     @Override
