@@ -14,21 +14,12 @@ import java.util.List;
 import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
 import com.github.naios.wide.core.framework.entities.server.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
-import com.github.naios.wide.core.framework.game.UnitClass;
-import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.core.framework.storage.name.NameStorage;
-import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
-import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
-import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
-import com.github.naios.wide.core.framework.util.FlagUtil;
-import com.github.naios.wide.core.framework.util.RandomUtil;
-import com.github.naios.wide.core.framework.util.StringUtil;
 import com.github.naios.wide.core.session.database.DatabaseType;
 import com.github.naios.wide.scripts.ScriptDefinition;
 
@@ -118,6 +109,8 @@ public class Test extends Script
 
         // Change Listener test
 
+        /*
+
         System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_SERVER_CONTROLLED));
         System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_NON_ATTACKABLE));
         System.out.println(FlagUtil.createFlag(UnitFlags.UNIT_FLAG_DISABLE_MOVE));
@@ -153,30 +146,6 @@ public class Test extends Script
             if (name != null)
                 System.out.println(String.format("SET @%s%s := %s;", mapType.getPrefix(), StringUtil.convertStringToVarName(name), i));
         }
-
-        /*
-        final NameStorage names = new DatabaseNameStorage("creature_template", "entry", "name");
-        System.out.println(names);
-        */
-
-        /*
-        final NameStorage names = new ClientNameStorage("Map.dbc", 0, 1);
-        System.out.println(names);
-        */
-
-        /*
-        final GameBuildMask mask = new GameBuildMask()
-            .addUntil(GameBuild.V4_2_0_14480)
-            .removeExpansion(Expansion.WRATH_OF_THE_LICH_KING)
-            .removeRange(GameBuild.V5_0_5_16048, GameBuild.V5_4_1_17538)
-            .add(GameBuild.V6_0_3_19103);
-
-        System.out.println(mask.contains(GameBuild.V4_2_0_14480));
-        System.out.println(!mask.contains(GameBuild.V3_3_5a_12340));
-        System.out.println(!mask.contains(GameBuild.V5_0_5_16048));
-        System.out.println(!mask.contains(GameBuild.V5_4_1_17538));
-        System.out.println(mask.contains(GameBuild.V6_0_3_19103));
-        */
 
         table.getChangeHolder().setScope("myscope","a simple create test comment.");
         final CreatureTemplate myentry = table.create(new ServerStorageKey<CreatureTemplate>(100000));
@@ -274,6 +243,7 @@ public class Test extends Script
 
         System.out.println(table.getChangeHolder());
         System.out.println(table.getChangeHolder().getQuery());
+        */
         table.close();
     }
 }

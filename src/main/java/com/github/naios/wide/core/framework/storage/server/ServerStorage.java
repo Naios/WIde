@@ -156,7 +156,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
                 (MappingAdapterHolder<ResultSet, T, ObservableValue<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
 
         mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema.getSchemaOf(tableName), adapter,
-                type, ServerStorageBaseImplementation.class);
+                type, Arrays.asList(ServerStoragePrivateBase.class), ServerStorageBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -395,7 +395,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private void checkInvalidAccess(final ServerStorageStructure storage)
     {
-        if (!((ServerStorageBaseImplementation)storage).writeableState().get().isAlive())
+        if (!((ServerStoragePrivateBase)storage).writeableState().get().isAlive())
             throw new AccessedDeletedStructureException(storage);
     }
 
@@ -404,7 +404,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_UPDATED);
+        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_UPDATED);
         changeHolder.insert(new ObservableValueStorageInfo(storage, name), observable, oldValue);
     }
 
@@ -412,7 +412,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
     {
         checkInvalidAccess(storage);
 
-        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_CREATED);
+        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_CREATED);
         changeHolder.create(storage);
     }
 
@@ -423,7 +423,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         storage.reset();
 
-        ((ServerStorageBaseImplementation)storage).writeableState().set(StructureState.STATE_DELETED);
+        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_DELETED);
     }
 
 

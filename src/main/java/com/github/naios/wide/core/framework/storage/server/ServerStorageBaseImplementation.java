@@ -14,7 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public class ServerStorageBaseImplementation implements ServerStorageBase
+public class ServerStorageBaseImplementation implements ServerStoragePublicBase, ServerStoragePrivateBase
 {
     private final ObjectProperty<StructureState> state =
             new SimpleObjectProperty<>(StructureState.STATE_UNKNOWN);
@@ -27,7 +27,8 @@ public class ServerStorageBaseImplementation implements ServerStorageBase
         return owner;
     }
 
-    protected void setOwner(final ServerStorage<?> owner)
+    @Override
+    public void setOwner(final ServerStorage<?> owner)
     {
         this.owner = owner;
     }
@@ -38,7 +39,8 @@ public class ServerStorageBaseImplementation implements ServerStorageBase
         return state;
     }
 
-    protected ObjectProperty<StructureState> writeableState()
+    @Override
+    public ObjectProperty<StructureState> writeableState()
     {
         return state;
     }
@@ -53,5 +55,11 @@ public class ServerStorageBaseImplementation implements ServerStorageBase
     public void reset()
     {
         // TODO
+    }
+
+    @Override
+    public String toString()
+    {
+        return "hey";
     }
 }

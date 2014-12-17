@@ -19,15 +19,15 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     private final MappingPlan plan;
 
     public JsonMapper(final TableSchema schema, final Class<? extends TO> target,
-            final Class<?> implementation)
+            final List<Class<?>> interfaces, final Class<?> implementation)
     {
-        this(schema, new MappingAdapterHolder<>(), target, implementation);
+        this(schema, new MappingAdapterHolder<>(), target, interfaces, implementation);
     }
 
     public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
-            final Class<? extends TO> target, final Class<?> implementation)
+            final Class<? extends TO> target, final List<Class<?>> interfaces, final Class<?> implementation)
     {
-        super(adapterHolder, target, implementation);
+        super(adapterHolder, target, interfaces, implementation);
         this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
     }
 

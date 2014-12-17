@@ -9,6 +9,7 @@
 package com.github.naios.wide.core.framework.storage.mapping;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.reflect.TypeToken;
@@ -19,19 +20,22 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
 
     private final Class<? extends TO> target;
 
+    private final Class<?>[] interfaces;
+
     private final Class<?> implementation;
 
-    public MapperBase(final Class<? extends TO> target, final Class<?> implementation)
-    {
-        this (new MappingAdapterHolder<>(), target, implementation);
-    }
-
     public MapperBase(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
-            final Class<? extends TO> target, final Class<?> implementation)
+            final Class<? extends TO> target, final List<Class<?>> interfaces,
+                final Class<?> implementation)
     {
         this.adapterHolder = adapterHolder;
 
         this.target = target;
+
+        final List<Class<?>> i = new ArrayList<>(interfaces);
+        i.add(target);
+
+        this.interfaces = i.toArray(new Class<?>[i.size()]);
 
         this.implementation = implementation;
     }
@@ -51,6 +55,16 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         return adapterHolder.getAdapterOf(type);
     }
 
+    protected Class<? extends TO> getTarget()
+    {
+        return target;
+    }
+
+    protected Class<?>[] getInterfaces()
+    {
+        return interfaces;
+    }
+
     protected Class<?> getImplementation()
     {
         return implementation;
@@ -66,11 +80,6 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         {
             return new Error(e.getMessage());
         }
-    }
-
-    protected Class<? extends TO> getTarget()
-    {
-        return target;
     }
 
     protected abstract Mapping<BASE> newMappingBasedOn(final FROM from);
@@ -94,6 +103,6 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     {
         final MappingProxy proxy = new MappingProxy(newImplementation(), mapping);
 
-        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {target}, proxy);
+        return (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
     }
 }

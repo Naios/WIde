@@ -12,7 +12,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;
 
-public interface ServerStorageBase
+public interface ServerStoragePublicBase
 {
     public ServerStorage<?> getOwner();
 

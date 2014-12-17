@@ -12,6 +12,6 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.mapping.Mapping;
 
-public interface ServerStorageStructure extends ServerStorageBase, Mapping<ObservableValue<?>>
+public interface ServerStorageStructure extends ServerStoragePublicBase, Mapping<ObservableValue<?>>
 {
 }
