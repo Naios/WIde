@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.server.builder;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -279,7 +278,7 @@ public class SQLMaker
         if (structures.length == 0)
             return "";
 
-        final List<Pair<Object, MappingMetaData>> keys = structures[0].getKeys();
+        final List<Pair<ObservableValue<?>, MappingMetaData>> keys = structures[0].getKeys();
 
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
@@ -288,41 +287,14 @@ public class SQLMaker
         else
         {
             // Yay, nested concat iterator!
-            return StringUtil.concat(SPACE + OR + SPACE, new Iterator<String>()
-            {
-                private int strucI = 0;
-
-                @Override
-                public boolean hasNext()
-                {
-                    return strucI < structures.length;
-                }
-
-                @Override
-                public String next()
-                {
-                    ++strucI;
-                    return "(" + StringUtil.concat(SPACE + AND + SPACE,
-                            new Iterator<String>()
-                            {
-                                private int keyI = 0;
-
-                                @Override
-                                public boolean hasNext()
-                                {
-                                    return keyI < keys.size();
-                                }
-
-                                @Override
-                                public String next()
-                                {
-                                    final Field field = keys.get(keyI++);
-                                    return createNameEqualsValue(vars, changeHolder, field,
-                                            getObservableValueByFieldAndStructure(field, structures[strucI - 1]), true);
-                                }
-                            }) + ")";
-                }
-            });
+            return StringUtil.concat(SPACE + OR + SPACE,
+                    new CrossIterator<ServerStorageStructure, String>(Arrays.asList(structures), (structure) ->
+                    {
+                        return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), (entry) ->
+                        {
+                            return createNameEqualsValue(vars, changeHolder, entry.second(), entry.first(), true);
+                        }));
+                    }));
         }
     }
 
@@ -334,8 +306,13 @@ public class SQLMaker
     {
         final Set<String> statements = new TreeSet<>();
 
-        for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> value : fields)
-            statements.add(createNameEqualsValue(vars, changeHolder, value.second(), value.first(), true));
+        for (final Pair<ObservableValue<?>, ObservableValueStorageInfo> entry : fields)
+        {
+            final Pair<ObservableValue<?>, MappingMetaData> data = entry.second().getStructure().getEntryByName(entry.second().getName());
+            assert (data.first() == entry.first());
+
+            statements.add(createNameEqualsValue(vars, changeHolder, data.second(), entry.first(), true));
+        }
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }

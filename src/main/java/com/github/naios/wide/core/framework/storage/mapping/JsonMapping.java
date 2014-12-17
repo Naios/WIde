@@ -23,7 +23,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
     private final List<Pair<BASE, MappingMetaData>> values;
 
-    private final List<Pair<Object, MappingMetaData>> keys;
+    private final List<Pair<BASE, MappingMetaData>> keys;
 
     private final List<Object> keyObjects;
 
@@ -36,7 +36,9 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
         this.values = Collections.unmodifiableList(values);
 
-        final List<Pair<Object, MappingMetaData>> keys = new ArrayList<>();
+        final List<Pair<BASE, MappingMetaData>> keys = new ArrayList<>();
+        final List<Object> keyObjects = new ArrayList<>();
+
         values.forEach((entry) ->
         {
             Object realValue;
@@ -52,14 +54,13 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
             }
 
             if (entry.second().isKey())
-                keys.add(new Pair<>(realValue, entry.second()));
+            {
+                keys.add(entry);
+                keyObjects.add(realValue);
+            }
         });
 
         this.keys = Collections.unmodifiableList(keys);
-
-        final List<Object> keyObjects = new ArrayList<>();
-        this.keys.forEach(key -> keyObjects.add(key.first()));
-
         this.keyObjects = Collections.unmodifiableList(keyObjects);
     }
 
@@ -70,7 +71,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public List<Pair<Object, MappingMetaData>> getKeys()
+    public List<Pair<BASE, MappingMetaData>> getKeys()
     {
         return keys;
     }
