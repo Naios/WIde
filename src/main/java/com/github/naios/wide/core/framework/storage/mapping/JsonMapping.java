@@ -132,23 +132,12 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public String toString()
     {
-        try
-        {
-            return "[" + StringUtil.concat(", ",
-                    new CrossIterator<>(this, entry->
-                    {
-                        return entry.second().getName() + " = " + new FormatterWrapper(entry.first()).toString();
-                    })) + "]";
-
-        } catch (final Throwable e)
-        {
-            // TODO: handle exception
-            e.printStackTrace();
-            throw new Error(e);
-        }
+        return "{" + StringUtil.concat(", ",
+                new CrossIterator<>(this, entry->
+                    entry.second().getName() + " = " +
+                        new FormatterWrapper(entry.first()).toString())) + "}";
     }
 }
