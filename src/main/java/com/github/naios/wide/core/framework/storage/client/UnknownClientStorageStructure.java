@@ -8,12 +8,9 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-public class UnknownClientStorageStructure implements ClientStorageStructure
-{
-    private int entry;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 
-    public int getEntry()
-    {
-        return entry;
-    }
+public interface UnknownClientStorageStructure extends ClientStorageStructure
+{
+    public ReadOnlyIntegerProperty entry();
 }

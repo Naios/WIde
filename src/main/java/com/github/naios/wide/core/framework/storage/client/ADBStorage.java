@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-import com.github.naios.wide.core.framework.storage.StorageException;
 
 /**
  * Implementation of Blizzards ADB Cache files as described in:
@@ -20,14 +19,9 @@ public class ADBStorage<T extends ClientStorageStructure> extends DB2Storage<T>
 
     protected final static String EXTENSION = ".adb";
 
-    public ADBStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
+    public ADBStorage(final String path) throws ClientStorageException
     {
-        super(type);
-    }
-
-    public ADBStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
-    {
-        super(type, path);
+        super(path);
     }
 
     @Override
