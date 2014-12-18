@@ -23,7 +23,7 @@ public class StringUtil
         return str
                 .toUpperCase()
                     .replaceAll(" +", "_")
-                        .replaceAll("[:punct:\\(\\)]", "");
+                        .replaceAll("[:punct:\\(\\)\\]\\[']", "");
     }
 
     public static String fillWithSpaces(final Object... array)
