@@ -10,7 +10,6 @@ package com.github.naios.wide.core.framework.storage.client;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -163,31 +162,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     // TODO find type
     private final Mapper<?, T, ObservableValue<?>> mapper;
-
-    private class StringInBufferCached
-    {
-        final int begin, length;
-
-        public StringInBufferCached(final ByteBuffer buffer, final int begin, final int length)
-        {
-            this.begin = begin;
-            this.length = length;
-        }
-
-        @Override
-        public String toString()
-        {
-
-            try
-            {
-                return new String(bytes, "UTF-8");
-            }
-            catch (final UnsupportedEncodingException e)
-            {
-                return null;
-            }
-        }
-    }
 
     public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
     {

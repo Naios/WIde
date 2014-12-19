@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,31 +18,27 @@ public class ClientStorageStringTable
     private final Map<Integer, String> strings
     = new HashMap<>();
 
-    public ClientStorageStringTable(final ByteBuffer buffer, final int offset)
+    public ClientStorageStringTable(final ByteBuffer buffer, final int stringTableOffset)
     {
         // Fill String table
         // String of the String Block offset begin always at StringBlockOffset + 1
-        buffer.position(offset + 1);
+        buffer.position(stringTableOffset + 1);
+
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         while (buffer.remaining() > 1)
         {
-            // Push buffer forward to the next string
-            final int current = buffer.position();
-            while (buffer.get() != 0);
+            stream.reset();
 
-            final int length = buffer.position() - offset - 1;
+            final int offset = buffer.position();
 
-            final byte[] bytes = new byte[length];
+            // Read null terminated string in buffer
+            byte cur;
+            while ((cur = buffer.get()) != 0)
+                stream.write(cur);
 
-            // TODO Find a better way
-            // buffer.get(bytes, begin, length); seems to be bugged hard!
-            buffer.position(begin);
-            for (int i = 0; i < length; ++i)
-                bytes[i] = buffer.get();
-
-
-            strings.put(offset, new StringInBufferCached(buffer, offset, buffer.position() - offset - 1));
+            // TODO Do we need to set the encoding to utf8?
+            strings.put(offset, new String(stream.toByteArray()));
         }
-
     }
 }
