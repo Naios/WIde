@@ -26,10 +26,11 @@ public class ClientStorageStringTable
 
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        while (buffer.remaining() > 1)
+        while (buffer.hasRemaining())
         {
             stream.reset();
 
+            // Stores the offset where the string begins
             final int offset = buffer.position();
 
             // Read null terminated string in buffer
@@ -38,7 +39,19 @@ public class ClientStorageStringTable
                 stream.write(cur);
 
             // TODO Do we need to set the encoding to utf8?
-            strings.put(offset, new String(stream.toByteArray()));
+            // TODO find out whether if the string needs a trim
+            strings.put(offset, stream.toString());
         }
+    }
+
+    /**
+     * Returns the in memory null terminated string at the offset
+     *
+     * @param offset
+     * @return The string at offset
+     */
+    public String getString(final int offset)
+    {
+        return strings.get(offset);
     }
 }

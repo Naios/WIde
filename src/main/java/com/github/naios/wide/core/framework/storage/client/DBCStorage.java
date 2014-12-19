@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-import com.github.naios.wide.core.framework.storage.StorageException;
 
 /**
  * Implementation of Blizzards DBC files as described in:
@@ -22,14 +21,9 @@ public class DBCStorage<T extends ClientStorageStructure> extends ClientStorage<
 
     protected final static String EXTENSION = ".dbc";
 
-    public DBCStorage(final Class<? extends ClientStorageStructure> type) throws StorageException
+    public DBCStorage(final String path) throws ClientStorageException
     {
-        super(type);
-    }
-
-    public DBCStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
-    {
-        super(type, path);
+        super(path);
     }
 
     @Override

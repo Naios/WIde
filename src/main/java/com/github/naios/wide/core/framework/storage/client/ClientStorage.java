@@ -23,7 +23,11 @@ import java.util.Map;
 
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.mapping.JsonMapper;
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
+import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
+import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
@@ -123,7 +127,11 @@ class MappingFailedException extends ClientStorageException
 
 public abstract class ClientStorage<T extends ClientStorageStructure> implements Iterable<T>
 {
-    protected final String path;
+    protected final static int FLOAT_CHECK_BOUNDS = 100000000;
+
+    protected final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
+
+    protected final static int STRING_CHECK_MAX_RECORDS = 5;
 
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
@@ -146,45 +154,30 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
      */
     private final int stringBlockSize;
 
+    private final String path;
+
+    // TODO do we need this?
+    private final Class<? extends ClientStorageStructure> type;
+
+    // TODO try to remove this.
     protected final ByteBuffer buffer;
 
     private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
-    final static int FLOAT_CHECK_BOUNDS = 100000000;
-
-    final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
-
-    final static int STRING_CHECK_MAX_RECORDS = 5;
-
     private final ClientStoragePossibleFieldChecker[] fieldType;
-
-    private final Class<? extends ClientStorageStructure> type;
 
     // TODO find type
     private final Mapper<?, T, ObservableValue<?>> mapper;
 
-    public ClientStorage(final Class<? extends ClientStorageStructure> type, final String path) throws ClientStorageException
+    public ClientStorage(final String path) throws ClientStorageException
     {
         this.path = path;
-        this.type = type;
 
         final File file = new File(path);
         if (!file.exists())
             throw new MissingFileException(path);
 
-        // Test if the storage file matches the regex defined in the structure
-        String regex = null;
-        try
-        {
-            regex = StorageStructure.getStorageName(type);
-            if (!file.getName().matches(regex))
-                throw new Exception();
-
-        } catch (final Exception e)
-        {
-            throw new NoMatchedStructureException(type, regex, path);
-        }
-
+        // Create the byte buffer
         final RandomAccessFile randomAccessFile;
         final FileChannel channel;
         final long size;
@@ -196,7 +189,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
             try
             {
                 channel = randomAccessFile.getChannel();
-            } catch (final Exception e)
+            }
+            catch (final Exception e)
             {
                 randomAccessFile.close();
                 throw e;
@@ -235,6 +229,19 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
         // Finish header reading of child classes
         finishHeaderReading();
+
+        // Select our Schema
+        final TableSchema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
+                .getClientStorageConfig().schema().get()).getSchemaOf(file.getName());
+
+        if (schema == null)
+        {
+            // TODO use default schema for unknown structures
+        }
+
+        // Create Mapper
+        mapper = new JsonMapper<>(schema, Arrays.asList(ClientStoragePrivateBase.class),
+                ClientStorageBaseImplementation.class);
 
         // Read Data
         buffer.position(getDataBlockOffset());
@@ -363,27 +370,11 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         return fieldType;
     }
 
-    private Field[] getAllAnnotatedFields()
-    {
-        return StorageStructure.getAllFields(type, ClientStorageEntry.class);
-    }
-
-    private Field getFieldForColumn(final int column)
-    {
-        for (final Field field : getAllAnnotatedFields())
-        {
-            final ClientStorageEntry annotation = field.getAnnotation(ClientStorageEntry.class);
-            if (annotation.idx() == column)
-                return field;
-        }
-        return null;
-    }
-
     int getOffset(final int y, final int x)
     {
         if ((y < 0 || y >= recordsCount) || (x < 0 || x >= fieldsCount))
         {
-            // Should not occur
+            // Should never occur
             assert false;
             return 0;
         }
@@ -399,21 +390,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     private String getStringAtRelativeOffset(final int relativeOffset)
     {
         return getStringAtOffset(buffer.getInt(relativeOffset) + getStringBlockOffset());
-    }
-
-    /**
-     * Returns the in memory null terminated string at the offset
-     *
-     * @param offset
-     * @return The string at offset
-     */
-    private String getStringAtOffset(final int offset)
-    {
-        final StringInBufferCached cached = offsetToStringCache.get(offset);
-        if (cached != null)
-            return cached.toString();
-        else
-            return null;
     }
 
     public T getEntry(final int entry) throws ClientStorageException
