@@ -22,6 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.value.ObservableValue;
+
+import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
 
 @SuppressWarnings("serial")
@@ -148,8 +151,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
     private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
-    final Map<Integer, StringInBufferCached> offsetToStringCache = new HashMap<>();
-
     final static int FLOAT_CHECK_BOUNDS = 100000000;
 
     final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
@@ -159,6 +160,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     private final ClientStoragePossibleFieldChecker[] fieldType;
 
     private final Class<? extends ClientStorageStructure> type;
+
+    // TODO find type
+    private final Mapper<?, T, ObservableValue<?>> mapper;
 
     private class StringInBufferCached
     {
@@ -173,13 +177,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         @Override
         public String toString()
         {
-            final byte[] bytes = new byte[length];
-
-            // TODO Find a better way
-            // buffer.get(bytes, begin, length); seems to be bugged hard!
-            buffer.position(begin);
-            for (int i = 0; i < length; ++i)
-                bytes[i] = buffer.get();
 
             try
             {
@@ -297,18 +294,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
 
             // Store it with its offset
             entryToOffsetCache.put(entry, getOffset(i, 0));
-        }
-
-        // String of the String Block offset begin always at StringBlockOffset + 1
-        buffer.position(getStringBlockOffset() + 1);
-
-        while (buffer.remaining() > 1)
-        {
-            // Push buffer forward to the next string
-            final int offset = buffer.position();
-            while (buffer.get() != 0);
-
-            offsetToStringCache.put(offset, new StringInBufferCached(buffer, offset, buffer.position() - offset - 1));
         }
 
         // Calculate field types
