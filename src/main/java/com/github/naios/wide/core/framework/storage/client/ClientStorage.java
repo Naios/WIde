@@ -14,10 +14,10 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +29,7 @@ import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;
+import com.github.naios.wide.core.framework.util.Pair;
 
 @SuppressWarnings("serial")
 class InvalidDataException extends ClientStorageException
@@ -136,7 +137,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
      */
-    final int recordsCount;
+    private final int recordsCount;
 
     /**
      * The count of fields (<b>X / Columns</b>) of the Storage
@@ -154,57 +155,55 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
      */
     private final int stringBlockSize;
 
-    private final String path;
+    /**
+     * Out ByteBuffer that holds the data
+     */
+    private final ByteBuffer buffer;
 
-    // TODO do we need this?
-    private final Class<? extends ClientStorageStructure> type;
+    /**
+     * Our strings in the ByteBuffer
+     */
+    private final ClientStorageStringTable strings;
 
-    // TODO try to remove this.
-    protected final ByteBuffer buffer;
+    /**
+     * The mapper that maps our raw dbc data to proxys
+     */
+    private final Mapper<Pair<ByteBuffer, ClientStorageStringTable>, T, ObservableValue<?>> mapper;
 
+    /**
+     * Maps entries to offsets
+     */
     private final Map<Integer, Integer> entryToOffsetCache = new HashMap<>();
 
+    // TODO remove this
     private final ClientStoragePossibleFieldChecker[] fieldType;
 
-    // TODO find type
-    private final Mapper<?, T, ObservableValue<?>> mapper;
 
     public ClientStorage(final String path) throws ClientStorageException
     {
-        this.path = path;
-
         final File file = new File(path);
         if (!file.exists())
             throw new MissingFileException(path);
 
         // Create the byte buffer
-        final RandomAccessFile randomAccessFile;
-        final FileChannel channel;
         final long size;
 
-        try
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r"))
         {
-            randomAccessFile = new RandomAccessFile(file, "r");
-
-            try
+            try (FileChannel channel = randomAccessFile.getChannel())
             {
-                channel = randomAccessFile.getChannel();
+                // Create a little Endian Buffer
+                size = channel.size();
+                buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size)
+                        .order(ByteOrder.LITTLE_ENDIAN)
+                        .asReadOnlyBuffer();
             }
             catch (final Exception e)
             {
-                randomAccessFile.close();
                 throw e;
             }
-
-            // Create a little Endian Buffer
-            size = channel.size();
-            buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-
-            channel.close();
-            randomAccessFile.close();
-
-        } catch (final Exception e)
+        }
+        catch (final Exception e)
         {
             throw new MissingFileException(path);
         }
@@ -230,6 +229,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         // Finish header reading of child classes
         finishHeaderReading();
 
+        strings = new ClientStorageStringTable(buffer, getStringBlockOffset());
+
         // Select our Schema
         final TableSchema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
                 .getClientStorageConfig().schema().get()).getSchemaOf(file.getName());
@@ -237,6 +238,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         if (schema == null)
         {
             // TODO use default schema for unknown structures
+            throw new Error("no schema!");
         }
 
         // Create Mapper
@@ -247,24 +249,14 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
         buffer.position(getDataBlockOffset());
 
         // Map indexes to row offsets
-        final List<Integer> keys = new LinkedList<>();
-        // Get indexes of fields marked as key
-        for (final Field field : getAllAnnotatedFields())
-        {
-            final ClientStorageEntry annotation = field.getAnnotation(ClientStorageEntry.class);
-            if (annotation.key())
-                if (field.getType().equals(int.class))
-                    keys.add(annotation.idx());
-                else
-                    throw new KeyIsNoIntException();
-        }
+        final List<Integer> keys = new ArrayList<>();
+
+        // mapper.getPlan().getKeys().forEach(entry -> keys.add(entry.));
 
         // Structure needs to define at least 1 key
         if (keys.isEmpty())
             throw new MissingKeyException();
 
-        // Do we need support for multiple keys?
-        // Currently we don't support it, but maybe we need it later
         if (keys.size() > 1)
             throw new UnsupportedOperationException();
 
@@ -368,6 +360,16 @@ public abstract class ClientStorage<T extends ClientStorageStructure> implements
     public ClientStoragePossibleFieldChecker[] getFieldTypes()
     {
         return fieldType;
+    }
+
+    protected ByteBuffer getByteBuffer()
+    {
+        return buffer;
+    }
+
+    public ClientStorageStringTable getStringTable()
+    {
+        return strings;
     }
 
     int getOffset(final int y, final int x)
