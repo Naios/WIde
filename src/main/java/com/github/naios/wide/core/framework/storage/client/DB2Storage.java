@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
+import java.nio.ByteBuffer;
 
 /**
  * Implementation of Blizzards DB2 files as described in:
@@ -21,7 +22,7 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
 
     protected final static String EXTENSION = ".db2";
 
-    protected int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
+    private int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
 
     public DB2Storage(final String path) throws ClientStorageException
     {
@@ -29,7 +30,7 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
     }
 
     @Override
-    protected void finishHeaderReading()
+    protected void finishHeaderReading(final ByteBuffer buffer)
     {
         tableHash = buffer.getInt();
         timestampLastWritten = buffer.getInt();

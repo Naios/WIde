@@ -8,13 +8,9 @@
 
 package com.github.naios.wide.core.framework.storage.mapping;
 
-import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaEntryType;
-
 public class MappingMetaData
 {
     private String name, target, description;
-
-    private SchemaEntryType type;
 
     private int index;
 
@@ -37,11 +33,6 @@ public class MappingMetaData
         return (description == null) ? "" : description;
     }
 
-    public SchemaEntryType getType()
-    {
-        return type;
-    }
-
     public int getIndex()
     {
         return index;
@@ -60,9 +51,8 @@ public class MappingMetaData
     @Override
     public String toString()
     {
-        return "MappingMetadata [name=" + name + ", target=" + target
-                + ", description=" + description + ", type=" + type
-                + ", index=" + index + ", key=" + key + ", alias=" + alias
-                + "]";
+        return String
+                .format("MappingMetaData [name=%s, target=%s, description=%s, index=%s, key=%s, alias=%s]",
+                        name, target, description, index, key, alias);
     }
 }

@@ -11,15 +11,15 @@ package com.github.naios.wide.scripts.test;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.naios.wide.core.framework.entities.client.TaxiNodes;
+import com.github.naios.wide.core.framework.entities.client.MapEntry;
 import com.github.naios.wide.core.framework.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
-import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
+import com.github.naios.wide.core.framework.storage.client.test;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -61,15 +61,15 @@ public class Test extends Script
 
     private void testClientStorages(final String[] args)
     {
-        final ClientStorage<UnknownClientStorageStructure> sceneSript =
+        final test<UnknownClientStorageStructure> sceneSript =
                 new ClientStorageSelector<UnknownClientStorageStructure>
                     (UnknownClientStorageStructure.class, ClientStorageStructure.getPathOfFile("SceneScript.db2")).select();
 
-        final ClientStorage<TaxiNodes> taxiNodes =
-                new ClientStorageSelector<TaxiNodes>(TaxiNodesStructure.class).select();
+        final test<MapEntry> taxiNodes =
+                new ClientStorageSelector<MapEntry>(TaxiNodesStructure.class).select();
 
         int count = 0;
-        for (final TaxiNodes nodes : taxiNodes)
+        for (final MapEntry nodes : taxiNodes)
             if (++count > 5)
                 break;
             else

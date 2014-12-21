@@ -31,7 +31,7 @@ public class PrintDBC extends Script
         try
         {
             final ClientStorage<UnknownClientStorageStructure> clientStorage =
-                    new ClientStorageSelector<UnknownClientStorageStructure>(UnknownClientStorageStructure.class, path).select();
+                    new ClientStorageSelector<UnknownClientStorageStructure>(path).select();
 
             System.out.println(clientStorage.toString());
         }

@@ -8,20 +8,16 @@
 
 package com.github.naios.wide.core.framework.entities.client;
 
-import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 
 import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 
-public interface TaxiNodes extends ClientStorageStructure
+public interface MapEntry extends ClientStorageStructure
 {
-    public ReadOnlyIntegerProperty getEntry();
+    public ReadOnlyIntegerProperty entry();
 
-    public ReadOnlyIntegerProperty getMap();
+    public ReadOnlyStringProperty directoy();
 
-    public ReadOnlyFloatProperty getX();
-
-    public ReadOnlyFloatProperty getY();
-
-    public ReadOnlyFloatProperty getZ();
+    public ReadOnlyStringProperty name();
 }

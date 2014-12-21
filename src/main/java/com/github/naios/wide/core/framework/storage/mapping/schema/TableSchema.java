@@ -14,18 +14,23 @@ import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 
 public class TableSchema
 {
-    private String name, structure;
+    private String name, structure, format;
 
     private List<MappingMetaData> entries;
 
     public String getName()
     {
-        return name;
+        return (name == null) ? "" : name;
     }
 
     public String getStructure()
     {
-        return structure;
+        return (structure == null) ? "" : structure;
+    }
+
+    public String getFormat()
+    {
+        return (format == null) ? "" : format;
     }
 
     public List<MappingMetaData> getEntries()
