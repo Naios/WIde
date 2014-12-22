@@ -1,14 +1,17 @@
 package com.github.naios.wide.core.framework.storage.client;
 
 import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.reflect.TypeToken;
 
 public interface ClientStorageDataTable<T extends ClientStorageStructure> extends Iterable<T>
 {
-    public String[] getFieldName();
+    public List<String> getFieldNames();
 
-    public String[] getFieldDescription();
+    public List<String> getFieldDescription();
 
-    public Class<?>[] getFieldType();
+    public List<TypeToken<?>> getFieldType();
 
     public T getEntry(int entry) throws ClientStorageException;
 

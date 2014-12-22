@@ -15,11 +15,15 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.naios.wide.core.WIde;
+import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")
 class InvalidDataException extends ClientStorageException
@@ -210,17 +214,20 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         stringTable = new ClientStorageStringTable(buffer, getStringBlockOffset());
 
         // Select our Schema
-        final TableSchema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
-                .getClientStorageConfig().schema().get()).getSchemaOf(file.getName());
+        final Schema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
+                .getClientStorageConfig().schema().get());
 
-        if (schema == null)
+        if (Objects.nonNull(schema))
         {
-            // TODO use default schema for unknown structures
-            throw new Error("no schema!");
+            final TableSchema tableSchema = schema.getSchemaOf(file.getName());
+            if (Objects.nonNull(tableSchema))
+            {
+                dataTable = new KnownSchemaDataTable<>(this, tableSchema, buffer);
+                return;
+            }
         }
 
-        // TODO init data table dependent whether format exists or not
-        dataTable = null;
+        dataTable = new UnknownSchemaDataTable<>(this, buffer);
     }
 
     // Overwritten Methods
@@ -274,19 +281,19 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     }
 
     @Override
-    public String[] getFieldName()
+    public List<String> getFieldNames()
     {
-        return dataTable.getFieldName();
+        return dataTable.getFieldNames();
     }
 
     @Override
-    public String[] getFieldDescription()
+    public List<String> getFieldDescription()
     {
         return dataTable.getFieldDescription();
     }
 
     @Override
-    public Class<?>[] getFieldType()
+    public List<TypeToken<?>> getFieldType()
     {
         return dataTable.getFieldType();
     }
@@ -308,7 +315,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         return getHeaderSize() + (y * recordSize) + (x * getFieldSize());
     }
 
-    private int getFieldOfOffset(final int offset)
+    protected int getFieldOfOffset(final int offset)
     {
         return (offset % getRecordSize()) / getFieldSize();
     }

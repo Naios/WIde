@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-
 /**
  * Implementation of Blizzards DBC files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DBC

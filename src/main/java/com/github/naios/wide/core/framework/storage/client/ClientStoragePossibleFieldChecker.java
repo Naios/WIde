@@ -84,4 +84,9 @@ public enum ClientStoragePossibleFieldChecker
     {
         return check.test(storage, column);
     }
+
+    private static Pair<String, List<TypeToken<?>> createFormatForBuffer()
+    {
+        return "";
+    }
 }

@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class ClientStorageStringTable
 {
-    private final Map<Integer, String> strings
-    = new HashMap<>();
+    private final Map<Integer, String> strings =
+            new HashMap<>();
 
     public ClientStorageStringTable(final ByteBuffer buffer, final int stringTableOffset)
     {
@@ -45,7 +45,7 @@ public class ClientStorageStringTable
     }
 
     /**
-     * Returns the in memory null terminated string at the offset
+     * Returns the null terminated string at the offset
      *
      * @param offset
      * @return The string at offset
