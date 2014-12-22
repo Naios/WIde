@@ -10,8 +10,10 @@ package com.github.naios.wide.core.framework.storage.client;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javafx.beans.value.ObservableValue;
 
@@ -24,14 +26,26 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
 {
     private final Mapper<ClientStorageRecord, ClientStorageStructure, ObservableValue<?>> mapper;
 
+    private final Map<Integer, T> entries =
+            new HashMap<>();
+
+    @SuppressWarnings("unchecked")
     public KnownSchemaDataTable(final ClientStorage<T> storage, final TableSchema schema,
             final ByteBuffer buffer)
     {
-        super(storage, buffer, schema.getFormat());
+        super(storage, schema.getFormat());
 
         mapper = createMapper(schema);
 
-        // Build entry to Offset Cache
+        for (int i = storage.getDataBlockOffset();
+                i < storage.getStringBlockOffset();
+                    i += storage.getRecordSize())
+        {
+            final ClientStorageRecord record = new ClientStorageRecord(buffer, storage, getFormat(), i);
+
+            final T entry = (T) mapper.map(record);
+            entries.put((int) entry.getHashableKeys().get(0), entry);
+        }
     }
 
     @Override
@@ -59,8 +73,7 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     @Override
     public T getEntry(final int entry) throws ClientStorageException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return entries.get(entry);
     }
 
     @Override
@@ -73,6 +86,6 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     @Override
     public Iterator<T> iterator()
     {
-        return null;
+        return entries.values().iterator();
     }
 }

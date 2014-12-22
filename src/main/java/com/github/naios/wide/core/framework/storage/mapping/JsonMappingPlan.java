@@ -83,7 +83,7 @@ public class JsonMappingPlan implements MappingPlan
         }
 
         if (!methods.isEmpty())
-            throw new RuntimeException(String.format("Structure fields %s are not present in the schema!", methods));
+            throw new RuntimeException(String.format("Structure fields %s is/are not present in the schema!", methods));
 
         // Check if all keys are present in the interface
         i = 0;

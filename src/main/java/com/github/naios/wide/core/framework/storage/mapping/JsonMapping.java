@@ -21,8 +21,6 @@ import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
-    private final MapperBase<FROM, TO, BASE> mapper;
-
     private final MappingPlan plan;
 
     private final List<Pair<BASE, MappingMetaData>> values;
@@ -34,8 +32,6 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
             final List<Pair<BASE, MappingMetaData>> values)
     {
-        this.mapper = mapper;
-
         this.plan = plan;
 
         this.values = Collections.unmodifiableList(values);

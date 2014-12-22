@@ -31,7 +31,7 @@ public class ClientStorageStringTable
             stream.reset();
 
             // Stores the offset where the string begins
-            final int offset = buffer.position();
+            final int offset = buffer.position() - stringTableOffset;
 
             // Read null terminated string in buffer
             byte cur;

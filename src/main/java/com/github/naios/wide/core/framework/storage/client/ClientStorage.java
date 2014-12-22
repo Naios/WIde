@@ -176,9 +176,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
             {
                 // Create a little Endian Buffer
                 size = channel.size();
-                buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size)
-                        .order(ByteOrder.LITTLE_ENDIAN)
-                        .asReadOnlyBuffer();
+                buffer = channel
+                        .map(FileChannel.MapMode.READ_ONLY, 0, size)
+                        .order(ByteOrder.LITTLE_ENDIAN);
             }
             catch (final Exception e)
             {
@@ -228,6 +228,11 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         }
 
         dataTable = new UnknownSchemaDataTable<>(this, buffer);
+    }
+
+    public static String getPathForStorage(final String path)
+    {
+        return WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
     }
 
     // Overwritten Methods

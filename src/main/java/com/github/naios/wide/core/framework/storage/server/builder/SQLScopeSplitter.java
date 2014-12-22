@@ -18,14 +18,10 @@ import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHo
  */
 public abstract class SQLScopeSplitter<T> implements Consumer<T>
 {
-    private final ServerStorageChangeHolder holder;
-
     private final Map<String, SQLScope> scopes;
 
     protected SQLScopeSplitter(final ServerStorageChangeHolder holder, final Map<String, SQLScope> scopes)
     {
-        this.holder = holder;
-
         this.scopes = scopes;
     }
 

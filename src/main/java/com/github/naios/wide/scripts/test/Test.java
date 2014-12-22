@@ -18,12 +18,10 @@ import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
-import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
 import com.github.naios.wide.core.framework.storage.server.ServerStorage;
-import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLMaker;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.RandomUtil;
@@ -60,7 +58,7 @@ public class Test extends Script
 
     private void testClientStorages(final String[] args)
     {
-        final ClientStorage<UnknownClientStorageStructure> sceneSript =
+        /*final ClientStorage<UnknownClientStorageStructure> sceneSript =
                 new ClientStorageSelector<UnknownClientStorageStructure>
                     ("SceneScript.db2").select();
 
@@ -72,7 +70,12 @@ public class Test extends Script
             if (++count > 5)
                 break;
             else
-                System.out.println(nodes);
+                System.out.println(nodes);*/
+
+        final ClientStorage<MapEntry> mapStorage =
+                new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc")).select();
+
+        mapStorage.forEach(action -> System.out.println(action));
     }
 
     private void testServerStorages(final String[] args)
@@ -80,8 +83,8 @@ public class Test extends Script
         final ServerStorage<CreatureTemplate> table =
                 new ServerStorage<>(DatabaseType.WORLD.getId(), "creature_template");
 
-        // TODO readd type save version of new ServerStorageKey<CreatureTemplate>
-        final CreatureTemplate entry = table.get(new ServerStorageKey<CreatureTemplate>(41378));
+        // TODO readd type save version of CreatureTemplate.createKey
+        final CreatureTemplate entry = table.get(CreatureTemplate.createKey(41378));
 
         System.out.println(entry + "\n");
 
@@ -90,8 +93,8 @@ public class Test extends Script
             System.out.println(c);
 
         // Check for same reference
-        final CreatureTemplate e1 = table.get(new ServerStorageKey<CreatureTemplate>(491));
-        final CreatureTemplate e2 = table.get(new ServerStorageKey<CreatureTemplate>(491));
+        final CreatureTemplate e1 = table.get(CreatureTemplate.createKey(491));
+        final CreatureTemplate e2 = table.get(CreatureTemplate.createKey(491));
         System.out.println(e1 == e2);
 
         final CreatureTemplate e3 = table.getWhere("entry=%d", 491).get(0);
@@ -156,7 +159,7 @@ public class Test extends Script
         System.out.println(table.getChangeHolder());
         table.getChangeHolder().setScope("myscope","a simple create test comment.");
         System.out.println(table.getChangeHolder());
-        final CreatureTemplate myentry = table.create(new ServerStorageKey<CreatureTemplate>(100000));
+        final CreatureTemplate myentry = table.create(CreatureTemplate.createKey(100000));
 
         for (int step = 0; step < 7; ++step)
         {
@@ -196,10 +199,10 @@ public class Test extends Script
 
         System.out.println(SQLMaker.createComment("this is\na multiline\ncomment."));
 
-        final CreatureTemplate ct1 = table.get(new ServerStorageKey<CreatureTemplate>(491));
-        final CreatureTemplate ct2 = table.get(new ServerStorageKey<CreatureTemplate>(41378));
-        final CreatureTemplate ct3 = table.get(new ServerStorageKey<CreatureTemplate>(151));
-        final CreatureTemplate ct4 = table.get(new ServerStorageKey<CreatureTemplate>(69));
+        final CreatureTemplate ct1 = table.get(CreatureTemplate.createKey(491));
+        final CreatureTemplate ct2 = table.get(CreatureTemplate.createKey(41378));
+        final CreatureTemplate ct3 = table.get(CreatureTemplate.createKey(151));
+        final CreatureTemplate ct4 = table.get(CreatureTemplate.createKey(69));
 
         table.getChangeHolder().setScope("test scope", "simple modify test");
 
@@ -231,19 +234,19 @@ public class Test extends Script
         table.getChangeHolder().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
         for (int i = 115; i < 120; ++i)
         {
-            final CreatureTemplate deleteMe = table.get(new ServerStorageKey<CreatureTemplate>(i));
+            final CreatureTemplate deleteMe = table.get(CreatureTemplate.createKey(i));
             if (deleteMe != null)
                 deleteMe.delete();
         }
 
         table.getChangeHolder().setScope("create scope 1", "creates one new creature template...");
-        final CreatureTemplate myqueryentry = table.create(new ServerStorageKey<CreatureTemplate>(1000000));
+        final CreatureTemplate myqueryentry = table.create(CreatureTemplate.createKey(1000000));
         myqueryentry.name().set("my test name");
 
         table.getChangeHolder().setScope("create scope 2", "creates 5 templates with random values");
         for (int i = 2000000; i < 2000005; ++i)
         {
-            final CreatureTemplate template = table.create(new ServerStorageKey<CreatureTemplate>(i));
+            final CreatureTemplate template = table.create(CreatureTemplate.createKey(i));
 
             template.unit_class().set(RandomUtil.getInt(0, 3));
             template.unit_flags().set(RandomUtil.getInt(0, 30));

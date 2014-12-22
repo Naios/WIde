@@ -8,10 +8,8 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 import javafx.beans.value.ObservableValue;
 
@@ -24,19 +22,13 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
 {
     private final ClientStorage<T> storage;
 
-    private final ByteBuffer buffer;
-
     private final ClientStorageFormat format;
 
-    private final Map<Integer, Integer> entryToOffsetCache =
-            new HashMap<>();
-
-    public AbstractDataTable(final ClientStorage<T> storage, final ByteBuffer buffer, final ClientStorageFormat format)
+    public AbstractDataTable(final ClientStorage<T> storage, final ClientStorageFormat format)
     {
         this.storage = storage;
 
-        this.buffer = buffer;
-
+        Objects.requireNonNull(format);
         this.format = format;
     }
 
@@ -45,36 +37,18 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
         return storage;
     }
 
-    public ByteBuffer getBuffer()
-    {
-        return buffer;
-    }
-
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Mapper<ClientStorageRecord, ClientStorageStructure, ObservableValue<?>>
         createMapper(final TableSchema schema)
     {
-        return new JsonMapper<>(schema, Arrays.asList(ClientStoragePrivateBase.class),
-                ClientStorageBaseImplementation.class);
+        return new JsonMapper(schema, ClientStorageRecordToPropertyMappingAdapterHolder.INSTANCE,
+                            Arrays.asList(ClientStoragePrivateBase.class),
+                                ClientStorageBaseImplementation.class);
     }
 
     @Override
     public ClientStorageFormat getFormat()
     {
         return format;
-    }
-
-    protected void addEntryToOffset(final int entry, final int offset)
-    {
-        entryToOffsetCache.put(entry, offset);
-    }
-
-    protected int getOffsetOfEntry(final int entry)
-    {
-        return entryToOffsetCache.get(entry);
-    }
-
-    protected int getNumberOfEntries()
-    {
-        return entryToOffsetCache.size();
     }
 }

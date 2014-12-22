@@ -17,7 +17,7 @@ public interface MapEntry extends ClientStorageStructure
 {
     public ReadOnlyIntegerProperty entry();
 
-    public ReadOnlyStringProperty directoy();
+    public ReadOnlyStringProperty directory();
 
     public ReadOnlyStringProperty name();
 }

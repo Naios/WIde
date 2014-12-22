@@ -152,9 +152,9 @@ public class SQLMaker
         return createNameEqualsName(createName(metaData), createValueOfObservableValue(vars, changeHolder, metaData, value, variablize));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "rawtypes" })
     private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
-            final MappingMetaData mappingMetaData, @SuppressWarnings("rawtypes") final ObservableValue value, final boolean variablize)
+            final MappingMetaData mappingMetaData, final ObservableValue value, final boolean variablize)
     {
         if (variablize)
         {

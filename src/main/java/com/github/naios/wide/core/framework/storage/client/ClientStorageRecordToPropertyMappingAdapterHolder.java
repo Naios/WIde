@@ -58,6 +58,18 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyIntegerWrapper();
                     }
+
+                    @Override
+                    public boolean isPossibleKey()
+                    {
+                        return true;
+                    }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyIntegerProperty me)
+                    {
+                        return me.get();
+                    }
                 })
             // Long
             .registerAdapter(TypeToken.of(ReadOnlyLongProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyLongProperty>()

@@ -17,17 +17,10 @@ import com.google.common.reflect.TypeToken;
 public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     extends AbstractDataTable<T>
 {
-    private final ClientStorage<T> storage;
-
-    private final ByteBuffer buffer;
-
     public UnknownSchemaDataTable(final ClientStorage<T> storage, final ByteBuffer buffer)
     {
-        this.storage = storage;
-
-        this.buffer = buffer;
-
-
+        // TODO
+        super(storage, null);
     }
 
     @Override

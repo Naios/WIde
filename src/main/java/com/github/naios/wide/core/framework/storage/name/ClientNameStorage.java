@@ -12,7 +12,6 @@ import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
-import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.session.hooks.Hook;
 import com.github.naios.wide.core.session.hooks.HookListener;
@@ -23,10 +22,9 @@ public class ClientNameStorage extends NameStorage
 
     private final String name;
 
-    public ClientNameStorage(final String name, final int entryColumn,
-            final int nameColumn)
+    public ClientNameStorage(final String name, final int entryColumn, final int nameColumn)
     {
-        this.name = ClientStorageStructure.getPathOfFile(name);
+        this.name = name;
         this.entryColumn = entryColumn;
         this.nameColumn = nameColumn;
 
@@ -58,7 +56,7 @@ public class ClientNameStorage extends NameStorage
         try
         {
             final ClientStorage<UnknownClientStorageStructure> dbc =
-                    new ClientStorageSelector<UnknownClientStorageStructure>(UnknownClientStorageStructure.class, name).select();
+                    new ClientStorageSelector<UnknownClientStorageStructure>(name).select();
 
             dbc.fillNameStorage(storage, entryColumn, nameColumn);
         }

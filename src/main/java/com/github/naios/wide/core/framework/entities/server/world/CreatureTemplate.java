@@ -16,6 +16,7 @@ import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.mapping.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.mapping.types.FlagProperty;
+import com.github.naios.wide.core.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 
 public interface CreatureTemplate extends ServerStorageStructure
@@ -29,4 +30,9 @@ public interface CreatureTemplate extends ServerStorageStructure
     public FlagProperty<UnitFlags> unit_flags();
 
     public EnumProperty<UnitClass> unit_class();
+
+    public static ServerStorageKey<CreatureTemplate> createKey(final int entry)
+    {
+        return new ServerStorageKey<CreatureTemplate>(entry);
+    }
 }
