@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.google.common.reflect.TypeToken;
 
 public class KnownSchemaDataTable<T extends ClientStorageStructure>
@@ -44,7 +45,7 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
             final ClientStorageRecord record = new ClientStorageRecord(buffer, storage, getFormat(), i);
 
             final T entry = (T) mapper.map(record);
-            entries.put((int) entry.getHashableKeys().get(0), entry);
+            entries.put((int) entry.getRawKeys().get(0), entry);
         }
     }
 
@@ -79,8 +80,17 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     @Override
     public Object[][] asObjectArray(final boolean prettyWrap)
     {
-        // TODO Auto-generated method stub
-        return null;
+        final Object[][] array = new Object[entries.size()][mapper.getPlan().getNumberOfElements()];
+        int y = 0;
+        for (final T entry : this)
+        {
+            for (int x = 0; x < entry.getRawValues().size(); ++x)
+                array[y][x] = FormatterWrapper.format(entry.getRawValues().get(x), prettyWrap);
+
+            ++y;
+        }
+
+        return array;
     }
 
     @Override

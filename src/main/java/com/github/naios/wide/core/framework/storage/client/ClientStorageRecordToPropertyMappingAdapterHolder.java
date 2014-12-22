@@ -90,6 +90,12 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyLongWrapper();
                     }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyLongProperty me)
+                    {
+                        return me.get();
+                    }
                 })
             // String
             .registerAdapter(TypeToken.of(ReadOnlyStringProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyStringProperty>()
@@ -110,6 +116,12 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyStringWrapper();
                     }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyStringProperty me)
+                    {
+                        return me.get();
+                    }
                 })
              // FloatProperty
             .registerAdapter(TypeToken.of(ReadOnlyFloatProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFloatProperty>()
@@ -127,6 +139,12 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final int index, final MappingMetaData metaData, final Object value)
                     {
                         return new ReadOnlyFloatWrapper();
+                    }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyFloatProperty me)
+                    {
+                        return me.get();
                     }
                 })
             // Enum Property
@@ -148,6 +166,12 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     {
                         return createHelper(new EnumProperty(AliasUtil.getEnum(metaData.getAlias())), value);
                     }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyEnumProperty<?> me)
+                    {
+                        return me.getValue().intValue();
+                    }
                 })
             // Flag Property
             .registerAdapter(TypeToken.of(ReadOnlyFlagProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFlagProperty<?>>()
@@ -167,6 +191,12 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingMetaData metaData, final Object value)
                     {
                         return createHelper(new FlagProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                    }
+
+                    @Override
+                    public Object getRawHashableValue(final ReadOnlyFlagProperty<?> me)
+                    {
+                        return me.getValue().intValue();
                     }
                 });
 

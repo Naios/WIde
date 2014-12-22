@@ -21,6 +21,8 @@ import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
+    final MapperBase<FROM, TO, BASE> mapper;
+
     private final MappingPlan plan;
 
     private final List<Pair<BASE, MappingMetaData>> values;
@@ -32,6 +34,8 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
             final List<Pair<BASE, MappingMetaData>> values)
     {
+        this.mapper = mapper;
+
         this.plan = plan;
 
         this.values = Collections.unmodifiableList(values);
@@ -41,30 +45,32 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
         values.forEach((entry) ->
         {
-            Object realValue;
-            try
-            {
-                realValue = mapper.getAdapterOf(
-                                plan.getMappedTypes().get(
-                                        plan.getOrdinalOfName(
-                                                entry.second().getName())))
-                                    .getRawHashableValue(entry.first());
-            }
-            catch (final Exception e)
-            {
-                // Should never happen
-                throw new Error(e);
-            }
-
             if (entry.second().isKey())
             {
                 keys.add(entry);
-                rawHashableKeys.add(realValue);
+                rawHashableKeys.add(getRawValue(entry));
             }
         });
 
         this.keys = Collections.unmodifiableList(keys);
         this.rawHashableKeys = Collections.unmodifiableList(rawHashableKeys);
+    }
+
+    private Object getRawValue(final Pair<BASE, MappingMetaData> entry)
+    {
+        try
+        {
+            return mapper.getAdapterOf(
+                            plan.getMappedTypes().get(
+                                    plan.getOrdinalOfName(
+                                            entry.second().getName())))
+                                .getRawHashableValue(entry.first());
+        }
+        catch (final Exception e)
+        {
+            // Should never happen
+            throw new Error(e);
+        }
     }
 
     @Override
@@ -80,9 +86,17 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public List<Object> getHashableKeys()
+    public List<Object> getRawKeys()
     {
         return rawHashableKeys;
+    }
+
+    @Override
+    public List<Object> getRawValues()
+    {
+        final List<Object> hashableValues = new ArrayList<>();
+        forEach(entry -> hashableValues.add(getRawValue(entry)));
+        return hashableValues;
     }
 
     @Override
@@ -133,10 +147,10 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         final Mapping other = (Mapping) obj;
         if (rawHashableKeys == null)
         {
-            if (other.getHashableKeys() != null)
+            if (other.getRawKeys() != null)
                 return false;
         }
-        else if (!rawHashableKeys.equals(other.getHashableKeys()))
+        else if (!rawHashableKeys.equals(other.getRawKeys()))
             return false;
 
         return true;
@@ -145,13 +159,13 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     @Override
     public int hashCode()
     {
-        return getHashableKeys().hashCode();
+        return getRawKeys().hashCode();
     }
 
     @Override
     public String toString()
     {
-        return "{" + Arrays.toString(getHashableKeys().toArray()) + " -> " +
+        return "{" + Arrays.toString(getRawKeys().toArray()) + " -> " +
                     StringUtil.concat(", ",
                             new CrossIterator<>(this, entry->
                                 entry.second().getName() + " = " +

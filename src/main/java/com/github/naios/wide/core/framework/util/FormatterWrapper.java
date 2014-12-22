@@ -60,4 +60,12 @@ public class FormatterWrapper
     {
         return options.contains(option);
     }
+
+    public static Object format(final Object obj, final boolean format, final Options... options)
+    {
+        if (format)
+            return new FormatterWrapper(obj, options);
+        else
+            return obj;
+    }
 }

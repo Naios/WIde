@@ -76,6 +76,8 @@ public class Test extends Script
                 new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc")).select();
 
         mapStorage.forEach(action -> System.out.println(action));
+
+        System.out.println(mapStorage);
     }
 
     private void testServerStorages(final String[] args)
