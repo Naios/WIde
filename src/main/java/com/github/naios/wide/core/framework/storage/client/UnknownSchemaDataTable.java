@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.github.naios.wide.core.framework.util.Pair;
-import com.google.common.reflect.TypeToken;
 
 class CheckInfo
 {
@@ -156,42 +155,9 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     private final static FieldEstimater ESTIMATER =
             new FieldEstimater(ClientStorageFormer.FT_INT);
 
-    private final Object[][] objects;
-
     public UnknownSchemaDataTable(final ClientStorage<T> storage, final ByteBuffer buffer)
     {
-        super(storage, estimateFormat(storage, buffer));
-
-        objects = new Object[storage.getRecordsCount()][getFormat().length()];
-
-        for (int offset = storage.getDataBlockOffset(), y = 0;
-                offset < storage.getStringBlockOffset();
-                    offset += storage.getRecordSize(), ++y)
-        {
-            final ClientStorageRecord record = new ClientStorageRecord(buffer, storage, getFormat(), offset);
-
-            for (int x = 0; x < getFormat().length(); ++x)
-            {
-                final Object obj;
-                switch (getFormat().getFormerAtIndex(x))
-                {
-                    case FT_INT:
-                    case FT_IND:
-                        obj = record.getInt(x);
-                        break;
-                    case FT_FLOAT:
-                        obj = record.getFloat(x);
-                        break;
-                    case FT_STRING:
-                        obj = record.getString(x);
-                        break;
-                    default:
-                        obj = null;
-                }
-
-                objects[y][x] = obj;
-            }
-        }
+        super(storage, buffer, estimateFormat(storage, buffer));
     }
 
     private static ClientStorageFormat estimateFormat(final ClientStorage<?> storage, final ByteBuffer buffer)
@@ -219,9 +185,7 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     public List<String> getFieldNames()
     {
         final List<String> list = new ArrayList<>();
-        for (int i = 0; i < getFormat().getFormat().length(); ++i)
-            list.add("Column " + i);
-
+        getFormat().forEach(entry -> list.add("Column " + entry.first()));
         return list;
     }
 
@@ -235,23 +199,9 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     }
 
     @Override
-    public List<TypeToken<?>> getFieldType()
-    {
-        final List<TypeToken<?>> list = new ArrayList<>();
-        getFormat().forEach(entry -> list.add(entry.second().getType()));
-        return list;
-    }
-
-    @Override
     public T getEntry(final int entry) throws ClientStorageException
     {
         throw new UnsupportedOperationException("You can't get specific entries from estimated storages!");
-    }
-
-    @Override
-    public Object[][] asObjectArray(final boolean prettyWrap)
-    {
-        return objects;
     }
 
     @Override

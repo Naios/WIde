@@ -11,6 +11,7 @@ package com.github.naios.wide.core.framework.storage.name;
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.core.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
 import com.github.naios.wide.core.session.hooks.Hook;
@@ -55,10 +56,14 @@ public class ClientNameStorage extends NameStorage
 
         try
         {
-            final ClientStorage<UnknownClientStorageStructure> dbc =
-                    new ClientStorageSelector<UnknownClientStorageStructure>(name).select();
+            final ClientStorage<UnknownClientStorageStructure> storage =
+                    new ClientStorageSelector<UnknownClientStorageStructure>
+                            (ClientStorage.getPathForStorage(name),
+                                ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
 
-            dbc.fillNameStorage(storage, entryColumn, nameColumn);
+            final Object[][] objects = storage.asObjectArray();
+            for (int i = 0; i < storage.getRecordsCount(); ++i)
+                add((int)objects[i][entryColumn], (String)objects[i][nameColumn]);
         }
         catch (final ClientStorageException e)
         {

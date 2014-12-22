@@ -15,7 +15,7 @@ public interface ClientStorageDataTable<T extends ClientStorageStructure> extend
 
     public T getEntry(int entry) throws ClientStorageException;
 
-    public Object[][] asObjectArray(boolean prettyWrap);
+    public Object[][] asObjectArray();
 
     public ClientStorageFormat getFormat();
 

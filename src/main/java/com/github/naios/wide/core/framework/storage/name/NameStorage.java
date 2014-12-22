@@ -17,7 +17,8 @@ import java.util.Map;
  */
 public abstract class NameStorage
 {
-    protected final Map<Integer, String> storage = new HashMap<>();
+    private final Map<Integer, String> storage =
+            new HashMap<>();
 
     // Setups some storage specific stuff
     public void setup()
@@ -37,6 +38,11 @@ public abstract class NameStorage
     public String fail(final int entry)
     {
         return null;
+    }
+
+    protected void add(final int entry, final String name)
+    {
+        storage.put(entry, name);
     }
 
     // Loads the storage into the cache

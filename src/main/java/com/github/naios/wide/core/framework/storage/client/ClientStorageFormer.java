@@ -62,7 +62,7 @@ public enum ClientStorageFormer
     /**
      * sorted by this field, field is not included
      */
-    FT_SORT('d', Integer.BYTES, int.class),
+    FT_SORT('d', Integer.BYTES, Void.class),
 
     /**
      * sorted by this field and parsed to data
@@ -72,7 +72,7 @@ public enum ClientStorageFormer
     /**
      * Used in sql format to mark column present in sql dbc
      */
-    FT_SQL_PRESENT('p', Integer.BYTES, int.class),
+    FT_SQL_PRESENT('p', Integer.BYTES, Void.class),
 
     /**
      * Used in sql format to mark column absent in sql dbc
@@ -109,6 +109,11 @@ public enum ClientStorageFormer
     public TypeToken<?> getType()
     {
         return type;
+    }
+
+    public boolean isPresent()
+    {
+        return !getType().equals(FT_NA.getType());
     }
 
     public static ClientStorageFormer getFormerOfCharacter(final char former)

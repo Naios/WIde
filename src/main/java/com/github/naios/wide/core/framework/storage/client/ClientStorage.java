@@ -16,13 +16,13 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.core.framework.util.FormatterWrapper;
 import com.github.naios.wide.core.framework.util.StringUtil;
 import com.google.common.reflect.TypeToken;
 
@@ -96,7 +96,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     /**
      * Our strings in the ByteBuffer
      */
-    private final ClientStorageDataTable<T> dataTable;
+    private ClientStorageDataTable<T> dataTable;
 
     public ClientStorage(final String path) throws ClientStorageException
     {
@@ -167,11 +167,14 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
 
         if (Objects.nonNull(schema))
         {
-            final TableSchema tableSchema = schema.getSchemaOf(file.getName());
-            if (Objects.nonNull(tableSchema))
+            try
             {
+                final TableSchema tableSchema = schema.getSchemaOf(file.getName());
                 dataTable = new KnownSchemaDataTable<>(this, tableSchema, buffer);
                 return;
+            }
+            catch (final Exception e)
+            {
             }
         }
 
@@ -221,11 +224,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         return stringBlockSize;
     }
 
-    protected int getFieldSize()
-    {
-        return recordSize / fieldsCount;
-    }
-
     protected int getDataBlockOffset()
     {
         return getHeaderSize();
@@ -259,23 +257,6 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         return stringTable;
     }
 
-    protected int getOffset(final int y, final int x)
-    {
-        if ((y < 0 || y >= recordsCount) || (x < 0 || x >= fieldsCount))
-        {
-            // Should never occur
-            assert false;
-            return 0;
-        }
-
-        return getHeaderSize() + (y * recordSize) + (x * getFieldSize());
-    }
-
-    protected int getFieldOfOffset(final int offset)
-    {
-        return (offset % getRecordSize()) / getFieldSize();
-    }
-
     @Override
     public T getEntry(final int entry) throws ClientStorageException
     {
@@ -288,23 +269,13 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         return dataTable.getFormat();
     }
 
-    public void fillNameStorage(final Map<Integer, String> map, final int entryColumn, final int nameColumn)
-    {
-        // TODO
-    }
-
     /**
      * @return ClientStorage as Object Array (use toString() to get Content)
      */
+    @Override
     public Object[][] asObjectArray()
     {
-        return asObjectArray(false);
-    }
-
-    @Override
-    public Object[][] asObjectArray(final boolean prettyWrap)
-    {
-        return dataTable.asObjectArray(prettyWrap);
+        return dataTable.asObjectArray();
     }
 
     /**
@@ -313,10 +284,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     public String[][] asStringArray()
     {
         final Object[][] asObjects = asObjectArray();
-        final String[][] array = new String[recordsCount][fieldsCount];
-        for (int y = 0; y < recordsCount; ++y)
-            for (int x = 0; x < fieldsCount; ++x)
-                array[y][x] = asObjects[y][x].toString();
+        final int height = asObjects.length, width = asObjects[0].length;
+
+        final String[][] array = new String[height][width];
+        for (int y = 0; y < height; ++y)
+            for (int x = 0; x < width; ++x)
+                array[y][x] = new FormatterWrapper(asObjects[y][x]).toString();
 
         return array;
     }
@@ -326,7 +299,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     {
         return String.format("%s (%s) Storage: %s\n%s\n\n%s\n%s",
                 getExtension(), getMagicSig(), path, getFormat(), StringUtil.concat(" | ", getFieldNames()),
-                    Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n"));
+                    Arrays.deepToString(asStringArray()).replaceAll("],", "],\n"));
     }
 
     @Override

@@ -59,25 +59,18 @@ public class Test extends Script
 
     private void testClientStorages(final String[] args)
     {
-        /*final ClientStorage<UnknownClientStorageStructure> sceneSript =
-                new ClientStorageSelector<UnknownClientStorageStructure>
-                    ("SceneScript.db2").select();
-
         final ClientStorage<MapEntry> taxiNodes =
-                new ClientStorageSelector<MapEntry>("TaxiNodes.db2").select();
+                new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("TaxiNodes.db2")).select();
 
-        int count = 0;
-        for (final MapEntry nodes : taxiNodes)
-            if (++count > 5)
-                break;
-            else
-                System.out.println(nodes);*/
+        System.out.println(taxiNodes);
 
         final ClientStorage<MapEntry> mapStorage =
                 new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc"),
-                        ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
+                        ClientStoragePolicy.POLICY_SCHEMA_FIRST_ESTIMATE_AFTER).select();
 
-        // mapStorage.forEach(action -> System.out.println(action));
+        final NameStorage names = NameStorageHolder.instance().get("spell_name").getStorage();
+        for (int i = 0; i < 10; ++i)
+            System.out.println(StringUtil.convertStringToVarName(names.request(i)));
 
         System.out.println(mapStorage);
     }

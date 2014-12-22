@@ -68,7 +68,7 @@ public class DatabaseNameStorage extends NameStorage
                     "SELECT %s, %s FROM %s", entry, name, table));
 
             while (result.next())
-                storage.put(result.getInt(1), result.getString(2));
+                add(result.getInt(1), result.getString(2));
 
             result.close();
         }
