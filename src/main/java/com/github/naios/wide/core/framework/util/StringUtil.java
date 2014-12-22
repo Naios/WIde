@@ -61,9 +61,19 @@ public class StringUtil
         });
     }
 
+    public static String concat(final Iterable<String> iterable)
+    {
+        return concat(iterable.iterator());
+    }
+
     public static String concat(final String delemiter, final Iterable<String> iterable)
     {
         return concat(delemiter, iterable.iterator());
+    }
+
+    public static String concat(final Iterator<String> iterator)
+    {
+        return concat(new String(), iterator);
     }
 
     public static String concat(final String delemiter, final Iterator<String> iterator)

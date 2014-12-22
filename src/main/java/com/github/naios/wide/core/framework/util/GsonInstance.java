@@ -19,6 +19,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.core.framework.storage.client.ClientStorageFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -32,28 +33,34 @@ public class GsonInstance
         .excludeFieldsWithModifiers(Modifier.STATIC)
         // StringProperty Adapter
         .registerTypeAdapter(StringProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsString()),
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleStringProperty(json.getAsJsonPrimitive().getAsString()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleStringProperty()))
         // IntegerProperty Adapter
         .registerTypeAdapter(IntegerProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsInt()),
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleIntegerProperty(json.getAsJsonPrimitive().getAsInt()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleIntegerProperty()))
         // FloatProperty Adapter
         .registerTypeAdapter(FloatProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsFloat()),
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleFloatProperty(json.getAsJsonPrimitive().getAsFloat()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleFloatProperty()))
         // BooleanProperty Adapter
         .registerTypeAdapter(BooleanProperty.class,
-                new PropertyJSONAdapter<>(
-                        (observable, json) -> observable.set(json.getAsJsonPrimitive().getAsBoolean()),
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleBooleanProperty(json.getAsJsonPrimitive().getAsBoolean()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleBooleanProperty()))
+        // ClientStorageFormat Adapter
+        .registerTypeAdapter(ClientStorageFormat.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new ClientStorageFormat(json.getAsJsonPrimitive().getAsString()),
+                            (format) -> new JsonPrimitive(format.getFormat()),
+                                () -> new ClientStorageFormat("")))
         .create();
 
     public static String toJsonExcludeDefaultValues(final Object obj)

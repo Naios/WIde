@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.mapping.templates;
+package com.github.naios.wide.core.framework.storage.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +29,6 @@ import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 import com.github.naios.wide.core.framework.storage.mapping.MappingPlan;
-import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
 import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;

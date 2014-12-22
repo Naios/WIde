@@ -326,6 +326,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         return dataTable.getEntry(entry);
     }
 
+    @Override
+    public ClientStorageFormat getFormat()
+    {
+        return dataTable.getFormat();
+    }
+
     public void fillNameStorage(final Map<Integer, String> map, final int entryColumn, final int nameColumn)
     {
         // TODO

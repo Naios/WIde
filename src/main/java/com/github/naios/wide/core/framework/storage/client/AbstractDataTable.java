@@ -26,14 +26,18 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
 
     private final ByteBuffer buffer;
 
+    private final ClientStorageFormat format;
+
     private final Map<Integer, Integer> entryToOffsetCache =
             new HashMap<>();
 
-    public AbstractDataTable(final ClientStorage<T> storage, final ByteBuffer buffer)
+    public AbstractDataTable(final ClientStorage<T> storage, final ByteBuffer buffer, final ClientStorageFormat format)
     {
         this.storage = storage;
 
         this.buffer = buffer;
+
+        this.format = format;
     }
 
     public ClientStorage<T> getStorage()
@@ -51,6 +55,12 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
     {
         return new JsonMapper<>(schema, Arrays.asList(ClientStoragePrivateBase.class),
                 ClientStorageBaseImplementation.class);
+    }
+
+    @Override
+    public ClientStorageFormat getFormat()
+    {
+        return format;
     }
 
     protected void addEntryToOffset(final int entry, final int offset)

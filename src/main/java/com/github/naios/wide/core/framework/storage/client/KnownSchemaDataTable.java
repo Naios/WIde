@@ -27,7 +27,7 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     public KnownSchemaDataTable(final ClientStorage<T> storage, final TableSchema schema,
             final ByteBuffer buffer)
     {
-        super(storage, buffer);
+        super(storage, buffer, schema.getFormat());
 
         mapper = createMapper(schema);
 

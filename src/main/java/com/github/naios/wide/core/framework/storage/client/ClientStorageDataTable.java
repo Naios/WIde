@@ -17,6 +17,8 @@ public interface ClientStorageDataTable<T extends ClientStorageStructure> extend
 
     public Object[][] asObjectArray(boolean prettyWrap);
 
+    public ClientStorageFormat getFormat();
+
     @Override
     public Iterator<T> iterator();
 }

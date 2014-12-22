@@ -16,10 +16,9 @@ import com.github.naios.wide.core.framework.entities.server.world.CreatureTempla
 import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
+import com.github.naios.wide.core.framework.storage.client.ClientStorage;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
-import com.github.naios.wide.core.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.core.framework.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.core.framework.storage.client.test;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
 import com.github.naios.wide.core.framework.storage.name.NameStorageType;
@@ -61,12 +60,12 @@ public class Test extends Script
 
     private void testClientStorages(final String[] args)
     {
-        final test<UnknownClientStorageStructure> sceneSript =
+        final ClientStorage<UnknownClientStorageStructure> sceneSript =
                 new ClientStorageSelector<UnknownClientStorageStructure>
-                    (UnknownClientStorageStructure.class, ClientStorageStructure.getPathOfFile("SceneScript.db2")).select();
+                    ("SceneScript.db2").select();
 
-        final test<MapEntry> taxiNodes =
-                new ClientStorageSelector<MapEntry>(TaxiNodesStructure.class).select();
+        final ClientStorage<MapEntry> taxiNodes =
+                new ClientStorageSelector<MapEntry>("TaxiNodes.db2").select();
 
         int count = 0;
         for (final MapEntry nodes : taxiNodes)

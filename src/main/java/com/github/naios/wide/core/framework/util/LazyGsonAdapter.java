@@ -9,11 +9,8 @@
 package com.github.naios.wide.core.framework.util;
 
 import java.lang.reflect.Type;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import javafx.beans.value.WritableValue;
 
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
@@ -23,15 +20,17 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-public class PropertyJSONAdapter<T extends WritableValue<?>> implements JsonSerializer<T>, JsonDeserializer<T>, InstanceCreator<T>
+public class LazyGsonAdapter<T>
+    implements JsonSerializer<T>, JsonDeserializer<T>, InstanceCreator<T>
 {
-    private final BiConsumer<T, JsonElement> set;
+    private final Function<JsonElement, T> set;
 
     private final Function<T, JsonElement> get;
 
     private final Supplier<T> create;
 
-    public PropertyJSONAdapter(final BiConsumer<T, JsonElement> set, final Function<T, JsonElement> get, final Supplier<T> create)
+    public LazyGsonAdapter(final Function<JsonElement, T> set,
+            final Function<T, JsonElement> get, final Supplier<T> create)
     {
         this.set = set;
         this.get = get;
@@ -49,9 +48,7 @@ public class PropertyJSONAdapter<T extends WritableValue<?>> implements JsonSeri
     public T deserialize(final JsonElement json, final Type type,
             final JsonDeserializationContext context) throws JsonParseException
     {
-        final T obj = create.get();
-        set.accept(obj, json);
-        return obj;
+        return set.apply(json);
     }
 
     @Override

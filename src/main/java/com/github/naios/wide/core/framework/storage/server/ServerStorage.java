@@ -29,7 +29,6 @@ import com.github.naios.wide.core.framework.storage.mapping.Mapper;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
-import com.github.naios.wide.core.framework.storage.mapping.templates.SQLToPropertyMappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.core.framework.storage.server.helper.StructureState;

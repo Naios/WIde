@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.google.common.reflect.TypeToken;
 
+@SuppressWarnings("serial")
 class UnknownFormerException extends RuntimeException
 {
     public UnknownFormerException(final char former)
@@ -23,16 +24,59 @@ class UnknownFormerException extends RuntimeException
 
 public enum ClientStorageFormer
 {
+    /**
+     * not used or unknown, 4 byte size
+     */
     FT_NA('x', Integer.BYTES, int.class),
+
+    /**
+     * not used or unknown, byte
+     */
     FT_NA_BYTE('X', 1, byte.class),
+
+    /**
+     * string
+     */
     FT_STRING('s', Integer.BYTES, String.class),
+
+    /**
+     * float
+     */
     FT_FLOAT('f', Float.BYTES, float.class),
+
+    /**
+     * uint32
+     */
     FT_INT('i', Integer.BYTES, int.class),
+
+    /**
+     * uint8
+     */
     FT_BYTE('b', 1, byte.class),
+
+    /**
+     * uint64
+     */
     FT_LONG('l', Long.BYTES, long.class),
+
+    /**
+     * sorted by this field, field is not included
+     */
     FT_SORT('d', Integer.BYTES, int.class),
+
+    /**
+     * sorted by this field and parsed to data
+     */
     FT_IND('n', Integer.BYTES, int.class),
+
+    /**
+     * Used in sql format to mark column present in sql dbc
+     */
     FT_SQL_PRESENT('p', Integer.BYTES, int.class),
+
+    /**
+     * Used in sql format to mark column absent in sql dbc
+     */
     FT_SQL_ABSENT('a', Integer.BYTES, int.class);
 
     private final char former;
@@ -83,5 +127,12 @@ public enum ClientStorageFormer
             map.put(former.former, former);
 
         return map;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s (ID: \'%s\', Type: %s)",
+                name(), former, type.getClass().getName());
     }
 }

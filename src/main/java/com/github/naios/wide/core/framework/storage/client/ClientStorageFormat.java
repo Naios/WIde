@@ -12,9 +12,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ClientStorageFormat implements Iterable<ClientStorageFormer>
+import com.github.naios.wide.core.framework.util.CrossIterator;
+import com.github.naios.wide.core.framework.util.Pair;
+import com.github.naios.wide.core.framework.util.StringUtil;
+
+public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorageFormer>>
 {
     private final String format;
+
+    private final int size;
 
     private final Map<Integer, Integer> indexToOffsetCache =
             new HashMap<>();
@@ -23,12 +29,29 @@ public class ClientStorageFormat implements Iterable<ClientStorageFormer>
     {
         this.format = format;
 
-        int offset = 0, i = 0;
-        for (final ClientStorageFormer former : this)
+        int offset = 0;
+        for (final Pair<Integer, ClientStorageFormer> entry : this)
         {
-            indexToOffsetCache.put(i++, offset);
-            offset += former.getSize();
+            indexToOffsetCache.put(entry.first(), offset);
+            offset += entry.second().getSize();
         }
+
+        this.size = offset;
+    }
+
+    public int byteSize()
+    {
+        return size;
+    }
+
+    public String getFormat()
+    {
+        return format;
+    }
+
+    public int formatLength()
+    {
+        return format.length();
     }
 
     public ClientStorageFormer getFormerAtIndex(final int index)
@@ -42,23 +65,32 @@ public class ClientStorageFormat implements Iterable<ClientStorageFormer>
     }
 
     @Override
-    public Iterator<ClientStorageFormer> iterator()
+    public Iterator<Pair<Integer, ClientStorageFormer>> iterator()
     {
-        return new Iterator<ClientStorageFormer>()
+        return new Iterator<Pair<Integer, ClientStorageFormer>>()
         {
             private int pos = 0;
 
             @Override
             public boolean hasNext()
             {
-                return pos < format.length();
+                return pos < formatLength();
             }
 
             @Override
-            public ClientStorageFormer next()
+            public Pair<Integer, ClientStorageFormer> next()
             {
-                return getFormerAtIndex(pos++);
+                return new Pair<>(pos, getFormerAtIndex(pos++));
             }
         };
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("DBC Format: \"%s\"%s", format,
+                StringUtil.concat(new CrossIterator<Pair<Integer, ClientStorageFormer>, String>(this,
+                        entry -> String.format("\n\t%-3s %s",
+                                entry.first(), entry.second(), entry.second().getType().getClass().getName()))));
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import com.google.common.reflect.TypeToken;
 
 public class UnknownSchemaDataTable<T extends ClientStorageStructure>
-    implements ClientStorageDataTable<T>
+    extends AbstractDataTable<T>
 {
     private final ClientStorage<T> storage;
 
