@@ -31,13 +31,17 @@ public class EnviromentConfig
 
     private final GameBuild build;
 
+    private final StringProperty alias_definition;
+
     private final ClientStorageConfig client_storages;
 
     private final List<DatabaseConfig> databases;
 
-    public EnviromentConfig(final GameBuild build, final ClientStorageConfig client_storages)
+    public EnviromentConfig(final GameBuild build, final StringProperty alias_definition,
+            final ClientStorageConfig client_storages)
     {
         this.name = new SimpleStringProperty();
+        this.alias_definition = new SimpleStringProperty();
         this.build = build;
         this.client_storages = client_storages;
         this.databases = new ArrayList<>();
@@ -46,6 +50,11 @@ public class EnviromentConfig
     public StringProperty name()
     {
         return name;
+    }
+
+    public StringProperty alias_definition()
+    {
+        return alias_definition;
     }
 
     public ClientStorageConfig getClientStorageConfig()

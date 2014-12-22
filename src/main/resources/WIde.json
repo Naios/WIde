@@ -6,7 +6,7 @@
     {
       "name": "3.3.5",
       "build": "V3_3_5a_12340",
-      "alias_definition": schematics/alias.json
+      "alias_definition": "schematics/alias.json",
       "client_storages": {
         "path": "data/3.3.5/dbc",
         "schema": "schematics/3.3.5/dbc.json"
@@ -41,7 +41,7 @@
     {
       "name": "4.3.4",
       "build": "V4_3_4_15595",
-      "alias_definition": schematics/alias.json
+      "alias_definition": "schematics/alias.json",
       "client_storages": {
         "path": "data/4.3.4/dbc",
         "schema": "schematics/4.3.4/dbc.json"
@@ -76,7 +76,7 @@
     {
       "name": "6.x",
       "build": "V6_0_3_19103",
-      "alias_definition": schematics/alias.json
+      "alias_definition": "schematics/alias.json",
       "client_storages": {
         "path": "data/6.x/dbc",
         "schema": "schematics/6.x/dbc.json"
