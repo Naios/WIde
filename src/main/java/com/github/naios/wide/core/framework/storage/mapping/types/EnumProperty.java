@@ -6,13 +6,15 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.server.types;
+package com.github.naios.wide.core.framework.storage.mapping.types;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
 import com.github.naios.wide.core.Constants;
 
-public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
+public class EnumProperty<T extends Enum<T>>
+    extends SimpleIntegerProperty
+        implements ReadOnlyEnumProperty<T>
 {
     private final Class<T> type;
 
@@ -28,6 +30,7 @@ public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
         this.type = type;
     }
 
+    @Override
     public Class<T> getEnum()
     {
         return type;
@@ -38,6 +41,7 @@ public class EnumProperty<T extends Enum<T>> extends SimpleIntegerProperty
         set(value.ordinal());
     }
 
+    @Override
     public boolean is(final T value)
     {
         return get() == value.ordinal();

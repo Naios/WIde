@@ -20,12 +20,12 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
+import com.github.naios.wide.core.framework.storage.mapping.types.EnumProperty;
+import com.github.naios.wide.core.framework.storage.mapping.types.FlagProperty;
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.core.framework.storage.server.helper.ObservableValueStorageInfo;
-import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
-import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 import com.github.naios.wide.core.framework.util.CrossIterator;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.FormatterWrapper;

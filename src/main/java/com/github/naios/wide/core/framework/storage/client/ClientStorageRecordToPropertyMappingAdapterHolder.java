@@ -8,8 +8,6 @@
 
 package com.github.naios.wide.core.framework.storage.client;
 
-import java.sql.SQLException;
-
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.ReadOnlyFloatWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -24,10 +22,11 @@ import com.github.naios.wide.core.framework.storage.mapping.MappingAdapter;
 import com.github.naios.wide.core.framework.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.core.framework.storage.mapping.MappingMetaData;
 import com.github.naios.wide.core.framework.storage.mapping.MappingPlan;
+import com.github.naios.wide.core.framework.storage.mapping.types.EnumProperty;
+import com.github.naios.wide.core.framework.storage.mapping.types.FlagProperty;
+import com.github.naios.wide.core.framework.storage.mapping.types.ReadOnlyEnumProperty;
+import com.github.naios.wide.core.framework.storage.mapping.types.ReadOnlyFlagProperty;
 import com.github.naios.wide.core.framework.storage.server.AliasUtil;
-import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
-import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
-import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.google.common.reflect.TypeToken;
 
 public class ClientStorageRecordToPropertyMappingAdapterHolder
@@ -103,7 +102,6 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
              // FloatProperty
             .registerAdapter(TypeToken.of(ReadOnlyFloatProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFloatProperty>()
                 {
-
                     @Override
                     public ReadOnlyFloatProperty map(final ClientStorageRecord from,
                             final MappingPlan plan, final int index,
@@ -120,103 +118,40 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     }
                 })
             // Enum Property
-            .registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ClientStorageRecord, EnumProperty<?>>()
+            .registerAdapter(TypeToken.of(ReadOnlyEnumProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyEnumProperty<?>>()
                 {
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public EnumProperty map(final ClientStorageRecord from,
+                    public ReadOnlyEnumProperty map(final ClientStorageRecord from,
                             final MappingPlan plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        try
-                        {
-                            return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public boolean set(final EnumProperty<?> me, final Object value)
-                    {
-                        if (value instanceof Integer)
-                        {
-                            me.set((int)value);
-                            return true;
-                        }
-
-                        final Class<? extends Enum<?>> enumeration = me.getEnum();
-                        if (!enumeration.isAssignableFrom(value.getClass()))
-                            return false;
-
-                        for (final Enum<?> info : enumeration.getEnumConstants())
-                            if (info.equals(value))
-                            {
-                                me.set(info.ordinal());
-                                return true;
-                            }
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean setDefault(final EnumProperty<?> me)
-                    {
-                        me.set(0);
-                        return true;
+                        return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getIndex()));
                     }
 
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public EnumProperty<?> create(final MappingPlan plan, final int index,
+                    public ReadOnlyEnumProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
                         return createHelper(new EnumProperty(AliasUtil.getEnum(metaData.getAlias())), value);
                     }
                 })
             // Flag Property
-            .registerAdapter(TypeToken.of(FlagProperty.class), new MappingAdapter<ClientStorageRecord, FlagProperty<?>>()
+            .registerAdapter(TypeToken.of(ReadOnlyFlagProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFlagProperty<?>>()
                 {
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public FlagProperty map(final ClientStorageRecord from,
+                    public ReadOnlyFlagProperty map(final ClientStorageRecord from,
                             final MappingPlan plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        try
-                        {
-                            return new FlagProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    public boolean set(final FlagProperty<?> me, final Object value)
-                    {
-                        if (value instanceof Integer)
-                        {
-                            me.set((int)value);
-                            return true;
-                        }
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean setDefault(final FlagProperty<?> me)
-                    {
-                        me.set(FlagUtil.DEFAULT_VALUE);
-                        return true;
+                        return new FlagProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getIndex()));
                     }
 
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public FlagProperty<?> create(final MappingPlan plan, final int index,
+                    public ReadOnlyFlagProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
                         return createHelper(new FlagProperty(AliasUtil.getEnum(metaData.getAlias())), value);

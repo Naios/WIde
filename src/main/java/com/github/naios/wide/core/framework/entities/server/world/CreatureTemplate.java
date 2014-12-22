@@ -14,9 +14,9 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
+import com.github.naios.wide.core.framework.storage.mapping.types.EnumProperty;
+import com.github.naios.wide.core.framework.storage.mapping.types.FlagProperty;
 import com.github.naios.wide.core.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.core.framework.storage.server.types.EnumProperty;
-import com.github.naios.wide.core.framework.storage.server.types.FlagProperty;
 
 public interface CreatureTemplate extends ServerStorageStructure
 {

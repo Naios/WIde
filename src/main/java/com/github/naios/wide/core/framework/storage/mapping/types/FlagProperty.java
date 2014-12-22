@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.storage.server.types;
+package com.github.naios.wide.core.framework.storage.mapping.types;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import com.github.naios.wide.core.framework.util.FlagUtil;
 import com.github.naios.wide.core.framework.util.StringUtil;
 
-public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
+public class FlagProperty<T extends Enum<T>>
+    extends SimpleIntegerProperty
+        implements ReadOnlyFlagProperty<T>
 {
     private final Class<T> type;
 
@@ -32,21 +34,25 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
         this.type = type;
     }
 
+    @Override
     public Class<T> getEnum()
     {
         return type;
     }
 
+    @Override
     public int createFlag(final T flag)
     {
         return FlagUtil.createFlag(flag);
     }
 
+    @Override
     public boolean hasFlag(final T flag)
     {
         return FlagUtil.hasFlag(flag, get());
     }
 
+    @Override
     public List<T> getFlagList()
     {
         return FlagUtil.getFlagList(type, get());
@@ -62,6 +68,7 @@ public class FlagProperty<T extends Enum<T>> extends SimpleIntegerProperty
         set(get() &~ createFlag(flag));
     }
 
+    @Override
     public String asHex()
     {
         return StringUtil.asHex(get());
