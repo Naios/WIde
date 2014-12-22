@@ -23,6 +23,7 @@ import com.github.naios.wide.core.WIde;
 import com.github.naios.wide.core.framework.storage.mapping.schema.Schema;
 import com.github.naios.wide.core.framework.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.core.framework.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.core.framework.util.StringUtil;
 import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")
@@ -64,12 +65,6 @@ class MissingSchemaException extends ClientStorageException
 public abstract class ClientStorage<T extends ClientStorageStructure>
     implements ClientStorageDataTable<T>
 {
-    protected final static int FLOAT_CHECK_BOUNDS = 100000000;
-
-    protected final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
-
-    protected final static int STRING_CHECK_MAX_RECORDS = 5;
-
     private final String path;
 
     /**
@@ -184,9 +179,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
             throw new MissingSchemaException(path);
 
         dataTable = new UnknownSchemaDataTable<>(this, buffer);
-        if (!Objects.nonNull(schema))
-            throw new MissingSchemaException(path);
-    }
+     }
 
     public static String getPathForStorage(final String path)
     {
@@ -331,8 +324,9 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     @Override
     public String toString()
     {
-        return String.format("%s (%s) Storage: %s\n%s\n%s",
-                getExtension(), getMagicSig(), path, getFormat(), Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n"));
+        return String.format("%s (%s) Storage: %s\n%s\n\n%s\n%s",
+                getExtension(), getMagicSig(), path, getFormat(), StringUtil.concat(" | ", getFieldNames()),
+                    Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n"));
     }
 
     @Override

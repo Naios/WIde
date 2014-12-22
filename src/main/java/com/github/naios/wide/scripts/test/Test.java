@@ -75,9 +75,9 @@ public class Test extends Script
 
         final ClientStorage<MapEntry> mapStorage =
                 new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc"),
-                        ClientStoragePolicy.POLICY_SCHEMA_ONLY).select();
+                        ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
 
-        mapStorage.forEach(action -> System.out.println(action));
+        // mapStorage.forEach(action -> System.out.println(action));
 
         System.out.println(mapStorage);
     }

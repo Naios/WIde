@@ -46,7 +46,7 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
         this.size = offset;
     }
 
-    public int byteSize()
+    public int getByteSize()
     {
         return size;
     }
@@ -56,7 +56,7 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
         return format;
     }
 
-    public int formatLength()
+    public int length()
     {
         return format.length();
     }
@@ -81,7 +81,7 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
             @Override
             public boolean hasNext()
             {
-                return pos < formatLength();
+                return pos < length();
             }
 
             @Override

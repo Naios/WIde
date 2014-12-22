@@ -53,7 +53,7 @@ public class Terminal extends Module implements UIModule
         final DatabaseConfig config =
                 WIde.getConfig().get().getActiveEnviroment().getDatabaseConfig(DatabaseType.WORLD.getId());
 
-        final String cmdString = config.getEndpointString() + ": ";
+        final String cmdString = config.getEndpointString() + " > ";
 
         final String singleCommand = WIde.getEnviroment().getParameter("execute");
 
