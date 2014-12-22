@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javafx.beans.value.ObservableValue;
 
@@ -81,9 +83,15 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     public Object[][] asObjectArray(final boolean prettyWrap)
     {
         final Object[][] array = new Object[entries.size()][mapper.getPlan().getNumberOfElements()];
+
+        // Order keys
+        final Set<Integer> keys = new TreeSet<Integer>(entries.keySet());
+
         int y = 0;
-        for (final T entry : this)
+        for (final int key : keys)
         {
+            final T entry = getEntry(key);
+
             for (int x = 0; x < entry.getRawValues().size(); ++x)
                 array[y][x] = FormatterWrapper.format(entry.getRawValues().get(x), prettyWrap);
 

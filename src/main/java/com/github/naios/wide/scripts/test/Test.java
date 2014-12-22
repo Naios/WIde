@@ -17,6 +17,7 @@ import com.github.naios.wide.core.framework.extensions.scripts.Script;
 import com.github.naios.wide.core.framework.game.UnitClass;
 import com.github.naios.wide.core.framework.game.UnitFlags;
 import com.github.naios.wide.core.framework.storage.client.ClientStorage;
+import com.github.naios.wide.core.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.core.framework.storage.client.ClientStorageSelector;
 import com.github.naios.wide.core.framework.storage.name.NameStorage;
 import com.github.naios.wide.core.framework.storage.name.NameStorageHolder;
@@ -73,7 +74,8 @@ public class Test extends Script
                 System.out.println(nodes);*/
 
         final ClientStorage<MapEntry> mapStorage =
-                new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc")).select();
+                new ClientStorageSelector<MapEntry>(ClientStorage.getPathForStorage("Map.dbc"),
+                        ClientStoragePolicy.POLICY_SCHEMA_ONLY).select();
 
         mapStorage.forEach(action -> System.out.println(action));
 

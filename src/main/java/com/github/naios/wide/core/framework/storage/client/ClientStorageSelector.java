@@ -12,9 +12,19 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 {
     private final String path;
 
+    private final ClientStoragePolicy policy;
+
     public ClientStorageSelector(final String path)
     {
+        this (path, ClientStoragePolicy.DEFAULT_POLICY);
+    }
+
+    public ClientStorageSelector(final String path,
+            final ClientStoragePolicy policy)
+    {
         this.path = path;
+
+        this.policy = policy;
     }
 
     public ClientStorage<T> select() throws ClientStorageException
@@ -25,11 +35,11 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         switch (extension)
         {
             case ADBStorage.EXTENSION:
-                return new ADBStorage<T>(path);
+                return new ADBStorage<T>(path, policy);
             case DB2Storage.EXTENSION:
-                return new DB2Storage<T>(path);
+                return new DB2Storage<T>(path, policy);
             case DBCStorage.EXTENSION:
-                return new DBCStorage<T>(path);
+                return new DBCStorage<T>(path, policy);
             default:
                 return null;
         }

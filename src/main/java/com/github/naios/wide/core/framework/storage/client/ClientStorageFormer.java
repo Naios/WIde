@@ -27,12 +27,12 @@ public enum ClientStorageFormer
     /**
      * not used or unknown, 4 byte size
      */
-    FT_NA('x', Integer.BYTES, int.class),
+    FT_NA('x', Integer.BYTES, Void.class),
 
     /**
      * not used or unknown, byte
      */
-    FT_NA_BYTE('X', 1, byte.class),
+    FT_NA_BYTE('X', 1, Void.class),
 
     /**
      * string
@@ -77,7 +77,7 @@ public enum ClientStorageFormer
     /**
      * Used in sql format to mark column absent in sql dbc
      */
-    FT_SQL_ABSENT('a', Integer.BYTES, int.class);
+    FT_SQL_ABSENT('a', Integer.BYTES, Void.class);
 
     private final char former;
 
@@ -132,7 +132,7 @@ public enum ClientStorageFormer
     @Override
     public String toString()
     {
-        return String.format("%s (ID: \'%s\', Type: %s)",
-                name(), former, type.getClass().getName());
+        return String.format("%-10s (\'%s\' -> %s)",
+                name(), former, type.getRawType().getSimpleName());
     }
 }

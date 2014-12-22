@@ -20,9 +20,14 @@ public class DBCStorage<T extends ClientStorageStructure> extends ClientStorage<
 
     protected final static String EXTENSION = ".dbc";
 
-    public DBCStorage(final String path) throws ClientStorageException
+    public DBCStorage(final String path)
     {
         super(path);
+    }
+
+    public DBCStorage(final String path, final ClientStoragePolicy policy)
+    {
+        super(path, policy);
     }
 
     @Override

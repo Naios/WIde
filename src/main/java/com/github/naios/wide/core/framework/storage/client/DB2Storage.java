@@ -29,6 +29,11 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorage<
         super(path);
     }
 
+    public DB2Storage(final String path, final ClientStoragePolicy policy)
+    {
+        super(path, policy);
+    }
+
     @Override
     protected void finishHeaderReading(final ByteBuffer buffer)
     {

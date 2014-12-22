@@ -18,7 +18,7 @@ import com.github.naios.wide.core.framework.util.StringUtil;
 
 public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorageFormer>>
 {
-    private final String format;
+    private final String format, comment;
 
     private final int size;
 
@@ -27,7 +27,14 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
 
     public ClientStorageFormat(final String format)
     {
+        this (format, "");
+    }
+
+    public ClientStorageFormat(final String format, final String comment)
+    {
         this.format = format;
+
+        this.comment = comment;
 
         int offset = 0;
         for (final Pair<Integer, ClientStorageFormer> entry : this)
@@ -88,9 +95,9 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
     @Override
     public String toString()
     {
-        return String.format("DBC Format: \"%s\"%s", format,
+        return String.format("Format: \"%s\"%s%s", format, comment.isEmpty() ? "" : (" (" + comment + ") "),
                 StringUtil.concat(new CrossIterator<Pair<Integer, ClientStorageFormer>, String>(this,
-                        entry -> String.format("\n\t%-3s %s",
-                                entry.first(), entry.second(), entry.second().getType().getClass().getName()))));
+                        entry -> String.format("\n  %-3s %s",
+                                entry.first(), entry.second()))));
     }
 }

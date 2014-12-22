@@ -24,6 +24,11 @@ public class ADBStorage<T extends ClientStorageStructure> extends DB2Storage<T>
         super(path);
     }
 
+    public ADBStorage(final String path, final ClientStoragePolicy policy)
+    {
+        super(path, policy);
+    }
+
     @Override
     protected String getMagicSig()
     {

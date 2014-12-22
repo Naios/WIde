@@ -53,70 +53,11 @@ class MissingFileException extends ClientStorageException
 }
 
 @SuppressWarnings("serial")
-class OutOfBoundsException extends ClientStorageException
+class MissingSchemaException extends ClientStorageException
 {
-    public OutOfBoundsException()
+    public MissingSchemaException(final String path)
     {
-        super("Range is out of Bounds!");
-    }
-}
-
-@SuppressWarnings("serial")
-class KeyIsNoIntException extends ClientStorageException
-{
-    public KeyIsNoIntException()
-    {
-        super("Given DBC Structure has a Key assigned that isn't an int, impossible!");
-    }
-}
-
-@SuppressWarnings("serial")
-class MissingKeyException extends ClientStorageException
-{
-    public MissingKeyException()
-    {
-        super("Given Client Storage Structure has no Key assigned!");
-    }
-}
-
-@SuppressWarnings("serial")
-class MissingEntryException extends ClientStorageException
-{
-    public MissingEntryException()
-    {
-        super("Entry <unknown> is missing in the storage!");
-    }
-
-    public MissingEntryException(final int entry)
-    {
-        super(String.format("Entry %s is missing in the storage!", entry));
-    }
-}
-
-@SuppressWarnings("serial")
-class NoMatchedStructureException extends ClientStorageException
-{
-    public NoMatchedStructureException(final Class<? extends ClientStorageStructure> type, final String  mask, final String path)
-    {
-        super(String.format("Given Client Storage Structure mask in class %s (%s) does not match to file %s.", type.getName(), mask, path));
-    }
-}
-
-@SuppressWarnings("serial")
-class WrongStructureException extends ClientStorageException
-{
-    public WrongStructureException(final Class<? extends ClientStorageStructure> type, final String path)
-    {
-        super(String.format("Given Client Storage Structure %s is not valid for file %s.", type.getName(), path));
-    }
-}
-
-@SuppressWarnings("serial")
-class MappingFailedException extends ClientStorageException
-{
-    public MappingFailedException()
-    {
-        super("Failed with mapping or class creation!");
+        super(String.format("Didn't find any schema matching storage %s.", path));
     }
 }
 
@@ -128,6 +69,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     protected final static float FLOAT_CHECK_PERCENTAGE = 0.95f;
 
     protected final static int STRING_CHECK_MAX_RECORDS = 5;
+
+    private final String path;
 
     /**
      * The count of records (<b>Y / Rows</b>) of the Storage
@@ -162,6 +105,13 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
 
     public ClientStorage(final String path) throws ClientStorageException
     {
+        this (path, ClientStoragePolicy.DEFAULT_POLICY);
+    }
+
+    public ClientStorage(final String path, final ClientStoragePolicy policy) throws ClientStorageException
+    {
+        this.path = path;
+
         final File file = new File(path);
         if (!file.exists())
             throw new MissingFileException(path);
@@ -214,7 +164,10 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         stringTable = new ClientStorageStringTable(buffer, getStringBlockOffset());
 
         // Select our Schema
-        final Schema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
+        Schema schema = null;
+
+        if (policy.isSchemaProvided())
+            schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
                 .getClientStorageConfig().schema().get());
 
         if (Objects.nonNull(schema))
@@ -227,7 +180,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
             }
         }
 
+        if (!policy.isSchemaEstimated())
+            throw new MissingSchemaException(path);
+
         dataTable = new UnknownSchemaDataTable<>(this, buffer);
+        if (!Objects.nonNull(schema))
+            throw new MissingSchemaException(path);
     }
 
     public static String getPathForStorage(final String path)
@@ -373,7 +331,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     @Override
     public String toString()
     {
-        return Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n");
+        return String.format("%s (%s) Storage: %s\n%s\n%s",
+                getExtension(), getMagicSig(), path, getFormat(), Arrays.deepToString(asObjectArray(true)).replaceAll("],", "],\n"));
     }
 
     @Override
