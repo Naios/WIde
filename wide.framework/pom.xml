@@ -18,20 +18,11 @@
     <artifactId>framework</artifactId>
     <version>1.0</version>
 
-    <name>${bundle.symbolicName}</name>
+    <name>WIde Framework Libraries</name>
 
     <packaging>bundle</packaging>
 
     <dependencies>
-        <!--
-     | uncomment to add all imported (non-local) bundles to your compilation classpath
-    <dependency>
-      <type>pom</type>
-      <groupId>${parent.groupId}</groupId>
-      <artifactId>provision</artifactId>
-      <optional>true</optional>
-    </dependency>
-    -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi_R4_core</artifactId>
@@ -48,5 +39,4 @@
             <version>18.0</version>
         </dependency>
     </dependencies>
-
 </project>
