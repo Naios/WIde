@@ -19,8 +19,8 @@ See LICENSE file for full details.
 
 Requirements
 ---------------
-- JDK 8
-- [Maven](http://maven.apache.org/)
+- [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+- [Maven](http://maven.apache.org)
 
 Installation
 --------------
@@ -48,11 +48,11 @@ Console Mode Examples
 
     `java -jar target/wide* -e "printdbc TaxiNodes.db2"`
 
-Dependencys
+Dependencies
 --------------
-Dependencys are managed automatically through the maven build system.
+Dependencies are managed automatically through the maven build system.
 
-WIde uses following dependencys:
+WIde uses following dependencies:
 
 - [Apache commons-io](http://commons.apache.org/proper/commons-io/)
 
@@ -68,4 +68,4 @@ WIde uses following dependencys:
 
 - [MariaDB java-client](https://mariadb.com/kb/en/mariadb/client-libraries/mariadb-java-client/)
 
-See file doc/Dependencys.txt for a list of all dependencys and its licences.
+See file doc/Dependencies.txt for a list of all dependencies and its licences.
