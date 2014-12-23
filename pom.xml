@@ -62,7 +62,7 @@
            | some example Pax-Runner settings
           -->
           <provision>
-            <param>--platform=felix</param>
+            <param>--platform=equinox</param>
           </provision>
         </configuration>
         <executions>
