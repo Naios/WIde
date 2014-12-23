@@ -1,4 +1,4 @@
-package com.github.naios.internal;
+package com.github.naios.wide.framework.internal;
 
 import java.util.Dictionary;
 import java.util.Properties;
@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import com.github.naios.ExampleService;
+import com.github.naios.wide.framework.ExampleService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -22,7 +22,7 @@ public final class ExampleActivator
     public void start( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STARTING com.github.naios" );
+        System.out.println( "STARTING com.github.naios.wide" );
 
         final Multimap<Integer, String> myMultimap = ArrayListMultimap.create();
         myMultimap.put(1, "guava");
@@ -35,7 +35,7 @@ public final class ExampleActivator
         final Dictionary props = new Properties();
         // add specific service properties here...
 
-        System.out.println( "REGISTER com.github.naios.ExampleService" );
+        System.out.println( "REGISTER com.github.naios.wide.ExampleService" );
 
         // Register our example service implementation in the OSGi service registry
         bc.registerService( ExampleService.class.getName(), new ExampleServiceImpl(), props );
@@ -47,7 +47,7 @@ public final class ExampleActivator
     public void stop( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STOPPING com.github.naios" );
+        System.out.println( "STOPPING com.github.naios.wide" );
 
         // no need to unregister our service - the OSGi framework handles it for us
     }

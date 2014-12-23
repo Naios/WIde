@@ -1,4 +1,4 @@
-package com.github.naios;
+package com.github.naios.wide.framework;
 
 /**
  * Public API representing an example OSGi service

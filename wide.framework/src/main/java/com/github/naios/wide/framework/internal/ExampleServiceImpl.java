@@ -1,10 +1,10 @@
-package com.github.naios.internal;
+package com.github.naios.wide.framework.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.naios.ExampleService;
+import com.github.naios.wide.framework.ExampleService;
 
 /**
  * Internal implementation of our example OSGi service

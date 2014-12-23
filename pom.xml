@@ -26,7 +26,7 @@
   <artifactId>wide</artifactId>
   <version>1.0</version>
 
-  <name>com.github.naios.wide (OSGi project)</name>
+  <name>WIde MMORPG Framework Tools</name>
 
   <!--
    | describe your project here
@@ -47,7 +47,7 @@
   <modules>
     <module>poms</module>
     <module>provision</module>
-    <module>com.github.naios</module>
+    <module>wide.framework</module>
   </modules>
 
   <build>
