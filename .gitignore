@@ -1,2 +1,21 @@
+# WIde
+WIde.json
+git.properties
+data/
+cache/
+schematics/
+
+# Maven
 target/
 runner/
+META-INF/
+build.properties
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea
+*.iml
