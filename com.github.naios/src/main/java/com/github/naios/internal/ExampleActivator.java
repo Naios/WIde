@@ -7,6 +7,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import com.github.naios.ExampleService;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Extension of the default OSGi bundle activator
@@ -17,12 +19,20 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework starts our bundle
      */
-    public void start( BundleContext bc )
+    public void start( final BundleContext bc )
         throws Exception
     {
         System.out.println( "STARTING com.github.naios" );
 
-        Dictionary props = new Properties();
+        final Multimap<Integer, String> myMultimap = ArrayListMultimap.create();
+        myMultimap.put(1, "guava");
+        myMultimap.put(1, "resolved and");
+        myMultimap.put(1, "works");
+
+        System.out.println(String.format("DEBUG: %s", myMultimap.asMap().get(1).toString()));
+
+
+        final Dictionary props = new Properties();
         // add specific service properties here...
 
         System.out.println( "REGISTER com.github.naios.ExampleService" );
@@ -34,7 +44,7 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework stops our bundle
      */
-    public void stop( BundleContext bc )
+    public void stop( final BundleContext bc )
         throws Exception
     {
         System.out.println( "STOPPING com.github.naios" );
