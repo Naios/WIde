@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-  <parent>
-    <relativePath>../poms/compiled/</relativePath>
-    <groupId>com.github.naios.wide.build</groupId>
-    <artifactId>compiled-bundle-settings</artifactId>
+    <parent>
+        <relativePath>../poms/compiled/</relativePath>
+        <groupId>com.github.naios.wide.build</groupId>
+        <artifactId>compiled-bundle-settings</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <properties>
+        <bundle.symbolicName>com.github.naios</bundle.symbolicName>
+        <bundle.namespace>com.github.naios</bundle.namespace>
+    </properties>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.github.naios.wide</groupId>
+    <artifactId>com.github.naios</artifactId>
     <version>1.0</version>
-  </parent>
 
-  <properties>
-    <bundle.symbolicName>com.github.naios</bundle.symbolicName>
-    <bundle.namespace>com.github.naios</bundle.namespace>
-  </properties>
+    <name>${bundle.symbolicName}</name>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.naios.wide</groupId>
-  <artifactId>com.github.naios</artifactId>
-  <version>1.0</version>
+    <packaging>bundle</packaging>
 
-  <name>${bundle.symbolicName}</name>
-
-  <packaging>bundle</packaging>
-
-  <dependencies>
-    <!--
+    <dependencies>
+        <!--
      | uncomment to add all imported (non-local) bundles to your compilation classpath
     <dependency>
       <type>pom</type>
@@ -32,16 +32,21 @@
       <optional>true</optional>
     </dependency>
     -->
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_core</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi_R4_compendium</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+    </dependencies>
 
 </project>
