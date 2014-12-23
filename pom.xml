@@ -48,6 +48,7 @@
     <module>poms</module>
     <module>provision</module>
     <module>com.google.guava</module>
+    <module>com.github.naios</module>
   </modules>
 
   <build>
