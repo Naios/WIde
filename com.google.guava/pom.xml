@@ -18,7 +18,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.naios.wide</groupId>
   <artifactId>com.google.guava</artifactId>
-  <version>18.0-001-SNAPSHOT</version>
+  <version>18.0</version>
 
   <name>${bundle.symbolicName} ${wrapped.version} [osgi]</name>
 
