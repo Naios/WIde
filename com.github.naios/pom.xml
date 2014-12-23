@@ -43,8 +43,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.github.naios.wide</groupId>
-            <artifactId>com.google.guava</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
     </dependencies>
