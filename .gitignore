@@ -8,7 +8,6 @@ schematics/
 # Maven
 target/
 runner/
-META-INF/
 build.properties
 
 # Eclipse
