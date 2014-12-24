@@ -1,12 +1,11 @@
 package com.github.naios.wide.framework.internal;
 
-import java.util.Dictionary;
-import java.util.Properties;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
-import com.github.naios.wide.framework.DatabasePoolService;
+import com.github.naios.wide.database_pool.DatabasePoolService;
+import com.github.naios.wide.framework.FrameworkService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -32,14 +31,20 @@ public final class ExampleActivator
 
         System.out.println(String.format("DEBUG: %s", myMultimap.asMap().get(1).toString()));
 
+        bc.registerService( FrameworkService.class.getName(), new FrameworkServiceImpl(), null );
 
-        final Dictionary props = new Properties();
-        // add specific service properties here...
+        try
+        {
+            System.out.println(String.format("DEBUG: %s", "say..."));
+            final ServiceReference ref = bc.getServiceReference(DatabasePoolService.class.getName());
+            System.out.println(String.format("DEBUG: %s", "and..."));
+            ((DatabasePoolService) bc.getService(ref)).sayHello();
+        }
+        catch (final Throwable e)
+        {
+            e.printStackTrace();
+        }
 
-        System.out.println("Stopping " + getClass().getCanonicalName());
-
-        // Register our example service implementation in the OSGi service registry
-        bc.registerService( DatabasePoolService.class.getName(), new DatabasePoolServiceImpl(), props );
     }
 
     /**
@@ -49,9 +54,8 @@ public final class ExampleActivator
     public void stop( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STOPPING com.github.naios.wide" );
+        System.out.println("Stopping " + getClass().getCanonicalName());
 
-        // no need to unregister our service - the OSGi framework handles it for us
     }
 }
 
