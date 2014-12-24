@@ -19,10 +19,11 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework starts our bundle
      */
+    @Override
     public void start( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STARTING com.github.naios.wide" );
+        System.out.println("Stopping " + getClass().getCanonicalName());
 
         final Multimap<Integer, String> myMultimap = ArrayListMultimap.create();
         myMultimap.put(1, "guava");
@@ -35,7 +36,7 @@ public final class ExampleActivator
         final Dictionary props = new Properties();
         // add specific service properties here...
 
-        System.out.println( "REGISTER com.github.naios.wide.ExampleService" );
+        System.out.println("Stopping " + getClass().getCanonicalName());
 
         // Register our example service implementation in the OSGi service registry
         bc.registerService( ExampleService.class.getName(), new ExampleServiceImpl(), props );
@@ -44,6 +45,7 @@ public final class ExampleActivator
     /**
      * Called whenever the OSGi framework stops our bundle
      */
+    @Override
     public void stop( final BundleContext bc )
         throws Exception
     {

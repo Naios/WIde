@@ -21,7 +21,7 @@ public final class ExampleActivator
     public void start( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STARTING com.github.naios.wide" );
+        System.out.println("Starting " + getClass().getCanonicalName());
 
         final Dictionary props = new Properties();
         // add specific service properties here...
@@ -39,7 +39,7 @@ public final class ExampleActivator
     public void stop( final BundleContext bc )
         throws Exception
     {
-        System.out.println( "STOPPING com.github.naios.wide" );
+        System.out.println("Stopping " + getClass().getCanonicalName());
 
         // no need to unregister our service - the OSGi framework handles it for us
     }
