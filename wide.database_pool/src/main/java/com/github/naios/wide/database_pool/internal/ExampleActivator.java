@@ -6,8 +6,6 @@ import java.util.Properties;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import com.github.naios.wide.database_pool.DatabasePoolService;
-
 /**
  * Extension of the default OSGi bundle activator
  */
@@ -26,10 +24,10 @@ public final class ExampleActivator
         final Dictionary props = new Properties();
         // add specific service properties here...
 
-        System.out.println( "REGISTER com.github.naios.wide.ExampleService" );
+        // System.out.println( "REGISTER com.github.naios.wide.ExampleService" );
 
         // Register our example service implementation in the OSGi service registry
-        bc.registerService(DatabasePoolService.class.getName(), new DatabasePoolServiceImpl(), props);
+        // bc.registerService(DatabasePoolService.class.getName(), new DatabasePoolServiceImpl(), props);
     }
 
     /**
