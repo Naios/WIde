@@ -38,5 +38,10 @@
             <artifactId>guava</artifactId>
             <version>18.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.naios.wide</groupId>
+            <artifactId>database_pool</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

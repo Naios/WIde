@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import com.github.naios.wide.framework.ExampleService;
+import com.github.naios.wide.framework.DatabasePoolService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -39,7 +39,7 @@ public final class ExampleActivator
         System.out.println("Stopping " + getClass().getCanonicalName());
 
         // Register our example service implementation in the OSGi service registry
-        bc.registerService( ExampleService.class.getName(), new ExampleServiceImpl(), props );
+        bc.registerService( DatabasePoolService.class.getName(), new DatabasePoolServiceImpl(), props );
     }
 
     /**
