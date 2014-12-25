@@ -7,7 +7,7 @@ git.properties
 
 # Maven
 target/
-runner/
+/runner
 build.properties
 
 # Eclipse
