@@ -47,7 +47,6 @@
         <module>wide.database_pool</module>
     </modules>
 
-
     <dependencyManagement>
         <dependencies>
             <!-- Project Modules-->
@@ -62,9 +61,21 @@
                 <version>1.0</version>
             </dependency>
 
-            <!-- OSGI-->
+            <!-- OSGI -->
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>4.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>4.3.1</version>
+            </dependency>
 
-            <!-- Dependencies-->
+            <!-- Blueprint -->
+
+            <!-- Dependencies -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
