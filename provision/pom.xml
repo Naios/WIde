@@ -66,12 +66,15 @@
             <artifactId>pax-logging-api</artifactId>
         </dependency>
 
-        <!--
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
         </dependency>
-        -->
+
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock</artifactId>
+        </dependency>
 
         <!-- Dependencies -->
         <dependency>
