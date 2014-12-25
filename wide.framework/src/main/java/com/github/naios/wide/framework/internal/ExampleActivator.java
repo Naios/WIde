@@ -2,9 +2,7 @@ package com.github.naios.wide.framework.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
-import com.github.naios.wide.database_pool.DatabasePoolService;
 import com.github.naios.wide.framework.FrameworkService;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -22,7 +20,7 @@ public final class ExampleActivator
     public void start( final BundleContext bc )
         throws Exception
     {
-        System.out.println("Stopping " + getClass().getCanonicalName());
+        System.out.println("Starting " + getClass().getCanonicalName());
 
         final Multimap<Integer, String> myMultimap = ArrayListMultimap.create();
         myMultimap.put(1, "guava");
@@ -33,6 +31,7 @@ public final class ExampleActivator
 
         bc.registerService( FrameworkService.class.getName(), new FrameworkServiceImpl(), null );
 
+        /*
         try
         {
             System.out.println(String.format("DEBUG: %s", "say..."));
@@ -44,7 +43,7 @@ public final class ExampleActivator
         {
             e.printStackTrace();
         }
-
+    */
     }
 
     /**
