@@ -7,6 +7,8 @@ schematics/
 
 # Maven
 target/
+runner/
+build.properties
 
 # Eclipse
 .project
