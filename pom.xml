@@ -41,6 +41,15 @@
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
 
         <org.ops4j.pax.logging.DefaultServiceLog.level>WARN</org.ops4j.pax.logging.DefaultServiceLog.level>
+
+        <!-- Add JavaFX to the OSGI default Classpath-->
+        <org.osgi.framework.system.packages.extra>
+            javafx.animation, javafx.application, javafx.beans, javafx.beans.binding, javafx.beans.property, javafx.beans.property.adapter, javafx.beans.value,\
+            javafx.collections, javafx.concurrent,  javafx.embed.swing, javafx.embed.swt, javafx.event, javafx.fxml, javafx.geometry, javafx.scene, javafx.scene.canvas,\
+            javafx.scene.chart, javafx.scene.control, javafx.scene.control.cell, javafx.scene.effect, javafx.scene.image,  javafx.scene.input, javafx.scene.layout,\
+            javafx.scene.media, javafx.scene.paint, javafx.scene.shape,  javafx.scene.text, javafx.scene.transform, javafx.scene.web, javafx.stage, javafx.util,\
+            javafx.util.converter, com.sun.javafx.application
+        </org.osgi.framework.system.packages.extra>
     </properties>   
 
     <modules>

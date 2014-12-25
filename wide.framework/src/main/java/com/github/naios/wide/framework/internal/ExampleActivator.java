@@ -1,5 +1,8 @@
 package com.github.naios.wide.framework.internal;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -30,6 +33,25 @@ public final class ExampleActivator
         System.out.println(String.format("DEBUG: %s", myMultimap.asMap().get(1).toString()));
 
         bc.registerService( FrameworkService.class.getName(), new FrameworkServiceImpl(), null );
+
+
+        // Java FX Test
+
+        System.out.println("testing fx now");
+        try
+        {
+
+            final StringProperty property = new SimpleStringProperty("this is a javaFX Test");
+            System.out.println("im here 1");
+            System.out.println(property);
+            System.out.println("im here 2");
+        }
+        catch (final Throwable e)
+        {
+            e.printStackTrace();
+        }
+
+        System.out.println("test end");
 
         /*
         try
