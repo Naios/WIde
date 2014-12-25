@@ -40,10 +40,8 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- dependency pom representing the global classpath of imported bundles -->
             <dependency>
-                <!--
-         | dependency pom representing the global classpath of imported bundles
-        -->
                 <type>pom</type>
                 <groupId>com.github.naios.wide.build</groupId>
                 <artifactId>provision</artifactId>
@@ -67,5 +65,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>

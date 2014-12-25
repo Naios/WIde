@@ -2,60 +2,85 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <parent>
-    <groupId>com.github.naios.wide.build</groupId>
-    <artifactId>shared-plugin-settings</artifactId>
-    <version>1.0</version>
-  </parent>
+    <parent>
+        <groupId>com.github.naios.wide.build</groupId>
+        <artifactId>shared-plugin-settings</artifactId>
+        <version>1.0</version>
+    </parent>
 
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>compiled-bundle-settings</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>compiled-bundle-settings</artifactId>
 
-  <name>wide - bundle instructions</name>
+    <name>wide - bundle instructions</name>
 
-  <packaging>pom</packaging>
+    <packaging>pom</packaging>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <!--
-       | example additional resource entries, useful when building Eclipse RCP applications
-      -->
-      <resource>
-        <directory>.</directory>
-        <includes>
-          <include>plugin.xml</include>
-          <include>plugin.properties</include>
-          <include>icons/**</include>
-        </includes>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <!--
-         | the following instructions build a simple set of public/private classes into an OSGi bundle
-        -->
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-            <Bundle-Version>${pom.version}</Bundle-Version>
-            <!--
-             | assume public classes are in the top package, and private classes are under ".internal"
-            -->
-            <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${pom.version}"</Export-Package>
-            <Private-Package>${bundle.namespace}.internal.*</Private-Package>
-            <!--
-             | each module can override these defaults in their osgi.bnd file
-            -->
-            <_include>-osgi.bnd</_include>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
 
+            <!-- example additional resource entries, useful when building Eclipse RCP applications -->
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>plugin.xml</include>
+                    <include>plugin.properties</include>
+                    <include>icons/**</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <!-- the following instructions build a simple set of public/private classes into an OSGi bundle -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
+                        <Bundle-Version>${pom.version}</Bundle-Version>
+                        <!--assume public classes are in the top package, and private classes are under ".internal" -->
+                        <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${pom.version}"</Export-Package>
+                        <Private-Package>${bundle.namespace}.internal.*</Private-Package>
+                        <!-- each module can override these defaults in their osgi.bnd file -->
+                        <_include>-osgi.bnd</_include>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.1.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <prefix>git</prefix>
+                    <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                    <verbose>false</verbose>
+                    <useNativeGit>false</useNativeGit>
+                    <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                    <skipPoms>true</skipPoms>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>src/main/resources/properties/git.properties</generateGitPropertiesFilename>
+                    <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                    <abbrevLength>7</abbrevLength>
+                    <skip>false</skip>
+                    <excludeProperties>
+                        <excludeProperty>git.commit.user.*</excludeProperty>
+                        <excludeProperty>git.build.user.*</excludeProperty>
+                        <excludeProperty>git.commit.message.*</excludeProperty>
+                        <excludeProperty>git.remote.*</excludeProperty>
+                    </excludeProperties>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
