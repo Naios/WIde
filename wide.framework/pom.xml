@@ -43,10 +43,5 @@
             <artifactId>database_pool</artifactId>
             <version>1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.1</version>
-        </dependency>
     </dependencies>
 </project>

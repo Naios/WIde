@@ -33,10 +33,5 @@
             <artifactId>osgi_R4_compendium</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-            <version>1.0.1</version>
-        </dependency>
     </dependencies>
 </project>

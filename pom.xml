@@ -5,9 +5,16 @@
     <artifactId>wide</artifactId>
     <version>1.0</version>
 
-    <name>WIde - MMORPG Framework Tools</name>
+    <packaging>pom</packaging>
 
+    <name>WIde - MMORPG Framework Tools</name>
     <url>https://github.com/Naios/WIde</url>
+
+    <scm>
+        <connection>scm:git:git@github.com:Naios/WIde.git</connection>
+        <developerConnection>scm:git:git@github.com:Naios/WIde.git</developerConnection>
+        <url>git@github.com:Naios/WIde.git</url>
+    </scm>
 
     <licenses>
         <license>
@@ -31,9 +38,23 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.osgi.service.http.port>8080</org.osgi.service.http.port>
         <org.osgi.service.http.port.secure>8443</org.osgi.service.http.port.secure>
-    </properties>
+    </properties>   
 
-    <packaging>pom</packaging>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
+                <artifactId>framework</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
+                <artifactId>database-pool</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <modules>
         <module>poms</module>
@@ -44,7 +65,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.ops4j</groupId>
                 <artifactId>maven-pax-plugin</artifactId>
