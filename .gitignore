@@ -1,9 +1,9 @@
 # WIde
 WIde.json
 git.properties
-data/
-cache/
-schematics/
+/data
+/cache
+/schematics
 
 # Maven
 target/
