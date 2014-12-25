@@ -73,7 +73,7 @@
                 <version>4.3.1</version>
             </dependency>
 
-            <!-- Blueprint -->
+            <!-- Aries Blueprint -->
             <dependency>
                 <groupId>org.apache.aries.blueprint</groupId>
                 <artifactId>org.apache.aries.blueprint</artifactId>
@@ -115,23 +115,28 @@
                 <version>1.0.0</version>
             </dependency>
 
+            <!-- Required by Aries -->
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-all</artifactId>
                 <version>5.0.3</version>
             </dependency>
 
+            <!-- Required by Aries -->
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
                 <version>1.8.1</version>
             </dependency>
+
+            <!-- Required by Aries -->
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
                 <version>1.8.1</version>
             </dependency>
 
+            <!-- Required by pax-logging-service -->
             <dependency>
                 <groupId>org.jmock</groupId>
                 <artifactId>jmock</artifactId>

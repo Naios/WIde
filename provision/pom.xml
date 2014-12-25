@@ -22,7 +22,7 @@
             <artifactId>org.osgi.compendium</artifactId>
         </dependency>
 
-        <!-- Blueprint -->
+        <!-- Aries Blueprint -->
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
@@ -56,21 +56,25 @@
             <artifactId>org.apache.aries.quiesce.api</artifactId>
         </dependency>
 
+        <!-- Required by Aries -->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-all</artifactId>
         </dependency>
 
+        <!-- Required by Aries -->
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
         </dependency>
 
+        <!-- Required by Aries -->
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
         </dependency>
 
+        <!-- Required by pax-logging-service -->
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock</artifactId>
