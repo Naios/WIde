@@ -28,6 +28,8 @@ public final class ExampleActivator
 
         // Register our example service implementation in the OSGi service registry
         // bc.registerService(DatabasePoolService.class.getName(), new DatabasePoolServiceImpl(), props);
+
+        System.out.println(System.getProperty("org.osgi.framework.system.packages.extra"));
     }
 
     /**
