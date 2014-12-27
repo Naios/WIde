@@ -9,6 +9,7 @@
 package com.github.naios.wide.database_pool.internal;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -22,6 +23,11 @@ public class DatabaseImpl implements Database
 
     private final BooleanProperty isOpen =
             new SimpleBooleanProperty();
+
+    public DatabaseImpl(final String connection, final String user, final String password) throws SQLException
+    {
+
+    }
 
     @Override
     public BooleanProperty isOpen()

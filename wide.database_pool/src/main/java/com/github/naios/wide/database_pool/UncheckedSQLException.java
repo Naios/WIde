@@ -8,10 +8,17 @@
 
 package com.github.naios.wide.database_pool;
 
+import java.sql.SQLException;
+
 /**
  * An unchecked exception type to wrap {@link java.sql.SQLException}'s
  */
-public abstract class UncheckedSQLException extends RuntimeException
+public class UncheckedSQLException extends RuntimeException
 {
     private static final long serialVersionUID = 2791696355518638817L;
+
+    public UncheckedSQLException(final SQLException exception)
+    {
+        super(exception);
+    }
 }
