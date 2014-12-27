@@ -1,6 +1,5 @@
 # WIde
-WIde.json
-git.properties
+/WIde.json
 /data
 /cache
 /schematics
@@ -9,6 +8,7 @@ git.properties
 target/
 /runner
 build.properties
+git.properties
 
 # Eclipse
 .project
