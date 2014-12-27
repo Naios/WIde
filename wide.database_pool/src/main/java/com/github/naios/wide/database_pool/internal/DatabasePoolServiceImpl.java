@@ -6,6 +6,8 @@ import java.util.Objects;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 
 import com.github.naios.wide.configuration.ConfigService;
@@ -57,8 +59,7 @@ public final class DatabasePoolServiceImpl
             e.printStackTrace();
         }*/
 
-        /*
-        currentEnviroment.bind(config. activeEnviroment());
+        currentEnviroment.bind(config.activeEnviroment());
         currentEnviroment.addListener(new ChangeListener<String>()
         {
             @Override
@@ -76,7 +77,9 @@ public final class DatabasePoolServiceImpl
                         database.update();
                 });
             }
-        });*/
+        });
+
+        System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
     }
 
     public void close()
@@ -86,6 +89,13 @@ public final class DatabasePoolServiceImpl
             connections.remove(id);
             database.close();
         });
+
+        System.out.println(String.format("DEBUG: %s", "DatabasePoolService::close()"));
+    }
+
+    public void setConfig(final ConfigService config)
+    {
+        this.config = config;
     }
 
     @Override
@@ -111,17 +121,5 @@ public final class DatabasePoolServiceImpl
         final DatabaseImpl database = new DatabaseImpl(connection, user, password, id, table);
         connections.put(id, database);
         return database;
-    }
-
-    public void bindConfig(final ConfigService config)
-    {
-        System.out.println(String.format("DEBUG: %s = %s (%s)", "bindConfig", config.title().get(), config.description().get()));
-        this.config = config;
-    }
-
-    public void unbindConfig(final ConfigService config)
-    {
-        System.out.println(String.format("DEBUG: %s", "unbindConfig"));
-        this.config = null;
     }
 }

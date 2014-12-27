@@ -6,20 +6,18 @@
  * See file LICENSE for full license details.
  -->
 
-<blueprint default-activation="eager" default-availability="optional"
-	default-timeout="300000" xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <description>WIde - MMORPG Framework Tools</description>
 
-    <bean id="databasePool" class="com.github.naios.wide.database_pool.internal.DatabasePoolServiceImpl"
-          init-method="open" destroy-method="close"/>
+    <reference id="configService" interface="com.github.naios.wide.configuration.ConfigService"/>
 
-    <reference id="configService" availability="mandatory" interface="com.github.naios.wide.configuration.ConfigService">
-        <reference-listener ref="databasePool" bind-method="bindConfig" unbind-method="unbindConfig"/>
-    </reference>
+    <bean id="databasePool" class="com.github.naios.wide.database_pool.internal.DatabasePoolServiceImpl"
+          init-method="open" destroy-method="close">
+        <property name="config" ref="configService"/>
+    </bean>
 
     <service id="databasePoolService" ref="databasePool"
-             interface="com.github.naios.wide.database_pool.DatabasePoolService"
-             depends-on="configService"/>
+             interface="com.github.naios.wide.database_pool.DatabasePoolService"/>
 
 </blueprint>

@@ -21,7 +21,7 @@ import com.github.naios.wide.database_pool.UncheckedSQLException;
 
 public class DatabaseImpl implements Database
 {
-    private Connection connection;
+    private final Connection connection = null;
 
     private final BooleanProperty isOpen =
             new SimpleBooleanProperty();
