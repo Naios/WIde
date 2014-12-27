@@ -8,27 +8,29 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
-public class QueryTypeConfigImpl
+import com.github.naios.wide.configuration.QueryTypeConfig;
+
+public class QueryTypeConfigImpl implements QueryTypeConfig
 {
-    /*
     private final QueryType type;
 
-    private final VariablizeConfig variablize;
+    private final VariablizeConfigImpl variablize;
 
-    public QueryTypeConfigImpl(final QueryType type, final VariablizeConfig variablize)
+    public QueryTypeConfigImpl(final QueryType type, final VariablizeConfigImpl variablize)
     {
         this.type = type;
         this.variablize = variablize;
     }
 
+    @Override
     public QueryType getType()
     {
         return type;
     }
 
-    public VariablizeConfig getVariablize()
+    @Override
+    public VariablizeConfigImpl getVariablize()
     {
         return variablize;
     }
-    */
 }

@@ -8,14 +8,16 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import com.github.naios.wide.configuration.VariablizeConfig;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class VariablizeConfig
+public class VariablizeConfigImpl implements VariablizeConfig
 {
     private final BooleanProperty custom, names, enums, flags;
 
-    public VariablizeConfig()
+    public VariablizeConfigImpl()
     {
         this.custom = new SimpleBooleanProperty();
         this.names = new SimpleBooleanProperty();
@@ -23,21 +25,25 @@ public class VariablizeConfig
         this.flags = new SimpleBooleanProperty();
     }
 
+    @Override
     public BooleanProperty custom()
     {
         return custom;
     }
 
+    @Override
     public BooleanProperty names()
     {
         return names;
     }
 
+    @Override
     public BooleanProperty enums()
     {
         return enums;
     }
 
+    @Override
     public BooleanProperty flags()
     {
         return flags;

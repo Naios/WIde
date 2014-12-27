@@ -14,6 +14,8 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.Config;
+import com.github.naios.wide.configuration.EnviromentConfig;
+import com.github.naios.wide.configuration.QueryConfig;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
@@ -50,14 +52,15 @@ public class ConfigImpl implements Config
         return active_enviroment;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List<EnviromentConfigImpl> getEnviroments()
+    public List<EnviromentConfig> getEnviroments()
     {
-        return enviroments;
+        return (List)enviroments;
     }
 
     @Override
-    public QueryConfigImpl getQueryConfig()
+    public QueryConfig getQueryConfig()
     {
         return querys;
     }

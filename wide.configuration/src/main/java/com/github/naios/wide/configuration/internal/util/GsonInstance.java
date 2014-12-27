@@ -25,6 +25,10 @@ import com.google.gson.JsonPrimitive;
 
 public class GsonInstance
 {
+    /**
+     * The Gson instance used in this bundle<br>
+     * Including registered type adapters for javafx propertys and pretty print set
+     */
     public final static Gson INSTANCE = new GsonBuilder()
         // Pretty print
         .setPrettyPrinting()
@@ -56,10 +60,13 @@ public class GsonInstance
                                 () -> new SimpleBooleanProperty()))
         .create();
 
+    /**
+     * Converts an object to json<br>
+     * Deletes default value declarations such as int=0, boolean=false or empty strings
+     */
     public static String toJsonExcludeDefaultValues(final Object obj)
     {
         return INSTANCE.toJson(obj)
-                // Delete default value declaration (minify .json)
                 .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }

@@ -8,12 +8,20 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class DatabaseConfigImpl
+import com.github.naios.wide.configuration.DatabaseConfig;
+
+public class DatabaseConfigImpl implements DatabaseConfig
 {
     private final StringProperty id, name, host, user, password, schema;
+
+    /**
+     * connection gets late initialized and bound to user@host first usage
+     */
+    private StringProperty connection = null;
 
     public DatabaseConfigImpl()
     {
@@ -25,38 +33,52 @@ public class DatabaseConfigImpl
         this.schema = new SimpleStringProperty();
     }
 
+    @Override
     public StringProperty id()
     {
         return id;
     }
 
+    @Override
     public StringProperty name()
     {
         return name;
     }
 
+    @Override
     public StringProperty host()
     {
         return host;
     }
 
+    @Override
     public StringProperty user()
     {
         return user;
     }
 
+    @Override
     public StringProperty password()
     {
         return password;
     }
 
+    @Override
     public StringProperty schema()
     {
         return schema;
     }
 
-    public String getEndpointString()
+    @Override
+    public StringProperty connection()
     {
-        return String.format("%s@%s", user.get(), host.get());
+        // We need to late bind the connection property to user and host
+        if (connection == null)
+        {
+            connection = new SimpleStringProperty();
+            connection.bind(Bindings.concat(user, "@", host));
+        }
+
+        return connection;
     }
 }

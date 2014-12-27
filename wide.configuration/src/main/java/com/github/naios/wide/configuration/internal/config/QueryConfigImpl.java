@@ -11,10 +11,12 @@ package com.github.naios.wide.configuration.internal.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.naios.wide.configuration.QueryConfig;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class QueryConfigImpl
+public class QueryConfigImpl implements QueryConfig
 {
     private final BooleanProperty compress;
 
@@ -26,11 +28,13 @@ public class QueryConfigImpl
         this.type = new ArrayList<>();
     }
 
+    @Override
     public BooleanProperty compress()
     {
         return compress;
     }
 
+    @Override
     public List<QueryTypeConfigImpl> getType()
     {
         return type;

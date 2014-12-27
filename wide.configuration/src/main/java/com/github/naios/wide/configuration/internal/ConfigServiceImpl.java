@@ -20,9 +20,10 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.ConfigService;
+import com.github.naios.wide.configuration.EnviromentConfig;
+import com.github.naios.wide.configuration.QueryConfig;
 import com.github.naios.wide.configuration.internal.config.ConfigImpl;
 import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
-import com.github.naios.wide.configuration.internal.config.QueryConfigImpl;
 import com.github.naios.wide.configuration.internal.util.GsonInstance;
 
 public class ConfigServiceImpl implements ConfigService
@@ -98,13 +99,13 @@ public class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public List<EnviromentConfigImpl> getEnviroments()
+    public List<EnviromentConfig> getEnviroments()
     {
         return config.getEnviroments();
     }
 
     @Override
-    public QueryConfigImpl getQueryConfig()
+    public QueryConfig getQueryConfig()
     {
         return config.getQueryConfig();
     }

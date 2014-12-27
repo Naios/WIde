@@ -14,6 +14,8 @@ import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.configuration.DatabaseConfig;
+import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.entities.GameBuild;
 
 @SuppressWarnings("serial")
@@ -25,7 +27,7 @@ class MissingDatabaseConfig extends RuntimeException
     }
 }
 
-public class EnviromentConfigImpl
+public class EnviromentConfigImpl implements EnviromentConfig
 {
     private final StringProperty name;
 
@@ -33,12 +35,12 @@ public class EnviromentConfigImpl
 
     private final StringProperty alias_definition;
 
-    private final ClientStorageConfig client_storages;
+    private final ClientStorageConfigImpl client_storages;
 
     private final List<DatabaseConfigImpl> databases;
 
     public EnviromentConfigImpl(final GameBuild build, final StringProperty alias_definition,
-            final ClientStorageConfig client_storages)
+            final ClientStorageConfigImpl client_storages)
     {
         this.name = new SimpleStringProperty();
         this.alias_definition = new SimpleStringProperty();
@@ -47,32 +49,38 @@ public class EnviromentConfigImpl
         this.databases = new ArrayList<>();
     }
 
+    @Override
     public StringProperty name()
     {
         return name;
     }
 
-    public StringProperty alias_definition()
+    @Override
+    public StringProperty aliasDefinition()
     {
         return alias_definition;
     }
 
-    public ClientStorageConfig getClientStorageConfig()
+    @Override
+    public ClientStorageConfigImpl getClientStorageConfig()
     {
         return client_storages;
     }
 
+    @Override
     public GameBuild getBuild()
     {
         return build;
     }
 
-    public List<DatabaseConfigImpl> getDatabases()
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<DatabaseConfig> getDatabases()
     {
-        return databases;
+        return (List)databases;
     }
 
-    public boolean isDatabasePresent(final String id)
+    private boolean isDatabasePresent(final String id)
     {
         for (final DatabaseConfigImpl db : databases)
             if (db.id().get().equals(id))
@@ -81,6 +89,7 @@ public class EnviromentConfigImpl
         return false;
     }
 
+    @Override
     public DatabaseConfigImpl getDatabaseConfig(final String id)
     {
         for (final DatabaseConfigImpl db : databases)
