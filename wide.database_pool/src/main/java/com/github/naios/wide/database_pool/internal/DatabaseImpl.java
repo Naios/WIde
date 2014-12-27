@@ -9,6 +9,7 @@
 package com.github.naios.wide.database_pool.internal;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
 
@@ -21,26 +22,24 @@ import com.github.naios.wide.database_pool.UncheckedSQLException;
 
 public class DatabaseImpl implements Database
 {
-    private final Connection connection = null;
+    private final Connection connection;
 
-    private final BooleanProperty isOpen =
-            new SimpleBooleanProperty();
+    private final BooleanProperty alive;
 
     private final String id, table;
 
+    private final boolean optional;
+
     public DatabaseImpl(final String connection, final String user, final String password,
-            final String id, final String table) throws SQLException
+            final String id, final String table, final boolean optional) throws SQLException
     {
+        this.connection = DriverManager.getConnection(connection, user, password);
+
         this.id = id;
         this.table = table;
-    }
+        this.optional = optional;
 
-    protected synchronized void update()
-    {
-        if (updateConnectionStatus())
-        {
-
-        }
+        alive = new SimpleBooleanProperty(true);
     }
 
     public String getId()
@@ -53,17 +52,22 @@ public class DatabaseImpl implements Database
         return table;
     }
 
-    @Override
-    public synchronized ReadOnlyBooleanProperty isOpen()
+    public boolean isOptional()
     {
-        return isOpen;
+        return optional;
+    }
+
+    @Override
+    public ReadOnlyBooleanProperty alive()
+    {
+        return alive;
     }
 
     @Override
     public synchronized void directExecute(final String query, final Object... format)
             throws UncheckedSQLException
     {
-        // TODO Auto-generated method stub
+
 
     }
 
@@ -108,7 +112,7 @@ public class DatabaseImpl implements Database
 
     protected synchronized void close()
     {
-        if (updateConnectionStatus())
+        if (updateAliveStatus())
         {
             try
             {
@@ -119,27 +123,27 @@ public class DatabaseImpl implements Database
                 e.printStackTrace();
             }
 
-            isOpen.set(false);
+            alive.set(false);
         }
     }
 
-    private boolean updateConnectionStatus()
+    private boolean updateAliveStatus()
     {
-        if (!isOpen.get())
-            return false;
+        if (!alive.get())
+            throw new UncheckedSQLException("");
 
         try
         {
             if (Objects.isNull(connection)
                 || connection.isClosed())
             {
-                isOpen.set(false);
+                alive.set(false);
                 return false;
             }
         }
         catch (final SQLException e)
         {
-            isOpen.set(false);
+            alive.set(false);
             return false;
         }
 

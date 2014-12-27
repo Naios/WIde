@@ -73,7 +73,7 @@ public final class ConfigServiceImpl implements ConfigService
             }
         }
 
-	    System.out.println(String.format("DEBUG: %s", "reload()"));
+	    System.out.println(String.format("DEBUG: %s", "ConfigService::reload()"));
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public final class ConfigServiceImpl implements ConfigService
             throwable.printStackTrace();
         }
 
-	    System.out.println(String.format("DEBUG: %s", "save()"));
+	    System.out.println(String.format("DEBUG: %s", "ConfigService::save()"));
     }
 
     @Override

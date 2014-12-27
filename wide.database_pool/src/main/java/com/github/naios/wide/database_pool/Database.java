@@ -17,9 +17,9 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 public interface Database
 {
     /**
-     * @return A boolean property to represent if the database is open/ closed at the moment
+     * @return A boolean property to represent if the database is open
      */
-    public ReadOnlyBooleanProperty isOpen();
+    public ReadOnlyBooleanProperty alive();
 
     /**
      *

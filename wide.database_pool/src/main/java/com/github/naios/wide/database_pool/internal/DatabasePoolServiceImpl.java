@@ -3,7 +3,9 @@ package com.github.naios.wide.database_pool.internal;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -11,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 
 import com.github.naios.wide.configuration.ConfigService;
+import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.database_pool.Database;
 import com.github.naios.wide.database_pool.DatabaseNotRegisteredException;
 import com.github.naios.wide.database_pool.DatabasePoolService;
@@ -43,21 +46,21 @@ public final class DatabasePoolServiceImpl
      */
     private final static String CUSTOM_DRIVER_FORMAT_PROPERTY = "com.github.naios.wide.database_pool.custom_driver_format";
 
-    private final ObservableMap<String /*id*/, DatabaseImpl /*database*/> connections =
+    private final ObservableMap<String /*id*/, ObjectProperty<DatabaseImpl> /*database*/> connections =
             new SimpleMapProperty<>();
 
     public void open()
     {
         // Try to load our preferred jdbc driver
-        /*
+        final String name = System.getProperty(CUSTOM_DRIVER_PROPERTY, DEFAULT_DRIVER);
         try
         {
-            Class.forName(System.getProperty(CUSTOM_DRIVER_PROPERTY, DEFAULT_DRIVER));
+            Class.forName(name);
         }
-        catch (final throwable e)
+        catch (final Throwable e)
         {
-            e.printStackTrace();
-        }*/
+            System.out.println(String.format("DEBUG: Didn't find jdbc class %s", name));
+        }
 
         currentEnviroment.bind(config.activeEnviroment());
         currentEnviroment.addListener(new ChangeListener<String>()
@@ -70,14 +73,26 @@ public final class DatabasePoolServiceImpl
                 {
                     if (!id.equals(newValue))
                     {
-                        connections.remove(id);
-                        database.close();
+                        database.get().close();
+
+                        if (database.get().isOptional())
+                            connections.remove(id);
+                        else
+                        {
+                            try
+                            {
+                                database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
+                            }
+                            catch (final SQLException e)
+                            {
+                            }
+                        }
                     }
-                    else
-                        database.update();
                 });
             }
         });
+
+
 
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
     }
@@ -87,7 +102,7 @@ public final class DatabasePoolServiceImpl
         connections.forEach((id, database) ->
         {
             connections.remove(id);
-            database.close();
+            database.get().close();
         });
 
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::close()"));
@@ -98,28 +113,52 @@ public final class DatabasePoolServiceImpl
         this.config = config;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public synchronized Database requestConnection(final String id)
+    public synchronized ObjectProperty<Database> requestConnection(final String id)
             throws DatabaseNotRegisteredException
     {
-        final DatabaseImpl database = connections.get(id);
+        final ObjectProperty<DatabaseImpl> database = connections.get(id);
         if (Objects.isNull(database))
             throw new DatabaseNotRegisteredException(id);
         else
-            return database;
+            return (ObjectProperty)database;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public synchronized Database registerConnection(final String id,
+    public synchronized ObjectProperty<Database> registerConnection(final String id,
             final String endpoint, final String user, final String password, final String table)
             throws SQLException
     {
         if (connections.containsKey(id))
-            return connections.get(id);
+            return (ObjectProperty)connections.get(id);
 
-        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), table);
-        final DatabaseImpl database = new DatabaseImpl(connection, user, password, id, table);
+        return registerDatabase(id, endpoint, user, password, table, true);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private SimpleObjectProperty<Database> registerDatabase(final String id,
+            final String endpoint, final String user, final String password,
+            final String table, final boolean optional) throws SQLException
+    {
+        final SimpleObjectProperty<DatabaseImpl> database = new SimpleObjectProperty<DatabaseImpl>(
+                createDatabase(id, endpoint, user, password, table, optional));
         connections.put(id, database);
-        return database;
+        return (SimpleObjectProperty)database;
+    }
+
+    private DatabaseImpl createDatabase(final DatabaseConfig config) throws SQLException
+    {
+        return createDatabase(config.id().get(), config.endpoint().get(),
+                config.user().get(), config.password().get(), config.name().get(), false);
+    }
+
+    private DatabaseImpl createDatabase(final String id,
+            final String endpoint, final String user, final String password,
+            final String table, final boolean optional) throws SQLException
+    {
+        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), table);
+        return new DatabaseImpl(connection, user, password, id, table, optional);
     }
 }

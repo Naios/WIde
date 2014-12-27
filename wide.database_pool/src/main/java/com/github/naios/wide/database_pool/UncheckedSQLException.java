@@ -21,4 +21,9 @@ public class UncheckedSQLException extends RuntimeException
     {
         super(exception);
     }
+
+    public UncheckedSQLException(final String msg)
+    {
+        super(msg);
+    }
 }

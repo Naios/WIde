@@ -69,7 +69,7 @@ public class DatabaseConfigImpl implements DatabaseConfig
     }
 
     @Override
-    public StringProperty connection()
+    public StringProperty endpoint()
     {
         return connection.get();
     }

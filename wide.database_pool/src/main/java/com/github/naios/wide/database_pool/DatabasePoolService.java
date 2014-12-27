@@ -10,6 +10,8 @@ package com.github.naios.wide.database_pool;
 
 import java.sql.SQLException;
 
+import javafx.beans.property.ObjectProperty;
+
 /**
  * The Pool service is responsible for creating and managing {@link Database} instances
  */
@@ -25,7 +27,7 @@ public interface DatabasePoolService
      * @throws      DatabaseNotRegisteredException Throws {@link DatabaseNotRegisteredException} if the requested database wasn't registered
      * @throws      SQLException Throws {@link SQLException} that occur while trying to open a connection.
      */
-    public Database requestConnection(String id) throws DatabaseNotRegisteredException, SQLException;
+    public ObjectProperty<Database> requestConnection(String id) throws DatabaseNotRegisteredException, SQLException;
 
     /**
      * Create a temporarily entry to a
@@ -43,6 +45,6 @@ public interface DatabasePoolService
      *
      * @throws          SQLException Throws {@link SQLException} that occur while trying to open a connection.
      */
-    public Database registerConnection(String id, String endpoint,
+    public ObjectProperty<Database> registerConnection(String id, String endpoint,
             String user, String password, String table) throws SQLException;
 }

@@ -46,7 +46,7 @@ public interface DatabaseConfig
     public StringProperty schema();
 
     /**
-     * @return The connection representing string (for example "user@localhost")
+     * @return The endpoint representing string (for example "user@localhost")
      */
-    public StringProperty connection();
+    public StringProperty endpoint();
 }
