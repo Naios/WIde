@@ -52,7 +52,7 @@ public class ConfigImpl implements Config
         return active_enviroment;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public List<EnviromentConfig> getEnviroments()
     {

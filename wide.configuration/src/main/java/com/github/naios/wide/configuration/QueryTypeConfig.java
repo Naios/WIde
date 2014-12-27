@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2013 - 2015 Naios <naios-dev@live.de>
  *
@@ -7,7 +8,6 @@
 
 package com.github.naios.wide.configuration;
 
-import com.github.naios.wide.configuration.internal.config.QueryType;
 import com.github.naios.wide.configuration.internal.config.VariablizeConfigImpl;
 
 public interface QueryTypeConfig

@@ -26,7 +26,7 @@ import com.google.gson.JsonPrimitive;
 public class GsonInstance
 {
     /**
-     * The Gson instance used in this bundle<br>
+     * The {@link Gson} instance used in this bundle<br>
      * Including registered type adapters for javafx propertys and pretty print set
      */
     public final static Gson INSTANCE = new GsonBuilder()

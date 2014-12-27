@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.configuration.internal.config;
+package com.github.naios.wide.configuration;
 
 public enum QueryType
 {

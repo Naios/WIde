@@ -8,19 +8,14 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import com.github.naios.wide.configuration.QueryType;
 import com.github.naios.wide.configuration.QueryTypeConfig;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig
 {
-    private final QueryType type;
+    private QueryType type;
 
-    private final VariablizeConfigImpl variablize;
-
-    public QueryTypeConfigImpl(final QueryType type, final VariablizeConfigImpl variablize)
-    {
-        this.type = type;
-        this.variablize = variablize;
-    }
+    private VariablizeConfigImpl variablize;
 
     @Override
     public QueryType getType()

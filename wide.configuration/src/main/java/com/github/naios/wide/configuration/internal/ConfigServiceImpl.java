@@ -31,12 +31,17 @@ public class ConfigServiceImpl implements ConfigService
     /**
      * Declares the name of our config file to load
      */
-    private final static String CONFIG_NAME = "WIde.json";
+    private final static String CONFIG_PATH = "WIde.json";
+
+    /**
+     * Property to allow to overwrite the config path
+     */
+    private final static String CONFIG_PATH_PROPERTY = "com.github.naios.wide.config";
 
     /**
      * Declares the path of our default config file
      */
-    private final static String DEFAULT_CONFIG_PATH = "default/WIde.json";
+    private final static String CONFIG_PATH_DEFAULT = "default/WIde.json";
 
     /**
      * The config object that actually holds our data.
@@ -46,16 +51,19 @@ public class ConfigServiceImpl implements ConfigService
 	@Override
     public void reload()
 	{
+	    // Get the config path trhough a system property ot through the default relative filename
+	    final String path = System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH);
+
 	    // If the config file could not be loaded use the default predefined file.
 	    try (final Reader reader = new InputStreamReader(
-               new FileInputStream(CONFIG_NAME)))
+               new FileInputStream(path)))
         {
             config = GsonInstance.INSTANCE.fromJson(reader, ConfigImpl.class);
         }
-        catch(final Throwable t)
+        catch (final Throwable t)
         {
             try (final Reader reader = new InputStreamReader(
-                    getClass().getClassLoader().getResourceAsStream(DEFAULT_CONFIG_PATH)))
+                    getClass().getClassLoader().getResourceAsStream(CONFIG_PATH_DEFAULT)))
             {
                 config = GsonInstance.INSTANCE.fromJson(reader, ConfigImpl.class);
             }
@@ -70,7 +78,7 @@ public class ConfigServiceImpl implements ConfigService
     public void save()
 	{
 	    try (final Writer writer = new OutputStreamWriter(
-                new FileOutputStream(CONFIG_NAME)))
+                new FileOutputStream(CONFIG_PATH)))
         {
 	        writer.write(GsonInstance.INSTANCE.toJson(config));
         }

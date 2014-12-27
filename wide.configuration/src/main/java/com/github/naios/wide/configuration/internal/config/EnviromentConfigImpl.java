@@ -8,10 +8,8 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
@@ -29,25 +27,15 @@ class MissingDatabaseConfig extends RuntimeException
 
 public class EnviromentConfigImpl implements EnviromentConfig
 {
-    private final StringProperty name;
+    private StringProperty name;
 
-    private final GameBuild build;
+    private GameBuild build;
 
-    private final StringProperty alias_definition;
+    private StringProperty alias_definition;
 
-    private final ClientStorageConfigImpl client_storages;
+    private ClientStorageConfigImpl client_storages;
 
-    private final List<DatabaseConfigImpl> databases;
-
-    public EnviromentConfigImpl(final GameBuild build, final StringProperty alias_definition,
-            final ClientStorageConfigImpl client_storages)
-    {
-        this.name = new SimpleStringProperty();
-        this.alias_definition = new SimpleStringProperty();
-        this.build = build;
-        this.client_storages = client_storages;
-        this.databases = new ArrayList<>();
-    }
+    private List<DatabaseConfigImpl> databases;
 
     @Override
     public StringProperty name()
@@ -73,7 +61,7 @@ public class EnviromentConfigImpl implements EnviromentConfig
         return build;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public List<DatabaseConfig> getDatabases()
     {

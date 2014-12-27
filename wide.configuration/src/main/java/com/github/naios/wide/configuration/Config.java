@@ -31,7 +31,7 @@ public interface Config
     public StringProperty activeEnviroment();
 
     /**
-     * @return All Enviroments
+     * @return All Enviroments as list
      */
     public List<EnviromentConfig> getEnviroments();
 

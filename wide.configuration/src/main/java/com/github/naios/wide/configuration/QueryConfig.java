@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2013 - 2015 Naios <naios-dev@live.de>
  *
@@ -9,9 +10,9 @@ package com.github.naios.wide.configuration;
 
 import java.util.List;
 
-import com.github.naios.wide.configuration.internal.config.QueryTypeConfigImpl;
-
 import javafx.beans.property.BooleanProperty;
+
+import com.github.naios.wide.configuration.internal.config.QueryTypeConfigImpl;
 
 public interface QueryConfig
 {

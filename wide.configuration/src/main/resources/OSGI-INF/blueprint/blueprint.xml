@@ -11,4 +11,7 @@
 
     <description>WIde - MMORPG Framework Tools</description>
 
+	<bean id="configService" class="com.github.naios.wide.configuration.internal.ConfigServiceImpl"
+         init-method="reload" destroy-method="save"/>
+
 </blueprint>

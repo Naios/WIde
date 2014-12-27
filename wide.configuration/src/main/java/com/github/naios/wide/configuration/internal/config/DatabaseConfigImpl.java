@@ -16,22 +16,12 @@ import com.github.naios.wide.configuration.DatabaseConfig;
 
 public class DatabaseConfigImpl implements DatabaseConfig
 {
-    private final StringProperty id, name, host, user, password, schema;
+    private StringProperty id, name, host, user, password, schema;
 
     /**
-     * connection gets late initialized and bound to user@host first usage
+     * connection gets late initialized and bound to user@host at first usage
      */
     private StringProperty connection = null;
-
-    public DatabaseConfigImpl()
-    {
-        this.id = new SimpleStringProperty();
-        this.name = new SimpleStringProperty();
-        this.host = new SimpleStringProperty();
-        this.user = new SimpleStringProperty();
-        this.password = new SimpleStringProperty();
-        this.schema = new SimpleStringProperty();
-    }
 
     @Override
     public StringProperty id()
@@ -73,6 +63,7 @@ public class DatabaseConfigImpl implements DatabaseConfig
     public StringProperty connection()
     {
         // We need to late bind the connection property to user and host
+        // because user & host might be null sometimes
         if (connection == null)
         {
             connection = new SimpleStringProperty();

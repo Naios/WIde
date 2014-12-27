@@ -8,21 +8,13 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.ClientStorageConfig;
 
 public class ClientStorageConfigImpl implements ClientStorageConfig
 {
-    private final StringProperty path, schema;
-
-    public ClientStorageConfigImpl()
-    {
-        this.path = new SimpleStringProperty();
-
-        this.schema = new SimpleStringProperty();
-    }
+    private StringProperty path, schema;
 
     @Override
     public StringProperty path()
