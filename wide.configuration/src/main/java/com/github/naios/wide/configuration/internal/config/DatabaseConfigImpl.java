@@ -13,15 +13,24 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
+import com.github.naios.wide.configuration.internal.util.LateAllocate;
 
 public class DatabaseConfigImpl implements DatabaseConfig
 {
     private StringProperty id, name, host, user, password, schema;
 
-    /**
-     * connection gets late initialized and bound to user@host at first usage
-     */
-    private StringProperty connection = null;
+    // We need to late bind the connection property to user and host
+    // because user & host might be null sometimes
+    private final LateAllocate<StringProperty> connection = new LateAllocate<StringProperty>()
+    {
+        @Override
+        public StringProperty allocate()
+        {
+            final StringProperty property = new SimpleStringProperty();
+            property.bind(Bindings.concat(user, "@", host));
+            return property;
+        }
+    };
 
     @Override
     public StringProperty id()
@@ -62,14 +71,6 @@ public class DatabaseConfigImpl implements DatabaseConfig
     @Override
     public StringProperty connection()
     {
-        // We need to late bind the connection property to user and host
-        // because user & host might be null sometimes
-        if (connection == null)
-        {
-            connection = new SimpleStringProperty();
-            connection.bind(Bindings.concat(user, "@", host));
-        }
-
-        return connection;
+        return connection.get();
     }
 }

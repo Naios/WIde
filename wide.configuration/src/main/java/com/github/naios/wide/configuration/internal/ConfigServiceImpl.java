@@ -26,7 +26,7 @@ import com.github.naios.wide.configuration.internal.config.ConfigImpl;
 import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
 import com.github.naios.wide.configuration.internal.util.GsonInstance;
 
-public class ConfigServiceImpl implements ConfigService
+public final class ConfigServiceImpl implements ConfigService
 {
     /**
      * Declares the name of our config file to load
