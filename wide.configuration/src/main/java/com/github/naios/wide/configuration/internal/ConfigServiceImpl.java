@@ -51,7 +51,7 @@ public class ConfigServiceImpl implements ConfigService
 	@Override
     public void reload()
 	{
-	    // Get the config path trhough a system property ot through the default relative filename
+	    // Get the config path through a system property or the default relative filename
 	    final String path = System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH);
 
 	    // If the config file could not be loaded use the default predefined file.
@@ -73,7 +73,7 @@ public class ConfigServiceImpl implements ConfigService
             }
         }
 
-	    System.out.println(String.format("DEBUG: %s", "loaded"));
+	    System.out.println(String.format("DEBUG: %s", "reload()"));
 	}
 
 	@Override
@@ -88,6 +88,8 @@ public class ConfigServiceImpl implements ConfigService
         {
             throwable.printStackTrace();
         }
+
+	    System.out.println(String.format("DEBUG: %s", "save()"));
     }
 
     @Override
