@@ -9,16 +9,16 @@
     </parent>
 
     <properties>
-        <bundle.symbolicName>com.github.naios.wide.framework</bundle.symbolicName>
-        <bundle.namespace>com.github.naios.wide.framework</bundle.namespace>
+        <bundle.symbolicName>com.github.naios.wide.configuration</bundle.symbolicName>
+        <bundle.namespace>com.github.naios.wide.configuration</bundle.namespace>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
-    <artifactId>framework</artifactId>
+    <artifactId>configuration</artifactId>
     <version>1.0</version>
 
-    <name>WIde Framework</name>
+    <name>WIde Configuration</name>
 
     <packaging>bundle</packaging>
 
@@ -36,15 +36,6 @@
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.naios.wide</groupId>
-            <artifactId>database_pool</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>

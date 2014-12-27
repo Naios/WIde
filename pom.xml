@@ -58,8 +58,9 @@
     <modules>
         <module>poms</module>
         <module>provision</module>
-        <module>wide.framework</module>
+        <module>wide.configuration</module>
         <module>wide.database_pool</module>
+        <module>wide.framework</module>
     </modules>
 
     <dependencyManagement>
