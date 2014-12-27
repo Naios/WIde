@@ -11,11 +11,11 @@ package com.github.naios.wide.configuration.internal.config;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class DatabaseConfig
+public class DatabaseConfigImpl
 {
     private final StringProperty id, name, host, user, password, schema;
 
-    public DatabaseConfig()
+    public DatabaseConfigImpl()
     {
         this.id = new SimpleStringProperty();
         this.name = new SimpleStringProperty();

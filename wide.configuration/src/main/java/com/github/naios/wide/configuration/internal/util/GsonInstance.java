@@ -8,24 +8,12 @@
 
 package com.github.naios.wide.configuration.internal.util;
 
-import java.lang.reflect.Modifier;
-
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.FloatProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonPrimitive;
 
 public class GsonInstance
 {
-    public final static Gson INSTANCE = new GsonBuilder()
+    public final static Gson INSTANCE = null;
+    /*new GsonBuilder()
         // Pretty print
         .setPrettyPrinting()
         // Exclude static fields
@@ -54,7 +42,7 @@ public class GsonInstance
                         (json) -> new SimpleBooleanProperty(json.getAsJsonPrimitive().getAsBoolean()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleBooleanProperty()))
-        .create();
+        .create();*/
 
     public static String toJsonExcludeDefaultValues(final Object obj)
     {

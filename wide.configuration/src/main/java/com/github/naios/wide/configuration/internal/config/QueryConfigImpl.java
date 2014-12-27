@@ -14,13 +14,13 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class QueryConfig
+public class QueryConfigImpl
 {
     private final BooleanProperty compress;
 
-    private final List<QueryTypeConfig> type;
+    private final List<QueryTypeConfigImpl> type;
 
-    public QueryConfig()
+    public QueryConfigImpl()
     {
         this.compress = new SimpleBooleanProperty();
         this.type = new ArrayList<>();
@@ -31,7 +31,7 @@ public class QueryConfig
         return compress;
     }
 
-    public List<QueryTypeConfig> getType()
+    public List<QueryTypeConfigImpl> getType()
     {
         return type;
     }

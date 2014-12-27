@@ -1,0 +1,45 @@
+
+/*
+ * Copyright (c) 2013 - 2014 Naios <naios-dev@live.de>
+ *
+ * This file is part of WIde which is released under Creative Commons 4.0 (by-nc-sa)
+ * See file LICENSE for full license details.
+ */
+
+package com.github.naios.wide.entities;
+
+public enum UnitFlags
+{
+    UNIT_FLAG_SERVER_CONTROLLED,
+    UNIT_FLAG_NON_ATTACKABLE,
+    UNIT_FLAG_DISABLE_MOVE,
+    UNIT_FLAG_PVP_ATTACKABLE,
+    UNIT_FLAG_RENAME,
+    UNIT_FLAG_PREPARATION,
+    UNIT_FLAG_UNK_6,
+    UNIT_FLAG_NOT_ATTACKABLE_1,
+    UNIT_FLAG_IMMUNE_TO_PC,
+    UNIT_FLAG_IMMUNE_TO_NPC,
+    UNIT_FLAG_LOOTING,
+    UNIT_FLAG_PET_IN_COMBAT,
+    UNIT_FLAG_PVP,
+    UNIT_FLAG_SILENCED,
+    UNIT_FLAG_UNK_14,
+    UNIT_FLAG_UNK_15,
+    UNIT_FLAG_UNK_16,
+    UNIT_FLAG_PACIFIED,
+    UNIT_FLAG_STUNNED,
+    UNIT_FLAG_IN_COMBAT,
+    UNIT_FLAG_TAXI_FLIGHT,
+    UNIT_FLAG_DISARMED,
+    UNIT_FLAG_CONFUSED,
+    UNIT_FLAG_FLEEING,
+    UNIT_FLAG_PLAYER_CONTROLLED,
+    UNIT_FLAG_NOT_SELECTABLE,
+    UNIT_FLAG_SKINNABLE,
+    UNIT_FLAG_MOUNT,
+    UNIT_FLAG_UNK_28,
+    UNIT_FLAG_UNK_29,
+    UNIT_FLAG_SHEATHE,
+    UNIT_FLAG_UNK_31;
+}

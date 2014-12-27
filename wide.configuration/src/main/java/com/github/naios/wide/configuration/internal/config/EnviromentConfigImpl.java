@@ -14,6 +14,8 @@ import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.entities.GameBuild;
+
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException
 {
@@ -23,7 +25,7 @@ class MissingDatabaseConfig extends RuntimeException
     }
 }
 
-public class EnviromentConfig
+public class EnviromentConfigImpl
 {
     private final StringProperty name;
 
@@ -33,9 +35,9 @@ public class EnviromentConfig
 
     private final ClientStorageConfig client_storages;
 
-    private final List<DatabaseConfig> databases;
+    private final List<DatabaseConfigImpl> databases;
 
-    public EnviromentConfig(final GameBuild build, final StringProperty alias_definition,
+    public EnviromentConfigImpl(final GameBuild build, final StringProperty alias_definition,
             final ClientStorageConfig client_storages)
     {
         this.name = new SimpleStringProperty();
@@ -65,23 +67,23 @@ public class EnviromentConfig
         return build;
     }
 
-    public List<DatabaseConfig> getDatabases()
+    public List<DatabaseConfigImpl> getDatabases()
     {
         return databases;
     }
 
     public boolean isDatabasePresent(final String id)
     {
-        for (final DatabaseConfig db : databases)
+        for (final DatabaseConfigImpl db : databases)
             if (db.id().get().equals(id))
                 return true;
 
         return false;
     }
 
-    public DatabaseConfig getDatabaseConfig(final String id)
+    public DatabaseConfigImpl getDatabaseConfig(final String id)
     {
-        for (final DatabaseConfig db : databases)
+        for (final DatabaseConfigImpl db : databases)
             if (db.id().get().equals(id))
                 return db;
 

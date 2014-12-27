@@ -8,13 +8,14 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
-public class QueryTypeConfig
+public class QueryTypeConfigImpl
 {
+    /*
     private final QueryType type;
 
     private final VariablizeConfig variablize;
 
-    public QueryTypeConfig(final QueryType type, final VariablizeConfig variablize)
+    public QueryTypeConfigImpl(final QueryType type, final VariablizeConfig variablize)
     {
         this.type = type;
         this.variablize = variablize;
@@ -29,4 +30,5 @@ public class QueryTypeConfig
     {
         return variablize;
     }
+    */
 }

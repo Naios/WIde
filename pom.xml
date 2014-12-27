@@ -62,17 +62,19 @@
         <org.osgi.framework.bundle.parent>ext</org.osgi.framework.bundle.parent>
     </properties>   
 
-    <modules>
-        <module>poms</module>
-        <module>provision</module>
-        <module>wide.configuration</module>
-        <module>wide.database_pool</module>
-        <module>wide.framework</module>
-    </modules>
-
     <dependencyManagement>
         <dependencies>
             <!-- Project Modules-->
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
+                <artifactId>entities</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
+                <artifactId>configuration</artifactId>
+                <version>1.0</version>
+            </dependency>
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
                 <artifactId>framework</artifactId>
@@ -227,4 +229,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <modules>
+        <module>poms</module>
+        <module>provision</module>
+        <module>wide.entities</module>
+        <module>wide.configuration</module>
+        <module>wide.database_pool</module>
+        <module>wide.framework</module>
+    </modules>
 </project>

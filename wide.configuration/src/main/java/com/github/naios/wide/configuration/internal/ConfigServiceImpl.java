@@ -21,8 +21,8 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.ConfigService;
 import com.github.naios.wide.configuration.internal.config.ConfigImpl;
-import com.github.naios.wide.configuration.internal.config.EnviromentConfig;
-import com.github.naios.wide.configuration.internal.config.QueryConfig;
+import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
+import com.github.naios.wide.configuration.internal.config.QueryConfigImpl;
 import com.github.naios.wide.configuration.internal.util.GsonInstance;
 
 public class ConfigServiceImpl implements ConfigService
@@ -98,19 +98,19 @@ public class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public List<EnviromentConfig> getEnviroments()
+    public List<EnviromentConfigImpl> getEnviroments()
     {
         return config.getEnviroments();
     }
 
     @Override
-    public QueryConfig getQueryConfig()
+    public QueryConfigImpl getQueryConfig()
     {
         return config.getQueryConfig();
     }
 
     @Override
-    public EnviromentConfig getActiveEnviroment()
+    public EnviromentConfigImpl getActiveEnviroment()
     {
         return config.getActiveEnviroment();
     }

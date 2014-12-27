@@ -28,9 +28,9 @@ public class ConfigImpl implements Config
 {
     private StringProperty title, description, active_enviroment;
 
-    private List<EnviromentConfig> enviroments;
+    private List<EnviromentConfigImpl> enviroments;
 
-    private QueryConfig querys;
+    private QueryConfigImpl querys;
 
     @Override
     public ReadOnlyStringProperty title()
@@ -51,21 +51,21 @@ public class ConfigImpl implements Config
     }
 
     @Override
-    public List<EnviromentConfig> getEnviroments()
+    public List<EnviromentConfigImpl> getEnviroments()
     {
         return enviroments;
     }
 
     @Override
-    public QueryConfig getQueryConfig()
+    public QueryConfigImpl getQueryConfig()
     {
         return querys;
     }
 
     @Override
-    public EnviromentConfig getActiveEnviroment()
+    public EnviromentConfigImpl getActiveEnviroment()
     {
-        for (final EnviromentConfig env : enviroments)
+        for (final EnviromentConfigImpl env : enviroments)
             if (env.name().get().equals(active_enviroment.get()))
                 return env;
 

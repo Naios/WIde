@@ -13,8 +13,8 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.configuration.internal.config.EnviromentConfig;
-import com.github.naios.wide.configuration.internal.config.QueryConfig;
+import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
+import com.github.naios.wide.configuration.internal.config.QueryConfigImpl;
 
 public interface Config
 {
@@ -36,15 +36,15 @@ public interface Config
     /**
      * @return All Enviroments
      */
-    public List<EnviromentConfig> getEnviroments();
+    public List<EnviromentConfigImpl> getEnviroments();
 
     /**
      * @return Our query config
      */
-    public QueryConfig getQueryConfig();
+    public QueryConfigImpl getQueryConfig();
 
     /**
      * @return The current active enviroment
      */
-    public EnviromentConfig getActiveEnviroment();
+    public EnviromentConfigImpl getActiveEnviroment();
 }
