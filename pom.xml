@@ -50,6 +50,9 @@
             javafx.scene.media, javafx.scene.paint, javafx.scene.shape,  javafx.scene.text, javafx.scene.transform, javafx.scene.web, javafx.stage, javafx.util,\
             javafx.util.converter, com.sun.javafx.application
         </org.osgi.framework.system.packages.extra>
+
+        <!-- Tell equinox to respect the ext path -->
+        <org.osgi.framework.bundle.parent>ext</org.osgi.framework.bundle.parent>
     </properties>   
 
     <modules>
