@@ -60,6 +60,8 @@
 
         <!-- Tell equinox to respect the ext path -->
         <org.osgi.framework.bundle.parent>ext</org.osgi.framework.bundle.parent>
+
+        <org.osgi.framework.system.capabilities>osgi.ee; osgi.ee="JavaSE";version:List="1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8"</org.osgi.framework.system.capabilities>
     </properties>   
 
     <dependencyManagement>
