@@ -48,5 +48,10 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.naios.wide</groupId>
+            <artifactId>configuration</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

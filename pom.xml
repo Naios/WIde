@@ -79,12 +79,12 @@
             </dependency>
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
-                <artifactId>framework</artifactId>
+                <artifactId>database-pool</artifactId>
                 <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
-                <artifactId>database-pool</artifactId>
+                <artifactId>framework</artifactId>
                 <version>1.0</version>
             </dependency>
 

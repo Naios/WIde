@@ -11,4 +11,15 @@
 
     <description>WIde - MMORPG Framework Tools</description>
 
+    <bean id="databasePool" class="com.github.naios.wide.database_pool.internal.DatabasePoolServiceImpl"
+          init-method="open" destroy-method="close"/>
+
+    <reference id="configService" availability="mandatory" interface="com.github.naios.wide.configuration.ConfigService">
+        <reference-listener ref="databasePool" bind-method="bindConfig" unbind-method="unbindConfig"/>
+    </reference>
+
+    <service id="databasePoolService" ref="databasePool"
+             interface="com.github.naios.wide.database_pool.DatabasePoolService"
+             depends-on="configService"/>
+
 </blueprint>

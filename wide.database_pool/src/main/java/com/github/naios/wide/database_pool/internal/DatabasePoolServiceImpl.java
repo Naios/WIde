@@ -3,10 +3,12 @@ package com.github.naios.wide.database_pool.internal;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableMap;
 
+import com.github.naios.wide.configuration.ConfigService;
 import com.github.naios.wide.database_pool.Database;
 import com.github.naios.wide.database_pool.DatabaseNotRegisteredException;
 import com.github.naios.wide.database_pool.DatabasePoolService;
@@ -14,6 +16,11 @@ import com.github.naios.wide.database_pool.DatabasePoolService;
 public final class DatabasePoolServiceImpl
     implements DatabasePoolService
 {
+    private ConfigService config;
+
+    private final StringProperty currentEnviroment =
+            new SimpleStringProperty();
+
     /**
      * The default jdbc driver to initialize
      */
@@ -34,14 +41,58 @@ public final class DatabasePoolServiceImpl
      */
     private final static String CUSTOM_DRIVER_FORMAT_PROPERTY = "com.github.naios.wide.database_pool.custom_driver_format";
 
-    private final ObservableMap<String /*id*/, ObjectProperty<Database> /*database*/> connections =
+    private final ObservableMap<String /*id*/, DatabaseImpl /*database*/> connections =
             new SimpleMapProperty<>();
 
+    public void open()
+    {
+        // Try to load our preferred jdbc driver
+        /*
+        try
+        {
+            Class.forName(System.getProperty(CUSTOM_DRIVER_PROPERTY, DEFAULT_DRIVER));
+        }
+        catch (final throwable e)
+        {
+            e.printStackTrace();
+        }*/
+
+        /*
+        currentEnviroment.bind(config. activeEnviroment());
+        currentEnviroment.addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable,
+                    final String oldValue, final String newValue)
+            {
+                connections.forEach((id, database) ->
+                {
+                    if (!id.equals(newValue))
+                    {
+                        connections.remove(id);
+                        database.close();
+                    }
+                    else
+                        database.update();
+                });
+            }
+        });*/
+    }
+
+    public void close()
+    {
+        connections.forEach((id, database) ->
+        {
+            connections.remove(id);
+            database.close();
+        });
+    }
+
     @Override
-    public ObjectProperty<Database> requestConnection(final String id)
+    public synchronized Database requestConnection(final String id)
             throws DatabaseNotRegisteredException
     {
-        final ObjectProperty<Database> database = connections.get(id);
+        final DatabaseImpl database = connections.get(id);
         if (Objects.isNull(database))
             throw new DatabaseNotRegisteredException(id);
         else
@@ -49,21 +100,28 @@ public final class DatabasePoolServiceImpl
     }
 
     @Override
-    public ObjectProperty<Database> registerConnection(final String id,
+    public synchronized Database registerConnection(final String id,
             final String endpoint, final String user, final String password, final String table)
             throws SQLException
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (connections.containsKey(id))
+            return connections.get(id);
+
+        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), table);
+        final DatabaseImpl database = new DatabaseImpl(connection, user, password, id, table);
+        connections.put(id, database);
+        return database;
     }
 
-    public void start()
+    public void bindConfig(final ConfigService config)
     {
-
+        System.out.println(String.format("DEBUG: %s = %s (%s)", "bindConfig", config.title().get(), config.description().get()));
+        this.config = config;
     }
 
-    public void stop()
+    public void unbindConfig(final ConfigService config)
     {
-
+        System.out.println(String.format("DEBUG: %s", "unbindConfig"));
+        this.config = null;
     }
 }

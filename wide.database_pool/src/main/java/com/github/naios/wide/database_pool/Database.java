@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.database_pool;
 
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
  * {@link Database} works as a wrapper interface for {@link java.sql.Connection}
@@ -19,7 +19,7 @@ public interface Database
     /**
      * @return A boolean property to represent if the database is open/ closed at the moment
      */
-    public BooleanProperty isOpen();
+    public ReadOnlyBooleanProperty isOpen();
 
     /**
      *
