@@ -72,6 +72,8 @@ public class ConfigServiceImpl implements ConfigService
                 tt.printStackTrace();
             }
         }
+
+	    System.out.println(String.format("DEBUG: %s", "loaded"));
 	}
 
 	@Override
