@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.util;
+package com.github.naios.wide.configuration.internal.util;
 
 import java.lang.reflect.Type;
 import java.util.function.Function;

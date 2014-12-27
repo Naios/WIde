@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.framework.util;
+package com.github.naios.wide.configuration.internal.util;
 
 import java.lang.reflect.Modifier;
 
@@ -19,7 +19,6 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.core.framework.storage.client.ClientStorageFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -55,18 +54,12 @@ public class GsonInstance
                         (json) -> new SimpleBooleanProperty(json.getAsJsonPrimitive().getAsBoolean()),
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleBooleanProperty()))
-        // ClientStorageFormat Adapter
-        .registerTypeAdapter(ClientStorageFormat.class,
-                new LazyGsonAdapter<>(
-                        (json) -> new ClientStorageFormat(json.getAsJsonPrimitive().getAsString()),
-                            (format) -> new JsonPrimitive(format.getFormat()),
-                                () -> new ClientStorageFormat("")))
         .create();
 
     public static String toJsonExcludeDefaultValues(final Object obj)
     {
         return INSTANCE.toJson(obj)
-                // Delete default values (minify .json)
+                // Delete default value declaration (minify .json)
                 .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }

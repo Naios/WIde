@@ -6,15 +6,13 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.session.config;
+package com.github.naios.wide.configuration.internal.config;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
-import com.github.naios.wide.core.framework.game.GameBuild;
 
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException

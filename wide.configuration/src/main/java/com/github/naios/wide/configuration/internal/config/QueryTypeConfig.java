@@ -6,9 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.session.config;
-
-import com.github.naios.wide.core.framework.storage.server.builder.QueryType;
+package com.github.naios.wide.configuration.internal.config;
 
 public class QueryTypeConfig
 {

@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.session.config;
+package com.github.naios.wide.configuration.internal.config;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

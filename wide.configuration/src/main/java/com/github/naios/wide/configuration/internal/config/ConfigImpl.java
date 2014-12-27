@@ -6,12 +6,14 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.core.session.config;
+package com.github.naios.wide.configuration.internal.config;
 
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
+
+import com.github.naios.wide.configuration.Config;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
@@ -22,7 +24,7 @@ class MissingActiveEnviroment extends RuntimeException
     }
 }
 
-public class BaseConfig
+public class ConfigImpl implements Config
 {
     private StringProperty title, description, active_enviroment;
 
@@ -30,31 +32,37 @@ public class BaseConfig
 
     private QueryConfig querys;
 
+    @Override
     public ReadOnlyStringProperty title()
     {
         return title;
     }
 
+    @Override
     public ReadOnlyStringProperty description()
     {
         return description;
     }
 
-    public StringProperty active_enviroment()
+    @Override
+    public StringProperty activeEnviroment()
     {
         return active_enviroment;
     }
 
+    @Override
     public List<EnviromentConfig> getEnviroments()
     {
         return enviroments;
     }
 
-    public QueryConfig getQuerys()
+    @Override
+    public QueryConfig getQueryConfig()
     {
         return querys;
     }
 
+    @Override
     public EnviromentConfig getActiveEnviroment()
     {
         for (final EnviromentConfig env : enviroments)
