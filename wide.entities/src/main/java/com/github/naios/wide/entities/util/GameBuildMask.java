@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.naios.wide.entities.Expansion;
-import com.github.naios.wide.entities.GameBuild;
+import com.github.naios.wide.entities.game.Expansion;
+import com.github.naios.wide.entities.game.GameBuild;
 
 public class GameBuildMask
 {

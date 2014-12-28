@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
@@ -282,15 +281,8 @@ public class DatabaseImpl implements Database
 
     protected void close()
     {
-        pool.shutdown();
-        try
-        {
-            pool.awaitTermination(10, TimeUnit.SECONDS);
-        }
-        catch (final InterruptedException e1)
-        {
-        }
-
+        // Forces shut down and executes all pending tasks in the current thread
+        pool.shutdownNow().forEach(task -> task.run());
         if (updateAliveStatus())
         {
             try

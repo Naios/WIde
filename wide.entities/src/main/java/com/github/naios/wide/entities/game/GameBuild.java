@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.entities;
+package com.github.naios.wide.entities.game;
 
 
 public enum GameBuild

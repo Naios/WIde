@@ -12,7 +12,7 @@ import java.util.List;
 
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.entities.GameBuild;
+import com.github.naios.wide.entities.game.GameBuild;
 
 public interface EnviromentConfig
 {

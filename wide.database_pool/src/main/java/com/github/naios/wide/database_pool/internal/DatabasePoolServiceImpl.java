@@ -76,12 +76,7 @@ public final class DatabasePoolServiceImpl
 
     public void close()
     {
-        connections.forEach((id, database) ->
-        {
-            connections.remove(id);
-            database.get().close();
-        });
-
+        connections.forEach((id, database) -> database.get().close());
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::close()"));
     }
 

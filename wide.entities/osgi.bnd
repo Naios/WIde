@@ -2,4 +2,4 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
-Export-Package: com.github.naios.wide.entities, com.github.naios.wide.entities.util
+Export-Package: com.github.naios.wide.entities.util, com.github.naios.wide.entities.game, com.github.naios.wide.entities.server, com.github.naios.wide.entities.client

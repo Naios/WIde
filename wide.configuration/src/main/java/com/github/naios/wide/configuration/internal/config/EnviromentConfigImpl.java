@@ -14,7 +14,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.configuration.EnviromentConfig;
-import com.github.naios.wide.entities.GameBuild;
+import com.github.naios.wide.entities.game.GameBuild;
 
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException
