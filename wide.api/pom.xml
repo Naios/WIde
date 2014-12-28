@@ -16,16 +16,16 @@
     </parent>
 
     <properties>
-        <bundle.symbolicName>com.github.naios.wide.entities</bundle.symbolicName>
-        <bundle.namespace>com.github.naios.wide.entities</bundle.namespace>
+        <bundle.symbolicName>com.github.naios.wide.api</bundle.symbolicName>
+        <bundle.namespace>com.github.naios.wide.api</bundle.namespace>
     </properties>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
-    <artifactId>entities</artifactId>
+    <artifactId>api</artifactId>
     <version>1.0</version>
 
-    <name>WIde Entities</name>
+    <name>WIde API</name>
 
     <packaging>bundle</packaging>
 
@@ -40,14 +40,5 @@
             <artifactId>org.osgi.compendium</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.naios.wide</groupId>
-            <artifactId>api</artifactId>
-            <version>1.0</version>
-        </dependency>
-    </dependencies>
+     </dependencies>
 </project>

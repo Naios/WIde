@@ -69,6 +69,11 @@
             <!-- Project Modules-->
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
+                <artifactId>api</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
                 <artifactId>entities</artifactId>
                 <version>1.0</version>
             </dependency>
@@ -235,6 +240,7 @@
     <modules>
         <module>poms</module>
         <module>provision</module>
+        <module>wide.api</module>
         <module>wide.entities</module>
         <module>wide.configuration</module>
         <module>wide.database_pool</module>

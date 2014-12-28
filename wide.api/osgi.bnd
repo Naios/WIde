@@ -1,0 +1,5 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+Export-Package: com.github.naios.wide.api, com.github.naios.wide.api.config, com.github.naios.wide.api.database, com.github.naios.wide.api.framework, com.github.naios.wide.api.entities

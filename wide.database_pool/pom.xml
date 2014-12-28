@@ -54,6 +54,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.naios.wide</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.naios.wide</groupId>
             <artifactId>configuration</artifactId>
             <version>1.0</version>
         </dependency>
