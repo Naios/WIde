@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,7 +57,7 @@ public class DatabaseImpl implements Database
     private final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     public DatabaseImpl(final String connectionString, final String user, final String password,
-            final String id, final String table, final boolean optional) throws SQLException
+            final String id, final String table, final boolean optional)
     {
         this.connectionString = connectionString;
         this.user = user;
@@ -76,14 +75,19 @@ public class DatabaseImpl implements Database
     {
         try
         {
+            System.out.println(String.format("DB: %s, User: %s, PW: %s", connectionString, user, password));
+
             this.syncConnection = DriverManager.getConnection(connectionString, user, password);
             this.asyncConnection = DriverManager.getConnection(connectionString, user, password);
 
+            /*
             for (final Entry<Object, String> query : preparedStatementQuerys.entrySet())
                 preparedStatements.put(query.getKey(), syncConnection.prepareStatement(query.getValue()));
+                */
         }
         catch (final SQLException e)
         {
+            e.printStackTrace();
             this.syncConnection = null;
             this.asyncConnection = null;
             return false;

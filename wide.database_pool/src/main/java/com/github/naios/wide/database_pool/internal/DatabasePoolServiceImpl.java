@@ -1,14 +1,14 @@
 package com.github.naios.wide.database_pool.internal;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableMap;
 
 import com.github.naios.wide.configuration.ConfigService;
 import com.github.naios.wide.configuration.DatabaseConfig;
@@ -41,8 +41,8 @@ public final class DatabasePoolServiceImpl
      */
     private final static String CUSTOM_DRIVER_FORMAT_PROPERTY = "com.github.naios.wide.database_pool.custom_driver_format";
 
-    private final ObservableMap<String /*id*/, ObjectProperty<DatabaseImpl> /*database*/> connections =
-            new SimpleMapProperty<>();
+    private final Map<String /*id*/, ObjectProperty<DatabaseImpl> /*database*/> connections =
+            new HashMap<>();
 
     private final ChangeListener<String> listener = new ChangeListener<String>()
     {
@@ -55,15 +55,7 @@ public final class DatabasePoolServiceImpl
                 if (database.get().isOptional())
                     connections.remove(id);
                 else
-                {
-                    try
-                    {
-                        database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
-                    }
-                    catch (final SQLException e)
-                    {
-                    }
-                }
+                    database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
             });
         }
     };
@@ -82,9 +74,7 @@ public final class DatabasePoolServiceImpl
         }
 
         for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
-        {
-
-        }
+            connections.put(dbconfig.id().get(), new SimpleObjectProperty<>(createDatabase(dbconfig)));
 
         config.activeEnviroment().addListener(listener);
 
@@ -144,7 +134,7 @@ public final class DatabasePoolServiceImpl
         return (SimpleObjectProperty)database;
     }
 
-    private DatabaseImpl createDatabase(final DatabaseConfig config) throws SQLException
+    private DatabaseImpl createDatabase(final DatabaseConfig config)
     {
         return createDatabase(config.id().get(), config.endpoint().get(),
                 config.user().get(), config.password().get(), config.name().get(), false);
@@ -152,9 +142,9 @@ public final class DatabasePoolServiceImpl
 
     private DatabaseImpl createDatabase(final String id,
             final String endpoint, final String user, final String password,
-            final String table, final boolean optional) throws SQLException
+            final String table, final boolean optional)
     {
-        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), table);
+        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), endpoint, table);
         return new DatabaseImpl(connection, user, password, id, table, optional);
     }
 }
