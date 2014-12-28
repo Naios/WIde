@@ -34,12 +34,7 @@ public final class DatabasePoolServiceImpl
     /**
      * The default driver format to create connection strings
      */
-    private final static String DEFAULT_DRIVER_FORMAT = "jdbc:mariadb://%s/%s";
-
-    /**
-     * Its possible to set this property to replace the default driver connection format string.
-     */
-    private final static String CUSTOM_DRIVER_FORMAT_PROPERTY = "com.github.naios.wide.database_pool.custom_driver_format";
+    private final static String DRIVER_FORMAT = "jdbc:mysql://%s/%s"; // 1: Host (ip:port), 2. Database
 
     private final Map<String /*id*/, ObjectProperty<DatabaseImpl> /*database*/> connections =
             new HashMap<>();
@@ -76,15 +71,11 @@ public final class DatabasePoolServiceImpl
         for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
             connections.put(dbconfig.id().get(), new SimpleObjectProperty<>(createDatabase(dbconfig)));
 
-        config.activeEnviroment().addListener(listener);
-
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
     }
 
     public void close()
     {
-        config.activeEnviroment().removeListener(listener);
-
         connections.forEach((id, database) ->
         {
             connections.remove(id);
@@ -97,6 +88,7 @@ public final class DatabasePoolServiceImpl
     public void setConfig(final ConfigService config)
     {
         this.config = config;
+        this.config.activeEnviroment().addListener(listener);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -136,15 +128,15 @@ public final class DatabasePoolServiceImpl
 
     private DatabaseImpl createDatabase(final DatabaseConfig config)
     {
-        return createDatabase(config.id().get(), config.endpoint().get(),
+        return createDatabase(config.id().get(), config.host().get(),
                 config.user().get(), config.password().get(), config.name().get(), false);
     }
 
     private DatabaseImpl createDatabase(final String id,
-            final String endpoint, final String user, final String password,
+            final String host, final String user, final String password,
             final String table, final boolean optional)
     {
-        final String connection = String.format(System.getProperty(CUSTOM_DRIVER_FORMAT_PROPERTY, DEFAULT_DRIVER_FORMAT), endpoint, table);
+        final String connection = String.format(DRIVER_FORMAT, host, table);
         return new DatabaseImpl(connection, user, password, id, table, optional);
     }
 }

@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,7 +45,7 @@ public class DatabaseImpl implements Database
 
     private final BooleanProperty alive;
 
-    private final String id, table, connectionString, user, password;
+    private final String id, name, connectionString, user, password;
 
     private final boolean optional;
 
@@ -57,17 +58,17 @@ public class DatabaseImpl implements Database
     private final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     public DatabaseImpl(final String connectionString, final String user, final String password,
-            final String id, final String table, final boolean optional)
+            final String id, final String name, final boolean optional)
     {
         this.connectionString = connectionString;
         this.user = user;
         this.password =  password;
         this.id = id;
-        this.table = table;
+        this.name = name;
         this.optional = optional;
 
         // Try to open the database
-        alive = new SimpleBooleanProperty(open());
+        this.alive = new SimpleBooleanProperty(open());
     }
 
     @Override
@@ -75,25 +76,44 @@ public class DatabaseImpl implements Database
     {
         try
         {
-            System.out.println(String.format("DB: %s, User: %s, PW: %s", connectionString, user, password));
-
             this.syncConnection = DriverManager.getConnection(connectionString, user, password);
             this.asyncConnection = DriverManager.getConnection(connectionString, user, password);
 
-            /*
             for (final Entry<Object, String> query : preparedStatementQuerys.entrySet())
                 preparedStatements.put(query.getKey(), syncConnection.prepareStatement(query.getValue()));
-                */
         }
         catch (final SQLException e)
         {
             e.printStackTrace();
+
+            if (Objects.nonNull(this.syncConnection))
+                try
+                {
+                    this.syncConnection.close();
+                }
+                catch (final Exception e2)
+                {
+                }
+
             this.syncConnection = null;
+
+            if (Objects.nonNull(this.asyncConnection))
+                try
+                {
+                    this.asyncConnection.close();
+                }
+                catch (final Exception e2)
+                {
+                }
+
             this.asyncConnection = null;
+
+            System.out.println(String.format("DEBUG: Connection to %s failed!", connectionString));
             return false;
         }
 
-        return false;
+        System.out.println(String.format("DEBUG: Established sync & async connection to %s.", connectionString));
+        return true;
     }
 
     @Override
@@ -105,7 +125,7 @@ public class DatabaseImpl implements Database
     @Override
     public String getName()
     {
-        return table;
+        return name;
     }
 
     protected boolean isOptional()
@@ -295,7 +315,7 @@ public class DatabaseImpl implements Database
     private boolean updateAliveStatus()
     {
         if (!alive.get())
-            throw new DatabaseClosedException();
+            return false;
 
         try
         {
