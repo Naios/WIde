@@ -14,11 +14,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.github.naios.wide.framework.internal.util.CrossIterator;
-import com.github.naios.wide.framework.internal.util.Pair;
-import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.storage.client.ClientStorageFormat;
-import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.api.util.CrossIterator;
+import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.api.util.StringUtil;
 
 public class ClientStorageFormatImpl implements Iterable<Pair<Integer, ClientStorageFormer>>, ClientStorageFormat
 {

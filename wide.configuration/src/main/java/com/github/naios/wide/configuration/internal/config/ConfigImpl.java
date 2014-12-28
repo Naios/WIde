@@ -15,9 +15,9 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.configuration.Config;
-import com.github.naios.wide.configuration.EnviromentConfig;
-import com.github.naios.wide.configuration.QueryConfig;
+import com.github.naios.wide.api.config.main.Config;
+import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 @SuppressWarnings("serial")

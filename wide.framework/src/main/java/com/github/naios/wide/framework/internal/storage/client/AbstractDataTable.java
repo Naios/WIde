@@ -16,12 +16,12 @@ import java.util.Objects;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.configuration.TableSchema;
+import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
-import com.github.naios.wide.framework.internal.util.Pair;
-import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 import com.google.common.reflect.TypeToken;
 
 public abstract class AbstractDataTable<T extends ClientStorageStructure>

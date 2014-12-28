@@ -8,9 +8,9 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 
 
 /**

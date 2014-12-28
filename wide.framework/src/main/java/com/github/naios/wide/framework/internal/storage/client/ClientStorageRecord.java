@@ -11,7 +11,7 @@ package com.github.naios.wide.framework.internal.storage.client;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 
 @SuppressWarnings("serial")
 class WrongFormatType extends RuntimeException

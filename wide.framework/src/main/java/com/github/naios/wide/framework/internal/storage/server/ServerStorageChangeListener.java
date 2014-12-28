@@ -11,8 +11,8 @@ package com.github.naios.wide.framework.internal.storage.server;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
-import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 public class ServerStorageChangeListener implements ChangeListener<Object>
 {

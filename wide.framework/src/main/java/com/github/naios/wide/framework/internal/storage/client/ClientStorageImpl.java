@@ -18,14 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.naios.wide.configuration.Schema;
-import com.github.naios.wide.configuration.TableSchema;
-import com.github.naios.wide.framework.internal.util.FormatterWrapper;
-import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.storage.client.ClientStorage;
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.config.schema.Schema;
+import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.client.ClientStorage;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.StringUtil;
 import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")

@@ -14,7 +14,8 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import com.github.naios.wide.configuration.QueryConfig;
+import com.github.naios.wide.api.config.main.QueryConfig;
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class QueryConfigImpl implements QueryConfig, Saveable
@@ -29,10 +30,11 @@ public class QueryConfigImpl implements QueryConfig, Saveable
         return compress;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public List<QueryTypeConfigImpl> getType()
+    public List<QueryTypeConfig> getType()
     {
-        return type;
+        return (List)type;
     }
 
     @Override

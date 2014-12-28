@@ -11,7 +11,7 @@ package com.github.naios.wide.configuration.internal.config;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.configuration.ClientStorageConfig;
+import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class ClientStorageConfigImpl implements ClientStorageConfig, Saveable

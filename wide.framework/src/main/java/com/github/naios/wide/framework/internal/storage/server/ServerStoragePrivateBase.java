@@ -10,8 +10,8 @@ package com.github.naios.wide.framework.internal.storage.server;
 
 import javafx.beans.property.ObjectProperty;
 
-import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
-import com.github.naios.wide.framework.storage.server.ServerStoragePublicBase;
+import com.github.naios.wide.api.framework.storage.server.ServerStoragePublicBase;
+import com.github.naios.wide.api.framework.storage.server.StructureState;
 
 public interface ServerStoragePrivateBase extends ServerStoragePublicBase
 {

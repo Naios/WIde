@@ -17,11 +17,11 @@ import java.util.Map;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.configuration.MappingMetaData;
-import com.github.naios.wide.configuration.TableSchema;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 
 public class KnownSchemaDataTable<T extends ClientStorageStructure>
     extends AbstractDataTable<T>

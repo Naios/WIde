@@ -12,8 +12,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.configuration.DatabaseConfig;
-import com.github.naios.wide.configuration.internal.util.LateAllocate;
+import com.github.naios.wide.api.config.main.DatabaseConfig;
+import com.github.naios.wide.api.util.LateAllocator;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class DatabaseConfigImpl implements DatabaseConfig, Saveable
@@ -27,7 +27,7 @@ public class DatabaseConfigImpl implements DatabaseConfig, Saveable
 
     // We need to late bind the connection property to user and host
     // because user & host might be null sometimes
-    private final LateAllocate<StringProperty> connection = new LateAllocate<StringProperty>()
+    private final LateAllocator<StringProperty> connection = new LateAllocator<StringProperty>()
     {
         @Override
         public StringProperty allocate()

@@ -8,11 +8,11 @@
 
 package com.github.naios.wide.framework.internal.storage.name;
 
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageImpl;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
 
 public class ClientNameStorage extends NameStorage
 {

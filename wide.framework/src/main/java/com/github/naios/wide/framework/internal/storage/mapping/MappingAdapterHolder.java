@@ -11,7 +11,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.naios.wide.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")

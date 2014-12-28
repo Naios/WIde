@@ -26,8 +26,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import com.github.naios.wide.database_pool.Database;
-import com.github.naios.wide.database_pool.UncheckedSQLException;
+import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.database.UncheckedSQLException;
 
 @SuppressWarnings("serial")
 class DatabaseClosedException extends UncheckedSQLException

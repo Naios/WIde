@@ -3,8 +3,8 @@ package com.github.naios.wide.framework.internal.storage.client;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.google.common.reflect.TypeToken;
 
 public interface ClientStorageDataTable<T extends ClientStorageStructure> extends Iterable<T>

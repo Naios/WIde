@@ -14,10 +14,10 @@ import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.configuration.DatabaseConfig;
-import com.github.naios.wide.configuration.EnviromentConfig;
+import com.github.naios.wide.api.config.main.DatabaseConfig;
+import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.entities.GameBuild;
 import com.github.naios.wide.configuration.internal.util.Saveable;
-import com.github.naios.wide.entities.game.GameBuild;
 
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException

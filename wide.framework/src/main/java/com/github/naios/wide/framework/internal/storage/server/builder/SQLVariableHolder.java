@@ -15,8 +15,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.github.naios.wide.framework.internal.util.FormatterWrapper;
-import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.StringUtil;
 
 public class SQLVariableHolder
 {

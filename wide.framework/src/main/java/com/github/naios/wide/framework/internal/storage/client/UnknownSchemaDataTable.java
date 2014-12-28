@@ -15,10 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.github.naios.wide.framework.internal.util.Pair;
-import com.github.naios.wide.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
-import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.util.Pair;
 
 class CheckInfo
 {

@@ -29,16 +29,16 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.configuration.MappingMetaData;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.StructureState;
+import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
-import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
-import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.IdentitySet;
-import com.github.naios.wide.framework.internal.util.Pair;
-import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 

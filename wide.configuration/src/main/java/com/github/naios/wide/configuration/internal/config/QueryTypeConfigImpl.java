@@ -8,8 +8,8 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
-import com.github.naios.wide.configuration.QueryType;
-import com.github.naios.wide.configuration.QueryTypeConfig;
+import com.github.naios.wide.api.config.main.QueryType;
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig, Saveable

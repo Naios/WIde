@@ -14,12 +14,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.naios.wide.configuration.MappingMetaData;
-import com.github.naios.wide.framework.internal.util.CrossIterator;
-import com.github.naios.wide.framework.internal.util.FormatterWrapper;
-import com.github.naios.wide.framework.internal.util.Pair;
-import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
+import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
+import com.github.naios.wide.api.util.CrossIterator;
+import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.api.util.StringUtil;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {

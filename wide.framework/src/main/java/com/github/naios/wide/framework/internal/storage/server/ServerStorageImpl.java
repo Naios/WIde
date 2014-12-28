@@ -23,19 +23,19 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.configuration.TableSchema;
+import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.server.ServerStorage;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.StructureState;
+import com.github.naios.wide.api.util.CrossIterator;
+import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
-import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
-import com.github.naios.wide.framework.internal.util.CrossIterator;
-import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.storage.server.ServerStorage;
-import com.github.naios.wide.framework.storage.server.ServerStorageException;
-import com.github.naios.wide.framework.storage.server.ServerStorageKey;
-import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 

@@ -13,8 +13,8 @@ import java.util.List;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
-import com.github.naios.wide.framework.internal.util.FlagUtil;
-import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.api.util.FlagUtil;
+import com.github.naios.wide.api.util.StringUtil;
 
 public class FlagProperty<T extends Enum<T>>
     extends SimpleIntegerProperty

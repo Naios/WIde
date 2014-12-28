@@ -11,7 +11,7 @@ package com.github.naios.wide.configuration.internal.config;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import com.github.naios.wide.configuration.VariablizeConfig;
+import com.github.naios.wide.api.config.main.VariablizeConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class VariablizeConfigImpl implements VariablizeConfig, Saveable

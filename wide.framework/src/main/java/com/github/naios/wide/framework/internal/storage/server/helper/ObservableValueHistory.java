@@ -10,6 +10,7 @@ package com.github.naios.wide.framework.internal.storage.server.helper;
 
 import java.util.Stack;
 
+import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
 
 public class ObservableValueHistory

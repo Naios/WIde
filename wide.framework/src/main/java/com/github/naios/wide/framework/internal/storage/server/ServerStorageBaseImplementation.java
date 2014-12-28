@@ -12,9 +12,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingImplementation;
-import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
-import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 public class ServerStorageBaseImplementation
     implements ServerStoragePrivateBase, MappingImplementation<ServerStorageStructure>
