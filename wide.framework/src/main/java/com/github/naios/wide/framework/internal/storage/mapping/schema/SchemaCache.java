@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.naios.wide.framework.WIde;
 import com.github.naios.wide.framework.internal.util.GsonInstance;
 
 public class SchemaCache
@@ -29,8 +28,8 @@ public class SchemaCache
      */
     public Schema getSchemaOfActiveEnviroment(final String databaseID)
     {
-        final String path = WIde.getConfig().get().getActiveEnviroment()
-                .getDatabaseConfig(databaseID).schema().get();
+        final String path = /*TODO WIde.getConfig().get().getActiveEnviroment()
+                .getDatabaseConfig(databaseID).schema().get()*/ null;
 
         return get(path);
     }

@@ -23,19 +23,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.WIde;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
 import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.StringUtil;
-import com.github.naios.wide.framework.session.hooks.Hook;
-import com.github.naios.wide.framework.session.hooks.HookListener;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -147,8 +143,8 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         this.databaseId = databaseId;
         this.tableName = tableName;
 
-        final TableSchema schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
-                .getDatabaseConfig(databaseId).schema().get()).getSchemaOf(tableName);
+        final TableSchema schema = /*TODO SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
+                .getDatabaseConfig(databaseId).schema().get()).getSchemaOf(tableName)*/  null;
 
         this.structureName = schema.getStructure();
 
@@ -173,7 +169,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             }
         });
 
-        this.connection.bind(WIde.getDatabase().connection(databaseId));
+        this.connection.bind(/*TODO WIde.getDatabase().connection(databaseId)*/ null);
 
         this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }
@@ -220,6 +216,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private void initStatements()
     {
+        /*TODO
         WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_ESTABLISHED, this)
         {
             @Override
@@ -240,6 +237,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
         if (WIde.getDatabase().isConnected())
             createStatements();
+            */
     }
 
     private void createStatements()
@@ -363,8 +361,10 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
             throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
 
+        /*TODO
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, structureName));
+    */
 
         return initStructure(mapper.map(result), false);
     }

@@ -29,7 +29,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.WIde;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueHistory;
@@ -84,7 +83,7 @@ public class ServerStorageChangeHolder implements Observable
 
     protected ServerStorageChangeHolder(final String databaseId)
     {
-        this.connection.bind(WIde.getDatabase().connection(databaseId));
+        this.connection.bind(/*TODO WIde.getDatabase().connection(databaseId)*/null);
         this.connection.addListener(new ChangeListener<Connection>()
         {
             @Override

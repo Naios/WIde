@@ -8,14 +8,11 @@
 
 package com.github.naios.wide.framework.internal.storage.name;
 
-import com.github.naios.wide.framework.WIde;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageException;
 import com.github.naios.wide.framework.internal.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.framework.session.hooks.Hook;
-import com.github.naios.wide.framework.session.hooks.HookListener;
 
 public class ClientNameStorage extends NameStorage
 {
@@ -35,6 +32,7 @@ public class ClientNameStorage extends NameStorage
     @Override
     public void setup()
     {
+        /*TODO
         WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
         {
             @Override
@@ -45,14 +43,15 @@ public class ClientNameStorage extends NameStorage
         });
 
         if (WIde.getConfig().isLoaded())
-            load();
+            load();*/
     }
 
     @Override
     public void load()
     {
+        /*TODO
         if (WIde.getEnviroment().isTraceEnabled())
-            System.out.println(String.format("Loading Client Namstorage: %s", name));
+            System.out.println(String.format("Loading Client Namstorage: %s", name));*/
 
         try
         {

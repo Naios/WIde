@@ -8,14 +8,6 @@
 
 package com.github.naios.wide.framework.internal.storage.name;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import com.github.naios.wide.framework.WIde;
-import com.github.naios.wide.framework.session.database.DatabaseType;
-import com.github.naios.wide.framework.session.hooks.Hook;
-import com.github.naios.wide.framework.session.hooks.HookListener;
 
 public class DatabaseNameStorage extends NameStorage
 {
@@ -33,6 +25,7 @@ public class DatabaseNameStorage extends NameStorage
     @Override
     public void setup()
     {
+        /*TODO
         WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_ESTABLISHED, this)
         {
             @Override
@@ -53,14 +46,17 @@ public class DatabaseNameStorage extends NameStorage
 
         if (WIde.getDatabase().isConnected())
             load();
+            */
     }
 
     @Override
     public void load()
     {
+        /*TODO
         if (WIde.getEnviroment().isTraceEnabled())
-            System.out.println(String.format("Loading Database Namstorage: %s", table));
+            System.out.println(String.format("Loading Database Namstorage: %s", table));*/
 
+        /*TODO
         try (final Statement stmt = WIde.getDatabase()
                 .connection(DatabaseType.WORLD.getId()).get().createStatement())
         {
@@ -76,5 +72,6 @@ public class DatabaseNameStorage extends NameStorage
         {
             e.printStackTrace();
         }
+        */
     }
 }

@@ -12,8 +12,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.naios.wide.framework.Constants;
-
 public class FormatterWrapper
 {
     public enum Options

@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.naios.wide.framework.WIde;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.Schema;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.SchemaCache;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
@@ -162,8 +161,8 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
         Schema schema = null;
 
         if (policy.isSchemaProvided())
-            schema = SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
-                .getClientStorageConfig().schema().get());
+            schema = SchemaCache.INSTANCE.get(/*TODO WIde.getConfig().get().getActiveEnviroment()
+                .getClientStorageConfig().schema().get()*/null);
 
         if (Objects.nonNull(schema))
         {
@@ -186,7 +185,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
 
     public static String getPathForStorage(final String path)
     {
-        return WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
+        return /*TODO WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path*/null;
     }
 
     // Overwritten Methods

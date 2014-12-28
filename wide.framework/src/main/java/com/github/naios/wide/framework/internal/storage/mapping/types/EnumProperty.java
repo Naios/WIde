@@ -10,7 +10,7 @@ package com.github.naios.wide.framework.internal.storage.mapping.types;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
-import com.github.naios.wide.framework.Constants;
+import com.github.naios.wide.framework.internal.util.Constants;
 
 public class EnumProperty<T extends Enum<T>>
     extends SimpleIntegerProperty
