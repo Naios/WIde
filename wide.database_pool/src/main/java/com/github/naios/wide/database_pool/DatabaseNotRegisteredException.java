@@ -8,12 +8,10 @@
 
 package com.github.naios.wide.database_pool;
 
-import java.sql.SQLException;
-
 /**
  * Thrown by {@link DatabasePoolService} if a requested id wasn't registered
  */
-public class DatabaseNotRegisteredException extends SQLException
+public class DatabaseNotRegisteredException extends UncheckedSQLException
 {
     private static final long serialVersionUID = -7045866019798230168L;
 
