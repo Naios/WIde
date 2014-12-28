@@ -8,6 +8,14 @@
 
 package com.github.naios.wide.framework;
 
+import com.github.naios.wide.framework.storage.client.ClientStorage;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.framework.storage.server.ServerStorage;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
+
 public interface FrameworkService
 {
+    public <T extends ClientStorageStructure> ClientStorage<T> createClientStorage(String name);
+
+    public <T extends ServerStorageStructure> ServerStorage<?> createServersStorage(String databaseId, String name);
 }

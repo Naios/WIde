@@ -15,36 +15,36 @@ import java.util.Map.Entry;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.internal.storage.server.ServerStorage;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructure;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.framework.internal.util.Pair;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
 public class SQLScope
 {
-    private final Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> update = HashMultimap.create();
+    private final Multimap<ServerStorageImpl<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> update = HashMultimap.create();
 
-    private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
+    private final Multimap<ServerStorageImpl<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
     protected SQLScope()
     {
     }
 
-    protected Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
+    protected Multimap<ServerStorageImpl<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
     {
         return update;
     }
 
-    protected Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
+    protected Multimap<ServerStorageImpl<?>, ServerStorageStructure> getInsert()
     {
         return insert;
     }
 
-    protected Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
+    protected Multimap<ServerStorageImpl<?>, ServerStorageStructure> getDelete()
     {
         return delete;
     }
@@ -123,15 +123,15 @@ public class SQLScope
         final StringBuilder builder = new StringBuilder();
 
         // Build delete querys for each structure
-        for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
+        for (final Entry<ServerStorageImpl<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
             buildDeletes(builder, changeHolder, structure, vars, variablize);
 
         // Build insert querys for each structure
-        for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : insert.asMap().entrySet())
+        for (final Entry<ServerStorageImpl<?>, Collection<ServerStorageStructure>> structure : insert.asMap().entrySet())
             buildInserts(builder, changeHolder, structure, vars, variablize);
 
         // Build upate querys for each structure
-        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
+        for (final Entry<ServerStorageImpl<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
             buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
 
         return builder.toString();
@@ -171,7 +171,7 @@ public class SQLScope
     private void buildDeletes(
             final StringBuilder builder,
             final ServerStorageChangeHolder changeHolder,
-            final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
+            final Entry<ServerStorageImpl<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
@@ -185,7 +185,7 @@ public class SQLScope
     private void buildInserts(
             final StringBuilder builder,
             final ServerStorageChangeHolder changeHolder,
-            final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
+            final Entry<ServerStorageImpl<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {
         // Build delete before insert querys

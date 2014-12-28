@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.server.helper;
 
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructure;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 public class ObservableValueStorageInfo
 {

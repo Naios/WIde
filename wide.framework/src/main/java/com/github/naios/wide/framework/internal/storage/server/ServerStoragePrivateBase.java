@@ -11,10 +11,11 @@ package com.github.naios.wide.framework.internal.storage.server;
 import javafx.beans.property.ObjectProperty;
 
 import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
+import com.github.naios.wide.framework.storage.server.ServerStoragePublicBase;
 
 public interface ServerStoragePrivateBase extends ServerStoragePublicBase
 {
-    public void setOwner(final ServerStorage<?> owner);
+    public void setOwner(final ServerStorageImpl<?> owner);
 
     public ObjectProperty<StructureState> writeableState();
 }

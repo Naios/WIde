@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.server;
 import com.github.naios.wide.framework.internal.game.Classes;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageHolder;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageType;
+import com.github.naios.wide.framework.storage.server.ServerStorageException;
 
 @SuppressWarnings("serial")
 class NoMetaEnumException extends ServerStorageException

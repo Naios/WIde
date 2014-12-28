@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.github.naios.wide.framework.internal.storage.mapping.MappingImplementation;
 import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 public class ServerStorageBaseImplementation
     implements ServerStoragePrivateBase, MappingImplementation<ServerStorageStructure>
@@ -29,16 +30,16 @@ public class ServerStorageBaseImplementation
         this.structure = structure;
     }
 
-    private ServerStorage<?> owner;
+    private ServerStorageImpl<?> owner;
 
     @Override
-    public ServerStorage<?> getOwner()
+    public ServerStorageImpl<?> getOwner()
     {
         return owner;
     }
 
     @Override
-    public void setOwner(final ServerStorage<?> owner)
+    public void setOwner(final ServerStorageImpl<?> owner)
     {
         this.owner = owner;
     }

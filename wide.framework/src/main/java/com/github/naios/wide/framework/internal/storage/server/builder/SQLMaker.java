@@ -24,13 +24,13 @@ import com.github.naios.wide.framework.internal.storage.mapping.types.EnumProper
 import com.github.naios.wide.framework.internal.storage.mapping.types.FlagProperty;
 import com.github.naios.wide.framework.internal.storage.server.AliasUtil;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructure;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.FlagUtil;
 import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 public class SQLMaker
 {

@@ -32,6 +32,10 @@ import com.github.naios.wide.framework.internal.storage.server.helper.Observable
 import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
 import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.framework.storage.server.ServerStorage;
+import com.github.naios.wide.framework.storage.server.ServerStorageException;
+import com.github.naios.wide.framework.storage.server.ServerStorageKey;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -116,7 +120,7 @@ class AccessedDeletedStructureException extends ServerStorageException
     }
 }
 
-public class ServerStorage<T extends ServerStorageStructure> implements AutoCloseable
+public class ServerStorageImpl<T extends ServerStorageStructure> implements ServerStorage<T>
 {
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
@@ -138,7 +142,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
 
     private Statement statement;
 
-    public ServerStorage(final String databaseId, final String tableName) throws ServerStorageException
+    public ServerStorageImpl(final String databaseId, final String tableName) throws ServerStorageException
     {
         this.databaseId = databaseId;
         this.tableName = tableName;
@@ -174,11 +178,13 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }
 
+    @Override
     public String getTableName()
     {
         return tableName;
     }
 
+    @Override
     public String getDatabaseId()
     {
         return databaseId;
@@ -189,6 +195,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return changeHolder;
     }
 
+    @Override
     public boolean isOpen()
     {
         // If the connection gets closed the statements are set to null
@@ -275,6 +282,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T get(final ServerStorageKey<T> key)
     {
@@ -290,6 +298,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return (T) newStructureFromResult(createResultSetFromKey(key));
     }
 
+    @Override
     public List<T> getWhere(final String where, final Object... args)
     {
         for (int i = 0; i < args.length; ++i)
@@ -299,6 +308,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return getWhere(String.format(where, args));
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<T> getWhere(final String where)
     {
@@ -369,6 +379,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         return initStructure(mapper.map(result), false);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T create(final ServerStorageKey<T> key)
     {
@@ -489,7 +500,7 @@ public class ServerStorage<T extends ServerStorageStructure> implements AutoClos
         if (getClass() != obj.getClass())
             return false;
         @SuppressWarnings("rawtypes")
-        final ServerStorage other = (ServerStorage) obj;
+        final ServerStorageImpl other = (ServerStorageImpl) obj;
         if (databaseId != other.databaseId)
             return false;
         if (tableName == null)

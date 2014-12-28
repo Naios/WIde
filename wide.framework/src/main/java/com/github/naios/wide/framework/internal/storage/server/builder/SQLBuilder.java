@@ -22,9 +22,9 @@ import java.util.Map.Entry;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructure;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.github.naios.wide.framework.internal.util.Pair;
+import com.github.naios.wide.framework.storage.server.ServerStorageStructure;
 
 /**
  * Implementation of an SQLBuilder based on storage holders

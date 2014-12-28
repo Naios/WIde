@@ -6,15 +6,16 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.server;
+package com.github.naios.wide.framework.storage.server;
 
 import javafx.beans.property.ReadOnlyObjectProperty;
 
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 import com.github.naios.wide.framework.internal.storage.server.helper.StructureState;
 
 public interface ServerStoragePublicBase
 {
-    public ServerStorage<?> getOwner();
+    public ServerStorageImpl<?> getOwner();
 
     public ReadOnlyObjectProperty<StructureState> state();
 
