@@ -2,8 +2,10 @@ package com.github.naios.wide.database_pool.internal;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -45,13 +47,20 @@ public final class DatabasePoolServiceImpl
         public void changed(final ObservableValue<? extends String> observable,
                 final String oldValue, final String newValue)
         {
+            final Set<String> remove = new HashSet<>();
             connections.forEach((id, database) ->
             {
                 if (database.get().isOptional())
-                    connections.remove(id);
+                {
+                    database.get().close();
+                    database.set(null);
+                    remove.add(id);
+                }
                 else
                     database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
             });
+
+            remove.forEach(id -> connections.remove(id));
         }
     };
 
