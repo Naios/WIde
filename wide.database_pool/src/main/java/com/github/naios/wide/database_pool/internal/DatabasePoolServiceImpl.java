@@ -6,8 +6,6 @@ import java.util.Objects;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
@@ -22,9 +20,6 @@ public final class DatabasePoolServiceImpl
     implements DatabasePoolService
 {
     private ConfigService config;
-
-    private final StringProperty currentEnviroment =
-            new SimpleStringProperty();
 
     /**
      * The default jdbc driver to initialize
@@ -49,6 +44,30 @@ public final class DatabasePoolServiceImpl
     private final ObservableMap<String /*id*/, ObjectProperty<DatabaseImpl> /*database*/> connections =
             new SimpleMapProperty<>();
 
+    private final ChangeListener<String> listener = new ChangeListener<String>()
+    {
+        @Override
+        public void changed(final ObservableValue<? extends String> observable,
+                final String oldValue, final String newValue)
+        {
+            connections.forEach((id, database) ->
+            {
+                if (database.get().isOptional())
+                    connections.remove(id);
+                else
+                {
+                    try
+                    {
+                        database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
+                    }
+                    catch (final SQLException e)
+                    {
+                    }
+                }
+            });
+        }
+    };
+
     public void open()
     {
         // Try to load our preferred jdbc driver
@@ -62,43 +81,20 @@ public final class DatabasePoolServiceImpl
             System.out.println(String.format("DEBUG: Didn't find jdbc class %s", name));
         }
 
-        currentEnviroment.bind(config.activeEnviroment());
-        currentEnviroment.addListener(new ChangeListener<String>()
+        for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
         {
-            @Override
-            public void changed(final ObservableValue<? extends String> observable,
-                    final String oldValue, final String newValue)
-            {
-                connections.forEach((id, database) ->
-                {
-                    if (!id.equals(newValue))
-                    {
-                        database.get().close();
 
-                        if (database.get().isOptional())
-                            connections.remove(id);
-                        else
-                        {
-                            try
-                            {
-                                database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
-                            }
-                            catch (final SQLException e)
-                            {
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        }
 
-
+        config.activeEnviroment().addListener(listener);
 
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
     }
 
     public void close()
     {
+        config.activeEnviroment().removeListener(listener);
+
         connections.forEach((id, database) ->
         {
             connections.remove(id);

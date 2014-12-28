@@ -8,6 +8,9 @@
 
 package com.github.naios.wide.database_pool;
 
+import java.sql.ResultSet;
+import java.util.concurrent.Future;
+
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
 /**
@@ -17,25 +20,89 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 public interface Database
 {
     /**
-     * @return A boolean property to represent if the database is open
+     * Tries to open the database
+     * @return returns true on success
+     */
+    public boolean open();
+
+    /**
+     * @return Returns the database unique id
+     */
+    public String getId();
+
+    /**
+     * @return Returns the database name.
+     */
+    public String getName();
+
+    /**
+     * @return A boolean property that represents if the database is open
      */
     public ReadOnlyBooleanProperty alive();
 
     /**
+     * A blocking query execute on the database that returns a result.
      *
-     * @param query
-     * @param format
-     * @throws UncheckedSQLException that wraps SQLException's that occured
+     * @param query     The query you want to execute
+     * @param format    Its possible to format the query with arguments
+     *
+     * @return          Returns the resulting result set.
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
      */
-    public void directExecute(String query, Object... format) throws UncheckedSQLException;
+    public ResultSet execute(String query, Object... args) throws UncheckedSQLException;
 
-    public void asyncExecute(String query, Object... format);
+    /**
+     * A non-blocking async execute on the database that returns a result.
+     *
+     * @param query     The query you want to execute
+     * @param args      Its possible to format the query with arguments
+     *
+     * @return          Returns a future pointing to the future result set.
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
+     */
+    public Future<ResultSet> asyncExecute(String query, Object... args) throws UncheckedSQLException;
 
+    /**
+     * A non-blocking async execute on the database that returns no result.
+     *
+     * @param query     The query you want to execute
+     * @param args    Its possible to format the query with arguments
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
+     */
+    public void simpleAsyncExecute(String query, Object... args) throws UncheckedSQLException;
+
+    /**
+     * Creates a prepared statement
+     *
+     * @param id        The unique id of the statement, ids must implement hashCode() and equals()!
+     * @param statement The sql prepared statement itself
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
+     */
     public void createPreparedStatement(Object id, String statement) throws UncheckedSQLException;
 
+    /**
+     * Releaes (deletes) a prepared statement
+     *
+     * @param id The unique id of the statement, ids must implement hashCode() and equals()!
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
+     */
     public void releasePreparedStatement(Object id) throws UncheckedSQLException;
 
-    public void directPreparedExecute(Object id, String statement) throws UncheckedSQLException;
-
-    public void asyncPreparedExecute(Object id, String statement) throws UncheckedSQLException;
+    /**
+     * Executes a prepared statement on the database
+     *
+     * @param id    The unique id of the statement, ids must implement hashCode() and equals()!
+     * @param args  All prepared arguments in the correct order.<br>
+     *              If the object isn't a primitive type {@link Object#toString()} will be called.
+     *
+     * @return      Returns a {@link ResultSet} on success
+     *
+     * @throws UncheckedSQLException that wraps SQLException's that occurred
+     */
+    public ResultSet preparedExecute(Object id, Object... args) throws UncheckedSQLException;
 }
