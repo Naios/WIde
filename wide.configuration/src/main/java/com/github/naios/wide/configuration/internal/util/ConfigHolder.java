@@ -14,15 +14,74 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
 
 public class ConfigHolder<T extends Saveable> implements Saveable
 {
+    /**
+     * The {@link Gson} instance used in this bundle<br>
+     * Including registered type adapters for javafx propertys and pretty print set
+     */
+    private final static Gson INSTANCE = new GsonBuilder()
+        // Pretty print
+        .setPrettyPrinting()
+        // Exclude static and final fields
+        .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.FINAL)
+        // StringProperty Adapter
+        .registerTypeAdapter(StringProperty.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleStringProperty(json.getAsJsonPrimitive().getAsString()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleStringProperty()))
+        // IntegerProperty Adapter
+        .registerTypeAdapter(IntegerProperty.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleIntegerProperty(json.getAsJsonPrimitive().getAsInt()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleIntegerProperty()))
+        // FloatProperty Adapter
+        .registerTypeAdapter(FloatProperty.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleFloatProperty(json.getAsJsonPrimitive().getAsFloat()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleFloatProperty()))
+        // BooleanProperty Adapter
+        .registerTypeAdapter(BooleanProperty.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new SimpleBooleanProperty(json.getAsJsonPrimitive().getAsBoolean()),
+                            (observable) -> new JsonPrimitive(observable.get()),
+                                () -> new SimpleBooleanProperty()))
+        .create();
+
+    /**
+     * Converts an object to json<br>
+     * Deletes default value declarations such as int=0, boolean=false or empty strings
+     */
+    private static String toJsonExcludeDefaultValues(final Object obj)
+    {
+        return INSTANCE.toJson(obj)
+                .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
+                .replaceAll(",\n *\".*\": (0|false|\"\")", "");
+    }
+
     private final Class<?> type;
 
     private ObjectProperty<T> config =
@@ -75,7 +134,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         try (final Reader reader = new InputStreamReader(
                new FileInputStream(origin.get())))
         {
-            config.set((T) GsonHelper.INSTANCE.fromJson(reader, type));
+            config.set((T) INSTANCE.fromJson(reader, type));
         }
         catch (final Throwable t)
         {
@@ -84,7 +143,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
             {
                 System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin.get(), defaultConfig));
 
-                config.set((T) GsonHelper.INSTANCE.fromJson(reader, type));
+                config.set((T) INSTANCE.fromJson(reader, type));
             }
             catch (final Throwable tt)
             {
@@ -93,6 +152,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         }
 
         path = origin.get();
+        System.out.println(String.format("DEBUG: Loaded config file: %s.", origin.get()));
     }
 
     /**
@@ -109,11 +169,17 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         try (final Writer writer = new OutputStreamWriter(
                 new FileOutputStream(path)))
         {
-            writer.write(GsonHelper.toJsonExcludeDefaultValues(config));
+            writer.write(toString());
         }
         catch(final Throwable throwable)
         {
             throwable.printStackTrace();
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return toJsonExcludeDefaultValues(config.get());
     }
 }

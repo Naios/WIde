@@ -13,18 +13,17 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
-import com.github.naios.wide.configuration.internal.util.GsonHelper;
 import com.github.naios.wide.configuration.internal.util.LateAllocate;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class DatabaseConfigImpl implements DatabaseConfig, Saveable
 {
-    private StringProperty id = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
-                name = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
-                    host = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
-                        user = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
-                            password = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
-                                schema = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
+    private StringProperty id = new SimpleStringProperty(""),
+                name = new SimpleStringProperty(""),
+                    host = new SimpleStringProperty(""),
+                        user = new SimpleStringProperty(""),
+                            password = new SimpleStringProperty(""),
+                                schema = new SimpleStringProperty("");
 
     // We need to late bind the connection property to user and host
     // because user & host might be null sometimes

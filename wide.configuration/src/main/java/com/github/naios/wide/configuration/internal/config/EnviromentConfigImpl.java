@@ -16,7 +16,6 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.configuration.EnviromentConfig;
-import com.github.naios.wide.configuration.internal.util.GsonHelper;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 import com.github.naios.wide.entities.game.GameBuild;
 
@@ -31,11 +30,11 @@ class MissingDatabaseConfig extends RuntimeException
 
 public class EnviromentConfigImpl implements EnviromentConfig, Saveable
 {
-    private StringProperty name = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
+    private StringProperty name = new SimpleStringProperty("");
 
     private GameBuild build = GameBuild.DEFAULT_BUILD;
 
-    private StringProperty alias_definition = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
+    private StringProperty alias_definition = new SimpleStringProperty("");
 
     private ClientStorageConfigImpl client_storages;
 
