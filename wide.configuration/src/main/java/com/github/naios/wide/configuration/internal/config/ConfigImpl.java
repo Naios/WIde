@@ -8,14 +8,17 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.Config;
 import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.configuration.QueryConfig;
+import com.github.naios.wide.configuration.internal.util.GsonHelper;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
@@ -28,9 +31,11 @@ class MissingActiveEnviroment extends RuntimeException
 
 public class ConfigImpl implements Config
 {
-    private StringProperty title, description, active_enviroment;
+    private StringProperty title = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
+                description = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
+                    active_enviroment = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
 
-    private List<EnviromentConfigImpl> enviroments;
+    private List<EnviromentConfigImpl> enviroments = new ArrayList<>();
 
     private QueryConfigImpl querys;
 

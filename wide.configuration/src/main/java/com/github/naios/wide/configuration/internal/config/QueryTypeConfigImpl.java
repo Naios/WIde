@@ -13,7 +13,7 @@ import com.github.naios.wide.configuration.QueryTypeConfig;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig
 {
-    private QueryType type;
+    private QueryType type = QueryType.UNDEFINED;
 
     private VariablizeConfigImpl variablize;
 

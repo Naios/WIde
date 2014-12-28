@@ -24,7 +24,7 @@ import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.configuration.QueryConfig;
 import com.github.naios.wide.configuration.internal.config.ConfigImpl;
 import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
-import com.github.naios.wide.configuration.internal.util.GsonInstance;
+import com.github.naios.wide.configuration.internal.util.GsonHelper;
 
 public final class ConfigServiceImpl implements ConfigService
 {
@@ -58,14 +58,15 @@ public final class ConfigServiceImpl implements ConfigService
 	    try (final Reader reader = new InputStreamReader(
                new FileInputStream(path)))
         {
-            config = GsonInstance.INSTANCE.fromJson(reader, ConfigImpl.class);
+            config = GsonHelper.INSTANCE.fromJson(reader, ConfigImpl.class);
         }
         catch (final Throwable t)
         {
             try (final Reader reader = new InputStreamReader(
                     getClass().getClassLoader().getResourceAsStream(CONFIG_PATH_DEFAULT)))
             {
-                config = GsonInstance.INSTANCE.fromJson(reader, ConfigImpl.class);
+                System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config!", path));
+                config = GsonHelper.INSTANCE.fromJson(reader, ConfigImpl.class);
             }
             catch (final Throwable tt)
             {
@@ -82,7 +83,7 @@ public final class ConfigServiceImpl implements ConfigService
 	    try (final Writer writer = new OutputStreamWriter(
                 new FileOutputStream(CONFIG_PATH)))
         {
-	        writer.write(GsonInstance.INSTANCE.toJson(config));
+	        writer.write(GsonHelper.toJsonExcludeDefaultValues(config));
         }
         catch(final Throwable throwable)
         {

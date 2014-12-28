@@ -37,6 +37,8 @@ public enum GameBuild
     V6_0_2_19033("6.0.2", Expansion.WARLORDS_OF_DRAENOR),
     V6_0_3_19103("6.0.3", Expansion.WARLORDS_OF_DRAENOR);
 
+    public static final GameBuild DEFAULT_BUILD = V3_3_5a_12340;
+
     private final String version;
 
     private final Expansion expansion;

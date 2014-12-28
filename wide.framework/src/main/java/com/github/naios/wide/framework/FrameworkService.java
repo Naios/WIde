@@ -17,5 +17,5 @@ public interface FrameworkService
 {
     public <T extends ClientStorageStructure> ClientStorage<T> createClientStorage(String name);
 
-    public <T extends ServerStorageStructure> ServerStorage<?> createServersStorage(String databaseId, String name);
+    public <T extends ServerStorageStructure> ServerStorage<T> createServersStorage(String databaseId, String name);
 }

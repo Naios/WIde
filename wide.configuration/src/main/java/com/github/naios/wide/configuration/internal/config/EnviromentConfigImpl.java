@@ -8,12 +8,15 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.configuration.EnviromentConfig;
+import com.github.naios.wide.configuration.internal.util.GsonHelper;
 import com.github.naios.wide.entities.game.GameBuild;
 
 @SuppressWarnings("serial")
@@ -27,15 +30,15 @@ class MissingDatabaseConfig extends RuntimeException
 
 public class EnviromentConfigImpl implements EnviromentConfig
 {
-    private StringProperty name;
+    private StringProperty name = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
 
-    private GameBuild build;
+    private GameBuild build = GameBuild.DEFAULT_BUILD;
 
     private StringProperty alias_definition;
 
     private ClientStorageConfigImpl client_storages;
 
-    private List<DatabaseConfigImpl> databases;
+    private List<DatabaseConfigImpl> databases = new ArrayList<>();
 
     @Override
     public StringProperty name()

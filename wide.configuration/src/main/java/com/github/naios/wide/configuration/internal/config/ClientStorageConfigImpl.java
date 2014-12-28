@@ -8,13 +8,16 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.ClientStorageConfig;
+import com.github.naios.wide.configuration.internal.util.GsonHelper;
 
 public class ClientStorageConfigImpl implements ClientStorageConfig
 {
-    private StringProperty path, schema;
+    private StringProperty path = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
+            schema = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
 
     @Override
     public StringProperty path()

@@ -23,8 +23,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 
-public class GsonInstance
+public class GsonHelper
 {
+    public final static String EMPTY_STRING = "";
+
     /**
      * The {@link Gson} instance used in this bundle<br>
      * Including registered type adapters for javafx propertys and pretty print set
@@ -32,8 +34,8 @@ public class GsonInstance
     public final static Gson INSTANCE = new GsonBuilder()
         // Pretty print
         .setPrettyPrinting()
-        // Exclude static fields
-        .excludeFieldsWithModifiers(Modifier.STATIC)
+        // Exclude static and final fields
+        .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.FINAL)
         // StringProperty Adapter
         .registerTypeAdapter(StringProperty.class,
                 new LazyGsonAdapter<>(
@@ -66,8 +68,16 @@ public class GsonInstance
      */
     public static String toJsonExcludeDefaultValues(final Object obj)
     {
-        return INSTANCE.toJson(obj)
-                .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
-                .replaceAll(",\n *\".*\": (0|false|\"\")", "");
+        try
+        {
+            return INSTANCE.toJson(obj)
+                    .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
+                    .replaceAll(",\n *\".*\": (0|false|\"\")", "");
+        }
+        catch (final Throwable e)
+        {
+            e.printStackTrace();
+            return e.getMessage();
+        }
     }
 }

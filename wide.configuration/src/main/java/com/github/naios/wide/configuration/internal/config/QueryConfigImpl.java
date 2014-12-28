@@ -8,17 +8,19 @@
 
 package com.github.naios.wide.configuration.internal.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 import com.github.naios.wide.configuration.QueryConfig;
 
 public class QueryConfigImpl implements QueryConfig
 {
-    private BooleanProperty compress;
+    private BooleanProperty compress = new SimpleBooleanProperty(false);
 
-    private List<QueryTypeConfigImpl> type;
+    private List<QueryTypeConfigImpl> type = new ArrayList<>();
 
     @Override
     public BooleanProperty compress()
