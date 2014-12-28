@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
+import com.github.naios.wide.configuration.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;

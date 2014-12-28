@@ -73,7 +73,6 @@ public class ConfigImpl implements Config, Saveable
     @Override
     public EnviromentConfigImpl getActiveEnviroment()
     {
-        System.out.println(String.format("DEBUG: %s -> %s", active_enviroment.get(), enviroments));
         for (final EnviromentConfigImpl env : enviroments)
             if (env.name().get().equals(active_enviroment.get()))
                 return env;

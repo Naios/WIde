@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import com.github.naios.wide.configuration.MappingMetaData;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.storage.mapping.Mapping;
 

@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.mapping.schema;
+package com.github.naios.wide.configuration;
 
 import java.util.List;
 

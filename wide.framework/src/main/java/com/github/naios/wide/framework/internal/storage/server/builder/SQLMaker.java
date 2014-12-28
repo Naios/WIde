@@ -19,7 +19,7 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
+import com.github.naios.wide.configuration.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.mapping.types.EnumProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.types.FlagProperty;
 import com.github.naios.wide.framework.internal.storage.server.AliasUtil;

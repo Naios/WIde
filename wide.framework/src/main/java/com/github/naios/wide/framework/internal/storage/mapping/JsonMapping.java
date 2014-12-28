@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import com.github.naios.wide.configuration.MappingMetaData;
 import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.Pair;

@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.mapping;
+package com.github.naios.wide.configuration;
 
 public class MappingMetaData
 {
@@ -23,7 +23,7 @@ public class MappingMetaData
         return name;
     }
 
-    protected String getTarget()
+    public String getTarget()
     {
         return (target == null) ? name : target;
     }

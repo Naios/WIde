@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.framework.internal.storage.mapping;
 
+import com.github.naios.wide.configuration.MappingMetaData;
+
 public abstract class MappingAdapter<FROM, BASE>
 {
     public abstract BASE map(FROM from, MappingPlan plan, int index, MappingMetaData metaData);

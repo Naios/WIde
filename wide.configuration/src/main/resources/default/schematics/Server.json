@@ -1,0 +1,6 @@
+{
+  "name": "Empty server storage schema",
+  "description": "An empty server storage schema",
+  "tables": [
+  ]
+}

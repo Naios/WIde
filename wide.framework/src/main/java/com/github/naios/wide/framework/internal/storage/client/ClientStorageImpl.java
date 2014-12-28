@@ -18,9 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.naios.wide.framework.internal.storage.mapping.schema.Schema;
-import com.github.naios.wide.framework.internal.storage.mapping.schema.SchemaCache;
-import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.configuration.Schema;
+import com.github.naios.wide.configuration.TableSchema;
 import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.StringUtil;
 import com.github.naios.wide.framework.storage.client.ClientStorage;
@@ -165,8 +164,8 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         Schema schema = null;
 
         if (policy.isSchemaProvided())
-            schema = SchemaCache.INSTANCE.get(/*TODO WIde.getConfig().get().getActiveEnviroment()
-                .getClientStorageConfig().schema().get()*/null);
+            schema = /*SchemaCache.INSTANCE.get(TODO WIde.getConfig().get().getActiveEnviroment()
+                .getClientStorageConfig().schema().get()*/null/*)*/;
 
         if (Objects.nonNull(schema))
         {

@@ -12,7 +12,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.configuration.MappingMetaData;
+import com.github.naios.wide.configuration.TableSchema;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.storage.mapping.Mapping;
 

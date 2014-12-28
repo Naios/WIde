@@ -25,9 +25,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.configuration.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 import com.github.naios.wide.framework.internal.storage.mapping.types.EnumProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.types.FlagProperty;

@@ -1,0 +1,6 @@
+{
+  "name": "Empty client storage schema",
+  "description": "An empty client storage schema",
+  "tables": [
+  ]
+}

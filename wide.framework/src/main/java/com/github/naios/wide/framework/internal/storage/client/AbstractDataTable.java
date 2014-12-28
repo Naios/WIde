@@ -16,9 +16,9 @@ import java.util.Objects;
 
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.configuration.TableSchema;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
-import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
