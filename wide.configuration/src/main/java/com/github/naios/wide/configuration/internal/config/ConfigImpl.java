@@ -19,6 +19,7 @@ import com.github.naios.wide.configuration.Config;
 import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.configuration.QueryConfig;
 import com.github.naios.wide.configuration.internal.util.GsonHelper;
+import com.github.naios.wide.configuration.internal.util.Saveable;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
@@ -29,7 +30,7 @@ class MissingActiveEnviroment extends RuntimeException
     }
 }
 
-public class ConfigImpl implements Config
+public class ConfigImpl implements Config, Saveable
 {
     private StringProperty title = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
                 description = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
@@ -73,10 +74,18 @@ public class ConfigImpl implements Config
     @Override
     public EnviromentConfigImpl getActiveEnviroment()
     {
+        System.out.println(String.format("DEBUG: %s -> %s", active_enviroment.get(), enviroments));
         for (final EnviromentConfigImpl env : enviroments)
             if (env.name().get().equals(active_enviroment.get()))
                 return env;
 
         throw new MissingActiveEnviroment();
+    }
+
+    @Override
+    public void save()
+    {
+        enviroments.forEach(e -> e.save());
+        querys.save();
     }
 }

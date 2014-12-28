@@ -68,16 +68,8 @@ public class GsonHelper
      */
     public static String toJsonExcludeDefaultValues(final Object obj)
     {
-        try
-        {
-            return INSTANCE.toJson(obj)
-                    .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
-                    .replaceAll(",\n *\".*\": (0|false|\"\")", "");
-        }
-        catch (final Throwable e)
-        {
-            e.printStackTrace();
-            return e.getMessage();
-        }
+        return INSTANCE.toJson(obj)
+                .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
+                .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 }

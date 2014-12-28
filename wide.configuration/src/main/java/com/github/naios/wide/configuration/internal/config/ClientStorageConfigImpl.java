@@ -13,8 +13,9 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.configuration.ClientStorageConfig;
 import com.github.naios.wide.configuration.internal.util.GsonHelper;
+import com.github.naios.wide.configuration.internal.util.Saveable;
 
-public class ClientStorageConfigImpl implements ClientStorageConfig
+public class ClientStorageConfigImpl implements ClientStorageConfig, Saveable
 {
     private StringProperty path = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
             schema = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
@@ -29,5 +30,10 @@ public class ClientStorageConfigImpl implements ClientStorageConfig
     public StringProperty schema()
     {
         return schema;
+    }
+
+    @Override
+    public void save()
+    {
     }
 }

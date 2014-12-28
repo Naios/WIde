@@ -15,8 +15,9 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.configuration.internal.util.GsonHelper;
 import com.github.naios.wide.configuration.internal.util.LateAllocate;
+import com.github.naios.wide.configuration.internal.util.Saveable;
 
-public class DatabaseConfigImpl implements DatabaseConfig
+public class DatabaseConfigImpl implements DatabaseConfig, Saveable
 {
     private StringProperty id = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
                 name = new SimpleStringProperty(GsonHelper.EMPTY_STRING),
@@ -78,5 +79,10 @@ public class DatabaseConfigImpl implements DatabaseConfig
     public StringProperty endpoint()
     {
         return connection.get();
+    }
+
+    @Override
+    public void save()
+    {
     }
 }

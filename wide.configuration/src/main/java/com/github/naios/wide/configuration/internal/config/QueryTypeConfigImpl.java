@@ -10,8 +10,9 @@ package com.github.naios.wide.configuration.internal.config;
 
 import com.github.naios.wide.configuration.QueryType;
 import com.github.naios.wide.configuration.QueryTypeConfig;
+import com.github.naios.wide.configuration.internal.util.Saveable;
 
-public class QueryTypeConfigImpl implements QueryTypeConfig
+public class QueryTypeConfigImpl implements QueryTypeConfig, Saveable
 {
     private QueryType type = QueryType.UNDEFINED;
 
@@ -27,5 +28,11 @@ public class QueryTypeConfigImpl implements QueryTypeConfig
     public VariablizeConfigImpl getVariablize()
     {
         return variablize;
+    }
+
+    @Override
+    public void save()
+    {
+        variablize.save();
     }
 }

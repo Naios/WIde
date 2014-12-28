@@ -17,6 +17,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.configuration.DatabaseConfig;
 import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.configuration.internal.util.GsonHelper;
+import com.github.naios.wide.configuration.internal.util.Saveable;
 import com.github.naios.wide.entities.game.GameBuild;
 
 @SuppressWarnings("serial")
@@ -28,13 +29,13 @@ class MissingDatabaseConfig extends RuntimeException
     }
 }
 
-public class EnviromentConfigImpl implements EnviromentConfig
+public class EnviromentConfigImpl implements EnviromentConfig, Saveable
 {
     private StringProperty name = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
 
     private GameBuild build = GameBuild.DEFAULT_BUILD;
 
-    private StringProperty alias_definition;
+    private StringProperty alias_definition = new SimpleStringProperty(GsonHelper.EMPTY_STRING);
 
     private ClientStorageConfigImpl client_storages;
 
@@ -88,5 +89,12 @@ public class EnviromentConfigImpl implements EnviromentConfig
                 return db;
 
         throw new MissingDatabaseConfig(id);
+    }
+
+    @Override
+    public void save()
+    {
+        client_storages.save();
+        databases.forEach(d -> d.save());
     }
 }

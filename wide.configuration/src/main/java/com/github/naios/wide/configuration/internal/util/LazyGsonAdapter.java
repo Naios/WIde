@@ -41,7 +41,6 @@ public class LazyGsonAdapter<T>
     public JsonElement serialize(final T src, final Type type,
             final JsonSerializationContext context)
     {
-        System.out.println(String.format("Serializing: %s (%s) - %s", src, src.getClass().getName(), context));
         return get.apply(src);
     }
 

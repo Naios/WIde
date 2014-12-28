@@ -8,12 +8,6 @@
 
 package com.github.naios.wide.configuration.internal;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -24,7 +18,7 @@ import com.github.naios.wide.configuration.EnviromentConfig;
 import com.github.naios.wide.configuration.QueryConfig;
 import com.github.naios.wide.configuration.internal.config.ConfigImpl;
 import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
-import com.github.naios.wide.configuration.internal.util.GsonHelper;
+import com.github.naios.wide.configuration.internal.util.ConfigHolder;
 
 public final class ConfigServiceImpl implements ConfigService
 {
@@ -44,88 +38,59 @@ public final class ConfigServiceImpl implements ConfigService
     private final static String CONFIG_PATH_DEFAULT = "default/WIde.json";
 
     /**
-     * The config object that actually holds our data.
+     * The config holder object that actually holds our data.
      */
-    private ConfigImpl config;
+    private final ConfigHolder<ConfigImpl> config =
+            new ConfigHolder<>(System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH),
+                    CONFIG_PATH_DEFAULT, ConfigImpl.class);
 
 	@Override
     public void reload()
 	{
-	    // Get the config path through a system property or the default relative filename
-	    final String path = System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH);
-
-	    // If the config file could not be loaded use the default predefined file.
-	    try (final Reader reader = new InputStreamReader(
-               new FileInputStream(path)))
-        {
-            config = GsonHelper.INSTANCE.fromJson(reader, ConfigImpl.class);
-        }
-        catch (final Throwable t)
-        {
-            try (final Reader reader = new InputStreamReader(
-                    getClass().getClassLoader().getResourceAsStream(CONFIG_PATH_DEFAULT)))
-            {
-                System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config!", path));
-                config = GsonHelper.INSTANCE.fromJson(reader, ConfigImpl.class);
-            }
-            catch (final Throwable tt)
-            {
-                tt.printStackTrace();
-            }
-        }
-
+	    config.load();
 	    System.out.println(String.format("DEBUG: %s", "ConfigService::reload()"));
 	}
 
 	@Override
     public void save()
 	{
-	    try (final Writer writer = new OutputStreamWriter(
-                new FileOutputStream(CONFIG_PATH)))
-        {
-	        writer.write(GsonHelper.toJsonExcludeDefaultValues(config));
-        }
-        catch(final Throwable throwable)
-        {
-            throwable.printStackTrace();
-        }
-
+	    config.save();
 	    System.out.println(String.format("DEBUG: %s", "ConfigService::save()"));
     }
 
     @Override
     public ReadOnlyStringProperty title()
     {
-        return config.title();
+        return config.get().get().title();
     }
 
     @Override
     public ReadOnlyStringProperty description()
     {
-        return config.description();
+        return config.get().get().description();
     }
 
     @Override
     public StringProperty activeEnviroment()
     {
-        return config.activeEnviroment();
+        return config.get().get().activeEnviroment();
     }
 
     @Override
     public List<EnviromentConfig> getEnviroments()
     {
-        return config.getEnviroments();
+        return config.get().get().getEnviroments();
     }
 
     @Override
     public QueryConfig getQueryConfig()
     {
-        return config.getQueryConfig();
+        return config.get().get().getQueryConfig();
     }
 
     @Override
     public EnviromentConfigImpl getActiveEnviroment()
     {
-        return config.getActiveEnviroment();
+        return config.get().get().getActiveEnviroment();
     }
 }
