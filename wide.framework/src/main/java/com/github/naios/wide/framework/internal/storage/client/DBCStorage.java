@@ -8,11 +8,14 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
+import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+
 /**
  * Implementation of Blizzards DBC files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=DBC
  */
-public class DBCStorage<T extends ClientStorageStructure> extends ClientStorage<T>
+public class DBCStorage<T extends ClientStorageStructure> extends ClientStorageImpl<T>
 {
     private final static int HEADER_SIZE = 20;
 

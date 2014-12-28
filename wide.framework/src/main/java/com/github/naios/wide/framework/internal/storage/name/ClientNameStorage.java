@@ -8,11 +8,11 @@
 
 package com.github.naios.wide.framework.internal.storage.name;
 
-import com.github.naios.wide.framework.internal.storage.client.ClientStorage;
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageException;
-import com.github.naios.wide.framework.internal.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.framework.internal.storage.client.ClientStorageImpl;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.client.UnknownClientStorageStructure;
+import com.github.naios.wide.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
 
 public class ClientNameStorage extends NameStorage
 {
@@ -55,9 +55,9 @@ public class ClientNameStorage extends NameStorage
 
         try
         {
-            final ClientStorage<UnknownClientStorageStructure> storage =
+            final ClientStorageImpl<UnknownClientStorageStructure> storage =
                     new ClientStorageSelector<UnknownClientStorageStructure>
-                            (ClientStorage.getPathForStorage(name),
+                            (ClientStorageImpl.getPathForStorage(name),
                                 ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
 
             final Object[][] objects = storage.asObjectArray();

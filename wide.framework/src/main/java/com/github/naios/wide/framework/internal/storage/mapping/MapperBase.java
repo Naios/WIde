@@ -12,6 +12,7 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
 public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implements Mapper<FROM, TO, BASE>

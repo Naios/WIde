@@ -8,6 +8,10 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
+import com.github.naios.wide.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
+
 public class ClientStorageSelector<T extends ClientStorageStructure>
 {
     private final String path;
@@ -27,7 +31,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         this.policy = policy;
     }
 
-    public ClientStorage<T> select() throws ClientStorageException
+    public ClientStorageImpl<T> select() throws ClientStorageException
     {
         // TODO improve this: maybe there is an easier way to get the extension
         final String extension = path.substring(path.lastIndexOf("."), path.length());

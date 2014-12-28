@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.framework.internal.util.Pair;
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {

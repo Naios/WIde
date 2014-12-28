@@ -9,6 +9,7 @@
 package com.github.naios.wide.framework.internal.storage.client;
 
 import com.github.naios.wide.framework.internal.storage.mapping.MappingImplementation;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 
 public class ClientStorageBaseImplementation
     implements ClientStoragePrivateBase, MappingImplementation<ClientStorageStructure>

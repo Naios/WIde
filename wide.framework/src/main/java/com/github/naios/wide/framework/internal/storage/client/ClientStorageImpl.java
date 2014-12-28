@@ -23,6 +23,10 @@ import com.github.naios.wide.framework.internal.storage.mapping.schema.SchemaCac
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.framework.storage.client.ClientStorage;
+import com.github.naios.wide.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.framework.storage.client.ClientStoragePolicy;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")
@@ -61,8 +65,8 @@ class MissingSchemaException extends ClientStorageException
     }
 }
 
-public abstract class ClientStorage<T extends ClientStorageStructure>
-    implements ClientStorageDataTable<T>
+public abstract class ClientStorageImpl<T extends ClientStorageStructure>
+    implements ClientStorageDataTable<T>, ClientStorage<T>
 {
     private final String path;
 
@@ -97,12 +101,12 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
      */
     private ClientStorageDataTable<T> dataTable;
 
-    public ClientStorage(final String path) throws ClientStorageException
+    public ClientStorageImpl(final String path) throws ClientStorageException
     {
         this (path, ClientStoragePolicy.DEFAULT_POLICY);
     }
 
-    public ClientStorage(final String path, final ClientStoragePolicy policy) throws ClientStorageException
+    public ClientStorageImpl(final String path, final ClientStoragePolicy policy) throws ClientStorageException
     {
         this.path = path;
 
@@ -203,11 +207,13 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     }
 
     // Getter
+    @Override
     public int getRecordsCount()
     {
         return recordsCount;
     }
 
+    @Override
     public int getFieldsCount()
     {
         return fieldsCount;
@@ -263,7 +269,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     }
 
     @Override
-    public ClientStorageFormat getFormat()
+    public ClientStorageFormatImpl getFormat()
     {
         return dataTable.getFormat();
     }
@@ -280,6 +286,7 @@ public abstract class ClientStorage<T extends ClientStorageStructure>
     /**
      * @return ClientStorage as String Array
      */
+    @Override
     public String[][] asStringArray()
     {
         final Object[][] asObjects = asObjectArray();

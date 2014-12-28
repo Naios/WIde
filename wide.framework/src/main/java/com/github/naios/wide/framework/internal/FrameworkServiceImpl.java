@@ -1,17 +1,15 @@
+
+/*
+ * Copyright (c) 2013 - 2014 Naios <naios-dev@live.de>
+ *
+ * This file is part of WIde which is released under Creative Commons 4.0 (by-nc-sa)
+ * See file LICENSE for full license details.
+ */
+
 package com.github.naios.wide.framework.internal;
 
-import com.github.naios.wide.framework.FrameworkService;
-
-/**
- * Internal implementation of our example OSGi service
- */
 public final class FrameworkServiceImpl
-    implements FrameworkService
+    // implements FrameworkService
 {
-    @Override
-    public void sayHello()
-    {
-        System.out.println("The framework sais hey!");
 
-    }
 }

@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
+import com.github.naios.wide.framework.storage.client.ClientStoragePublicBase;
+
 public interface ClientStoragePrivateBase extends ClientStoragePublicBase
 {
 }

@@ -18,6 +18,7 @@ import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.FormatterWrapper;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {

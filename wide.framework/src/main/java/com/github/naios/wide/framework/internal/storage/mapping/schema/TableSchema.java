@@ -10,14 +10,14 @@ package com.github.naios.wide.framework.internal.storage.mapping.schema;
 
 import java.util.List;
 
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageFormat;
+import com.github.naios.wide.framework.internal.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
 
 public class TableSchema
 {
     private String name, structure;
 
-    private ClientStorageFormat format;
+    private ClientStorageFormatImpl format;
 
     private List<MappingMetaData> entries;
 
@@ -31,7 +31,7 @@ public class TableSchema
         return (structure == null) ? "" : structure;
     }
 
-    public ClientStorageFormat getFormat()
+    public ClientStorageFormatImpl getFormat()
     {
         return format;
     }

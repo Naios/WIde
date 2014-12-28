@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage;
+package com.github.naios.wide.framework.storage;
 
 @SuppressWarnings("serial")
 public class StorageException extends IllegalStateException

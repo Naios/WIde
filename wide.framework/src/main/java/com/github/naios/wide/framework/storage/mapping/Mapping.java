@@ -6,10 +6,12 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.mapping;
+package com.github.naios.wide.framework.storage.mapping;
 
 import java.util.List;
 
+import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
+import com.github.naios.wide.framework.internal.storage.mapping.UnknownMappingEntryException;
 import com.github.naios.wide.framework.internal.util.Pair;
 
 public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>

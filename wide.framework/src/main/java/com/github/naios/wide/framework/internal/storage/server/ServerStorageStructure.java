@@ -10,7 +10,7 @@ package com.github.naios.wide.framework.internal.storage.server;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.internal.storage.mapping.Mapping;
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 
 public interface ServerStorageStructure
     extends ServerStoragePublicBase, Mapping<ObservableValue<?>>

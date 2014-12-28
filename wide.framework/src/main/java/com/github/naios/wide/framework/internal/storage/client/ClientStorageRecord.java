@@ -11,6 +11,8 @@ package com.github.naios.wide.framework.internal.storage.client;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
+
 @SuppressWarnings("serial")
 class WrongFormatType extends RuntimeException
 {
@@ -28,14 +30,14 @@ public class ClientStorageRecord
 {
     private final ByteBuffer buffer;
 
-    private final ClientStorage<?> storage;
+    private final ClientStorageImpl<?> storage;
 
     private final int offset;
 
-    private final ClientStorageFormat format;
+    private final ClientStorageFormatImpl format;
 
     public ClientStorageRecord(final ByteBuffer buffer,
-            final ClientStorage<?> storage, final ClientStorageFormat format, final int offset)
+            final ClientStorageImpl<?> storage, final ClientStorageFormatImpl format, final int offset)
     {
         this.buffer = buffer;
         this.storage = storage;

@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import com.github.naios.wide.framework.internal.storage.StorageException;
+import com.github.naios.wide.framework.storage.StorageException;
 
 @SuppressWarnings("serial")
 public class ServerStorageException extends StorageException

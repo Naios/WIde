@@ -20,18 +20,20 @@ import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
 import com.github.naios.wide.framework.internal.util.Pair;
+import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 import com.google.common.reflect.TypeToken;
 
 public abstract class AbstractDataTable<T extends ClientStorageStructure>
     implements ClientStorageDataTable<T>
 {
-    private final ClientStorage<T> storage;
+    private final ClientStorageImpl<T> storage;
 
-    private final ClientStorageFormat format;
+    private final ClientStorageFormatImpl format;
 
     private final Object[][] objects;
 
-    public AbstractDataTable(final ClientStorage<T> storage, final ByteBuffer buffer, final ClientStorageFormat format)
+    public AbstractDataTable(final ClientStorageImpl<T> storage, final ByteBuffer buffer, final ClientStorageFormatImpl format)
     {
         this.storage = storage;
 
@@ -91,7 +93,7 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
         return objects;
     }
 
-    public ClientStorage<T> getStorage()
+    public ClientStorageImpl<T> getStorage()
     {
         return storage;
     }
@@ -106,7 +108,7 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
     }
 
     @Override
-    public ClientStorageFormat getFormat()
+    public ClientStorageFormatImpl getFormat()
     {
         return format;
     }

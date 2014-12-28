@@ -20,6 +20,8 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingMetaData;
 import com.github.naios.wide.framework.internal.storage.mapping.schema.TableSchema;
+import com.github.naios.wide.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 
 public class KnownSchemaDataTable<T extends ClientStorageStructure>
     extends AbstractDataTable<T>
@@ -32,7 +34,7 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     private final List<String> names, description;
 
     @SuppressWarnings("unchecked")
-    public KnownSchemaDataTable(final ClientStorage<T> storage, final TableSchema schema,
+    public KnownSchemaDataTable(final ClientStorageImpl<T> storage, final TableSchema schema,
             final ByteBuffer buffer)
     {
         super(storage, buffer, schema.getFormat());

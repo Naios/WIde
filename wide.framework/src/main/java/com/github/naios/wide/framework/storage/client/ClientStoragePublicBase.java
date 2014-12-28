@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.client;
+package com.github.naios.wide.framework.storage.client;
 
 public interface ClientStoragePublicBase
 {

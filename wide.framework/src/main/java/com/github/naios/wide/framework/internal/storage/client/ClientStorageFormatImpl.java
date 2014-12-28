@@ -17,8 +17,10 @@ import java.util.TreeSet;
 import com.github.naios.wide.framework.internal.util.CrossIterator;
 import com.github.naios.wide.framework.internal.util.Pair;
 import com.github.naios.wide.framework.internal.util.StringUtil;
+import com.github.naios.wide.framework.storage.client.ClientStorageFormat;
+import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
 
-public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorageFormer>>
+public class ClientStorageFormatImpl implements Iterable<Pair<Integer, ClientStorageFormer>>, ClientStorageFormat
 {
     private final String format, comment;
 
@@ -30,12 +32,12 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
     private final Set<Integer> entries =
             new TreeSet<>();
 
-    public ClientStorageFormat(final String format)
+    public ClientStorageFormatImpl(final String format)
     {
         this (format, "");
     }
 
-    public ClientStorageFormat(final String format, final String comment)
+    public ClientStorageFormatImpl(final String format, final String comment)
     {
         this.format = format;
 
@@ -56,26 +58,31 @@ public class ClientStorageFormat implements Iterable<Pair<Integer, ClientStorage
         this.size = offset;
     }
 
+    @Override
     public int getByteSize()
     {
         return size;
     }
 
+    @Override
     public String getFormat()
     {
         return format;
     }
 
+    @Override
     public int size()
     {
         return entries.size();
     }
 
+    @Override
     public ClientStorageFormer getFormerAtIndex(final int index)
     {
         return ClientStorageFormer.getFormerOfCharacter(format.charAt(index));
     }
 
+    @Override
     public int getOffsetOfIndex(final int index)
     {
         return indexToOffsetCache.get(index);

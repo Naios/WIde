@@ -16,10 +16,13 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.github.naios.wide.framework.internal.util.Pair;
+import com.github.naios.wide.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.framework.storage.client.ClientStorageFormer;
+import com.github.naios.wide.framework.storage.client.ClientStorageStructure;
 
 class CheckInfo
 {
-    private final ClientStorage<?> storage;
+    private final ClientStorageImpl<?> storage;
 
     private final ByteBuffer buffer;
 
@@ -27,7 +30,7 @@ class CheckInfo
 
     private final int offset;
 
-    public CheckInfo(final ClientStorage<?> storage, final ByteBuffer buffer,
+    public CheckInfo(final ClientStorageImpl<?> storage, final ByteBuffer buffer,
             final StringBuilder format, final int offset)
     {
         this.storage = storage;
@@ -36,7 +39,7 @@ class CheckInfo
         this.offset = offset;
     }
 
-    public ClientStorage<?> getStorage()
+    public ClientStorageImpl<?> getStorage()
     {
         return storage;
     }
@@ -155,12 +158,12 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     private final static FieldEstimater ESTIMATER =
             new FieldEstimater(ClientStorageFormer.FT_INT);
 
-    public UnknownSchemaDataTable(final ClientStorage<T> storage, final ByteBuffer buffer)
+    public UnknownSchemaDataTable(final ClientStorageImpl<T> storage, final ByteBuffer buffer)
     {
         super(storage, buffer, estimateFormat(storage, buffer));
     }
 
-    private static ClientStorageFormat estimateFormat(final ClientStorage<?> storage, final ByteBuffer buffer)
+    private static ClientStorageFormatImpl estimateFormat(final ClientStorageImpl<?> storage, final ByteBuffer buffer)
     {
         final StringBuilder format = new StringBuilder();
 
@@ -177,7 +180,7 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
             offset += former.getSize();
         }
 
-        return new ClientStorageFormat(format.toString(),
+        return new ClientStorageFormatImpl(format.toString(),
                 String.format("estimated - %s byte(s) left", storage.getRecordSize() - offset));
     }
 

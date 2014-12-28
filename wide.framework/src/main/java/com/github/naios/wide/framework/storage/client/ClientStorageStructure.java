@@ -6,11 +6,11 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.client;
+package com.github.naios.wide.framework.storage.client;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.framework.internal.storage.mapping.Mapping;
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 
 public interface ClientStorageStructure
     extends ClientStoragePublicBase, Mapping<ObservableValue<?>>

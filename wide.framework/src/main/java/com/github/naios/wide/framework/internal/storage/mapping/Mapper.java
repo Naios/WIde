@@ -10,6 +10,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 
 import java.util.List;
 
+import com.github.naios.wide.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
 public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>

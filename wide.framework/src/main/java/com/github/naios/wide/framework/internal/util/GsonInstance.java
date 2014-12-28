@@ -19,7 +19,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageFormat;
+import com.github.naios.wide.framework.internal.storage.client.ClientStorageFormatImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -56,11 +56,11 @@ public class GsonInstance
                             (observable) -> new JsonPrimitive(observable.get()),
                                 () -> new SimpleBooleanProperty()))
         // ClientStorageFormat Adapter
-        .registerTypeAdapter(ClientStorageFormat.class,
+        .registerTypeAdapter(ClientStorageFormatImpl.class,
                 new LazyGsonAdapter<>(
-                        (json) -> new ClientStorageFormat(json.getAsJsonPrimitive().getAsString()),
+                        (json) -> new ClientStorageFormatImpl(json.getAsJsonPrimitive().getAsString()),
                             (format) -> new JsonPrimitive(format.getFormat()),
-                                () -> new ClientStorageFormat("")))
+                                () -> new ClientStorageFormatImpl("")))
         .create();
 
     public static String toJsonExcludeDefaultValues(final Object obj)

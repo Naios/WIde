@@ -6,9 +6,9 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.client;
+package com.github.naios.wide.framework.storage.client;
 
-import com.github.naios.wide.framework.internal.storage.StorageException;
+import com.github.naios.wide.framework.storage.StorageException;
 
 @SuppressWarnings("serial")
 public class ClientStorageException extends StorageException
