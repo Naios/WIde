@@ -16,8 +16,8 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
-import com.github.naios.wide.config.internal.config.ConfigImpl;
-import com.github.naios.wide.config.internal.config.EnviromentConfigImpl;
+import com.github.naios.wide.config.internal.config.main.ConfigImpl;
+import com.github.naios.wide.config.internal.config.main.EnviromentConfigImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public final class ConfigServiceImpl implements ConfigService

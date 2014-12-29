@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.Pair;

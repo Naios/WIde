@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.config.internal.config;
+package com.github.naios.wide.config.internal.config.main;
 
 import java.util.ArrayList;
 import java.util.List;

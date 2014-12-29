@@ -10,42 +10,13 @@ package com.github.naios.wide.api.config.schema;
 
 import java.util.List;
 
-@SuppressWarnings("serial")
-class MissingSchemaException extends RuntimeException
+public interface Schema
 {
-    public MissingSchemaException(final String name)
-    {
-        super(String.format("Schema %s is missing!!", name));
-    }
-}
+    public String getName();
 
-public class Schema
-{
-    private String name, description;
+    public String getDescription();
 
-    private List<TableSchema> tables;
+    public List<TableSchema> getTables();
 
-    public String getName()
-    {
-        return name;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public List<TableSchema> getTables()
-    {
-        return tables;
-    }
-
-    public TableSchema getSchemaOf(final String name)
-    {
-        for (final TableSchema schema : tables)
-            if (schema.getName().equals(name))
-                return schema;
-
-        throw new MissingSchemaException(name);
-    }
+    public TableSchema getSchemaOf(String name);
 }

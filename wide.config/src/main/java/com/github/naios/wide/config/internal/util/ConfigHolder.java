@@ -30,6 +30,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -49,26 +50,27 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         .registerTypeAdapter(StringProperty.class,
                 new LazyGsonAdapter<>(
                         (json) -> new SimpleStringProperty(json.getAsJsonPrimitive().getAsString()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleStringProperty()))
+                            (observable) -> new JsonPrimitive(observable.get())))
         // IntegerProperty Adapter
         .registerTypeAdapter(IntegerProperty.class,
                 new LazyGsonAdapter<>(
                         (json) -> new SimpleIntegerProperty(json.getAsJsonPrimitive().getAsInt()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleIntegerProperty()))
+                            (observable) -> new JsonPrimitive(observable.get())))
         // FloatProperty Adapter
         .registerTypeAdapter(FloatProperty.class,
                 new LazyGsonAdapter<>(
                         (json) -> new SimpleFloatProperty(json.getAsJsonPrimitive().getAsFloat()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleFloatProperty()))
+                            (observable) -> new JsonPrimitive(observable.get())))
         // BooleanProperty Adapter
         .registerTypeAdapter(BooleanProperty.class,
                 new LazyGsonAdapter<>(
                         (json) -> new SimpleBooleanProperty(json.getAsJsonPrimitive().getAsBoolean()),
-                            (observable) -> new JsonPrimitive(observable.get()),
-                                () -> new SimpleBooleanProperty()))
+                            (observable) -> new JsonPrimitive(observable.get())))
+        // ClientStorageFormat Adapter
+        .registerTypeAdapter(ClientStorageFormatImpl.class,
+                new LazyGsonAdapter<>(
+                        (json) -> new ClientStorageFormatImpl(json.getAsJsonPrimitive().getAsString()),
+                            (format) -> new JsonPrimitive(format.getFormat())))
         .create();
 
     /**

@@ -8,51 +8,17 @@
 
 package com.github.naios.wide.api.config.schema;
 
-public class MappingMetaData
+public interface MappingMetaData
 {
-    private String name, target, description;
+    public String getName();
 
-    private int index;
+    public String getTarget();
 
-    private boolean key;
+    public String getDescription();
 
-    private String alias;
+    public int getIndex();
 
-    public String getName()
-    {
-        return name;
-    }
+    public boolean isKey();
 
-    public String getTarget()
-    {
-        return (target == null) ? name : target;
-    }
-
-    public String getDescription()
-    {
-        return (description == null) ? "" : description;
-    }
-
-    public int getIndex()
-    {
-        return index;
-    }
-
-    public boolean isKey()
-    {
-        return key;
-    }
-
-    public String getAlias()
-    {
-        return (alias == null) ? "" : alias;
-    }
-
-    @Override
-    public String toString()
-    {
-        return String
-                .format("MappingMetaData [name=%s, target=%s, description=%s, index=%s, key=%s, alias=%s]",
-                        name, target, description, index, key, alias);
-    }
+    public String getAlias();
 }

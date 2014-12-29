@@ -12,31 +12,13 @@ import java.util.List;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 
-public class TableSchema
+public interface TableSchema
 {
-    private String name, structure;
+    public String getName();
 
-    private ClientStorageFormat format;
+    public String getStructure();
 
-    private List<MappingMetaData> entries;
+    public ClientStorageFormat getFormat();
 
-    public String getName()
-    {
-        return (name == null) ? "" : name;
-    }
-
-    public String getStructure()
-    {
-        return (structure == null) ? "" : structure;
-    }
-
-    public ClientStorageFormat getFormat()
-    {
-        return format;
-    }
-
-    public List<MappingMetaData> getEntries()
-    {
-        return entries;
-    }
+    public List<MappingMetaData> getEntries();
 }

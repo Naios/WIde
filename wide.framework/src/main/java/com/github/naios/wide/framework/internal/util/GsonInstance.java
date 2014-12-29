@@ -19,7 +19,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageFormatImpl;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;

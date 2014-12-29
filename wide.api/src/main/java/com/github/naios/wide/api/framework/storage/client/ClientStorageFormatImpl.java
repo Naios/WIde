@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.client;
+package com.github.naios.wide.api.framework.storage.client;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
-import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
