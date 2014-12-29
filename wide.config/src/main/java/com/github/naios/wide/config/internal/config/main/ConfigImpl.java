@@ -18,6 +18,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.main.Config;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
+import com.github.naios.wide.config.internal.util.ConfigHolder;
 import com.github.naios.wide.config.internal.util.Saveable;
 
 @SuppressWarnings("serial")
@@ -85,5 +86,11 @@ public class ConfigImpl implements Config, Saveable
     {
         enviroments.forEach(e -> e.save());
         querys.save();
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.getJsonOfObject(this);
     }
 }

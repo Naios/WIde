@@ -17,6 +17,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.entities.GameBuild;
+import com.github.naios.wide.config.internal.util.ConfigHolder;
 import com.github.naios.wide.config.internal.util.Saveable;
 
 @SuppressWarnings("serial")
@@ -95,5 +96,11 @@ public class EnviromentConfigImpl implements EnviromentConfig, Saveable
     {
         client_storages.save();
         databases.forEach(d -> d.save());
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.getJsonOfObject(this);
     }
 }

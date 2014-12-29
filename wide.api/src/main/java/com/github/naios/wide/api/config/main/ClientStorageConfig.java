@@ -8,18 +8,25 @@
 
 package com.github.naios.wide.api.config.main;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+
+import com.github.naios.wide.api.config.schema.Schema;
 
 public interface ClientStorageConfig
 {
     /**
-     * @return The path to the schema
+     * @return The path to the client storage directory
      */
-
     public StringProperty path();
 
     /**
-     * @return The name of the schema
+     * @return The path of the schema
      */
-    public StringProperty schema();
+    public StringProperty schemaPath();
+
+    /**
+     * @return Returns the schema matching the schema Path
+     */
+    public ObjectProperty<Schema> schema();
 }

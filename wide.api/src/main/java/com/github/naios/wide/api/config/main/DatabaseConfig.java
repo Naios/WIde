@@ -8,7 +8,10 @@
 
 package com.github.naios.wide.api.config.main;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+
+import com.github.naios.wide.api.config.schema.Schema;
 
 /**
  * The {@link DatabaseConfig} holds our data relevant for sql connections
@@ -41,9 +44,14 @@ public interface DatabaseConfig
     public StringProperty password();
 
     /**
-     * @return The schema name
+     * @return The path of the schema
      */
-    public StringProperty schema();
+    public StringProperty schemaPath();
+
+    /**
+     * @return Returns the schema matching the schema Path
+     */
+    public ObjectProperty<Schema> schema();
 
     /**
      * @return The endpoint representing string (for example "user@localhost")

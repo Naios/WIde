@@ -9,11 +9,15 @@
 package com.github.naios.wide.config.internal.config.main;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.main.DatabaseConfig;
+import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.util.LateAllocator;
+import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
+import com.github.naios.wide.config.internal.util.ConfigHolder;
 import com.github.naios.wide.config.internal.util.Saveable;
 
 public class DatabaseConfigImpl implements DatabaseConfig, Saveable
@@ -37,6 +41,11 @@ public class DatabaseConfigImpl implements DatabaseConfig, Saveable
             return property;
         }
     };
+
+    private final static String DEFAULT_SCHEMA_PATH = "default/schematics/Server.json";
+
+    private final ConfigHolder<SchemaImpl> schemaObject =
+            new ConfigHolder<>(DEFAULT_SCHEMA_PATH, SchemaImpl.class);
 
     @Override
     public StringProperty id()
@@ -69,9 +78,16 @@ public class DatabaseConfigImpl implements DatabaseConfig, Saveable
     }
 
     @Override
-    public StringProperty schema()
+    public StringProperty schemaPath()
     {
         return schema;
+    }
+
+    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public ObjectProperty<Schema> schema()
+    {
+        return (ObjectProperty)schemaObject.get(schemaPath().get());
     }
 
     @Override
@@ -83,5 +99,11 @@ public class DatabaseConfigImpl implements DatabaseConfig, Saveable
     @Override
     public void save()
     {
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.getJsonOfObject(this);
     }
 }

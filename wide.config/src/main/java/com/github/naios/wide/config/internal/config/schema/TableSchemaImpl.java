@@ -14,8 +14,10 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
+import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.util.Saveable;
 
-public class TableSchemaImpl implements TableSchema
+public class TableSchemaImpl implements TableSchema, Saveable
 {
     private String name, structure;
 
@@ -46,5 +48,16 @@ public class TableSchemaImpl implements TableSchema
     public List<MappingMetaData> getEntries()
     {
         return (List)entries;
+    }
+
+    @Override
+    public void save()
+    {
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.getJsonOfObject(this);
     }
 }

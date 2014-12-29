@@ -12,6 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import com.github.naios.wide.api.config.main.VariablizeConfig;
+import com.github.naios.wide.config.internal.util.ConfigHolder;
 import com.github.naios.wide.config.internal.util.Saveable;
 
 public class VariablizeConfigImpl implements VariablizeConfig, Saveable
@@ -46,5 +47,11 @@ public class VariablizeConfigImpl implements VariablizeConfig, Saveable
     @Override
     public void save()
     {
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.getJsonOfObject(this);
     }
 }

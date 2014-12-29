@@ -24,8 +24,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -96,36 +94,28 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     private ObjectProperty<T> config =
             new SimpleObjectProperty<>(null);
 
-    private final ReadOnlyStringProperty origin;
-
     private final String defaultConfig;
 
     private String path = null;
 
-    public ConfigHolder(final String origin, final String defaultConfig, final Class<?> type)
-    {
-        this (new ReadOnlyStringWrapper(origin), defaultConfig, type);
-    }
-
-    public ConfigHolder(final ReadOnlyStringProperty origin, final String defaultConfig, final Class<?> type)
+    public ConfigHolder(final String defaultConfig, final Class<?> type)
     {
         this.defaultConfig = defaultConfig;
         this.type = type;
-        this.origin = origin;
     }
 
     /**
      * Gets the config<br>
      * If necessary load the config from file.
      */
-    public ObjectProperty<T> get()
+    public ObjectProperty<T> get(final String origin)
     {
-        if (!origin.get().equals(path))
+        if (!origin.equals(path))
         {
             if (Objects.nonNull(config.get()))
                 save();
 
-            load();
+            load(origin);
         }
 
         return config;
@@ -135,18 +125,18 @@ public class ConfigHolder<T extends Saveable> implements Saveable
      * Loads the config from file, overwrites existing config
      */
     @SuppressWarnings("unchecked")
-    public void load()
+    public void load(final String origin)
     {
-        Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
+        Pair<Object, AtomicInteger> ref = REFERENCES.get(origin);
         if (Objects.isNull(ref))
         {
             Object object = null;
 
-            System.out.println(String.format("DEBUG: Loading config file: %s", origin.get()));
+            System.out.println(String.format("DEBUG: Loading config file: %s", origin));
 
             // If the config file could not be loaded use the default predefined file.
             try (final Reader reader = new InputStreamReader(
-                   new FileInputStream(origin.get())))
+                   new FileInputStream(origin)))
             {
                 object = INSTANCE.fromJson(reader, type);
             }
@@ -155,7 +145,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
                 try (final Reader reader = new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream(defaultConfig)))
                 {
-                    System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin.get(), defaultConfig));
+                    System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin, defaultConfig));
 
                     object = INSTANCE.fromJson(reader, type);
                 }
@@ -166,14 +156,14 @@ public class ConfigHolder<T extends Saveable> implements Saveable
             }
 
             ref = new Pair<>(object, new AtomicInteger(0));
-            REFERENCES.put(origin.get(), ref);
+            REFERENCES.put(origin, ref);
 
-            System.out.println(String.format("DEBUG: Loaded config file: %s.", origin.get()));
+            System.out.println(String.format("DEBUG: Loaded config file: %s.", origin));
         }
         else
-            System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin.get()));
+            System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin));
 
-        path = origin.get();
+        path = origin;
         config.set((T) ref.first());
         ref.second().incrementAndGet();
     }
@@ -206,9 +196,14 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         }
     }
 
+    public static String getJsonOfObject(final Object object)
+    {
+        return toJsonExcludeDefaultValues(object);
+    }
+
     @Override
     public String toString()
     {
-        return toJsonExcludeDefaultValues(config.get());
+        return getJsonOfObject(config.get());
     }
 }

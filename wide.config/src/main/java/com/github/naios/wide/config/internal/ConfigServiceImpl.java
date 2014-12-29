@@ -37,17 +37,18 @@ public final class ConfigServiceImpl implements ConfigService
      */
     private final static String CONFIG_PATH_DEFAULT = "default/WIde.json";
 
+    private final static String PATH = System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH);
+
     /**
      * The config holder object that actually holds our data.
      */
     private final ConfigHolder<ConfigImpl> config =
-            new ConfigHolder<>(System.getProperty(CONFIG_PATH_PROPERTY, CONFIG_PATH),
-                    CONFIG_PATH_DEFAULT, ConfigImpl.class);
+            new ConfigHolder<>(CONFIG_PATH_DEFAULT, ConfigImpl.class);
 
 	@Override
     public void reload()
 	{
-	    config.load();
+	    config.load(PATH);
 	    System.out.println(String.format("DEBUG: %s", "ConfigService::reload()"));
 	}
 
@@ -61,36 +62,36 @@ public final class ConfigServiceImpl implements ConfigService
     @Override
     public ReadOnlyStringProperty title()
     {
-        return config.get().get().title();
+        return config.get(PATH).get().title();
     }
 
     @Override
     public ReadOnlyStringProperty description()
     {
-        return config.get().get().description();
+        return config.get(PATH).get().description();
     }
 
     @Override
     public StringProperty activeEnviroment()
     {
-        return config.get().get().activeEnviroment();
+        return config.get(PATH).get().activeEnviroment();
     }
 
     @Override
     public List<EnviromentConfig> getEnviroments()
     {
-        return config.get().get().getEnviroments();
+        return config.get(PATH).get().getEnviroments();
     }
 
     @Override
     public QueryConfig getQueryConfig()
     {
-        return config.get().get().getQueryConfig();
+        return config.get(PATH).get().getQueryConfig();
     }
 
     @Override
     public EnviromentConfigImpl getActiveEnviroment()
     {
-        return config.get().get().getActiveEnviroment();
+        return config.get(PATH).get().getActiveEnviroment();
     }
 }
