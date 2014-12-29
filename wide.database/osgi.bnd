@@ -2,5 +2,5 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
-Import-Package: org.mariadb.jdbc
+Import-Package: org.mariadb.jdbc, *
 Export-Package: !*
