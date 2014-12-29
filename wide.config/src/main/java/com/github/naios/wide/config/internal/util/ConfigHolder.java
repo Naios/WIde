@@ -15,7 +15,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
@@ -31,6 +34,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
+import com.github.naios.wide.api.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -84,6 +88,9 @@ public class ConfigHolder<T extends Saveable> implements Saveable
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 
+    private final static Map<String /*path*/, Pair<Object, AtomicInteger>> REFERENCES =
+            new HashMap<>();
+
     private final Class<?> type;
 
     private ObjectProperty<T> config =
@@ -130,31 +137,45 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     @SuppressWarnings("unchecked")
     public void load()
     {
-        System.out.println(String.format("DEBUG: Loading config file: %s", origin.get()));
+        Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
+        if (Objects.isNull(ref))
+        {
+            Object object = null;
 
-        // If the config file could not be loaded use the default predefined file.
-        try (final Reader reader = new InputStreamReader(
-               new FileInputStream(origin.get())))
-        {
-            config.set((T) INSTANCE.fromJson(reader, type));
-        }
-        catch (final Throwable t)
-        {
+            System.out.println(String.format("DEBUG: Loading config file: %s", origin.get()));
+
+            // If the config file could not be loaded use the default predefined file.
             try (final Reader reader = new InputStreamReader(
-                    getClass().getClassLoader().getResourceAsStream(defaultConfig)))
+                   new FileInputStream(origin.get())))
             {
-                System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin.get(), defaultConfig));
+                object = INSTANCE.fromJson(reader, type);
+            }
+            catch (final Throwable t)
+            {
+                try (final Reader reader = new InputStreamReader(
+                        getClass().getClassLoader().getResourceAsStream(defaultConfig)))
+                {
+                    System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin.get(), defaultConfig));
 
-                config.set((T) INSTANCE.fromJson(reader, type));
+                    object = INSTANCE.fromJson(reader, type);
+                }
+                catch (final Throwable tt)
+                {
+                    tt.printStackTrace();
+                }
             }
-            catch (final Throwable tt)
-            {
-                tt.printStackTrace();
-            }
+
+            ref = new Pair<>(object, new AtomicInteger(0));
+            REFERENCES.put(origin.get(), ref);
+
+            System.out.println(String.format("DEBUG: Loaded config file: %s.", origin.get()));
         }
+        else
+            System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin.get()));
 
         path = origin.get();
-        System.out.println(String.format("DEBUG: Loaded config file: %s.", origin.get()));
+        config.set((T) ref.first());
+        ref.second().incrementAndGet();
     }
 
     /**
@@ -163,6 +184,12 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     @Override
     public void save()
     {
+        final Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
+        if (ref.second().decrementAndGet() > 0)
+            return;
+
+        REFERENCES.remove(path);
+
         System.out.println(String.format("DEBUG: Saving config file %s.", path));
 
         // Notify inlined configs
