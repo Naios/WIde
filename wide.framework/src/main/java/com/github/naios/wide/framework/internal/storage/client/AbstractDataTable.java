@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.configuration.schema.TableSchema;
+import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;

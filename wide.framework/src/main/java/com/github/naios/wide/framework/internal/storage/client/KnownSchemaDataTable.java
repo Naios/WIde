@@ -17,8 +17,8 @@ import java.util.Map;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.configuration.schema.MappingMetaData;
-import com.github.naios.wide.api.configuration.schema.TableSchema;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;

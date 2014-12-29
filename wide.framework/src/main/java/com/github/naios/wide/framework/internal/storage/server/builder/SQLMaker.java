@@ -19,7 +19,7 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.configuration.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.FlagUtil;

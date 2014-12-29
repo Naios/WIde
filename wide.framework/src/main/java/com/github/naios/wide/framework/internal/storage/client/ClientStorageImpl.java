@@ -18,8 +18,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.naios.wide.api.configuration.schema.Schema;
-import com.github.naios.wide.api.configuration.schema.TableSchema;
+import com.github.naios.wide.api.config.schema.Schema;
+import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;

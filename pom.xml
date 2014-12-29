@@ -79,12 +79,12 @@
             </dependency>
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
-                <artifactId>configuration</artifactId>
+                <artifactId>config</artifactId>
                 <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>com.github.naios.wide</groupId>
-                <artifactId>database-pool</artifactId>
+                <artifactId>database</artifactId>
                 <version>1.0</version>
             </dependency>
             <dependency>
@@ -242,8 +242,8 @@
         <module>provision</module>
         <module>wide.api</module>
         <module>wide.entities</module>
-        <module>wide.configuration</module>
-        <module>wide.database_pool</module>
+        <module>wide.config</module>
+        <module>wide.database</module>
         <module>wide.framework</module>
     </modules>
 </project>

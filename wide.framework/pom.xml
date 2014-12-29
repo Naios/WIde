@@ -55,12 +55,12 @@
         </dependency>
         <dependency>
             <groupId>com.github.naios.wide</groupId>
-            <artifactId>configuration</artifactId>
+            <artifactId>config</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.naios.wide</groupId>
-            <artifactId>database_pool</artifactId>
+            <artifactId>database</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>

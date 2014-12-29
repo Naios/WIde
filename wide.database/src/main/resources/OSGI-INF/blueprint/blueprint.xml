@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright (c) 2013 - 2014 Naios <naios-dev@live.de>
+ *
+ * This file is part of WIde which is released under Creative Commons 4.0 (by-nc-sa)
+ * See file LICENSE for full license details.
+ -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <description>WIde - MMORPG Framework Tools</description>
+
+    <reference id="configService" interface="com.github.naios.wide.api.config.ConfigService"/>
+
+    <bean id="databasePool" class="com.github.naios.wide.database.internal.DatabasePoolServiceImpl"
+          init-method="open" destroy-method="close">
+        <property name="config" ref="configService"/>
+    </bean>
+
+    <service id="databasePoolService" ref="databasePool"
+             interface="com.github.naios.wide.api.database.DatabasePoolService"/>
+
+</blueprint>
