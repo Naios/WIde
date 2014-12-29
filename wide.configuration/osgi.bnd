@@ -2,4 +2,4 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
-Import-Package: !com.github.naios.wide.configuration, *
+Export-Package:

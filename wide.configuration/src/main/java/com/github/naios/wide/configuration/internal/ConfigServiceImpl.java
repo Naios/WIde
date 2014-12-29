@@ -13,9 +13,9 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.config.main.EnviromentConfig;
-import com.github.naios.wide.api.config.main.QueryConfig;
+import com.github.naios.wide.api.configuration.ConfigService;
+import com.github.naios.wide.api.configuration.main.EnviromentConfig;
+import com.github.naios.wide.api.configuration.main.QueryConfig;
 import com.github.naios.wide.configuration.internal.config.ConfigImpl;
 import com.github.naios.wide.configuration.internal.config.EnviromentConfigImpl;
 import com.github.naios.wide.configuration.internal.util.ConfigHolder;

@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 import com.github.naios.wide.api.util.Pair;
 
-public interface ClientStorageFormat
+public interface ClientStorageFormat extends Iterable<Pair<Integer, ClientStorageFormer>>
 {
     public int getByteSize();
 
@@ -24,5 +24,6 @@ public interface ClientStorageFormat
 
     public int getOffsetOfIndex(int index);
 
+    @Override
     public Iterator<Pair<Integer, ClientStorageFormer>> iterator();
 }

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.google.common.reflect.TypeToken;
 
@@ -19,7 +20,7 @@ public interface ClientStorageDataTable<T extends ClientStorageStructure> extend
 
     public Object[][] asObjectArray();
 
-    public ClientStorageFormatImpl getFormat();
+    public ClientStorageFormat getFormat();
 
     @Override
     public Iterator<T> iterator();

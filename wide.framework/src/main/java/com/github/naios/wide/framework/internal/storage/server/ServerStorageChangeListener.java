@@ -23,10 +23,11 @@ public class ServerStorageChangeListener implements ChangeListener<Object>
         this.info = new ObservableValueStorageInfo(storage, name);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void changed(final ObservableValue<?> observable,
             final Object oldValue, final Object newValue)
     {
-        info.getStructure().getOwner().onValueChanged(info, observable, oldValue);
+        ((ServerStorageImpl)info.getStructure().getOwner()).onValueChanged(info, observable, oldValue);
     }
 }

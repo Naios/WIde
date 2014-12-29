@@ -12,7 +12,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.api.config.main.DatabaseConfig;
+import com.github.naios.wide.api.configuration.main.DatabaseConfig;
 import com.github.naios.wide.api.util.LateAllocator;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 

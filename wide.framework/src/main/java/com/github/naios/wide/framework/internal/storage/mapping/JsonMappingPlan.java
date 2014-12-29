@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.configuration.schema.MappingMetaData;
+import com.github.naios.wide.api.configuration.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

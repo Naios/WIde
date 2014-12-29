@@ -2,4 +2,4 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
-Import-Package: org.mariadb.jdbc, !com.github.naios.wide.database_pool, *
+Import-Package: org.mariadb.jdbc

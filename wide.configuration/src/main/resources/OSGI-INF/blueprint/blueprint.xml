@@ -6,8 +6,7 @@
  * See file LICENSE for full license details.
  -->
 
-<blueprint default-activation="eager" default-availability="optional"
-	default-timeout="300000" xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <description>WIde - MMORPG Framework Tools</description>
 
@@ -15,6 +14,6 @@
           init-method="reload" destroy-method="save"/>
 
     <service id="configService" ref="config"
-             interface="com.github.naios.wide.configuration.ConfigService"/>
+             interface="com.github.naios.wide.api.configuration.ConfigService"/>
 
 </blueprint>

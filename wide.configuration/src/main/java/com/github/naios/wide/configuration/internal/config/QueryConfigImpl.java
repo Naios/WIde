@@ -14,8 +14,8 @@ import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
-import com.github.naios.wide.api.config.main.QueryConfig;
-import com.github.naios.wide.api.config.main.QueryTypeConfig;
+import com.github.naios.wide.api.configuration.main.QueryConfig;
+import com.github.naios.wide.api.configuration.main.QueryTypeConfig;
 import com.github.naios.wide.configuration.internal.util.Saveable;
 
 public class QueryConfigImpl implements QueryConfig, Saveable

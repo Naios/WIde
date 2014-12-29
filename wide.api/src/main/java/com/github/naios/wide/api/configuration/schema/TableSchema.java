@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.config.schema;
+package com.github.naios.wide.api.configuration.schema;
 
 import java.util.List;
 

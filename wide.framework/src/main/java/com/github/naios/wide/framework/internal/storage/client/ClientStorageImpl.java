@@ -18,10 +18,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import com.github.naios.wide.api.config.schema.Schema;
-import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.configuration.schema.Schema;
+import com.github.naios.wide.api.configuration.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -268,7 +269,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
     }
 
     @Override
-    public ClientStorageFormatImpl getFormat()
+    public ClientStorageFormat getFormat()
     {
         return dataTable.getFormat();
     }

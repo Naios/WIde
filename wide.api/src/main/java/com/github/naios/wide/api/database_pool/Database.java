@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.database;
+package com.github.naios.wide.api.database_pool;
 
 import java.sql.ResultSet;
 import java.util.concurrent.Future;

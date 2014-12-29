@@ -10,7 +10,7 @@ package com.github.naios.wide.api.framework.storage.mapping;
 
 import java.util.List;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.configuration.schema.MappingMetaData;
 import com.github.naios.wide.api.util.Pair;
 
 public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>

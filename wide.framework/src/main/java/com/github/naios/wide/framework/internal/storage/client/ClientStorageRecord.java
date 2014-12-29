@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.client;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 
 @SuppressWarnings("serial")
@@ -34,10 +35,10 @@ public class ClientStorageRecord
 
     private final int offset;
 
-    private final ClientStorageFormatImpl format;
+    private final ClientStorageFormat format;
 
     public ClientStorageRecord(final ByteBuffer buffer,
-            final ClientStorageImpl<?> storage, final ClientStorageFormatImpl format, final int offset)
+            final ClientStorageImpl<?> storage, final ClientStorageFormat format, final int offset)
     {
         this.buffer = buffer;
         this.storage = storage;

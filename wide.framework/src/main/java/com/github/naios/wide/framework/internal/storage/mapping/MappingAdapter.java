@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.mapping;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.configuration.schema.MappingMetaData;
 
 public abstract class MappingAdapter<FROM, BASE>
 {

@@ -16,7 +16,8 @@ import java.util.Objects;
 
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.configuration.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.Pair;
@@ -29,11 +30,11 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
 {
     private final ClientStorageImpl<T> storage;
 
-    private final ClientStorageFormatImpl format;
+    private final ClientStorageFormat format;
 
     private final Object[][] objects;
 
-    public AbstractDataTable(final ClientStorageImpl<T> storage, final ByteBuffer buffer, final ClientStorageFormatImpl format)
+    public AbstractDataTable(final ClientStorageImpl<T> storage, final ByteBuffer buffer, final ClientStorageFormat format)
     {
         this.storage = storage;
 
@@ -108,7 +109,7 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
     }
 
     @Override
-    public ClientStorageFormatImpl getFormat()
+    public ClientStorageFormat getFormat()
     {
         return format;
     }

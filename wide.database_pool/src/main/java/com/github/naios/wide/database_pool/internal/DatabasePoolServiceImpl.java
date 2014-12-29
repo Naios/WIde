@@ -12,10 +12,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.database.Database;
-import com.github.naios.wide.api.database.DatabaseNotRegisteredException;
-import com.github.naios.wide.api.database.DatabasePoolService;
+import com.github.naios.wide.api.configuration.ConfigService;
+import com.github.naios.wide.api.configuration.main.DatabaseConfig;
+import com.github.naios.wide.api.database_pool.Database;
+import com.github.naios.wide.api.database_pool.DatabaseNotRegisteredException;
+import com.github.naios.wide.api.database_pool.DatabasePoolService;
 
 public final class DatabasePoolServiceImpl
     implements DatabasePoolService

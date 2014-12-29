@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.Pair;
@@ -163,7 +164,7 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
         super(storage, buffer, estimateFormat(storage, buffer));
     }
 
-    private static ClientStorageFormatImpl estimateFormat(final ClientStorageImpl<?> storage, final ByteBuffer buffer)
+    private static ClientStorageFormat estimateFormat(final ClientStorageImpl<?> storage, final ByteBuffer buffer)
     {
         final StringBuilder format = new StringBuilder();
 

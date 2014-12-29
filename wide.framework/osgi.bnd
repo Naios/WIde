@@ -2,4 +2,4 @@
 # Use this file to add customized Bnd instructions for the bundle
 #-----------------------------------------------------------------
 
-Export-Package: com.github.naios.wide.framework, com.github.naios.wide.framework.storage, com.github.naios.wide.framework.storage.client, com.github.naios.wide.framework.storage.server, com.github.naios.wide.framework.storage.mapping
+Export-Package:

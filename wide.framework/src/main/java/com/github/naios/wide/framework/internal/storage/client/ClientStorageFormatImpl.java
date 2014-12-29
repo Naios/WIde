@@ -20,7 +20,7 @@ import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 
-public class ClientStorageFormatImpl implements Iterable<Pair<Integer, ClientStorageFormer>>, ClientStorageFormat
+public class ClientStorageFormatImpl implements ClientStorageFormat
 {
     private final String format, comment;
 

@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.configuration.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -567,6 +567,7 @@ public class ServerStorageChangeHolder implements Observable
                 .writeableState().set(StructureState.STATE_DELETED));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void set(final ObservableValue<?> observable, final Object value)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
@@ -576,12 +577,13 @@ public class ServerStorageChangeHolder implements Observable
         // Prevents recursive calls
         valueHistory.invalidate();
 
-        if (!valueHistory.getReference().getStructure().getOwner()
+        if (!((ServerStorageImpl)valueHistory.getReference().getStructure().getOwner())
                 .setValueOfObservable(valueHistory.getReference().getName(),
                         observable, value))
             valueHistory.validateNext();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void setDefault(final ObservableValue<?> observable)
     {
         final ObservableValueHistory valueHistory = history.get(observable);
@@ -591,7 +593,7 @@ public class ServerStorageChangeHolder implements Observable
         // Prevents recursive calls
         valueHistory.invalidate();
 
-        if (!valueHistory.getReference().getStructure().getOwner()
+        if (!((ServerStorageImpl)valueHistory.getReference().getStructure().getOwner())
                 .resetValueOfObservable(valueHistory.getReference().getName(), observable))
             valueHistory.validateNext();
     }

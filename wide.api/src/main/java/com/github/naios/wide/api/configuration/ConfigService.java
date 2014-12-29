@@ -6,9 +6,9 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.config;
+package com.github.naios.wide.api.configuration;
 
-import com.github.naios.wide.api.config.main.Config;
+import com.github.naios.wide.api.configuration.main.Config;
 
 public interface ConfigService extends Config
 {

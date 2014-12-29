@@ -6,15 +6,17 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.config.main;
-
-import java.util.List;
+package com.github.naios.wide.api.configuration.main;
 
 import javafx.beans.property.BooleanProperty;
 
-public interface QueryConfig
+public interface VariablizeConfig
 {
-    public BooleanProperty compress();
+    public BooleanProperty custom();
 
-    public List<QueryTypeConfig> getType();
+    public BooleanProperty names();
+
+    public BooleanProperty enums();
+
+    public BooleanProperty flags();
 }
