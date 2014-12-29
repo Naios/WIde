@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.config.internal.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -174,9 +175,17 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     @Override
     public void save()
     {
-        final Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
-        if (ref.second().decrementAndGet() > 0)
+        if (Objects.isNull(config.get()))
             return;
+
+        final Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
+
+        // If there are references alive, release this reference and continue
+        if (ref.second().decrementAndGet() > 0)
+        {
+            config.set(null);
+            return;
+        }
 
         REFERENCES.remove(path);
 
@@ -185,8 +194,13 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         // Notify inlined configs
         config.get().save();
 
+        // Create directorys
+        final File file = new File(path);
+        if (Objects.nonNull(file.getParent()))
+            new File(file.getParent()).mkdirs();
+
         try (final Writer writer = new OutputStreamWriter(
-                new FileOutputStream(path)))
+                new FileOutputStream(file)))
         {
             writer.write(toString());
         }
@@ -194,6 +208,8 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         {
             throwable.printStackTrace();
         }
+
+        config.set(null);
     }
 
     public static String getJsonOfObject(final Object object)
