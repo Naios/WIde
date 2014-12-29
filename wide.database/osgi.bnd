@@ -3,3 +3,4 @@
 #-----------------------------------------------------------------
 
 Import-Package: org.mariadb.jdbc
+Export-Package: !*
