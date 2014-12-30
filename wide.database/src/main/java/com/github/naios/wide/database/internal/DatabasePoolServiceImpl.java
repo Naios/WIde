@@ -21,7 +21,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.database.DatabaseNotRegisteredException;
@@ -89,15 +88,7 @@ public final class DatabasePoolServiceImpl
         for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
             connections.put(dbconfig.id().get(), new SimpleObjectProperty<>(createDatabase(dbconfig)));
 
-        // Debug Code
         System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
-
-        final ClientStorageConfig csc = config.getActiveEnviroment().getClientStorageConfig();
-
-        System.out.println(String.format("DEBUG: %s", csc));
-        System.out.println(String.format("DEBUG: %s = %s", csc.schemaPath().get(), csc.schema().get()));
-        // ////
-
     }
 
     public void close()
