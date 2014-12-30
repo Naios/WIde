@@ -19,7 +19,6 @@ import com.github.naios.wide.api.config.main.Config;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException
@@ -30,7 +29,7 @@ class MissingActiveEnviroment extends RuntimeException
     }
 }
 
-public class ConfigImpl implements Config, Saveable
+public class ConfigImpl implements Config
 {
     private StringProperty title = new SimpleStringProperty(""),
                 description = new SimpleStringProperty(""),
@@ -79,13 +78,6 @@ public class ConfigImpl implements Config, Saveable
                 return env;
 
         throw new MissingActiveEnviroment();
-    }
-
-    @Override
-    public void save()
-    {
-        enviroments.forEach(e -> e.save());
-        querys.save();
     }
 
     @Override

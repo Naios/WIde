@@ -17,9 +17,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
-public class QueryConfigImpl implements QueryConfig, Saveable
+public class QueryConfigImpl implements QueryConfig
 {
     private BooleanProperty compress = new SimpleBooleanProperty(false);
 
@@ -36,12 +35,6 @@ public class QueryConfigImpl implements QueryConfig, Saveable
     public List<QueryTypeConfig> getType()
     {
         return (List)type;
-    }
-
-    @Override
-    public void save()
-    {
-        type.forEach(t -> t.save());
     }
 
     @Override

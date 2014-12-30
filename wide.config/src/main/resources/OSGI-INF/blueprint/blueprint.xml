@@ -11,7 +11,7 @@
     <description>WIde - MMORPG Framework Tools</description>
 
     <bean id="config" class="com.github.naios.wide.config.internal.ConfigServiceImpl"
-          init-method="reload" destroy-method="save"/>
+          init-method="reload" destroy-method="close"/>
 
     <service id="configService" ref="config"
              interface="com.github.naios.wide.api.config.ConfigService"/>

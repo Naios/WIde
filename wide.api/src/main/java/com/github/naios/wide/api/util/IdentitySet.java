@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.util;
+package com.github.naios.wide.api.util;
 
 import java.util.Collection;
 import java.util.IdentityHashMap;

@@ -13,9 +13,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 import com.github.naios.wide.api.config.main.VariablizeConfig;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
-public class VariablizeConfigImpl implements VariablizeConfig, Saveable
+public class VariablizeConfigImpl implements VariablizeConfig
 {
     private BooleanProperty custom = new SimpleBooleanProperty(false), names = new SimpleBooleanProperty(false),
             enums = new SimpleBooleanProperty(false), flags = new SimpleBooleanProperty(false);
@@ -42,11 +41,6 @@ public class VariablizeConfigImpl implements VariablizeConfig, Saveable
     public BooleanProperty flags()
     {
         return flags;
-    }
-
-    @Override
-    public void save()
-    {
     }
 
     @Override

@@ -16,9 +16,8 @@ import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
-public class ClientStorageConfigImpl implements ClientStorageConfig, Saveable
+public class ClientStorageConfigImpl implements ClientStorageConfig
 {
     private StringProperty path = new SimpleStringProperty(""),
             schema = new SimpleStringProperty("");
@@ -45,12 +44,6 @@ public class ClientStorageConfigImpl implements ClientStorageConfig, Saveable
     public ObjectProperty<Schema> schema()
     {
         return (ObjectProperty)schemaObject.get(schemaPath().get());
-    }
-
-    @Override
-    public void save()
-    {
-        schemaObject.save();
     }
 
     @Override

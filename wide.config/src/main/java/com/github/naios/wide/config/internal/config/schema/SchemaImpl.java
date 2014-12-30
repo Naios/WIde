@@ -14,7 +14,6 @@ import java.util.List;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
 @SuppressWarnings("serial")
 class MissingSchemaException extends RuntimeException
@@ -25,7 +24,7 @@ class MissingSchemaException extends RuntimeException
     }
 }
 
-public class SchemaImpl implements Schema, Saveable
+public class SchemaImpl implements Schema
 {
     private String name, description;
 
@@ -58,11 +57,6 @@ public class SchemaImpl implements Schema, Saveable
                 return schema;
 
         throw new MissingSchemaException(name);
-    }
-
-    @Override
-    public void save()
-    {
     }
 
     @Override

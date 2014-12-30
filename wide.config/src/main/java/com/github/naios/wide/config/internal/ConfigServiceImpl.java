@@ -9,6 +9,7 @@
 package com.github.naios.wide.config.internal;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
@@ -45,17 +46,50 @@ public final class ConfigServiceImpl implements ConfigService
     private final ConfigHolder<ConfigImpl> config =
             new ConfigHolder<>(CONFIG_PATH_DEFAULT, ConfigImpl.class);
 
+    private final long DEFAULT_SAVE_INTERVAL_SECONDS = 300;
+
+    private final String PROPERTY_SAVE_INTERVAL_SECONDS = "com.github.naios.config.saveinterval";
+
+    private final long saveInterval = Long.valueOf(System.getProperty(PROPERTY_SAVE_INTERVAL_SECONDS, String.valueOf(DEFAULT_SAVE_INTERVAL_SECONDS)));
+
+    private final Thread saverThread = new Thread()
+    {
+        @Override
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(saveInterval));
+                }
+                catch (final Throwable e)
+                {
+                    return;
+                }
+
+                ConfigHolder.globalSave();
+            }
+        };
+    };
+
 	@Override
     public void reload()
 	{
 	    config.load(PATH);
-	    System.out.println(String.format("DEBUG: %s", "ConfigService::reload()"));
+	    System.out.println(String.format("DEBUG: ConfigService::reload()"));
+
+	    saverThread.start();
+	    System.out.println(String.format("DEBUG: Config saver Thread started, interval %s seconds", saveInterval));
 	}
 
 	@Override
-    public void save()
+    public void close()
 	{
-	    config.save();
+	    saverThread.interrupt();
+        System.out.println("DEBUG: Config saver Thread stopped!");
+
+	    ConfigHolder.globalClose();
 	    System.out.println(String.format("DEBUG: %s", "ConfigService::save()"));
     }
 

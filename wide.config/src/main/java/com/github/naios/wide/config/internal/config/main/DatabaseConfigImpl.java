@@ -18,9 +18,8 @@ import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.util.LateAllocator;
 import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
-public class DatabaseConfigImpl implements DatabaseConfig, Saveable
+public class DatabaseConfigImpl implements DatabaseConfig
 {
     private StringProperty id = new SimpleStringProperty(""),
                 name = new SimpleStringProperty(""),
@@ -94,11 +93,6 @@ public class DatabaseConfigImpl implements DatabaseConfig, Saveable
     public StringProperty endpoint()
     {
         return connection.get();
-    }
-
-    @Override
-    public void save()
-    {
     }
 
     @Override

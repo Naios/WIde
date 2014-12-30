@@ -9,9 +9,8 @@
 package com.github.naios.wide.config.internal.config.schema;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.config.internal.util.Saveable;
 
-public class MappingMetaDataImpl implements MappingMetaData, Saveable
+public class MappingMetaDataImpl implements MappingMetaData
 {
     private String name, target, description;
 
@@ -63,10 +62,5 @@ public class MappingMetaDataImpl implements MappingMetaData, Saveable
         return String
                 .format("MappingMetaData [name=%s, target=%s, description=%s, index=%s, key=%s, alias=%s]",
                         name, target, description, index, key, alias);
-    }
-
-    @Override
-    public void save()
-    {
     }
 }

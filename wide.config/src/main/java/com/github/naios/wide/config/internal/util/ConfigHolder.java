@@ -16,10 +16,10 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
@@ -33,12 +33,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
+import com.github.naios.wide.api.util.IdentitySet;
 import com.github.naios.wide.api.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 
-public class ConfigHolder<T extends Saveable> implements Saveable
+public class ConfigHolder<T>
 {
     /**
      * The {@link Gson} instance used in this bundle<br>
@@ -87,8 +88,9 @@ public class ConfigHolder<T extends Saveable> implements Saveable
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 
-    private final static Map<String /*path*/, Pair<Object, AtomicInteger>> REFERENCES =
-            new HashMap<>();
+    @SuppressWarnings("rawtypes")
+    private final static Map<String /*path*/, Pair<Object, Set<ConfigHolder>>> REFERENCES =
+            new ConcurrentHashMap<>();
 
     private final Class<?> type;
 
@@ -114,7 +116,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         if (!origin.equals(path))
         {
             if (Objects.nonNull(config.get()))
-                save();
+                save(path, config.get());
 
             load(origin);
         }
@@ -128,7 +130,8 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     @SuppressWarnings("unchecked")
     public void load(final String origin)
     {
-        Pair<Object, AtomicInteger> ref = REFERENCES.get(origin);
+        @SuppressWarnings("rawtypes")
+        Pair<Object, Set<ConfigHolder>> ref = REFERENCES.get(origin);
         if (Objects.isNull(ref))
         {
             Object object = null;
@@ -156,7 +159,7 @@ public class ConfigHolder<T extends Saveable> implements Saveable
                 }
             }
 
-            ref = new Pair<>(object, new AtomicInteger(0));
+            ref = new Pair<>(object, new IdentitySet<>());
             REFERENCES.put(origin, ref);
 
             System.out.println(String.format("DEBUG: Loaded config file: %s.", origin));
@@ -164,52 +167,68 @@ public class ConfigHolder<T extends Saveable> implements Saveable
         else
             System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin));
 
-        path = origin;
-        config.set((T) ref.first());
-        ref.second().incrementAndGet();
+        synchronized (ref.first())
+        {
+            path = origin;
+            config.set((T) ref.first());
+            ref.second().add(this);
+        }
     }
 
     /**
      * Saves the config to file.
      */
-    @Override
-    public void save()
+    public static void save(final String path, final Object obj)
+    {
+        if (Objects.isNull(obj))
+            return;
+
+        synchronized (obj)
+        {
+            System.out.println(String.format("DEBUG: Saving config file %s.", path));
+
+            // Create directories
+            final File file = new File(path);
+            if (Objects.nonNull(file.getParent()))
+                new File(file.getParent()).mkdirs();
+
+            try (final Writer writer = new OutputStreamWriter(
+                    new FileOutputStream(file)))
+            {
+                writer.write(toJsonExcludeDefaultValues(obj));
+            }
+            catch(final Throwable throwable)
+            {
+                throwable.printStackTrace();
+            }
+        }
+    }
+
+    public void close()
     {
         if (Objects.isNull(config.get()))
             return;
 
-        final Pair<Object, AtomicInteger> ref = REFERENCES.get(path);
-
-        // If there are references alive, release this reference and continue
-        if (ref.second().decrementAndGet() > 0)
+        synchronized (REFERENCES)
         {
-            config.set(null);
-            return;
-        }
+            @SuppressWarnings("rawtypes")
+            final Pair<Object, Set<ConfigHolder>> ref = REFERENCES.get(path);
 
-        REFERENCES.remove(path);
+            // If there are references alive, release this reference and continue
+            ref.second().remove(this);
+            if (!ref.second().isEmpty())
+            {
+                config.set(null);
+                return;
+            }
 
-        System.out.println(String.format("DEBUG: Saving config file %s.", path));
+            REFERENCES.remove(path);
 
-        // Notify inlined configs
-        config.get().save();
-
-        // Create directorys
-        final File file = new File(path);
-        if (Objects.nonNull(file.getParent()))
-            new File(file.getParent()).mkdirs();
-
-        try (final Writer writer = new OutputStreamWriter(
-                new FileOutputStream(file)))
-        {
-            writer.write(toString());
-        }
-        catch(final Throwable throwable)
-        {
-            throwable.printStackTrace();
+            save(path, config.get());
         }
 
         config.set(null);
+        path = null;
     }
 
     public static String getJsonOfObject(final Object object)
@@ -221,5 +240,22 @@ public class ConfigHolder<T extends Saveable> implements Saveable
     public String toString()
     {
         return getJsonOfObject(config.get());
+    }
+
+    public static void globalSave()
+    {
+        synchronized (REFERENCES)
+        {
+            REFERENCES.entrySet().forEach(entry -> save(entry.getKey(), entry.getValue().first()));
+        }
+    }
+
+    public static void globalClose()
+    {
+        synchronized (REFERENCES)
+        {
+            REFERENCES.values().forEach(entry ->
+                entry.second().forEach(holder -> holder.close()));
+        }
     }
 }

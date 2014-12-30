@@ -18,7 +18,6 @@ import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.entities.GameBuild;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
-import com.github.naios.wide.config.internal.util.Saveable;
 
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException
@@ -29,7 +28,7 @@ class MissingDatabaseConfig extends RuntimeException
     }
 }
 
-public class EnviromentConfigImpl implements EnviromentConfig, Saveable
+public class EnviromentConfigImpl implements EnviromentConfig
 {
     private StringProperty name = new SimpleStringProperty("");
 
@@ -89,13 +88,6 @@ public class EnviromentConfigImpl implements EnviromentConfig, Saveable
                 return db;
 
         throw new MissingDatabaseConfig(id);
-    }
-
-    @Override
-    public void save()
-    {
-        client_storages.save();
-        databases.forEach(d -> d.save());
     }
 
     @Override

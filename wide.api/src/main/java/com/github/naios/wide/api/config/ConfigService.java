@@ -20,5 +20,5 @@ public interface ConfigService extends Config
     /**
      * Saves the config to file
      */
-    public void save();
+    public void close();
 }
