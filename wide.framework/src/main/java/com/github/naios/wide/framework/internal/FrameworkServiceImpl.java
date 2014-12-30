@@ -19,9 +19,9 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
-    private ConfigService config;
+    private static ConfigService config;
 
-    private DatabasePoolService database;
+    private static DatabasePoolService database;
 
     public void start()
     {
@@ -42,16 +42,26 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     public void setConfig(final ConfigService config)
     {
-        this.config = config;
+        FrameworkServiceImpl.config = config;
     }
 
     public void setDatabase(final DatabasePoolService database)
     {
-        this.database = database;
+        FrameworkServiceImpl.database = database;
+    }
+
+    public static ConfigService getConfig()
+    {
+        return config;
+    }
+
+    public static DatabasePoolService getDatabase()
+    {
+        return database;
     }
 
     @Override
-    public <T extends ClientStorageStructure> ClientStorage<T> createClientStorage(
+    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
             final String name)
     {
         // TODO Auto-generated method stub
@@ -59,7 +69,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     }
 
     @Override
-    public <T extends ServerStorageStructure> ServerStorage<T> createServersStorage(
+    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(
             final String databaseId, final String name)
     {
         // TODO Auto-generated method stub

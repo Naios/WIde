@@ -8,6 +8,12 @@
 
 package com.github.naios.wide.framework.internal.storage.name;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.database.DatabaseType;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class DatabaseNameStorage extends NameStorage
 {
@@ -19,34 +25,7 @@ public class DatabaseNameStorage extends NameStorage
         this.entry = entry;
         this.name = name;
 
-        setup();
-    }
-
-    @Override
-    public void setup()
-    {
-        /*TODO
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_ESTABLISHED, this)
-        {
-            @Override
-            public void informed()
-            {
-                load();
-            }
-        });
-
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSE, this)
-        {
-            @Override
-            public void informed()
-            {
-                unload();
-            }
-        });
-
-        if (WIde.getDatabase().isConnected())
-            load();
-            */
+        load();
     }
 
     @Override
@@ -56,13 +35,9 @@ public class DatabaseNameStorage extends NameStorage
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Loading Database Namstorage: %s", table));*/
 
-        /*TODO
-        try (final Statement stmt = WIde.getDatabase()
-                .connection(DatabaseType.WORLD.getId()).get().createStatement())
+        final Database database = FrameworkServiceImpl.getDatabase().requestConnection(DatabaseType.WORLD.getId()).get();
+        try (final ResultSet result = database.execute("SELECT %s, %s FROM %s", entry, name, table))
         {
-            final ResultSet result = stmt.executeQuery(String.format(
-                    "SELECT %s, %s FROM %s", entry, name, table));
-
             while (result.next())
                 add(result.getInt(1), result.getString(2));
 
@@ -72,6 +47,5 @@ public class DatabaseNameStorage extends NameStorage
         {
             e.printStackTrace();
         }
-        */
     }
 }

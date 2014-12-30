@@ -25,7 +25,7 @@
     <artifactId>config</artifactId>
     <version>1.0</version>
 
-    <name>WIde Config</name>
+    <name>WIde Config - Service</name>
 
     <packaging>bundle</packaging>
 

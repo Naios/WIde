@@ -26,24 +26,7 @@ public class ClientNameStorage extends NameStorage
         this.entryColumn = entryColumn;
         this.nameColumn = nameColumn;
 
-        setup();
-    }
-
-    @Override
-    public void setup()
-    {
-        /*TODO
-        WIde.getHooks().addListener(new HookListener(Hook.ON_CONFIG_LOADED, this)
-        {
-            @Override
-            public void informed()
-            {
-                load();
-            }
-        });
-
-        if (WIde.getConfig().isLoaded())
-            load();*/
+        load();
     }
 
     @Override

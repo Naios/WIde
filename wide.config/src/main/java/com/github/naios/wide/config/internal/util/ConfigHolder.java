@@ -34,10 +34,58 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.util.IdentitySet;
-import com.github.naios.wide.api.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
+
+class Reference
+{
+    private final Object object;
+
+    @SuppressWarnings("rawtypes")
+    private final Set<ConfigHolder> references =
+            new IdentitySet<>();
+
+    private int lastHashCode = 0;
+
+    public Reference(final Object object)
+    {
+        this.object = object;
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    public void addReference(final ConfigHolder reference)
+    {
+        references.add(reference);
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    public boolean removeReference(final ConfigHolder reference)
+    {
+        references.remove(reference);
+        return !references.isEmpty();
+    }
+
+    public Object getObject()
+    {
+        return object;
+    }
+
+    public int getLastHashCode()
+    {
+        return lastHashCode;
+    }
+
+    public void setLastHashCode(final int lastHashCode)
+    {
+        this.lastHashCode = lastHashCode;
+    }
+
+    public void close()
+    {
+        references.forEach(holder -> holder.close());
+    }
+}
 
 public class ConfigHolder<T>
 {
@@ -81,15 +129,14 @@ public class ConfigHolder<T>
      * Converts an object to json<br>
      * Deletes default value declarations such as int=0, boolean=false or empty strings
      */
-    private static String toJsonExcludeDefaultValues(final Object obj)
+    protected static String toJsonExcludeDefaultValues(final Object obj)
     {
         return INSTANCE.toJson(obj)
                 .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 
-    @SuppressWarnings("rawtypes")
-    private final static Map<String /*path*/, Pair<Object, Set<ConfigHolder>>> REFERENCES =
+    private final static Map<String /*path*/, Reference> REFERENCES =
             new ConcurrentHashMap<>();
 
     private final Class<?> type;
@@ -116,7 +163,9 @@ public class ConfigHolder<T>
         if (!origin.equals(path))
         {
             if (Objects.nonNull(config.get()))
-                save(path, config.get());
+            {
+                save(path, REFERENCES.get(path));
+            }
 
             load(origin);
         }
@@ -130,8 +179,7 @@ public class ConfigHolder<T>
     @SuppressWarnings("unchecked")
     public void load(final String origin)
     {
-        @SuppressWarnings("rawtypes")
-        Pair<Object, Set<ConfigHolder>> ref = REFERENCES.get(origin);
+        Reference ref = REFERENCES.get(origin);
         if (Objects.isNull(ref))
         {
             Object object = null;
@@ -159,7 +207,7 @@ public class ConfigHolder<T>
                 }
             }
 
-            ref = new Pair<>(object, new IdentitySet<>());
+            ref = new Reference(object);
             REFERENCES.put(origin, ref);
 
             System.out.println(String.format("DEBUG: Loaded config file: %s.", origin));
@@ -167,24 +215,31 @@ public class ConfigHolder<T>
         else
             System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin));
 
-        synchronized (ref.first())
+        synchronized (ref.getObject())
         {
             path = origin;
-            config.set((T) ref.first());
-            ref.second().add(this);
+            config.set((T) ref.getObject());
+            ref.addReference(this);
         }
     }
 
     /**
      * Saves the config to file.
      */
-    public static void save(final String path, final Object obj)
+    public static void save(final String path, final Reference ref)
     {
-        if (Objects.isNull(obj))
-            return;
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(ref);
 
-        synchronized (obj)
+        synchronized (ref.getObject())
         {
+            final String json = toJsonExcludeDefaultValues(ref.getObject());
+            if (json.hashCode() == ref.getLastHashCode())
+            {
+                System.out.println(String.format("DEBUG: Skipped saving of config file %s, nothing to save!", path));
+                return;
+            }
+
             System.out.println(String.format("DEBUG: Saving config file %s.", path));
 
             // Create directories
@@ -195,7 +250,8 @@ public class ConfigHolder<T>
             try (final Writer writer = new OutputStreamWriter(
                     new FileOutputStream(file)))
             {
-                writer.write(toJsonExcludeDefaultValues(obj));
+                ref.setLastHashCode(json.hashCode());
+                writer.write(json);
             }
             catch(final Throwable throwable)
             {
@@ -211,12 +267,10 @@ public class ConfigHolder<T>
 
         synchronized (REFERENCES)
         {
-            @SuppressWarnings("rawtypes")
-            final Pair<Object, Set<ConfigHolder>> ref = REFERENCES.get(path);
+            final Reference ref = REFERENCES.get(path);
 
             // If there are references alive, release this reference and continue
-            ref.second().remove(this);
-            if (!ref.second().isEmpty())
+            if (ref.removeReference(this))
             {
                 config.set(null);
                 return;
@@ -224,7 +278,7 @@ public class ConfigHolder<T>
 
             REFERENCES.remove(path);
 
-            save(path, config.get());
+            save(path, ref);
         }
 
         config.set(null);
@@ -246,7 +300,7 @@ public class ConfigHolder<T>
     {
         synchronized (REFERENCES)
         {
-            REFERENCES.entrySet().forEach(entry -> save(entry.getKey(), entry.getValue().first()));
+            REFERENCES.entrySet().forEach(entry -> save(entry.getKey(), entry.getValue()));
         }
     }
 
@@ -254,8 +308,7 @@ public class ConfigHolder<T>
     {
         synchronized (REFERENCES)
         {
-            REFERENCES.values().forEach(entry ->
-                entry.second().forEach(holder -> holder.close()));
+            REFERENCES.values().forEach(entry -> entry.close());
         }
     }
 }

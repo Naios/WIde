@@ -20,11 +20,6 @@ public abstract class NameStorage
     private final Map<Integer, String> storage =
             new HashMap<>();
 
-    // Setups some storage specific stuff
-    public void setup()
-    {
-    }
-
     public String request(final int entry)
     {
         final String name = storage.get(entry);

@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.database.internal;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -123,7 +122,6 @@ public final class DatabasePoolServiceImpl
     @Override
     public synchronized ObjectProperty<Database> registerConnection(final String id,
             final String endpoint, final String user, final String password, final String table)
-            throws SQLException
     {
         if (connections.containsKey(id))
             return (ObjectProperty)connections.get(id);
@@ -134,7 +132,7 @@ public final class DatabasePoolServiceImpl
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private SimpleObjectProperty<Database> registerDatabase(final String id,
             final String endpoint, final String user, final String password,
-            final String table, final boolean optional) throws SQLException
+            final String table, final boolean optional)
     {
         final SimpleObjectProperty<DatabaseImpl> database = new SimpleObjectProperty<DatabaseImpl>(
                 createDatabase(id, endpoint, user, password, table, optional));

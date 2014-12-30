@@ -25,7 +25,7 @@
     <artifactId>database</artifactId>
     <version>1.0</version>
 
-    <name>WIde Database Pool</name>
+    <name>WIde Database Pool - Service</name>
 
     <packaging>bundle</packaging>
 

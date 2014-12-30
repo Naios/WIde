@@ -9,7 +9,6 @@
 package com.github.naios.wide.framework.internal.storage.server;
 
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
-import com.github.naios.wide.framework.internal.game.Classes;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageHolder;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageType;
 
@@ -32,7 +31,7 @@ public class AliasUtil
         if (!name.isEmpty())
             try
             {
-                type = Class.forName(Classes.class.getPackage().getName() + "." + name);
+                type = Class.forName(/*TODO Classes.class.getPackage().getName() + "." + name*/null);
             }
             catch (final Exception e)
             {

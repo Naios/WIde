@@ -27,7 +27,7 @@ public interface DatabasePoolService
      * @throws      DatabaseNotRegisteredException Throws {@link DatabaseNotRegisteredException} if the requested database wasn't registered
      * @throws      SQLException Throws {@link SQLException} that occur while trying to open a connection.
      */
-    public ObjectProperty<Database> requestConnection(String id) throws DatabaseNotRegisteredException, SQLException;
+    public ObjectProperty<Database> requestConnection(String id) throws DatabaseNotRegisteredException;
 
     /**
      * Create a temporarily entry to a
@@ -46,5 +46,5 @@ public interface DatabasePoolService
      * @throws          SQLException Throws {@link SQLException} that occur while trying to open a connection.
      */
     public ObjectProperty<Database> registerConnection(String id, String endpoint,
-            String user, String password, String table) throws SQLException;
+            String user, String password, String table);
 }
