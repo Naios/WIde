@@ -64,7 +64,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
             final String name)
     {
-        // TODO Auto-generated method stub
+        // TODO @FrameworkIntegration
         return null;
     }
 
@@ -72,7 +72,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(
             final String databaseId, final String name)
     {
-        // TODO Auto-generated method stub
+        // TODO @FrameworkIntegration
         return null;
     }
 }

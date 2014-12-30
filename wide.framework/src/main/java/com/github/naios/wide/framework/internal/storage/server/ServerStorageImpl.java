@@ -148,8 +148,8 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.databaseId = databaseId;
         this.tableName = tableName;
 
-        final TableSchema schema = /*TODO SchemaCache.INSTANCE.get(WIde.getConfig().get().getActiveEnviroment()
-                .getDatabaseConfig(databaseId).schema().get()).getSchemaOf(tableName)*/  null;
+        final TableSchema schema = FrameworkServiceImpl.getConfig().getActiveEnviroment()
+                .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
 
         this.structureName = schema.getStructure();
 
@@ -170,7 +170,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                     final ObservableValue<? extends Database> observable,
                     final Database oldValue, final Database newValue)
             {
-                initStatements();
+                registerStatements();
             }
         });
 
@@ -222,33 +222,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                 StringUtil.concat(" ", new CrossIterator<>(mapper.getPlan().getKeys(), metadata -> metadata.getName() + "=?"));
     }
 
-    private void initStatements()
-    {
-        /*TODO
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_ESTABLISHED, this)
-        {
-            @Override
-            public void informed()
-            {
-                createStatements();
-            }
-        });
-
-        WIde.getHooks().addListener(new HookListener(Hook.ON_DATABASE_CLOSE, this)
-        {
-            @Override
-            public void informed()
-            {
-                deleteStatements();
-            }
-        });
-
-        if (WIde.getDatabase().isConnected())
-            createStatements();
-            */
-    }
-
-    private void createStatements()
+    private void registerStatements()
     {
         database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
     }
@@ -329,7 +303,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
 
-        /*TODO Trace
+        /*TODO @FrameworkIntegration:Trace
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, structureName));
          */
@@ -419,7 +393,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     public SQLBuilder createBuilder()
     {
-        // TODO
+        // TODO Adapt builder
         return new SQLBuilder(getChangeHolder(), true);
     }
 

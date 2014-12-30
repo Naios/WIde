@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,12 +29,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.IdentitySet;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueHistory;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
@@ -53,7 +54,7 @@ class MalformedHistoryException extends IllegalStateException
 
 public class ServerStorageChangeHolder implements Observable
 {
-    private final ObjectProperty<Connection> connection =
+    private final ObjectProperty<Database> database =
             new SimpleObjectProperty<>();
 
     private final Map<ObservableValueStorageInfo, ObservableValue<?>> reference =
@@ -84,13 +85,13 @@ public class ServerStorageChangeHolder implements Observable
 
     protected ServerStorageChangeHolder(final String databaseId)
     {
-        this.connection.bind(/*TODO WIde.getDatabase().connection(databaseId)*/null);
-        this.connection.addListener(new ChangeListener<Connection>()
+        this.database.bind(FrameworkServiceImpl.getDatabase().requestConnection(databaseId));
+        this.database.addListener(new ChangeListener<Database>()
         {
             @Override
             public void changed(
-                    final ObservableValue<? extends Connection> observable,
-                    final Connection oldValue, final Connection newValue)
+                    final ObservableValue<? extends Database> observable,
+                    final Database oldValue, final Database newValue)
             {
                 // if the connection change invalidate all changes
                 invalidate();
@@ -791,9 +792,9 @@ public class ServerStorageChangeHolder implements Observable
         return valueHistory.getHistory().toArray();
     }
 
-    public ObjectProperty<Connection> connection()
+    public ObjectProperty<Database> connection()
     {
-        return connection;
+        return database;
     }
 
     private void informListeners()

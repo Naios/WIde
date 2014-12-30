@@ -31,7 +31,7 @@ public class AliasUtil
         if (!name.isEmpty())
             try
             {
-                type = Class.forName(/*TODO Classes.class.getPackage().getName() + "." + name*/null);
+                type = Class.forName(/*TODO @FrameworkIntegration Classes.class.getPackage().getName() + "." + name*/null);
             }
             catch (final Exception e)
             {

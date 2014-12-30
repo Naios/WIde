@@ -27,6 +27,7 @@ import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.StringUtil;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")
@@ -165,8 +166,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         Schema schema = null;
 
         if (policy.isSchemaProvided())
-            schema = /*SchemaCache.INSTANCE.get(TODO WIde.getConfig().get().getActiveEnviroment()
-                .getClientStorageConfig().schema().get()*/null/*)*/;
+            schema = FrameworkServiceImpl.getConfig().getActiveEnviroment().getClientStorageConfig().schema().get();
 
         if (Objects.nonNull(schema))
         {
@@ -189,7 +189,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
 
     public static String getPathForStorage(final String path)
     {
-        return /*TODO WIde.getConfig().get().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path*/null;
+        return FrameworkServiceImpl.getConfig().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
     }
 
     // Overwritten Methods

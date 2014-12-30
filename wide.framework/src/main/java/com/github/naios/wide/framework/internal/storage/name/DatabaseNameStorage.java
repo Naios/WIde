@@ -31,7 +31,7 @@ public class DatabaseNameStorage extends NameStorage
     @Override
     public void load()
     {
-        /*TODO Trace
+        /*TODO @FrameworkIntegration:Trace
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Loading Database Namstorage: %s", table));*/
 

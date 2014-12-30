@@ -11,7 +11,6 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -198,16 +197,7 @@ public class SQLBuilder
         if (changeholder.connection().get() == null)
             return false;
 
-        try (final Statement statement = changeholder.connection().get().createStatement())
-        {
-            statement.execute(toString());
-        }
-        catch (final Exception e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-
+        changeholder.connection().get().asyncExecute(toString());
         return true;
     }
 
