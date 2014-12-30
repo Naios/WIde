@@ -9,7 +9,7 @@ package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.List;
 
-public interface ServerStorage<T extends ServerStorageStructure> extends AutoCloseable
+public interface ServerStorage<T extends ServerStorageStructure>
 {
     public String getTableName();
 
@@ -24,8 +24,4 @@ public interface ServerStorage<T extends ServerStorageStructure> extends AutoClo
     public List<T> getWhere(String where);
 
     public T create(ServerStorageKey<T> key);
-
-    @Override
-    public void close();
-
 }

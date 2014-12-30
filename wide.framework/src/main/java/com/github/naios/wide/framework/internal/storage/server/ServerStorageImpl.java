@@ -8,14 +8,12 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 import javafx.beans.property.ObjectProperty;
@@ -24,6 +22,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
@@ -31,6 +30,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.StringUtil;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
@@ -122,11 +122,16 @@ class AccessedDeletedStructureException extends ServerStorageException
 
 public class ServerStorageImpl<T extends ServerStorageStructure> implements ServerStorage<T>
 {
+    enum PreparedStatements
+    {
+        STATEMENT_SELECT_ROW
+    }
+
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
-    private final ObjectProperty<Connection> connection =
-            new SimpleObjectProperty<Connection>();
+    private final ObjectProperty<Database> database =
+            new SimpleObjectProperty<Database>();
 
     private final String databaseId;
 
@@ -137,10 +142,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     private final ServerStorageChangeHolder changeHolder;
 
     private final String structureName;
-
-    private PreparedStatement preparedStatement;
-
-    private Statement statement;
 
     public ServerStorageImpl(final String databaseId, final String tableName) throws ServerStorageException
     {
@@ -162,18 +163,18 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
 
-        this.connection.addListener(new ChangeListener<Connection>()
+        this.database.addListener(new ChangeListener<Database>()
         {
             @Override
             public void changed(
-                    final ObservableValue<? extends Connection> observable,
-                    final Connection oldValue, final Connection newValue)
+                    final ObservableValue<? extends Database> observable,
+                    final Database oldValue, final Database newValue)
             {
                 initStatements();
             }
         });
 
-        this.connection.bind(/*TODO WIde.getDatabase().connection(databaseId)*/ null);
+        this.database.bind(FrameworkServiceImpl.getDatabase().requestConnection(databaseId));
 
         this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }
@@ -199,7 +200,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     public boolean isOpen()
     {
         // If the connection gets closed the statements are set to null
-        return preparedStatement != null;
+        return Objects.nonNull(database.get()) && database.get().alive().get();
     }
 
     private void checkOpen()
@@ -249,37 +250,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private void createStatements()
     {
-        try
-        {
-            statement = connection.get().createStatement();
-            preparedStatement = connection.get().prepareStatement(statementFormat);
-
-        }
-        catch (final SQLException e)
-        {
-            throw new DatabaseConnectionException(e.getMessage());
-        }
-    }
-
-    private void deleteStatements()
-    {
-        try
-        {
-            if (statement != null)
-                statement.close();
-
-            if (preparedStatement != null)
-                preparedStatement.close();
-
-        } catch (final SQLException e)
-        {
-        }
-        finally
-        {
-            statement = null;
-            preparedStatement = null;
-            cache.invalidateAll();
-        }
+        database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
     }
 
     @Override
@@ -318,7 +289,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         final ResultSet result;
         try
         {
-            result = statement.executeQuery(selectLowPart + where);
+            result = database.get().execute(selectLowPart + where);
 
             while (result.next())
                 list.add((T) newStructureFromResult(result));
@@ -333,25 +304,12 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private ResultSet createResultSetFromKey(final ServerStorageKey<T> key)
     {
-        if (preparedStatement == null)
-            throw new DatabaseConnectionException("Statement is null");
-
-        for (int i = 0; i < key.get().size(); ++i)
-                try
-                {
-                    preparedStatement.setString(i + 1, key.get(i).toString());
-
-                } catch (final SQLException e)
-                {
-                    throw new DatabaseConnectionException(e.getMessage());
-                }
-
         final ResultSet result;
         try
         {
-            result = preparedStatement.executeQuery();
+            result = database.get().preparedExecute(PreparedStatements.STATEMENT_SELECT_ROW, key.get().toArray());
         }
-        catch (final Exception e)
+        catch (final Throwable e)
         {
             throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
@@ -371,10 +329,10 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             throw new WrongDatabaseStructureException(structureName, e.getMessage());
         }
 
-        /*TODO
+        /*TODO Trace
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, structureName));
-    */
+         */
 
         return initStructure(mapper.map(result), false);
     }
@@ -463,12 +421,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     {
         // TODO
         return new SQLBuilder(getChangeHolder(), true);
-    }
-
-    @Override
-    public void close()
-    {
-        deleteStatements();
     }
 
     @Override
