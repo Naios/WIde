@@ -10,25 +10,26 @@ package com.github.naios.wide.entities.util;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.entities.enums.Classes;
 
 public class EntityLoader
 {
     private final static Object DUMMY = new Object();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Class<? extends Enum> requestEnum(final String name) throws NoSucheEntityException
+    public static Class<? extends Enum> requestEnum(final String shortName) throws NoSucheEntityException
     {
         try
         {
-            final Class<?> type = Class.forName(name, true, DUMMY.getClass().getClassLoader());
+            final Class<?> type = Class.forName(Classes.class.getPackage() + "." + shortName, true, DUMMY.getClass().getClassLoader());
             if (!type.isEnum())
-                throw new NoSucheEntityException(name, Enum.class);
+                throw new NoSucheEntityException(shortName, Enum.class);
 
             return (Class)type;
         }
         catch (final ClassNotFoundException e)
         {
-            throw new NoSucheEntityException(name, e);
+            throw new NoSucheEntityException(shortName, e);
         }
         catch (final NoSucheEntityException e)
         {
@@ -38,19 +39,19 @@ public class EntityLoader
 
     // TODO Fix double code
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Class<? extends ClientStorageStructure> requestClientStorage(final String name) throws NoSucheEntityException
+    public static Class<? extends ClientStorageStructure> requestClientStorage(final String fullName) throws NoSucheEntityException
     {
         try
         {
-            final Class<?> type = Class.forName(name, true, DUMMY.getClass().getClassLoader());
+            final Class<?> type = Class.forName(fullName, true, DUMMY.getClass().getClassLoader());
             if (!ClientStorageStructure.class.isAssignableFrom(type))
-                throw new NoSucheEntityException(name, ClientStorageStructure.class);
+                throw new NoSucheEntityException(fullName, ClientStorageStructure.class);
 
             return (Class)type;
         }
         catch (final ClassNotFoundException e)
         {
-            throw new NoSucheEntityException(name, e);
+            throw new NoSucheEntityException(fullName, e);
         }
         catch (final NoSucheEntityException e)
         {
@@ -59,19 +60,19 @@ public class EntityLoader
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Class<? extends ServerStorageStructure> requestServerStorage(final String name) throws NoSucheEntityException
+    public static Class<? extends ServerStorageStructure> requestServerStorage(final String fullName) throws NoSucheEntityException
     {
         try
         {
-            final Class<?> type = Class.forName(name, true, DUMMY.getClass().getClassLoader());
+            final Class<?> type = Class.forName(fullName, true, DUMMY.getClass().getClassLoader());
             if (!ServerStorageStructure.class.isAssignableFrom(type))
-                throw new NoSucheEntityException(name, ServerStorageStructure.class);
+                throw new NoSucheEntityException(fullName, ServerStorageStructure.class);
 
             return (Class)type;
         }
         catch (final ClassNotFoundException e)
         {
-            throw new NoSucheEntityException(name, e);
+            throw new NoSucheEntityException(fullName, e);
         }
         catch (final NoSucheEntityException e)
         {

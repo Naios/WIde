@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.entities.game;
+package com.github.naios.wide.entities.enums;
 
 public enum Races
 {
