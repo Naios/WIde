@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.entities.util;
 
+@SuppressWarnings("serial")
 public class NoSucheEntityException extends RuntimeException
 {
     public NoSucheEntityException(final String name, final Throwable cause)

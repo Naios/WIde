@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.mapping.types;
+package com.github.naios.wide.entities.util;
 
 import java.util.List;
 

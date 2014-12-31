@@ -27,11 +27,11 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.FlagUtil;
+import com.github.naios.wide.entities.util.EnumProperty;
+import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
-import com.github.naios.wide.framework.internal.storage.mapping.types.EnumProperty;
-import com.github.naios.wide.framework.internal.storage.mapping.types.FlagProperty;
 import com.google.common.reflect.TypeToken;
 
 public class SQLToPropertyMappingAdapterHolder
