@@ -18,7 +18,9 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 
 public final class FrameworkServiceImpl implements FrameworkService
@@ -40,10 +42,22 @@ public final class FrameworkServiceImpl implements FrameworkService
 
         System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::start()"));
 
-        new Thread(()->
+        new Thread(new Runnable()
         {
-            final ServerStorage<CreatureTemplate> ct = new ServerStorageImpl<>("world", "creature_template");
-            System.out.println(String.format("DEBUG: %s", ct.get(new ServerStorageKey<>(1))));
+            @Override
+            public void run()
+            {
+                final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
+                System.out.println(String.format("DEBUG: %s", me));
+
+                final ServerStorage<CreatureTemplate> ct = new ServerStorageImpl<>("world", "creature_template");
+
+                System.out.println(String.format("DEBUG: %s", ct.get(new ServerStorageKey<>(41378))));
+
+                ct.getWhere("entry between 22000 and 30000 limit 20").forEach(template -> System.out.println(template));
+            }
+
+
         }).start();
     }
 

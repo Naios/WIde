@@ -40,8 +40,7 @@ public class ClientNameStorage extends NameStorage
         {
             final ClientStorageImpl<UnknownClientStorageStructure> storage =
                     new ClientStorageSelector<UnknownClientStorageStructure>
-                            (ClientStorageImpl.getPathForStorage(name),
-                                ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
+                            (name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
 
             final Object[][] objects = storage.asObjectArray();
             for (int i = 0; i < storage.getRecordsCount(); ++i)

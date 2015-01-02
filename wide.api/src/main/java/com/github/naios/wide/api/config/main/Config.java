@@ -10,6 +10,7 @@ package com.github.naios.wide.api.config.main;
 
 import java.util.List;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -44,4 +45,10 @@ public interface Config
      * @return The current active enviroment
      */
     public EnviromentConfig getActiveEnviroment();
+
+    /**
+     * @return Boolean property that says if we want to compress the config<br>
+     *         (Don't save default values).
+     */
+    public BooleanProperty compress();
 }

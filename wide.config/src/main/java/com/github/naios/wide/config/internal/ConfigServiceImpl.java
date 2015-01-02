@@ -11,6 +11,7 @@ package com.github.naios.wide.config.internal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -79,9 +80,18 @@ public final class ConfigServiceImpl implements ConfigService
         };
     };
 
+    private static ConfigServiceImpl THIS_SERVICE;
+
+    public static ConfigService getService()
+    {
+        return THIS_SERVICE;
+    }
+
 	@Override
     public void reload()
 	{
+	    THIS_SERVICE = this;
+
 	    config.load(PATH);
 	    System.out.println(String.format("DEBUG: ConfigService::reload()"));
 
@@ -133,5 +143,11 @@ public final class ConfigServiceImpl implements ConfigService
     public EnviromentConfigImpl getActiveEnviroment()
     {
         return config.get(PATH).get().getActiveEnviroment();
+    }
+
+    @Override
+    public BooleanProperty compress()
+    {
+        return config.get(PATH).get().compress();
     }
 }

@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.client;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class ClientStorageSelector<T extends ClientStorageStructure>
 {
@@ -23,12 +24,18 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         this (path, ClientStoragePolicy.DEFAULT_POLICY);
     }
 
-    public ClientStorageSelector(final String path,
+    public ClientStorageSelector(final String name,
             final ClientStoragePolicy policy)
     {
-        this.path = path;
+        this.path = getPathForStorage(name);
 
         this.policy = policy;
+    }
+
+    private static String getPathForStorage(final String path)
+    {
+        return FrameworkServiceImpl.getConfigService().getActiveEnviroment()
+                .getClientStorageConfig().path().get() + "/" + path;
     }
 
     public ClientStorageImpl<T> select() throws ClientStorageException

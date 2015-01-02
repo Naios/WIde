@@ -34,6 +34,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.util.IdentitySet;
+import com.github.naios.wide.config.internal.ConfigServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -125,13 +126,18 @@ public class ConfigHolder<T>
                             (format) -> new JsonPrimitive(format.getFormat())))
         .create();
 
+    public static String toJson(final Object obj)
+    {
+        return INSTANCE.toJson(obj);
+    }
+
     /**
      * Converts an object to json<br>
      * Deletes default value declarations such as int=0, boolean=false or empty strings
      */
-    protected static String toJsonExcludeDefaultValues(final Object obj)
+    public static String toJsonExcludeDefaultValues(final Object obj)
     {
-        return INSTANCE.toJson(obj)
+        return toJson(obj)
                 .replaceAll(" *\".*\": (0|false|\"\"),\n", "")
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
@@ -231,7 +237,8 @@ public class ConfigHolder<T>
 
         synchronized (ref.getObject())
         {
-            final String json = toJsonExcludeDefaultValues(ref.getObject());
+            final String json = getJsonOfObject(ref.getObject(), ConfigServiceImpl.getService().compress().get());
+
             if (json.hashCode() == ref.getLastHashCode())
             {
                 System.out.println(String.format("DEBUG: Skipped saving of config file %s, nothing to save!", path));
@@ -283,15 +290,18 @@ public class ConfigHolder<T>
         path = null;
     }
 
-    public static String getJsonOfObject(final Object object)
+    public static String getJsonOfObject(final Object object, final boolean compress)
     {
-        return toJsonExcludeDefaultValues(object);
+        if (compress)
+            return toJsonExcludeDefaultValues(object);
+        else
+            return toJson(object);
     }
 
     @Override
     public String toString()
     {
-        return getJsonOfObject(config.get());
+        return toJsonExcludeDefaultValues(config.get());
     }
 
     public static void globalSave()

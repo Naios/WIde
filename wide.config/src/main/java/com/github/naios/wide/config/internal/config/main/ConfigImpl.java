@@ -11,7 +11,9 @@ package com.github.naios.wide.config.internal.config.main;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -38,6 +40,8 @@ public class ConfigImpl implements Config
     private List<EnviromentConfigImpl> enviroments = new ArrayList<>();
 
     private QueryConfigImpl querys;
+
+    private BooleanProperty compress = new SimpleBooleanProperty(true);
 
     @Override
     public ReadOnlyStringProperty title()
@@ -71,6 +75,12 @@ public class ConfigImpl implements Config
     }
 
     @Override
+    public BooleanProperty compress()
+    {
+        return compress;
+    }
+
+    @Override
     public EnviromentConfigImpl getActiveEnviroment()
     {
         for (final EnviromentConfigImpl env : enviroments)
@@ -83,6 +93,6 @@ public class ConfigImpl implements Config
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

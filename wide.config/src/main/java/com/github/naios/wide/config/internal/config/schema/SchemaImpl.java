@@ -62,6 +62,6 @@ public class SchemaImpl implements Schema
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

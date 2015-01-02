@@ -33,6 +33,6 @@ public class QueryTypeConfigImpl implements QueryTypeConfig
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

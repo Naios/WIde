@@ -46,6 +46,6 @@ public class VariablizeConfigImpl implements VariablizeConfig
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

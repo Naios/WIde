@@ -93,6 +93,6 @@ public class EnviromentConfigImpl implements EnviromentConfig
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

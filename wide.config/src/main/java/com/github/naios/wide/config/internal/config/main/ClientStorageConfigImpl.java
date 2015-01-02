@@ -49,6 +49,6 @@ public class ClientStorageConfigImpl implements ClientStorageConfig
     @Override
     public String toString()
     {
-        return ConfigHolder.getJsonOfObject(this);
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

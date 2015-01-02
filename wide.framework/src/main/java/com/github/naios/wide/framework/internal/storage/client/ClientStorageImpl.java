@@ -187,11 +187,6 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         dataTable = new UnknownSchemaDataTable<>(this, buffer);
      }
 
-    public static String getPathForStorage(final String path)
-    {
-        return FrameworkServiceImpl.getConfigService().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
-    }
-
     // Overwritten Methods
     protected abstract int getHeaderSize();
 

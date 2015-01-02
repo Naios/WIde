@@ -1,0 +1,34 @@
+{
+  "name": "6.x TC database schema",
+  "description": "a simple reduced schema for testing purposes.",
+  "tables": [
+    {
+      "name": "creature_template",
+      "structure": "com.github.naios.wide.entities.server.world.v6x.CreatureTemplate_6x",
+      "entries": [
+        {
+          "name": "entry",
+          "description": "creature entry (primary key).",
+          "key": true,
+          "alias": "creature_name"
+        },
+        {
+          "name": "KillCredit1",
+          "target": "kill_credit1",
+          "alias": "creature_name"
+        },
+        {
+          "name": "name"
+        },
+        {
+          "name": "unit_flags",
+          "alias": "UnitFlags"
+        },
+        {
+          "name": "unit_class",
+          "alias": "UnitClass"
+        }
+      ]
+    }
+  ]
+}

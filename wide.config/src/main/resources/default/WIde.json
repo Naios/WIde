@@ -78,7 +78,7 @@
       "build": "V6_0_3_19103",
       "alias_definition": "schematics/alias.json",
       "client_storages": {
-        "path": "data/6.x/dbc",
+        "path": "data/6.0.3/dbc",
         "schema": "schematics/6.x/dbc.json"
       },
       "databases": [
@@ -140,5 +140,6 @@
         }
       }
     ]
-  }
+  },
+  "compress": true
 }
