@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import com.github.naios.wide.entities.util.EntityLoader;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageHolder;
 import com.github.naios.wide.framework.internal.storage.name.NameStorageType;
 
@@ -17,7 +17,7 @@ public class AliasUtil
     @SuppressWarnings("rawtypes")
     public static Class<? extends Enum> getEnum(final String name)
     {
-        return EntityLoader.requestEnum(name);
+        return FrameworkServiceImpl.getEntityService().requestEnum(name);
     }
 
     public static String getNamstorageEntry(final String name, final int entry)

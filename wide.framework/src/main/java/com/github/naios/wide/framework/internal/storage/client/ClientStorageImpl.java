@@ -166,7 +166,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         Schema schema = null;
 
         if (policy.isSchemaProvided())
-            schema = FrameworkServiceImpl.getConfig().getActiveEnviroment().getClientStorageConfig().schema().get();
+            schema = FrameworkServiceImpl.getConfigService().getActiveEnviroment().getClientStorageConfig().schema().get();
 
         if (Objects.nonNull(schema))
         {
@@ -189,7 +189,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
 
     public static String getPathForStorage(final String path)
     {
-        return FrameworkServiceImpl.getConfig().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
+        return FrameworkServiceImpl.getConfigService().getActiveEnviroment().getClientStorageConfig().path().get() + "/" + path;
     }
 
     // Overwritten Methods

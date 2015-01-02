@@ -14,9 +14,11 @@ import java.util.List;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.entities.NoSucheEntityException;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
@@ -42,9 +44,9 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     {
         try
         {
-            return schema.getClass().getClassLoader().loadClass(schema.getStructure());
+            return FrameworkServiceImpl.getEntityService().requestClass(schema.getStructure());
         }
-        catch (final ClassNotFoundException e)
+        catch (final NoSucheEntityException e)
         {
             throw new Error(e);
         }

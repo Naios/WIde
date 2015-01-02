@@ -11,14 +11,16 @@
     <description>WIde - MMORPG Framework Tools</description>
 
     <reference id="configService" interface="com.github.naios.wide.api.config.ConfigService"/>
-    <reference id="databasePool" interface="com.github.naios.wide.api.database.DatabasePoolService"/>
-
+    <reference id="databaseService" interface="com.github.naios.wide.api.database.DatabasePoolService"/>
+    <reference id="entityService" interface="com.github.naios.wide.api.entities.EntityService"/>
+    
     <bean id="framework" class="com.github.naios.wide.framework.internal.FrameworkServiceImpl"
           init-method="start" destroy-method="stop">
 
-        <property name="config" ref="configService"/>
+        <property name="configService" ref="configService"/>
+        <property name="databaseService" ref="databaseService"/>
+        <property name="entityService" ref="entityService"/>
 
-        <property name="database" ref="databasePool"/>
     </bean>
 
     <service id="frameworkService" ref="framework"

@@ -148,7 +148,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.databaseId = databaseId;
         this.tableName = tableName;
 
-        final TableSchema schema = FrameworkServiceImpl.getConfig().getActiveEnviroment()
+        final TableSchema schema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
                 .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
 
         this.structureName = schema.getStructure();
@@ -174,7 +174,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             }
         });
 
-        this.database.bind(FrameworkServiceImpl.getDatabase().requestConnection(databaseId));
+        this.database.bind(FrameworkServiceImpl.getDatabasePoolService().requestConnection(databaseId));
 
         this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }

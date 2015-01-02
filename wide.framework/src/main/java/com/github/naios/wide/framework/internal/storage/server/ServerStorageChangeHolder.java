@@ -85,7 +85,7 @@ public class ServerStorageChangeHolder implements Observable
 
     protected ServerStorageChangeHolder(final String databaseId)
     {
-        this.database.bind(FrameworkServiceImpl.getDatabase().requestConnection(databaseId));
+        this.database.bind(FrameworkServiceImpl.getDatabasePoolService().requestConnection(databaseId));
         this.database.addListener(new ChangeListener<Database>()
         {
             @Override

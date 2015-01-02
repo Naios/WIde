@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.entities.util;
+package com.github.naios.wide.api.entities;
 
 @SuppressWarnings("serial")
 public class NoSucheEntityException extends RuntimeException

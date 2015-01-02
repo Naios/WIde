@@ -35,7 +35,7 @@ public class DatabaseNameStorage extends NameStorage
         if (WIde.getEnviroment().isTraceEnabled())
             System.out.println(String.format("Loading Database Namstorage: %s", table));*/
 
-        final Database database = FrameworkServiceImpl.getDatabase().requestConnection(DatabaseType.WORLD.getId()).get();
+        final Database database = FrameworkServiceImpl.getDatabasePoolService().requestConnection(DatabaseType.WORLD.getId()).get();
         try (final ResultSet result = database.execute("SELECT %s, %s FROM %s", entry, name, table))
         {
             while (result.next())
