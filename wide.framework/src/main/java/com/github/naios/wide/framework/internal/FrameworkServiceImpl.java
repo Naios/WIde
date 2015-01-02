@@ -40,8 +40,11 @@ public final class FrameworkServiceImpl implements FrameworkService
 
         System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::start()"));
 
-        final ServerStorage<CreatureTemplate> ct = new ServerStorageImpl<>("world", "creature_template");
-        System.out.println(String.format("DEBUG: %s", ct.get(new ServerStorageKey<>(1))));
+        new Thread(()->
+        {
+            final ServerStorage<CreatureTemplate> ct = new ServerStorageImpl<>("world", "creature_template");
+            System.out.println(String.format("DEBUG: %s", ct.get(new ServerStorageKey<>(1))));
+        }).start();
     }
 
     public void stop()
@@ -59,7 +62,7 @@ public final class FrameworkServiceImpl implements FrameworkService
         FrameworkServiceImpl.databasePoolService = databasePoolService;
     }
 
-    public static void setEntityService(final EntityService entityService)
+    public void setEntityService(final EntityService entityService)
     {
         FrameworkServiceImpl.entityService = entityService;
     }
