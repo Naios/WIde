@@ -209,8 +209,6 @@ public class ConfigHolder<T>
 
             ref = new Reference(object);
             REFERENCES.put(origin, ref);
-
-            System.out.println(String.format("DEBUG: Loaded config file: %s.", origin));
         }
         else
             System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin));

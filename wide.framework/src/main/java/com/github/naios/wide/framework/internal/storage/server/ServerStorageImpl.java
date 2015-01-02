@@ -96,9 +96,9 @@ class DatabaseConnectionException extends ServerStorageException
 @SuppressWarnings("serial")
 class WrongDatabaseStructureException extends ServerStorageException
 {
-    public WrongDatabaseStructureException(final String name, final String msg)
+    public WrongDatabaseStructureException(final String name, final Throwable cause)
     {
-        super(String.format("Your database structure dosn't match to %s (%s)!", name, msg));
+        super(String.format("Your database structure dosn't match to %s!", name), cause);
     }
 }
 
@@ -285,7 +285,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         }
         catch (final Throwable e)
         {
-            throw new WrongDatabaseStructureException(structureName, e.getMessage());
+            throw new WrongDatabaseStructureException(structureName, e);
         }
 
         return result;
@@ -300,7 +300,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         }
         catch (final Exception e)
         {
-            throw new WrongDatabaseStructureException(structureName, e.getMessage());
+            throw new WrongDatabaseStructureException(structureName, e);
         }
 
         /*TODO @FrameworkIntegration:Trace

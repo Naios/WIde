@@ -15,4 +15,9 @@ public class StorageException extends IllegalStateException
     {
         super(msg);
     }
+
+    public StorageException(final String msg, final Throwable cause)
+    {
+        super(msg, cause);
+    }
 }

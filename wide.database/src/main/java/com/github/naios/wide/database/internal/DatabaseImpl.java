@@ -258,15 +258,15 @@ public class DatabaseImpl implements Database
                 {
                     for (int i = 0; i < args.length; ++i)
                         if (args[i] instanceof Integer)
-                            statement.setInt(i, (int)args[i]);
+                            statement.setInt(i + 1, (int)args[i]);
                         else if (args[i] instanceof Boolean)
-                            statement.setBoolean(i, (boolean)args[i]);
+                            statement.setBoolean(i + 1, (boolean)args[i]);
                         else if (args[i] instanceof Float)
-                            statement.setFloat(i, (float)args[i]);
+                            statement.setFloat(i + 1, (float)args[i]);
                         else if (args[i] instanceof Double)
-                            statement.setDouble(i, (double)args[i]);
+                            statement.setDouble(i + 1, (double)args[i]);
                         else
-                            statement.setString(i, args[i].toString());
+                            statement.setString(i + 1, args[i].toString());
 
                     return statement.executeQuery();
                 }

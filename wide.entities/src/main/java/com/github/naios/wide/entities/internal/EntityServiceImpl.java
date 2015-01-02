@@ -11,6 +11,8 @@ package com.github.naios.wide.entities.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.osgi.framework.Bundle;
+
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.entities.NoSucheEntityException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
@@ -19,19 +21,28 @@ import com.github.naios.wide.entities.enums.Classes;
 
 public class EntityServiceImpl implements EntityService
 {
+    private Bundle bundle;
+
     private final Map<String, Class<?>> classes =
             new HashMap<>();
+
+    public void setBundle(final Bundle bundle)
+    {
+        this.bundle = bundle;
+    }
 
     @Override
     public Class<?> requestClass(final String fullName) throws NoSucheEntityException
     {
-        final Class<?> type = classes.get(fullName);
+        Class<?> type = classes.get(fullName);
         if (type != null)
             return type;
 
         try
         {
-            return Class.forName(fullName);
+            type = bundle.loadClass(fullName);
+            classes.put(fullName, type);
+            return type;
         }
         catch (final ClassNotFoundException e)
         {
@@ -46,7 +57,7 @@ public class EntityServiceImpl implements EntityService
         final Class<?> type;
         try
         {
-            type = requestClass(Classes.class.getPackage() + "." + shortName);
+            type = requestClass(Classes.class.getPackage().getName() + "." + shortName);
         }
         catch (final NoSucheEntityException e)
         {

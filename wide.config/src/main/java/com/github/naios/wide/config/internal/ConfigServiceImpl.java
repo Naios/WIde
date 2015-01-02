@@ -52,8 +52,14 @@ public final class ConfigServiceImpl implements ConfigService
 
     private final long saveInterval = Long.valueOf(System.getProperty(PROPERTY_SAVE_INTERVAL_SECONDS, String.valueOf(DEFAULT_SAVE_INTERVAL_SECONDS)));
 
+    private final String SAVER_THREAD_NAME = "WIde Config saver Thread";
+
     private final Thread saverThread = new Thread()
     {
+        {
+            setName(SAVER_THREAD_NAME);
+        }
+
         @Override
         public void run()
         {

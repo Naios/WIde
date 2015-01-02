@@ -11,7 +11,9 @@
     <description>WIde - MMORPG Framework Tools</description>
 
     <service interface="com.github.naios.wide.api.entities.EntityService">
-        <bean class="com.github.naios.wide.entities.internal.EntityServiceImpl"/>
+        <bean class="com.github.naios.wide.entities.internal.EntityServiceImpl">
+            <property name="bundle" ref="blueprintBundle"/>
+        </bean>
     </service>
 
 </blueprint>
