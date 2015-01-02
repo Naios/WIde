@@ -29,7 +29,7 @@ import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.storage.server.AliasUtil;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 
 public class SQLMaker
@@ -121,7 +121,7 @@ public class SQLMaker
     /**
      * Creates a sql in clause.
      */
-    protected static String createInClause(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+    protected static String createInClause(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder,
             final MappingMetaData mappingMetaData, final ServerStorageStructure[] structures)
     {
         final String query = StringUtil.concat(COMMA + SPACE,
@@ -146,14 +146,14 @@ public class SQLMaker
     /**
      * Creates field equals value clause.
      */
-    protected static String createNameEqualsValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+    protected static String createNameEqualsValue(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder,
             final MappingMetaData metaData, final ObservableValue<?> value, final boolean variablize)
     {
         return createNameEqualsName(createName(metaData), createValueOfObservableValue(vars, changeHolder, metaData, value, variablize));
     }
 
     @SuppressWarnings({ "rawtypes" })
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+    private static String createValueOfObservableValue(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder,
             final MappingMetaData mappingMetaData, final ObservableValue value, final boolean variablize)
     {
         if (variablize)
@@ -274,7 +274,7 @@ public class SQLMaker
     /**
      * creates the key part of an structure
      */
-    protected static String createKeyPart(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder, final ServerStorageStructure... structures)
+    protected static String createKeyPart(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder, final ServerStorageStructure... structures)
     {
         if (structures.length == 0)
             return "";
@@ -302,7 +302,7 @@ public class SQLMaker
     /**
      * Creates only the update fields part of a collection containing observables with storage infos
      */
-    protected static String createUpdateFields(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+    protected static String createUpdateFields(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> fields)
     {
         final Set<String> statements = new TreeSet<>();
@@ -346,7 +346,7 @@ public class SQLMaker
                         (entry) -> createName(entry.second().getName()))) + ")";
     }
 
-    public static String createInsertValuePart(final SQLVariableHolder vars, final ServerStorageChangeHolder changeHolder,
+    public static String createInsertValuePart(final SQLVariableHolder vars, final ServerStorageChangeHolderImpl changeHolder,
             final Collection<ServerStorageStructure> structures)
     {
         return StringUtil.concat(COMMA + NEWLINE,

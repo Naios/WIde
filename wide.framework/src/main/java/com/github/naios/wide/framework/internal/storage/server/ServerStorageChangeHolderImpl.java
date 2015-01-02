@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.Stack;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,6 +29,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -52,7 +52,7 @@ class MalformedHistoryException extends IllegalStateException
     }
 }
 
-public class ServerStorageChangeHolder implements Observable
+public class ServerStorageChangeHolderImpl implements ServerStorageChangeHolder
 {
     private final ObjectProperty<Database> database =
             new SimpleObjectProperty<>();
@@ -83,7 +83,7 @@ public class ServerStorageChangeHolder implements Observable
     private final Map<String, String> scopeComments =
             new HashMap<>();
 
-    protected ServerStorageChangeHolder(final String databaseId)
+    protected ServerStorageChangeHolderImpl(final String databaseId)
     {
         this.database.bind(FrameworkServiceImpl.getDatabasePoolService().requestConnection(databaseId));
         this.database.addListener(new ChangeListener<Database>()
@@ -112,6 +112,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * @return Our scope property
      */
+    @Override
     public StringProperty scope()
     {
         return scope;
@@ -121,6 +122,7 @@ public class ServerStorageChangeHolder implements Observable
      * Sets our current scope
      * @param scope unique Scope identifier
      */
+    @Override
     public void setScope(final String scope)
     {
         this.scope.set(scope);
@@ -131,6 +133,7 @@ public class ServerStorageChangeHolder implements Observable
      * @param scope unique Scope identifier
      * @param comment our comment we want to set
      */
+    @Override
     public void setScope(final String scope, final String comment)
     {
         scopeComments.put(scope, comment);
@@ -141,6 +144,7 @@ public class ServerStorageChangeHolder implements Observable
      * Releases the scope<br>
      * Equal to setScope(DEFAULT_SCOPE)
      */
+    @Override
     public void releaseScope()
     {
         scope.set(DEFAULT_SCOPE);
@@ -159,6 +163,7 @@ public class ServerStorageChangeHolder implements Observable
      * Sets an observable value as custom variable<br>
      * Value is wrapped into the variable then
      */
+    @Override
     public void setCustomVariable(final ObservableValue<?> value, final String name)
     {
         final ObservableValueHistory valueHistory = history.get(value);
@@ -171,6 +176,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Releases a custom variable of an observable value
      */
+    @Override
     public void releaseCustomVariable(final ObservableValue<?> value)
     {
         final ObservableValueHistory valueHistory = history.get(value);
@@ -185,6 +191,7 @@ public class ServerStorageChangeHolder implements Observable
      * @param value The observable value we want to get the variable name of
      * @return null if not existing, variable name otherwise
      */
+    @Override
     public String getCustomVariable(final ObservableValue<?> value)
     {
         final ObservableValueHistory valueHistory = history.get(value);
@@ -198,6 +205,7 @@ public class ServerStorageChangeHolder implements Observable
      * Sets the comment of the current scope
      * @param comment the comment you want to set
      */
+    @Override
     public void setScopeComment(final String comment)
     {
         scopeComments.put(scope.get(), comment);
@@ -266,6 +274,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Cleans up the history to the last database sync
      */
+    @Override
     public void free()
     {
         for (final ObservableValueHistory history : history.values())
@@ -285,6 +294,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Clears the history
      */
+    @Override
     public void clear()
     {
         for (final ObservableValueStorageInfo history : reference.keySet())
@@ -376,6 +386,7 @@ public class ServerStorageChangeHolder implements Observable
      * <b>Will erase all changes made on the structure.</b>
      * @param observable value you want to edit.
      */
+    @Override
     public void revert(final ServerStorageStructure structure)
     {
         revertImplementation(structure, true);
@@ -385,6 +396,7 @@ public class ServerStorageChangeHolder implements Observable
      * Resets all changes until the point you started the application
      * @param structure value you want to edit.
      */
+    @Override
     public void drop(final ServerStorageStructure structure)
     {
         revertImplementation(structure, false);
@@ -395,6 +407,7 @@ public class ServerStorageChangeHolder implements Observable
      * <b>may be unsuccessful if the structure was deleted & inserted</b>
      * @param structure value you want to edit.
      */
+    @Override
     public void tryReset(final ObservableValue<?> observable)
     {
         rollbackImplementation(observable, TIMES_UNLIMITED, false);
@@ -404,6 +417,7 @@ public class ServerStorageChangeHolder implements Observable
      * Drop all changes, made since the last sync.<br>
      * @param observable value you want to edit.
      */
+    @Override
     public void drop(final ObservableValue<?> observable)
     {
         rollbackImplementation(observable, TIMES_UNLIMITED, true);
@@ -413,6 +427,7 @@ public class ServerStorageChangeHolder implements Observable
      * Reverts the last change made
      * @param observable value you want to edit.
      */
+    @Override
     public void rollback(final ObservableValue<?> observable)
     {
         rollbackImplementation(observable, 1, false);
@@ -424,6 +439,7 @@ public class ServerStorageChangeHolder implements Observable
      * @param observable The Observable value you want to edit.
      * @param times How many operations you want to roll back.
      */
+    @Override
     public void rollback(final ObservableValue<?> observable, final int times)
     {
         rollbackImplementation(observable, times, false);
@@ -627,6 +643,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * @return Returns the latest known state of an observable value
      */
+    @Override
     public StructureState getObservablesLatestState(final ObservableValue<?> observable)
     {
         final ObservableValueHistory h = history.get(observable);
@@ -646,6 +663,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * @return All Observables that have changed
      */
+    @Override
     public Collection<ObservableValue<?>> getAllObservablesChanged()
     {
         final Collection<ObservableValue<?>> col = new ArrayList<>(reference.values());
@@ -660,6 +678,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * @return All Observables that have changed since the last sync
      */
+    @Override
     public Collection<ObservableValue<?>> getObservablesChanged()
     {
         final Collection<ObservableValue<?>> col = getAllObservablesChanged();
@@ -678,6 +697,7 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * @return All Structures that have changed
      */
+    @Override
     public Collection<ServerStorageStructure> getAllStructuresChanged()
     {
         final Collection<ServerStorageStructure> col = new HashSet<>();
@@ -762,11 +782,13 @@ public class ServerStorageChangeHolder implements Observable
     /**
      * Commits all changes to the database
      */
+    @Override
     public void commit()
     {
         update();
     }
 
+    @Override
     public String getQuery()
     {
         final SQLBuilder builder = new SQLBuilder(this, true);
@@ -783,6 +805,7 @@ public class ServerStorageChangeHolder implements Observable
      * @param value The ObservableValue you want to get the history
      * @return An array containing all versioned objects.
      */
+    @Override
     public Object[] getHistory(final ObservableValue<?> value)
     {
         final ObservableValueHistory valueHistory = history.get(value);

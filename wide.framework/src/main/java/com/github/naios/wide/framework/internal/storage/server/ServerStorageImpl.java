@@ -13,16 +13,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
@@ -133,13 +136,16 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     private final ObjectProperty<Database> database =
             new SimpleObjectProperty<Database>();
 
+    private final BooleanProperty alive =
+            new SimpleBooleanProperty();
+
     private final String databaseId;
 
     private final String statementFormat, selectLowPart, tableName;
 
     private final Mapper<ResultSet, T, ObservableValue<?>> mapper;
 
-    private final ServerStorageChangeHolder changeHolder;
+    private final ServerStorageChangeHolderImpl changeHolder;
 
     private final String structureName;
 
@@ -170,6 +176,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                     final ObservableValue<? extends Database> observable,
                     final Database oldValue, final Database newValue)
             {
+                alive.unbind();
+                alive.bind(newValue.alive());
+
                 registerStatements();
             }
         });
@@ -191,21 +200,21 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return databaseId;
     }
 
+    @Override
     public ServerStorageChangeHolder getChangeHolder()
     {
         return changeHolder;
     }
 
     @Override
-    public boolean isOpen()
+    public ReadOnlyBooleanProperty alive()
     {
-        // If the connection gets closed the statements are set to null
-        return Objects.nonNull(database.get()) && database.get().alive().get();
+        return alive;
     }
 
     private void checkOpen()
     {
-        if (!isOpen())
+        if (!alive().get())
             throw new StorageClosedException();
     }
 
@@ -394,7 +403,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     public SQLBuilder createBuilder()
     {
         // TODO Adapt builder
-        return new SQLBuilder(getChangeHolder(), true);
+        return new SQLBuilder(changeHolder, true);
     }
 
     @Override

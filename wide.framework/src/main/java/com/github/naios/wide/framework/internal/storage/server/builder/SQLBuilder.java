@@ -22,7 +22,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 
 /**
@@ -39,11 +39,11 @@ public class SQLBuilder
     private final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update =
             new ArrayList<>();
 
-    private final ServerStorageChangeHolder changeholder;
+    private final ServerStorageChangeHolderImpl changeholder;
 
     private final boolean variablize;
 
-    public SQLBuilder(final ServerStorageChangeHolder changeholder, final boolean variablize)
+    public SQLBuilder(final ServerStorageChangeHolderImpl changeholder, final boolean variablize)
     {
         this.changeholder = changeholder;
         this.variablize = variablize;

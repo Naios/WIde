@@ -18,7 +18,7 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolder;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -57,7 +57,7 @@ public class SQLScope
     /**
      * Splits collections containing update, insert & delete structures into its scopes
      */
-    protected static Map<String, SQLScope> split(final ServerStorageChangeHolder holder,
+    protected static Map<String, SQLScope> split(final ServerStorageChangeHolderImpl holder,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
@@ -118,7 +118,7 @@ public class SQLScope
         return scopes;
     }
 
-    protected String buildQuery(final String key, final SQLVariableHolder vars,  final ServerStorageChangeHolder changeHolder, final boolean variablize)
+    protected String buildQuery(final String key, final SQLVariableHolder vars,  final ServerStorageChangeHolderImpl changeHolder, final boolean variablize)
     {
         final StringBuilder builder = new StringBuilder();
 
@@ -139,7 +139,7 @@ public class SQLScope
 
     private void buildUpdates(
             final StringBuilder builder,
-            final ServerStorageChangeHolder changeHolder,
+            final ServerStorageChangeHolderImpl changeHolder,
             final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
             final SQLVariableHolder vars, final boolean variablize)
     {
@@ -170,7 +170,7 @@ public class SQLScope
 
     private void buildDeletes(
             final StringBuilder builder,
-            final ServerStorageChangeHolder changeHolder,
+            final ServerStorageChangeHolderImpl changeHolder,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {
@@ -184,7 +184,7 @@ public class SQLScope
 
     private void buildInserts(
             final StringBuilder builder,
-            final ServerStorageChangeHolder changeHolder,
+            final ServerStorageChangeHolderImpl changeHolder,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {

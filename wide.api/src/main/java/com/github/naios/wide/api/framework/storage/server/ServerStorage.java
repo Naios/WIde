@@ -9,13 +9,17 @@ package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
+
+import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
+
 public interface ServerStorage<T extends ServerStorageStructure>
 {
     public String getTableName();
 
     public String getDatabaseId();
 
-    public boolean isOpen();
+    public ReadOnlyBooleanProperty alive();
 
     public T get(ServerStorageKey<T> key);
 
@@ -24,4 +28,6 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public List<T> getWhere(String where);
 
     public T create(ServerStorageKey<T> key);
+
+    public ServerStorageChangeHolder getChangeHolder();
 }

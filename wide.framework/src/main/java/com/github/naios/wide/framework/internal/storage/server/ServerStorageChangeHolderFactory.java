@@ -13,15 +13,15 @@ import java.util.Map;
 
 public class ServerStorageChangeHolderFactory
 {
-    private static final Map<String, ServerStorageChangeHolder> INSTANCES =
+    private static final Map<String, ServerStorageChangeHolderImpl> INSTANCES =
             new HashMap<>();
 
-    public static ServerStorageChangeHolder instance(final String databaseId)
+    public static ServerStorageChangeHolderImpl instance(final String databaseId)
     {
-        ServerStorageChangeHolder instance = INSTANCES.get(databaseId);
+        ServerStorageChangeHolderImpl instance = INSTANCES.get(databaseId);
         if (instance == null)
         {
-            instance = new ServerStorageChangeHolder(databaseId);
+            instance = new ServerStorageChangeHolderImpl(databaseId);
             INSTANCES.put(databaseId, instance);
         }
         return instance;
