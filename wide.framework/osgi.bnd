@@ -3,3 +3,4 @@
 #-----------------------------------------------------------------
 
 Export-Package: !*
+DynamicImport-Package: com.github.naios.wide.entities.*
