@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 import javafx.beans.property.BooleanProperty;
@@ -177,9 +178,14 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                     final Database oldValue, final Database newValue)
             {
                 alive.unbind();
-                alive.bind(newValue.alive());
 
-                registerStatements();
+                if (Objects.nonNull(newValue))
+                {
+                    alive.bind(newValue.alive());
+                    registerStatements();
+                }
+                else
+                    alive.set(false);
             }
         });
 
