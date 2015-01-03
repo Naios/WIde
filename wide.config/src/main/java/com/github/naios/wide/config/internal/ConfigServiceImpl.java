@@ -15,6 +15,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
+import org.apache.felix.service.command.Descriptor;
+
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
@@ -88,21 +90,22 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     /**
-     * Command - Save
+     * OSGI Command
      */
+    @Descriptor("Saves the WIde config to file.")
     public void save()
     {
         ConfigHolder.globalSave();
     }
 
     /**
-     * Command - Config (shows the config)
+     * OSGI Command
      */
+    @Descriptor("Shows the WIde config and its as Json.")
     public void config()
     {
-        System.out.println(config);
+        ConfigHolder.print();
     }
-
 
 	@Override
     public void reload()

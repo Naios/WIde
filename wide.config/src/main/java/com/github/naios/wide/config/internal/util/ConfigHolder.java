@@ -34,6 +34,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.util.IdentitySet;
+import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.config.internal.ConfigServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -317,6 +318,18 @@ public class ConfigHolder<T>
         synchronized (REFERENCES)
         {
             REFERENCES.values().forEach(entry -> entry.close());
+        }
+    }
+
+    public static void print()
+    {
+        synchronized (REFERENCES)
+        {
+            REFERENCES.forEach((path, reference) ->
+            {
+                System.out.println(String.format("Config File: %s (Hash: %s)\n%s", path,
+                        StringUtil.asHex(reference.getLastHashCode()), reference.getObject()));
+            });
         }
     }
 }
