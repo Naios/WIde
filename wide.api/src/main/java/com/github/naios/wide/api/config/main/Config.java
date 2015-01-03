@@ -17,6 +17,16 @@ import javafx.beans.property.StringProperty;
 public interface Config
 {
     /**
+     * Any UI is called on start.
+     */
+    public static final String DEFAULT_UI_AUTO = "any";
+
+    /**
+     * No UI  is called on start.
+     */
+    public static final String DEFAULT_UI_SKIP = "skip";
+
+    /**
      * @return The title of the config
      */
     public ReadOnlyStringProperty title();
@@ -25,6 +35,11 @@ public interface Config
      * @return The description of the config
      */
     public ReadOnlyStringProperty description();
+
+    /**
+     * @return The preferred User Interface
+     */
+    public StringProperty ui();
 
     /**
      * @return The name of our current active config

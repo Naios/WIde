@@ -12,7 +12,6 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageException
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 
-
 /**
  * Implementation of Blizzards ADB Cache files as described in:
  * http://www.pxr.dk/wowdev/wiki/index.php?title=ADB

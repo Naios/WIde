@@ -1,6 +1,7 @@
 {
   "title": "WIde framework main configuration file.",
   "description": "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
+  "ui": "any",
   "active_enviroment": "6.x",
   "enviroments": [
     {

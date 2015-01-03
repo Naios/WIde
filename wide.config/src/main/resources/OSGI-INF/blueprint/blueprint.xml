@@ -14,6 +14,16 @@
           init-method="reload" destroy-method="close"/>
 
     <service id="configService" ref="config"
-             interface="com.github.naios.wide.api.config.ConfigService"/>
+             interface="com.github.naios.wide.api.config.ConfigService">
+        <service-properties>
+            <entry key="osgi.command.scope" value="wide"/>
+            <entry key="osgi.command.function">
+                <array value-type="java.lang.String">
+                    <value>config</value>
+                    <value>save</value>
+                </array>
+            </entry>
+        </service-properties>
+    </service>
 
 </blueprint>

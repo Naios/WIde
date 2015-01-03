@@ -35,7 +35,8 @@ public class ConfigImpl implements Config
 {
     private StringProperty title = new SimpleStringProperty(""),
                 description = new SimpleStringProperty(""),
-                    active_enviroment = new SimpleStringProperty("");
+                    ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
+                        active_enviroment = new SimpleStringProperty("");
 
     private List<EnviromentConfigImpl> enviroments = new ArrayList<>();
 
@@ -53,6 +54,12 @@ public class ConfigImpl implements Config
     public ReadOnlyStringProperty description()
     {
         return description;
+    }
+
+    @Override
+    public StringProperty ui()
+    {
+        return ui;
     }
 
     @Override

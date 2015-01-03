@@ -87,6 +87,23 @@ public final class ConfigServiceImpl implements ConfigService
         return THIS_SERVICE;
     }
 
+    /**
+     * Command - Save
+     */
+    public void save()
+    {
+        ConfigHolder.globalSave();
+    }
+
+    /**
+     * Command - Config (shows the config)
+     */
+    public void config()
+    {
+        System.out.println(config);
+    }
+
+
 	@Override
     public void reload()
 	{
@@ -119,6 +136,12 @@ public final class ConfigServiceImpl implements ConfigService
     public ReadOnlyStringProperty description()
     {
         return config.get(PATH).get().description();
+    }
+
+    @Override
+    public StringProperty ui()
+    {
+        return config.get(PATH).get().ui();
     }
 
     @Override
