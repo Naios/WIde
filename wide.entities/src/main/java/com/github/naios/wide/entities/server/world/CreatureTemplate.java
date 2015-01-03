@@ -12,7 +12,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
-import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
@@ -30,9 +29,4 @@ public interface CreatureTemplate extends ServerStorageStructure
     public FlagProperty<UnitFlags> unit_flags();
 
     public EnumProperty<UnitClass> unit_class();
-
-    public static ServerStorageKey<CreatureTemplate> createKey(final int entry)
-    {
-        return new ServerStorageKey<CreatureTemplate>(entry);
-    }
 }

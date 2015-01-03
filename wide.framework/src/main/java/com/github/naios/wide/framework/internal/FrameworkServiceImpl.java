@@ -18,7 +18,10 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
+import com.github.naios.wide.entities.enums.UnitClass;
+import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
@@ -58,11 +61,10 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 table.getWhere("entry between 22000 and 30000 limit 20").forEach(template -> System.out.println(template));
 
-                /*
-                final CreatureTemplate ct1 = table.get(CreatureTemplate.createKey(491));
-                final CreatureTemplate ct2 = table.get(CreatureTemplate.createKey(41378));
-                final CreatureTemplate ct3 = table.get(CreatureTemplate.createKey(151));
-                final CreatureTemplate ct4 = table.get(CreatureTemplate.createKey(69));
+                final CreatureTemplate ct1 = table.get(new ServerStorageKey<>(491));
+                final CreatureTemplate ct2 = table.get(new ServerStorageKey<>(41378));
+                final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151));
+                final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69));
 
                 table.getChangeHolder().setScope("test scope", "simple modify test");
 
@@ -94,19 +96,19 @@ public final class FrameworkServiceImpl implements FrameworkService
                 table.getChangeHolder().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
                 {
-                    final CreatureTemplate deleteMe = table.get(CreatureTemplate.createKey(i));
+                    final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i));
                     if (deleteMe != null)
                         deleteMe.delete();
                 }
 
                 table.getChangeHolder().setScope("create scope 1", "creates one new creature template...");
-                final CreatureTemplate myqueryentry = table.create(CreatureTemplate.createKey(1000000));
+                final CreatureTemplate myqueryentry = table.create(new ServerStorageKey<>(1000000));
                 myqueryentry.name().set("my test name");
 
                 table.getChangeHolder().setScope("create scope 2", "creates 5 templates with random values");
                 for (int i = 2000000; i < 2000005; ++i)
                 {
-                    final CreatureTemplate template = table.create(CreatureTemplate.createKey(i));
+                    final CreatureTemplate template = table.create(new ServerStorageKey<>(i));
 
                     template.unit_class().set(RandomUtil.getInt(0, 3));
                     template.unit_flags().set(RandomUtil.getInt(0, 30));
@@ -116,11 +118,9 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 System.out.println(table.getChangeHolder());
                 System.out.println(table.getChangeHolder().getQuery());
-                */
              }
 
-
-        })/*.start()*/;
+        }).start();
     }
 
     public void stop()
