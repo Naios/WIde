@@ -175,6 +175,13 @@
                 <version>2.6.0</version>
             </dependency>
 
+            <!-- Commands -->
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.gogo.runtime</artifactId>
+                <version>0.10.0</version>
+            </dependency>
+
             <!-- Dependencies -->
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -213,6 +220,7 @@
                 <configuration>
                     <provision>
                         <param>--platform=equinox</param>
+                        <param>mvn:org.apache.aries.blueprint/org.apache.aries.blueprint/1.1.0@2</param>
                     </provision>
                 </configuration>
                 <executions>
