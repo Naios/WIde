@@ -24,7 +24,7 @@ Requirements
 
 Installation
 --------------
-WIde uses **Maven** to OSGI bundles.
+WIde uses **Maven** to build OSGI bundles.
 
 1. Run `mvn clean install` to build the bundles.
 
