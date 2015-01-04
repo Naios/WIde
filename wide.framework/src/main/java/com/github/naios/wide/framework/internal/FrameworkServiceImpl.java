@@ -11,7 +11,6 @@ package com.github.naios.wide.framework.internal;
 import org.apache.felix.service.command.Descriptor;
 
 import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.framework.FrameworkService;
@@ -39,13 +38,6 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     public void start()
     {
-        // Debug Code
-        final ClientStorageConfig csc = getConfigService().getActiveEnviroment().getClientStorageConfig();
-
-        System.out.println(String.format("DEBUG: %s", csc));
-        System.out.println(String.format("DEBUG: %s = %s", csc.schemaPath().get(), csc.schema().get()));
-        // ////
-
         System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::start()"));
     }
 
