@@ -47,7 +47,84 @@ public final class FrameworkServiceImpl implements FrameworkService
         // ////
 
         System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::start()"));
+    }
 
+    public void stop()
+    {
+        System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::stop()"));
+    }
+
+    public void setConfigService(final ConfigService configService)
+    {
+        FrameworkServiceImpl.configService = configService;
+    }
+
+    public void setDatabasePoolService(final DatabasePoolService databasePoolService)
+    {
+        FrameworkServiceImpl.databasePoolService = databasePoolService;
+    }
+
+    public void setEntityService(final EntityService entityService)
+    {
+        FrameworkServiceImpl.entityService = entityService;
+    }
+
+    public static ConfigService getConfigService()
+    {
+        return configService;
+    }
+
+    public static DatabasePoolService getDatabasePoolService()
+    {
+        return databasePoolService;
+    }
+
+    public static EntityService getEntityService()
+    {
+        return entityService;
+    }
+
+    @Override
+    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
+            final String name)
+    {
+        // TODO @FrameworkIntegration
+        return null;
+    }
+
+    @Override
+    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(
+            final String databaseId, final String name)
+    {
+        // TODO @FrameworkIntegration
+        return null;
+    }
+
+    private ClientStorage<?> getStorgeOfCommand(final String name, final int policy)
+    {
+        if ((policy < 0) || (policy > ClientStoragePolicy.values().length))
+            throw new RuntimeException(String.format("%s is not an ordinal of ClientStoragePolicy!"));
+
+        final ClientStoragePolicy p = ClientStoragePolicy.values()[policy];
+
+        return new ClientStorageSelector<>(name, p).select();
+    }
+
+    @Descriptor("Shows any .dbc, .db2 or .adb storage (located in the data dir).")
+    public void dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
+            @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER") final int policy)
+    {
+        System.out.println(getStorgeOfCommand(name, policy));
+    }
+
+    @Descriptor("Shows an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
+    public void dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
+    {
+        System.out.println(getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat());
+    }
+
+    public void test()
+    {
         new Thread(new Runnable()
         {
             @Override
@@ -124,79 +201,5 @@ public final class FrameworkServiceImpl implements FrameworkService
              }
 
         }).start();
-    }
-
-    public void stop()
-    {
-        System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::stop()"));
-    }
-
-    public void setConfigService(final ConfigService configService)
-    {
-        FrameworkServiceImpl.configService = configService;
-    }
-
-    public void setDatabasePoolService(final DatabasePoolService databasePoolService)
-    {
-        FrameworkServiceImpl.databasePoolService = databasePoolService;
-    }
-
-    public void setEntityService(final EntityService entityService)
-    {
-        FrameworkServiceImpl.entityService = entityService;
-    }
-
-    public static ConfigService getConfigService()
-    {
-        return configService;
-    }
-
-    public static DatabasePoolService getDatabasePoolService()
-    {
-        return databasePoolService;
-    }
-
-    public static EntityService getEntityService()
-    {
-        return entityService;
-    }
-
-    @Override
-    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
-            final String name)
-    {
-        // TODO @FrameworkIntegration
-        return null;
-    }
-
-    @Override
-    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(
-            final String databaseId, final String name)
-    {
-        // TODO @FrameworkIntegration
-        return null;
-    }
-
-    private ClientStorage<?> getStorgeOfCommand(final String name, final int policy)
-    {
-        if ((policy < 0) || (policy > ClientStoragePolicy.values().length))
-            throw new RuntimeException(String.format("%s is not an ordinal of ClientStoragePolicy!"));
-
-        final ClientStoragePolicy p = ClientStoragePolicy.values()[policy];
-
-        return new ClientStorageSelector<>(name, p).select();
-    }
-
-    @Descriptor("Shows any .dbc, .db2 or .adb storage (located in the data dir).")
-    public void dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
-            @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER") final int policy)
-    {
-        System.out.println(getStorgeOfCommand(name, policy));
-    }
-
-    @Descriptor("Shows an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
-    public void dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
-    {
-        System.out.println(getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat());
     }
 }
