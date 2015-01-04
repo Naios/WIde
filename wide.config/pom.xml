@@ -23,6 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>config</artifactId>
+    <version>${configVersion}</version>
 
     <name>WIde Config - Service</name>
 

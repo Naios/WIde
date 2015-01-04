@@ -23,6 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>database</artifactId>
+    <version>${databaseVersion}</version>
 
     <name>WIde Database Pool - Service</name>
 

@@ -23,6 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>framework</artifactId>
+    <version>${frameworkVersion}</version>
 
     <name>WIde Framework - Service</name>
 
