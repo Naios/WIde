@@ -18,6 +18,17 @@
     </bean>
 
     <service id="databasePoolService" ref="databasePool"
-             interface="com.github.naios.wide.api.database.DatabasePoolService"/>
+             interface="com.github.naios.wide.api.database.DatabasePoolService">
+        <service-properties>
+            <entry key="osgi.command.scope" value="wide"/>
+            <entry key="osgi.command.function">
+                <array value-type="java.lang.String">
+                    <value>databases</value>
+                    <value>sql</value>
+                    <value>register</value>
+                </array>
+            </entry>
+        </service-properties>
+    </service>
 
 </blueprint>

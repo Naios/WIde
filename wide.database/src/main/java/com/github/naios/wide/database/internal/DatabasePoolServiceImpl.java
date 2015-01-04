@@ -8,8 +8,14 @@
 
 package com.github.naios.wide.database.internal;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -19,11 +25,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import org.apache.felix.service.command.Descriptor;
+
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.database.DatabaseNotRegisteredException;
 import com.github.naios.wide.api.database.DatabasePoolService;
+import com.github.naios.wide.api.database.UncheckedSQLException;
+import com.github.naios.wide.api.util.StringUtil;
 
 public final class DatabasePoolServiceImpl
     implements DatabasePoolService
@@ -152,5 +162,106 @@ public final class DatabasePoolServiceImpl
     {
         final String connection = String.format(DRIVER_FORMAT, host, table);
         return new DatabaseImpl(connection, user, password, id, table, optional);
+    }
+
+    /**
+     * OSGI Command
+     */
+    @Descriptor("Shows all registered databases.")
+    public synchronized void databases()
+    {
+        connections.forEach((id, database) ->
+        {
+            System.out.println(String.format("%-10s - %s", id, database != null ? database.get() : null));
+        });
+    }
+
+    /**
+     * OSGI Command
+     */
+    @Descriptor("Executes a query on the database with the given id.")
+    public void sql(@Descriptor("The id of the database (auth|character|world|<custom>)") final String id,
+            @Descriptor("The SQL query you want to execute") final String query)
+    {
+        final Database db = requestConnection(id).get();
+        db.open();
+
+        final ResultSet result = db.execute(query);
+        if (Objects.nonNull(result))
+        {
+            System.out.println("No result!");
+            return;
+        }
+
+        ResultSetMetaData metaData;
+        try
+        {
+            metaData = result.getMetaData();
+        }
+        catch (final SQLException e)
+        {
+            throw new UncheckedSQLException(e);
+        }
+
+        if (Objects.nonNull(metaData))
+        {
+            System.out.println("No metadata!");
+            return;
+        }
+
+        try
+        {
+            final int columns = metaData.getColumnCount();
+
+            // Header
+            final List<String> values = new LinkedList<>();
+            for (int i = 1; i <= columns; ++i)
+                values.add(String.format("`%s`", metaData.getColumnName(i)));
+
+            System.out.println("(" + StringUtil.concat(", ", values) + ")");
+
+            while (result.next())
+            {
+                values.clear();
+                for (int i = 1; i <= columns; ++i)
+                {
+                    switch (metaData.getColumnType(i))
+                    {
+                        case Types.CHAR:
+                        case Types.VARCHAR:
+                        case Types.LONGVARCHAR:
+                        case Types.NVARCHAR:
+                        {
+                            final String val = result.getString(i);
+                            values.add(String.format("\"%s\"", val == null ? "" : val));
+                            break;
+                        }
+                        default:
+                            values.add(String.format("%s", result.getString(i)));
+                            break;
+                    }
+                }
+
+                System.out.println("(" + StringUtil.concat(", ", values) + ")");
+            }
+
+            result.close();
+        }
+        catch (final SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * OSGI Command
+     */
+    @Descriptor("Registers a database with the given id.")
+    public void register(@Descriptor("id") final String id,
+            @Descriptor("endpoint (localhost:3306)") final String endpoint,
+                @Descriptor("user") final String user, @Descriptor("password") final String password,
+                    @Descriptor("table") final String table)
+    {
+        registerConnection(id, endpoint, user, password, table);
     }
 }

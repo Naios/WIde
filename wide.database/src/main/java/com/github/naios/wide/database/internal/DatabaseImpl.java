@@ -42,7 +42,7 @@ public class DatabaseImpl implements Database
 {
     private Connection syncConnection, asyncConnection;
 
-    private final BooleanProperty alive;
+    private final BooleanProperty alive = new SimpleBooleanProperty(false);
 
     private final String id, name, connectionString, user, password;
 
@@ -67,12 +67,15 @@ public class DatabaseImpl implements Database
         this.optional = optional;
 
         // Try to open the database
-        this.alive = new SimpleBooleanProperty(open());
+        this.alive.set(open());
     }
 
     @Override
     public boolean open()
     {
+        if (alive.get())
+            return true;
+
         try
         {
             this.syncConnection = DriverManager.getConnection(connectionString, user, password);
@@ -327,5 +330,11 @@ public class DatabaseImpl implements Database
         }
 
         return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s@%s", user, connectionString);
     }
 }
