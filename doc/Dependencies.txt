@@ -1,6 +1,8 @@
 Apache 2 License:
     Apache
         log4j (http://logging.apache.org/log4j/2.x/)
+    OPS4J
+        pax logging service (https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging)
     Google
         guava (https://github.com/google/guava)
         gson (https://code.google.com/p/google-gson/)

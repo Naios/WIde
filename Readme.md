@@ -1,11 +1,11 @@
 # WIde - MMORPG Framework IDE #
 ---------------------------------
-[![Build Status](https://travis-ci.org/Naios/WIde.svg?branch=master)](https://travis-ci.org/Naios/WIde)
+[![Build Status](https://travis-ci.org/Naios/WIde.svg?branch=master)](https://travis-ci.org/Naios/WIde) **In Development!**
 
 WIde helps you to edit multiple MMORPG Framework entities.
 Currently WIde works with TrinityCore.
 
-WIde is mainly written in **Java** and makes heavily use of the **JavaFX** library.
+WIde is written as modular **Java** **OSGI Bundles** and makes heavily use of the **JavaFX** library.
 
 **See an example output [here](https://gist.github.com/Naios/634b0bfbc04e56165f96).**
 
@@ -24,39 +24,44 @@ Requirements
 
 Installation
 --------------
-WIde uses **Maven** to build executable .jar files.
+WIde uses **Maven** to OSGI bundles.
 
-1. Run `mvn clean package`
+1. Run `mvn clean install` to build the bundles.
 
-1. Runnable Jar file is located in target directory then.
+2. WIde uses pax-runner to deploy an **osgi** enviroment for testing purposes. (`mvn clean install pax:provision`)
+
+3. WIde uses Json config files to configure the enviroment. A default config is written on first startup. You may reconfigure config values to match your enviroment.
 
 Usage
 -------------
-WIde is able to run in **GUI** or **console** mode.
+In the osgi felix gogo shell there are multiple useful commands available:
 
-- GUI Mode:	`java -jar target/wide*`
+- `config` Shows the config as Json.
 
-- Console Mode: `java -jar target/wide* -ng`
+- `databases` Shows all available databases.
 
-Console Mode Examples
+- `dbc` Shows any .dbc, .db2 or .adb storage in your data dir.
 
-- Simple hello message: `java -jar target/wide* -e hello`
+- `dbcformat` Shows an estimated format for any storage (detects key, string, float and int).
 
-- Simple help message: `java -jar target/wide* -e "help printdbc"`
+- `sql` Executes a sql query on a database.
 
-- Shows the content of TaxiNodes.db2 (or any other .dbc, .db2 or .adb storage):
-
-    `java -jar target/wide* -e "printdbc TaxiNodes.db2"`
+Use `help ${commnand}` or just `help` to get further information.
+After your work is done use `shutdown` to exit the osgi enviroment.
 
 Dependencies
 --------------
 Dependencies are managed automatically through the maven build system.
 
-WIde uses following dependencies:
+WIde uses following dependencies and bundles at runtime:
+
+- [Apache Aries Blueprint](http://aries.apache.org/)
 
 - [Apache commons-math3](http://commons.apache.org/proper/commons-math/)
 
 - [Apache log4j](http://logging.apache.org/log4j/2.x/)
+
+- [Pax Logging Service](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging)
 
 - [Google guava](https://github.com/google/guava/)
 
