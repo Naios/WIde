@@ -54,10 +54,6 @@ Dependencies are managed automatically through the maven build system.
 
 WIde uses following dependencies:
 
-- [Apache commons-io](http://commons.apache.org/proper/commons-io/)
-
-- [Apache commons-cli](http://commons.apache.org/proper/commons-cli/)
-
 - [Apache commons-math3](http://commons.apache.org/proper/commons-math/)
 
 - [Apache log4j](http://logging.apache.org/log4j/2.x/)

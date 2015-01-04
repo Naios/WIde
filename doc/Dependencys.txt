@@ -1,8 +1,5 @@
 Apache 2 License:
     Apache
-        commons-io (http://commons.apache.org/proper/commons-io/)
-        commons-cli (http://commons.apache.org/proper/commons-cli/)
-        commons-math3 (http://commons.apache.org/proper/commons-math/)
         log4j (http://logging.apache.org/log4j/2.x/)
     Google
         guava (https://github.com/google/guava)
