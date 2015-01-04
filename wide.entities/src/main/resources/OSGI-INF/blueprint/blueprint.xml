@@ -10,10 +10,20 @@
 
     <description>WIde - MMORPG Framework Tools</description>
 
-    <service interface="com.github.naios.wide.api.entities.EntityService">
-        <bean class="com.github.naios.wide.entities.internal.EntityServiceImpl">
-            <property name="bundle" ref="blueprintBundle"/>
-        </bean>
+    <bean id="entityService" class="com.github.naios.wide.entities.internal.EntityServiceImpl">
+        <property name="bundle" ref="blueprintBundle"/>
+    </bean>
+
+    <service ref="entityService" interface="com.github.naios.wide.api.entities.EntityService">
+        <service-properties>
+            <entry key="osgi.command.scope" value="wide"/>
+            <entry key="osgi.command.function">
+                <array value-type="java.lang.String">
+                    <value>flags</value>
+                    <value>enums</value>
+                </array>
+            </entry>
+        </service-properties>
     </service>
 
 </blueprint>
