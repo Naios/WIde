@@ -1,4 +1,4 @@
-# WIde - MMORPG Framework IDE #
+# WIde - MMORPG Framework Tools #
 ---------------------------------
 [![Build Status](https://travis-ci.org/Naios/WIde.svg?branch=master)](https://travis-ci.org/Naios/WIde) **In Development!**
 
@@ -31,6 +31,8 @@ WIde uses **Maven** to build OSGI bundles.
 2. WIde uses pax-runner to deploy an **osgi** enviroment for testing purposes. (`mvn clean install pax:provision`)
 
 3. WIde uses Json config files to configure the enviroment. A default config is written on first startup. You may reconfigure config values to match your enviroment.
+
+4. If you want to develop with WIde or create new bundles for it use [this Documentation](https://github.com/Naios/WIde/blob/master/doc/ide/eclipse/How%20to%20develop%20in%20Eclipse.md) to set up your enviroment.
 
 Usage
 -------------
