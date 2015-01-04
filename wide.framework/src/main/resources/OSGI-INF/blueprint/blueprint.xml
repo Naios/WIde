@@ -24,6 +24,16 @@
     </bean>
 
     <service id="frameworkService" ref="framework"
-             interface="com.github.naios.wide.api.framework.FrameworkService"/>
+             interface="com.github.naios.wide.api.framework.FrameworkService">
+        <service-properties>
+            <entry key="osgi.command.scope" value="wide"/>
+            <entry key="osgi.command.function">
+                <array value-type="java.lang.String">
+                    <value>dbc</value>
+                    <value>dbcformat</value>
+                </array>
+            </entry>
+        </service-properties>
+    </service>
 
 </blueprint>

@@ -8,12 +8,15 @@
 
 package com.github.naios.wide.framework.internal;
 
+import org.apache.felix.service.command.Descriptor;
+
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.framework.FrameworkService;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
+import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
@@ -172,5 +175,28 @@ public final class FrameworkServiceImpl implements FrameworkService
     {
         // TODO @FrameworkIntegration
         return null;
+    }
+
+    private ClientStorage<?> getStorgeOfCommand(final String name, final int policy)
+    {
+        if ((policy < 0) || (policy > ClientStoragePolicy.values().length))
+            throw new RuntimeException(String.format("%s is not an ordinal of ClientStoragePolicy!"));
+
+        final ClientStoragePolicy p = ClientStoragePolicy.values()[policy];
+
+        return new ClientStorageSelector<>(name, p).select();
+    }
+
+    @Descriptor("Shows any .dbc, .db2 or .adb storage (located in the data dir).")
+    public void dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
+            @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER") final int policy)
+    {
+        System.out.println(getStorgeOfCommand(name, policy));
+    }
+
+    @Descriptor("Shows an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
+    public void dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
+    {
+        System.out.println(getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat());
     }
 }

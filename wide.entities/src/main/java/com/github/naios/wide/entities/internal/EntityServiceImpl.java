@@ -156,7 +156,6 @@ public class EntityServiceImpl implements EntityService
         final Class<? extends Enum> enumeration = requestEnum(name);
         final List<? extends Enum> flags = FlagUtil.getFlagList(enumeration, val);
 
-
         System.out.println(String.format("Value: %s = %s", value, StringUtil.asHex(val)));
 
         for (final Enum flag : flags)
