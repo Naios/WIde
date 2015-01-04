@@ -34,9 +34,9 @@ WIde uses **Maven** to build OSGI bundles.
 
 4. If you want to develop with WIde or create new bundles for it use [this Documentation](https://github.com/Naios/WIde/blob/master/doc/ide/eclipse/How%20to%20develop%20in%20Eclipse.md) to set up your enviroment.
 
-Usage
+Shell Commands
 -------------
-In the osgi felix gogo shell there are multiple useful commands available:
+WIde adds multiple commands to the osgi felix gogo shell, that helps you to use the framework out of the box, however this is only a small part of WIde some commands might be helpful.
 
 - `config` Shows the config as Json.
 
@@ -47,6 +47,28 @@ In the osgi felix gogo shell there are multiple useful commands available:
 - `dbcformat` Shows an estimated format for any storage (detects key, string, float and int).
 
 - `sql` Executes a sql query on a database.
+
+- `enums` Shows an enum constant of the given enum value.
+
+	> `enums UnitClass 3`
+
+   	> Value: 3 = 0x3 = CLASS_MAGE
+
+- `flags` Shows all flags of a value (flagsplitter).
+
+	> `flags UnitFlags 0x432`
+	>
+   	> Value: 1074 = 0x432
+   	>
+   	>   0x2      = UNIT_FLAG_NON_ATTACKABLE
+   	>
+   	>  0x10      = UNIT_FLAG_RENAME
+   	>
+   	>  0x20      = UNIT_FLAG_PREPARATION
+   	>
+   	> 0x400      = UNIT_FLAG_LOOTING
+
+	*If you want more enums to be supported add it to the entities bundle an pullrequest your changes.*
 
 Use `help ${commnand}` or just `help` to get further information.
 After your work is done use `shutdown` to exit the osgi enviroment.
