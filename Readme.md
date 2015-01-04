@@ -70,8 +70,15 @@ WIde adds multiple commands to the osgi felix gogo shell, that helps you to use 
 
 	*If you want more enums to be supported add it to the entities bundle and pullrequest your changes.*
 
+
 Use `help ${commnand}` or just `help` to get further information.
 After your work is done use `shutdown` to exit the osgi enviroment.
+
+**For the experienced users:**
+
+The Apache Felix GOGO shell also [supports advanced structures like lists, variables and functions](http://felix.apache.org/site/rfc-147-overview.html). This makes it possible to use advanced scripting expressions like:
+
+    each [0x7 1738 27] { flags UnitFlags $it }
 
 Dependencies
 --------------
