@@ -144,7 +144,7 @@ public class EntityServiceImpl implements EntityService
             return;
         }
 
-        System.out.println(String.format("Value: %s = %s = %s", value, StringUtil.asHex(val), enumValue.name()));
+        System.out.println(String.format("Value: %s = %s = %s", val, StringUtil.asHex(val), enumValue.name()));
     }
 
     @SuppressWarnings("rawtypes")
@@ -156,7 +156,7 @@ public class EntityServiceImpl implements EntityService
         final Class<? extends Enum> enumeration = requestEnum(name);
         final List<? extends Enum> flags = FlagUtil.getFlagList(enumeration, val);
 
-        System.out.println(String.format("Value: %s = %s", value, StringUtil.asHex(val)));
+        System.out.println(String.format("Value: %s = %s", val, StringUtil.asHex(val)));
 
         for (final Enum flag : flags)
             System.out.println(String.format("\n%-10s = %s", StringUtil.asHex(FlagUtil.createFlag(flag)), flag.name()));
