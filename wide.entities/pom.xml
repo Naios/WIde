@@ -23,7 +23,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>entities</artifactId>
-    <version>1.0</version>
 
     <name>WIde Entities</name>
 
@@ -51,7 +50,6 @@
         <dependency>
             <groupId>com.github.naios.wide</groupId>
             <artifactId>api</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>

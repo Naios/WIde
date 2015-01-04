@@ -23,7 +23,6 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>database</artifactId>
-    <version>1.0</version>
 
     <name>WIde Database Pool - Service</name>
 
@@ -55,12 +54,10 @@
         <dependency>
             <groupId>com.github.naios.wide</groupId>
             <artifactId>api</artifactId>
-            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.naios.wide</groupId>
             <artifactId>config</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
