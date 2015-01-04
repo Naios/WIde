@@ -68,7 +68,7 @@ WIde adds multiple commands to the osgi felix gogo shell, that helps you to use 
    	>
    	> 0x400      = UNIT_FLAG_LOOTING
 
-	*If you want more enums to be supported add it to the entities bundle an pullrequest your changes.*
+	*If you want more enums to be supported add it to the entities bundle and pullrequest your changes.*
 
 Use `help ${commnand}` or just `help` to get further information.
 After your work is done use `shutdown` to exit the osgi enviroment.

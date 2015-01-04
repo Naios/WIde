@@ -187,7 +187,7 @@ public final class DatabasePoolServiceImpl
         db.open();
 
         final ResultSet result = db.execute(query);
-        if (Objects.nonNull(result))
+        if (Objects.isNull(result))
         {
             System.out.println("No result!");
             return;
@@ -203,7 +203,7 @@ public final class DatabasePoolServiceImpl
             throw new UncheckedSQLException(e);
         }
 
-        if (Objects.nonNull(metaData))
+        if (Objects.isNull(metaData))
         {
             System.out.println("No metadata!");
             return;
