@@ -26,6 +26,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.database.UncheckedSQLException;
 
@@ -40,6 +43,8 @@ class DatabaseClosedException extends UncheckedSQLException
 
 public class DatabaseImpl implements Database
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseImpl.class);
+
     private Connection syncConnection, asyncConnection;
 
     private final BooleanProperty alive = new SimpleBooleanProperty(false);
@@ -110,11 +115,13 @@ public class DatabaseImpl implements Database
 
             this.asyncConnection = null;
 
-            System.out.println(String.format("DEBUG: Connection to %s failed!", connectionString));
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("Connection to {} failed!", connectionString);
             return false;
         }
 
-        System.out.println(String.format("DEBUG: Established sync & async connection to %s.", connectionString));
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Established sync & async connection to {}.", connectionString);
         return true;
     }
 

@@ -88,11 +88,7 @@ WIde uses following dependencies and bundles at runtime:
 
 - [Apache Aries Blueprint](http://aries.apache.org/)
 
-- [Apache commons-math3](http://commons.apache.org/proper/commons-math/)
-
-- [Apache log4j](http://logging.apache.org/log4j/2.x/)
-
-- [Pax Logging Service](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging)
+- [Pax Logging API & Service](https://ops4j1.jira.com/wiki/display/paxlogging/Pax+Logging)
 
 - [Google guava](https://github.com/google/guava/)
 

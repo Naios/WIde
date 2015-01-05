@@ -16,6 +16,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -31,6 +33,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.util.IdentitySet;
@@ -91,6 +96,8 @@ class Reference
 
 public class ConfigHolder<T>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigHolder.class);
+
     /**
      * The {@link Gson} instance used in this bundle<br>
      * Including registered type adapters for javafx propertys and pretty print set
@@ -143,6 +150,7 @@ public class ConfigHolder<T>
                 .replaceAll(",\n *\".*\": (0|false|\"\")", "");
     }
 
+    // TODO convert this into a concurrent hash map
     private final static Map<String /*path*/, Reference> REFERENCES =
             new ConcurrentHashMap<>();
 
@@ -191,7 +199,8 @@ public class ConfigHolder<T>
         {
             Object object = null;
 
-            System.out.println(String.format("DEBUG: Loading config file: %s", origin));
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("Loading config file: {}", origin);
 
             // If the config file could not be loaded use the default predefined file.
             try (final Reader reader = new InputStreamReader(
@@ -204,7 +213,8 @@ public class ConfigHolder<T>
                 try (final Reader reader = new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream(defaultConfig)))
                 {
-                    System.out.println(String.format("DEBUG: Error while loading provided config file %s, switched to default config %s!", origin, defaultConfig));
+                    if (LOGGER.isDebugEnabled())
+                        LOGGER.debug("Error while loading provided config file {}, switched to default config {}!", origin, defaultConfig);
 
                     object = INSTANCE.fromJson(reader, type);
                 }
@@ -217,8 +227,8 @@ public class ConfigHolder<T>
             ref = new Reference(object);
             REFERENCES.put(origin, ref);
         }
-        else
-            System.out.println(String.format("DEBUG: Reusing cached config file: %s.", origin));
+        else if (LOGGER.isDebugEnabled())
+                LOGGER.debug("Reusing cached config file: {}.", origin);
 
         synchronized (ref.getObject())
         {
@@ -242,11 +252,14 @@ public class ConfigHolder<T>
 
             if (json.hashCode() == ref.getLastHashCode())
             {
-                System.out.println(String.format("DEBUG: Skipped saving of config file %s, nothing to save!", path));
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug("Skipped saving of config file {}, nothing to save!", path);
+
                 return;
             }
 
-            System.out.println(String.format("DEBUG: Saving config file %s.", path));
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("Saving config file {}.", path);
 
             // Create directories
             final File file = new File(path);
@@ -321,15 +334,17 @@ public class ConfigHolder<T>
         }
     }
 
-    public static void print()
+    public static List<String> getConfigsAsList()
     {
+        final List<String> result = new ArrayList<>();
         synchronized (REFERENCES)
         {
             REFERENCES.forEach((path, reference) ->
             {
-                System.out.println(String.format("Config File: %s (Hash: %s)\n%s", path,
+                result.add(String.format("Config File: %s (Hash: %s)\n%s", path,
                         StringUtil.asHex(reference.getLastHashCode()), reference.getObject()));
             });
         }
+        return result;
     }
 }

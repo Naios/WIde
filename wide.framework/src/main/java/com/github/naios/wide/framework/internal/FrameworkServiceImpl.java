@@ -9,6 +9,8 @@
 package com.github.naios.wide.framework.internal;
 
 import org.apache.felix.service.command.Descriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.database.DatabasePoolService;
@@ -30,6 +32,8 @@ import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FrameworkServiceImpl.class);
+
     private static ConfigService configService;
 
     private static DatabasePoolService databasePoolService;
@@ -38,12 +42,14 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     public void start()
     {
-        System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::start()"));
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Framework Service started!");
     }
 
     public void stop()
     {
-        System.out.println(String.format("DEBUG: %s", "FrameworkServiceImpl::stop()"));
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Framework Service stopped!");
     }
 
     public void setConfigService(final ConfigService configService)

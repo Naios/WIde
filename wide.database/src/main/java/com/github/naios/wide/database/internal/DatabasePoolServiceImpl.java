@@ -12,9 +12,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -26,6 +26,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import org.apache.felix.service.command.Descriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
@@ -33,11 +35,12 @@ import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.database.DatabaseNotRegisteredException;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.database.UncheckedSQLException;
-import com.github.naios.wide.api.util.StringUtil;
 
 public final class DatabasePoolServiceImpl
     implements DatabasePoolService
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatabasePoolServiceImpl.class);
+
     private ConfigService config;
 
     /**
@@ -91,13 +94,14 @@ public final class DatabasePoolServiceImpl
         }
         catch (final Throwable e)
         {
-            System.out.println(String.format("DEBUG: Didn't find jdbc class %s", name));
+            LOGGER.error("Didn't find jdbc class {}", name);
         }
 
         for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
             connections.put(dbconfig.id().get(), new SimpleObjectProperty<>(createDatabase(dbconfig)));
 
-        System.out.println(String.format("DEBUG: %s", "DatabasePoolService::open()"));
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde DatabasePool Service opened!");
     }
 
     public void close()
@@ -107,7 +111,8 @@ public final class DatabasePoolServiceImpl
             database.get().close();
             database.set(null);
         });
-        System.out.println(String.format("DEBUG: %s", "DatabasePoolService::close()"));
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde DatabasePool Service: closed!");
     }
 
     public void setConfig(final ConfigService config)
@@ -147,6 +152,10 @@ public final class DatabasePoolServiceImpl
         final SimpleObjectProperty<DatabaseImpl> database = new SimpleObjectProperty<DatabaseImpl>(
                 createDatabase(id, endpoint, user, password, table, optional));
         connections.put(id, database);
+
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Registered database {}", database);
+
         return (SimpleObjectProperty)database;
     }
 
@@ -166,23 +175,28 @@ public final class DatabasePoolServiceImpl
 
     /**
      * OSGI Command
+     * @return
      */
-    @Descriptor("Shows all registered databases.")
-    public synchronized void databases()
+    @Descriptor("Returns all registered databases.")
+    public synchronized List<String> databases()
     {
+        final List<String> result = new ArrayList<>();
         connections.forEach((id, database) ->
         {
-            System.out.println(String.format("%-10s - %s", id, database != null ? database.get() : null));
+            result.add(String.format("%-10s - %s", id, database != null ? database.get() : null));
         });
+        return result;
     }
 
     /**
      * OSGI Command
      */
     @Descriptor("Executes a query on the database with the given id.")
-    public void sql(@Descriptor("The id of the database (auth|character|world|<custom>)") final String id,
+    public List<List<Object>> sql(@Descriptor("The id of the database (auth|character|world|<custom>)") final String id,
             @Descriptor("The SQL query you want to execute") final String query)
     {
+        final List<List<Object>> list = new ArrayList<>();
+
         final Database db = requestConnection(id).get();
         db.open();
 
@@ -190,7 +204,7 @@ public final class DatabasePoolServiceImpl
         if (Objects.isNull(result))
         {
             System.out.println("No result!");
-            return;
+            return list;
         }
 
         ResultSetMetaData metaData;
@@ -203,10 +217,11 @@ public final class DatabasePoolServiceImpl
             throw new UncheckedSQLException(e);
         }
 
+        // TODO is this correct?
         if (Objects.isNull(metaData))
         {
             System.out.println("No metadata!");
-            return;
+            return list;
         }
 
         try
@@ -214,35 +229,34 @@ public final class DatabasePoolServiceImpl
             final int columns = metaData.getColumnCount();
 
             // Header
-            final List<String> values = new LinkedList<>();
-            for (int i = 1; i <= columns; ++i)
-                values.add(String.format("`%s`", metaData.getColumnName(i)));
+            final List<Object> header = new ArrayList<>();
+            list.add(header);
 
-            System.out.println("(" + StringUtil.concat(", ", values) + ")");
+            for (int i = 1; i <= columns; ++i)
+                header.add(metaData.getColumnName(i));
 
             while (result.next())
             {
-                values.clear();
+                final List<Object> values = new ArrayList<>();
+
                 for (int i = 1; i <= columns; ++i)
                 {
                     switch (metaData.getColumnType(i))
                     {
-                        case Types.CHAR:
-                        case Types.VARCHAR:
-                        case Types.LONGVARCHAR:
-                        case Types.NVARCHAR:
-                        {
-                            final String val = result.getString(i);
-                            values.add(String.format("\"%s\"", val == null ? "" : val));
+                        case Types.INTEGER:
+                            values.add(result.getInt(i));
                             break;
-                        }
+                        case Types.DOUBLE:
+                            values.add(result.getDouble(i));
+                            break;
+                        case Types.FLOAT:
+                            values.add(result.getFloat(i));
+                            break;
                         default:
-                            values.add(String.format("%s", result.getString(i)));
+                            values.add(result.getString(i));
                             break;
                     }
                 }
-
-                System.out.println("(" + StringUtil.concat(", ", values) + ")");
             }
 
             result.close();
@@ -251,6 +265,8 @@ public final class DatabasePoolServiceImpl
         {
             e.printStackTrace();
         }
+
+        return list;
     }
 
     /**

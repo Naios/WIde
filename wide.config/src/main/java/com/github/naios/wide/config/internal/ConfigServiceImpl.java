@@ -16,6 +16,8 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.StringProperty;
 
 import org.apache.felix.service.command.Descriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
@@ -26,6 +28,8 @@ import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public final class ConfigServiceImpl implements ConfigService
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceImpl.class);
+
     /**
      * Declares the name of our config file to load
      */
@@ -66,6 +70,9 @@ public final class ConfigServiceImpl implements ConfigService
         @Override
         public void run()
         {
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("WIde Config saver Thread started, interval {} seconds", saveInterval);
+
             while (true)
             {
                 try
@@ -101,10 +108,10 @@ public final class ConfigServiceImpl implements ConfigService
     /**
      * OSGI Command
      */
-    @Descriptor("Shows the WIde config and its as Json.")
-    public void config()
+    @Descriptor("Returns the WIde config and its subconfigs as Json.")
+    public List<String> config()
     {
-        ConfigHolder.print();
+        return ConfigHolder.getConfigsAsList();
     }
 
 	@Override
@@ -113,20 +120,23 @@ public final class ConfigServiceImpl implements ConfigService
 	    THIS_SERVICE = this;
 
 	    config.load(PATH);
-	    System.out.println(String.format("DEBUG: ConfigService::reload()"));
+
+	    if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Config Service stopped!");
 
 	    saverThread.start();
-	    System.out.println(String.format("DEBUG: Config saver Thread started, interval %s seconds", saveInterval));
 	}
 
 	@Override
     public void close()
 	{
 	    saverThread.interrupt();
-        System.out.println("DEBUG: Config saver Thread stopped!");
+	    if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Config saver Thread stopped!");
 
 	    ConfigHolder.globalClose();
-	    System.out.println(String.format("DEBUG: %s", "ConfigService::save()"));
+	    if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Config Service stopped!");
     }
 
     @Override

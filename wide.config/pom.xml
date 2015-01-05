@@ -60,5 +60,9 @@
             <groupId>com.github.naios.wide</groupId>
             <artifactId>entities</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
     </dependencies>
 </project>
