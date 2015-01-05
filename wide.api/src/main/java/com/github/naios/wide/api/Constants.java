@@ -17,7 +17,7 @@ public enum Constants
     STRING_TEST("test"),
     STRING_EXCEPTION("<exception>"),
     STRING_MISSIN_ENTRY("<missing entry>"),
-    STRING_NULL("<null>"),
+    STRING_NULL("null"),
 
     ////////////////////////////////////////////////////////
     // Properties

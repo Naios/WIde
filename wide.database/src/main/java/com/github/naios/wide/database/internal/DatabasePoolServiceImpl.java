@@ -13,8 +13,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +37,7 @@ import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.database.DatabaseNotRegisteredException;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.database.UncheckedSQLException;
+import com.github.naios.wide.api.util.FormatterWrapper;
 
 public final class DatabasePoolServiceImpl
     implements DatabasePoolService
@@ -192,10 +195,10 @@ public final class DatabasePoolServiceImpl
      * OSGI Command
      */
     @Descriptor("Executes a query on the database with the given id.")
-    public List<List<Object>> sql(@Descriptor("The id of the database (auth|character|world|<custom>)") final String id,
+    public Collection<Collection<Object>> sql(@Descriptor("The id of the database (auth|character|world|<custom>)") final String id,
             @Descriptor("The SQL query you want to execute") final String query)
     {
-        final List<List<Object>> list = new ArrayList<>();
+        final Collection<Collection<Object>> list = new LinkedList<>();
 
         final Database db = requestConnection(id).get();
         db.open();
@@ -229,7 +232,7 @@ public final class DatabasePoolServiceImpl
             final int columns = metaData.getColumnCount();
 
             // Header
-            final List<Object> header = new ArrayList<>();
+            final Collection<Object> header = new LinkedList<>();
             list.add(header);
 
             for (int i = 1; i <= columns; ++i)
@@ -237,13 +240,16 @@ public final class DatabasePoolServiceImpl
 
             while (result.next())
             {
-                final List<Object> values = new ArrayList<>();
+                final List<Object> values = new LinkedList<>();
 
                 for (int i = 1; i <= columns; ++i)
                 {
                     switch (metaData.getColumnType(i))
                     {
                         case Types.INTEGER:
+                        case Types.BIGINT:
+                        case Types.TINYINT:
+                        case Types.SMALLINT:
                             values.add(result.getInt(i));
                             break;
                         case Types.DOUBLE:
@@ -252,11 +258,19 @@ public final class DatabasePoolServiceImpl
                         case Types.FLOAT:
                             values.add(result.getFloat(i));
                             break;
+                        case Types.CHAR:
+                        case Types.VARCHAR:
+                        case Types.LONGVARCHAR:
+                        case Types.NVARCHAR:
+                            values.add(new FormatterWrapper(result.getString(i)));
+                            break;
                         default:
                             values.add(result.getString(i));
                             break;
                     }
                 }
+
+                list.add(values);
             }
 
             result.close();

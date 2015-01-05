@@ -17,11 +17,13 @@ import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.framework.FrameworkService;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
@@ -108,17 +110,27 @@ public final class FrameworkServiceImpl implements FrameworkService
         return new ClientStorageSelector<>(name, p).select();
     }
 
-    @Descriptor("Shows any .dbc, .db2 or .adb storage (located in the data dir).")
-    public void dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
-            @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER") final int policy)
+    @Descriptor("Returns any .dbc, .db2 or .adb storage (located in the data dir).")
+
+    public Object[][] dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
+            @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER (default)")
+                /*FIXME @Parameter(names={"-p", "--policy"}, absentValue="2") */ final int policy)
     {
-        System.out.println(getStorgeOfCommand(name, policy));
+        final Object[][] array = getStorgeOfCommand(name, policy).asObjectArray();
+        final int height = array.length, width = array[0].length;
+
+        for (int y = 0; y < height; ++y)
+            for (int x = 0; x < width; ++x)
+                if (array[y][x] instanceof String)
+                    array[y][x] = new FormatterWrapper(array[y][x]);
+
+        return array;
     }
 
-    @Descriptor("Shows an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
-    public void dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
+    @Descriptor("Returns an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
+    public ClientStorageFormat dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
     {
-        System.out.println(getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat());
+        return getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat();
     }
 
     public void test()
