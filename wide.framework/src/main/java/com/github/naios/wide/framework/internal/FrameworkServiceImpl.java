@@ -8,6 +8,10 @@
 
 package com.github.naios.wide.framework.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.felix.service.command.Descriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,19 +116,31 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     @Descriptor("Returns any .dbc, .db2 or .adb storage (located in the data dir).")
 
-    public Object[][] dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
+    public Collection<Object[]> dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
             @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER (default)")
                 /*FIXME @Parameter(names={"-p", "--policy"}, absentValue="2") */ final int policy)
     {
-        final Object[][] array = getStorgeOfCommand(name, policy).asObjectArray();
+        final ClientStorage<?> storage = getStorgeOfCommand(name, policy);
+        final Object[][] array = storage.asObjectArray();
         final int height = array.length, width = array[0].length;
 
+        final Collection<Object[]> result = new ArrayList<>(height);
+
+        final List<String> names = new ArrayList<>(storage.getFieldNames());
+        names.replaceAll(columnName -> new FormatterWrapper(columnName).toString());
+
+        result.add(names.toArray());
+
         for (int y = 0; y < height; ++y)
+        {
             for (int x = 0; x < width; ++x)
                 if (array[y][x] instanceof String)
                     array[y][x] = new FormatterWrapper(array[y][x]);
 
-        return array;
+            result.add(array[y]);
+        }
+
+        return result;
     }
 
     @Descriptor("Returns an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
