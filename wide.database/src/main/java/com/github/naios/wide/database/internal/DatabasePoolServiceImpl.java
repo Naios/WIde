@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -80,7 +81,7 @@ public final class DatabasePoolServiceImpl
                     remove.add(id);
                 }
                 else
-                    database.set(createDatabase(config.getActiveEnviroment().getDatabaseConfig(id)));
+                    database.set(createDatabase(id, config.getActiveEnviroment().getDatabaseConfig(id)));
             });
 
             remove.forEach(id -> connections.remove(id));
@@ -100,8 +101,8 @@ public final class DatabasePoolServiceImpl
             LOGGER.error("Didn't find jdbc class {}", name);
         }
 
-        for (final DatabaseConfig dbconfig : config.getActiveEnviroment().getDatabases())
-            connections.put(dbconfig.id().get(), new SimpleObjectProperty<>(createDatabase(dbconfig)));
+        for (final Entry<String, DatabaseConfig> db : config.getActiveEnviroment().getDatabases())
+            connections.put(db.getKey(), new SimpleObjectProperty<>(createDatabase(db.getKey(), db.getValue())));
 
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("WIde DatabasePool Service opened!");
@@ -162,9 +163,9 @@ public final class DatabasePoolServiceImpl
         return (SimpleObjectProperty)database;
     }
 
-    private DatabaseImpl createDatabase(final DatabaseConfig config)
+    private DatabaseImpl createDatabase(final String id, final DatabaseConfig config)
     {
-        return createDatabase(config.id().get(), config.host().get(),
+        return createDatabase(id, config.host().get(),
                 config.user().get(), config.password().get(), config.name().get(), false);
     }
 

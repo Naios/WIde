@@ -8,7 +8,8 @@
 
 package com.github.naios.wide.api.config.main;
 
-import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javafx.beans.property.StringProperty;
 
@@ -16,11 +17,6 @@ import com.github.naios.wide.api.entities.GameBuild;
 
 public interface EnviromentConfig
 {
-    /**
-     * @return Name of the enviroment
-     */
-    public StringProperty name();
-
     /**
      * @return Path to the alias definition
      */
@@ -39,7 +35,7 @@ public interface EnviromentConfig
     /**
      * @return The {@link DatabaseConfig}'s of the enviroment
      */
-    public List<DatabaseConfig> getDatabases();
+    public Set<Entry<String, DatabaseConfig>> getDatabases();
 
     /**
      * @return The {@link DatabaseConfig} with a specific id

@@ -19,11 +19,6 @@ import com.github.naios.wide.api.config.schema.Schema;
 public interface DatabaseConfig
 {
     /**
-     * @return The database id ("world" or "auth" for example)
-     */
-    public StringProperty id();
-
-    /**
      * @return The database name in the db system
      */
     public StringProperty name();

@@ -8,15 +8,15 @@
 
 package com.github.naios.wide.api.config.main;
 
+import javafx.beans.property.BooleanProperty;
+
 public interface QueryTypeConfig
 {
-    /**
-     * @return The {@link QueryType} of this entry
-     */
-    public QueryType getType();
+    public BooleanProperty custom();
 
-    /**
-     * @return The {@link VariablizeConfigImpl} of this entry
-     */
-    public VariablizeConfig getVariablize();
+    public BooleanProperty names();
+
+    public BooleanProperty enums();
+
+    public BooleanProperty flags();
 }

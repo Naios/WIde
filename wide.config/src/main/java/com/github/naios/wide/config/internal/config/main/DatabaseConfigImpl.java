@@ -47,12 +47,6 @@ public class DatabaseConfigImpl implements DatabaseConfig
             new ConfigHolder<>(DEFAULT_SCHEMA_PATH, SchemaImpl.class);
 
     @Override
-    public StringProperty id()
-    {
-        return id;
-    }
-
-    @Override
     public StringProperty name()
     {
         return name;

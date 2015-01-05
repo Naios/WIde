@@ -8,8 +8,11 @@
 
 package com.github.naios.wide.config.internal.config.main;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -38,7 +41,8 @@ public class ConfigImpl implements Config
                     ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
                         active_enviroment = new SimpleStringProperty("");
 
-    private List<EnviromentConfigImpl> enviroments = new ArrayList<>();
+    private Map<String, EnviromentConfigImpl> enviroments =
+            new HashMap<String, EnviromentConfigImpl>();
 
     private QueryConfigImpl querys;
 
@@ -70,9 +74,9 @@ public class ConfigImpl implements Config
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public List<EnviromentConfig> getEnviroments()
+    public Set<Entry<String, EnviromentConfig>> getEnviroments()
     {
-        return (List)enviroments;
+        return (Set)enviroments.entrySet();
     }
 
     @Override
@@ -88,13 +92,13 @@ public class ConfigImpl implements Config
     }
 
     @Override
-    public EnviromentConfigImpl getActiveEnviroment()
+    public EnviromentConfig getActiveEnviroment()
     {
-        for (final EnviromentConfigImpl env : enviroments)
-            if (env.name().get().equals(active_enviroment.get()))
-                return env;
-
-        throw new MissingActiveEnviroment();
+        final EnviromentConfig enviroment = enviroments.get(active_enviroment.get());
+        if (Objects.nonNull(enviroment))
+            return enviroment;
+        else
+            throw new MissingActiveEnviroment();
     }
 
     @Override

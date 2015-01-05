@@ -30,19 +30,23 @@
     {
       "name": "CreatureName",
       "type": SERVER,
+      "database": world
       "target": "creature_template",
       "entry_column": "entry",
       "name_column": "name",
       "prefix": "NPC",
+      "zero": "none",
       "fail": "unk %s"
     },
     {
       "name": "GameObjectName",
       "type": SERVER,
+      "database": world
       "target": "gameobject_template",
       "entry_column": "entry",
       "name_column": "name",
       "prefix": "GOB",
+      "zero": "none",
       "fail": "unk %s"
     },
     {
@@ -52,6 +56,7 @@
       "entry_column_index": 0,
       "name_column_index": 1,
       "prefix": "MAP",
+      "zero": "none",
       "fail": "unk %s"
     },
     {
@@ -61,6 +66,7 @@
       "entry_column_index": 0,
       "name_column_index": 1,
       "prefix": "SPELL",
+      "zero": "none",
       "fail": "unk %s"
     }
   ]

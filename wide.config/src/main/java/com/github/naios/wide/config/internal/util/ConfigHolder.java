@@ -105,6 +105,8 @@ public class ConfigHolder<T>
     private final static Gson INSTANCE = new GsonBuilder()
         // Pretty print
         .setPrettyPrinting()
+        // Enable Map Key Serialization
+        .enableComplexMapKeySerialization()
         // Exclude static and final fields
         .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.FINAL)
         // StringProperty Adapter

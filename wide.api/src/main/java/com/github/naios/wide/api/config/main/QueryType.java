@@ -10,5 +10,5 @@ package com.github.naios.wide.api.config.main;
 
 public enum QueryType
 {
-    INSERT, DELETE, UPDATE, UNDEFINED
+    INSERT, DELETE, UPDATE
 }

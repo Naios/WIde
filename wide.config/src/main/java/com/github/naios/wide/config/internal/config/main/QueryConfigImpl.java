@@ -8,13 +8,17 @@
 
 package com.github.naios.wide.config.internal.config.main;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import com.github.naios.wide.api.config.main.QueryConfig;
+import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
@@ -22,7 +26,8 @@ public class QueryConfigImpl implements QueryConfig
 {
     private BooleanProperty compress = new SimpleBooleanProperty(false);
 
-    private List<QueryTypeConfigImpl> type = new ArrayList<>();
+    private Map<QueryType, QueryTypeConfigImpl> types =
+            new HashMap<QueryType, QueryTypeConfigImpl>();
 
     @Override
     public BooleanProperty compress()
@@ -30,11 +35,24 @@ public class QueryConfigImpl implements QueryConfig
         return compress;
     }
 
+    @Override
+    public QueryTypeConfig getConfigForType(final QueryType type)
+    {
+        QueryTypeConfigImpl config = types.get(type);
+        if (Objects.isNull(config))
+        {
+            config = new QueryTypeConfigImpl();
+            types.put(type, config);
+        }
+
+        return config;
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public List<QueryTypeConfig> getType()
+    public Set<Entry<QueryType, QueryTypeConfig>> getQueryTypeConfigs()
     {
-        return (List)type;
+        return (Set)types.entrySet();
     }
 
     @Override

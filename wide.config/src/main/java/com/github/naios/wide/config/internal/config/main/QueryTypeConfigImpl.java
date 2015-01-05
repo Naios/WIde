@@ -8,26 +8,39 @@
 
 package com.github.naios.wide.config.internal.config.main;
 
-import com.github.naios.wide.api.config.main.QueryType;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig
 {
-    private QueryType type = QueryType.UNDEFINED;
-
-    private VariablizeConfigImpl variablize;
+    private BooleanProperty custom = new SimpleBooleanProperty(false), names = new SimpleBooleanProperty(false),
+            enums = new SimpleBooleanProperty(false), flags = new SimpleBooleanProperty(false);
 
     @Override
-    public QueryType getType()
+    public BooleanProperty custom()
     {
-        return type;
+        return custom;
     }
 
     @Override
-    public VariablizeConfigImpl getVariablize()
+    public BooleanProperty names()
     {
-        return variablize;
+        return names;
+    }
+
+    @Override
+    public BooleanProperty enums()
+    {
+        return enums;
+    }
+
+    @Override
+    public BooleanProperty flags()
+    {
+        return flags;
     }
 
     @Override

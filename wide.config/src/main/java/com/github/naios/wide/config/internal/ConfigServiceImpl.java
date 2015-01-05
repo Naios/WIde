@@ -9,6 +9,8 @@
 package com.github.naios.wide.config.internal;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.BooleanProperty;
@@ -23,7 +25,6 @@ import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.config.internal.config.main.ConfigImpl;
-import com.github.naios.wide.config.internal.config.main.EnviromentConfigImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public final class ConfigServiceImpl implements ConfigService
@@ -164,7 +165,7 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public List<EnviromentConfig> getEnviroments()
+    public Set<Entry<String, EnviromentConfig>> getEnviroments()
     {
         return config.get(PATH).get().getEnviroments();
     }
@@ -176,7 +177,7 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public EnviromentConfigImpl getActiveEnviroment()
+    public EnviromentConfig getActiveEnviroment()
     {
         return config.get(PATH).get().getActiveEnviroment();
     }

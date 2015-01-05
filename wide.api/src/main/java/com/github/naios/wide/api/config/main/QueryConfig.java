@@ -8,7 +8,8 @@
 
 package com.github.naios.wide.api.config.main;
 
-import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javafx.beans.property.BooleanProperty;
 
@@ -16,5 +17,7 @@ public interface QueryConfig
 {
     public BooleanProperty compress();
 
-    public List<QueryTypeConfig> getType();
+    public QueryTypeConfig getConfigForType(QueryType type);
+
+    public Set<Entry<QueryType, QueryTypeConfig>> getQueryTypeConfigs();
 }

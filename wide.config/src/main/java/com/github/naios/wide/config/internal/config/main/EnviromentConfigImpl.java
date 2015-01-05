@@ -8,8 +8,11 @@
 
 package com.github.naios.wide.config.internal.config.main;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -30,21 +33,15 @@ class MissingDatabaseConfig extends RuntimeException
 
 public class EnviromentConfigImpl implements EnviromentConfig
 {
-    private StringProperty name = new SimpleStringProperty("");
-
     private GameBuild build = GameBuild.DEFAULT_BUILD;
 
     private StringProperty alias_definition = new SimpleStringProperty("");
 
     private ClientStorageConfigImpl client_storages;
 
-    private List<DatabaseConfigImpl> databases = new ArrayList<>();
-
-    @Override
-    public StringProperty name()
-    {
-        return name;
-    }
+    @SuppressWarnings("serial")
+    private Map<String, DatabaseConfigImpl> databases =
+            new HashMap<String, DatabaseConfigImpl>();
 
     @Override
     public StringProperty aliasDefinition()
@@ -66,28 +63,19 @@ public class EnviromentConfigImpl implements EnviromentConfig
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public List<DatabaseConfig> getDatabases()
+    public Set<Entry<String, DatabaseConfig>> getDatabases()
     {
-        return (List)databases;
-    }
-
-    private boolean isDatabasePresent(final String id)
-    {
-        for (final DatabaseConfigImpl db : databases)
-            if (db.id().get().equals(id))
-                return true;
-
-        return false;
+        return (Set)databases.entrySet();
     }
 
     @Override
-    public DatabaseConfigImpl getDatabaseConfig(final String id)
+    public DatabaseConfig getDatabaseConfig(final String id)
     {
-        for (final DatabaseConfigImpl db : databases)
-            if (db.id().get().equals(id))
-                return db;
-
-        throw new MissingDatabaseConfig(id);
+        final DatabaseConfig db = databases.get(id);
+        if (Objects.nonNull(db))
+            return db;
+        else
+            throw new MissingDatabaseConfig(id);
     }
 
     @Override

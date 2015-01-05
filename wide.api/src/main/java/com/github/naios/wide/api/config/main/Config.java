@@ -8,7 +8,8 @@
 
 package com.github.naios.wide.api.config.main;
 
-import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -47,9 +48,9 @@ public interface Config
     public StringProperty activeEnviroment();
 
     /**
-     * @return All Enviroments as list
+     * @return All Enviroments as entry set
      */
-    public List<EnviromentConfig> getEnviroments();
+    public Set<Entry<String, EnviromentConfig>> getEnviroments();
 
     /**
      * @return Our query config
