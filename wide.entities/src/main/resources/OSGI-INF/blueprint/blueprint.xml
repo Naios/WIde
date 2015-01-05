@@ -21,6 +21,9 @@
                 <array value-type="java.lang.String">
                     <value>flags</value>
                     <value>enums</value>
+                    <value>todec</value>
+                    <value>tohex</value>
+                    <value>tobin</value>
                 </array>
             </entry>
         </service-properties>

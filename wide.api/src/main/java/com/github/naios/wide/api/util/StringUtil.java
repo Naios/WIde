@@ -93,4 +93,9 @@ public class StringUtil
     {
         return "0x" + Integer.toHexString(value);
     }
+
+    public static String asBin(final int value)
+    {
+        return "0b" + Integer.toBinaryString(value);
+    }
 }
