@@ -24,6 +24,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 {
     private final MappingPlan plan;
 
+    @SuppressWarnings("rawtypes")
     public JsonMapper(final TableSchema schema, final List<Class<?>> interfaces,
                 final Class<? extends MappingImplementation> implementation)
     {

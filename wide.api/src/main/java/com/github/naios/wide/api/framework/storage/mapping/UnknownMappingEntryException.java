@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.mapping;
 
+@SuppressWarnings("serial")
 public class UnknownMappingEntryException extends RuntimeException
 {
     public UnknownMappingEntryException(final String name)

@@ -8,8 +8,11 @@
 
 package com.github.naios.wide.config.internal.config.schema;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
 
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -28,7 +31,7 @@ public class SchemaImpl implements Schema
 {
     private String name, description;
 
-    private List<TableSchemaImpl> tables = new ArrayList<>();
+    private Map<String, TableSchemaImpl> tables = new HashMap<>();
 
     @Override
     public String getName()
@@ -44,19 +47,19 @@ public class SchemaImpl implements Schema
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public List<TableSchema> getTables()
+    public Set<Entry<String, TableSchema>> getTables()
     {
-        return (List)tables;
+        return (Set)tables.entrySet();
     }
 
     @Override
     public TableSchema getSchemaOf(final String name)
     {
-        for (final TableSchema schema : tables)
-            if (schema.getName().equals(name))
-                return schema;
-
-        throw new MissingSchemaException(name);
+        final TableSchema schema = tables.get(name);
+        if (Objects.nonNull(schema))
+            return schema;
+        else
+            throw new MissingSchemaException(name);
     }
 
     @Override

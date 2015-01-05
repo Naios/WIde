@@ -1,9 +1,8 @@
 {
   "name": "6.x TC client stores schema",
   "description": "a simple reduced schema for testing purposes.",
-  "tables": [
-    {
-      "name": "Map.dbc",
+  "tables": {
+    "Map.dbc": {
       "structure": "com.github.naios.wide.entities.client.MapEntry",
       "format": "nsiixxsixxixiffxiiiixx",
       "entries": [
@@ -19,7 +18,7 @@
           "name": "name",
           "index": 6
         }
-      ]
+      }
     }
   ]
 }

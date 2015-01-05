@@ -26,6 +26,7 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorageI
 
     protected final static String EXTENSION = ".db2";
 
+    @SuppressWarnings("unused")
     private int tableHash, timestampLastWritten, minId, maxId, locale, unk2;
 
     public DB2Storage(final String path) throws ClientStorageException

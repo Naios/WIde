@@ -1,9 +1,9 @@
 {
   "name": "6.x TC database schema",
   "description": "a simple reduced schema for testing purposes.",
-  "tables": [
-    {
-      "name": "creature_template",
+  "tables": {
+    "creature_template": {
+      "name": ,
       "structure": "com.github.naios.wide.entities.server.world.v6x.CreatureTemplate_6x",
       "entries": [
         {
@@ -28,7 +28,7 @@
           "name": "unit_class",
           "alias": "UnitClass"
         }
-      ]
+      }
     }
   ]
 }

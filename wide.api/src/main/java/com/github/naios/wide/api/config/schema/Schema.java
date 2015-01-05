@@ -8,7 +8,8 @@
 
 package com.github.naios.wide.api.config.schema;
 
-import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface Schema
 {
@@ -16,7 +17,7 @@ public interface Schema
 
     public String getDescription();
 
-    public List<TableSchema> getTables();
+    public Set<Entry<String, TableSchema>> getTables();
 
     public TableSchema getSchemaOf(String name);
 }
