@@ -35,24 +35,23 @@ public class EnviromentConfigImpl implements EnviromentConfig
 {
     private GameBuild build = GameBuild.DEFAULT_BUILD;
 
-    private StringProperty alias_definition = new SimpleStringProperty("");
+    private StringProperty aliasDefinition = new SimpleStringProperty("");
 
-    private ClientStorageConfigImpl client_storages;
+    private ClientStorageConfigImpl clientStorages;
 
-    @SuppressWarnings("serial")
     private Map<String, DatabaseConfigImpl> databases =
             new HashMap<String, DatabaseConfigImpl>();
 
     @Override
     public StringProperty aliasDefinition()
     {
-        return alias_definition;
+        return aliasDefinition;
     }
 
     @Override
     public ClientStorageConfigImpl getClientStorageConfig()
     {
-        return client_storages;
+        return clientStorages;
     }
 
     @Override

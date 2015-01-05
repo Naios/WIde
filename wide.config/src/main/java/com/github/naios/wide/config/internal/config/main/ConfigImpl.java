@@ -38,8 +38,9 @@ public class ConfigImpl implements Config
 {
     private StringProperty title = new SimpleStringProperty(""),
                 description = new SimpleStringProperty(""),
-                    ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
-                        active_enviroment = new SimpleStringProperty("");
+                        license = new SimpleStringProperty(""),
+                            ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
+                                activeEnviroment = new SimpleStringProperty("");
 
     private Map<String, EnviromentConfigImpl> enviroments =
             new HashMap<String, EnviromentConfigImpl>();
@@ -61,6 +62,12 @@ public class ConfigImpl implements Config
     }
 
     @Override
+    public ReadOnlyStringProperty license()
+    {
+        return license;
+    }
+
+    @Override
     public StringProperty ui()
     {
         return ui;
@@ -69,7 +76,7 @@ public class ConfigImpl implements Config
     @Override
     public StringProperty activeEnviroment()
     {
-        return active_enviroment;
+        return activeEnviroment;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -94,7 +101,7 @@ public class ConfigImpl implements Config
     @Override
     public EnviromentConfig getActiveEnviroment()
     {
-        final EnviromentConfig enviroment = enviroments.get(active_enviroment.get());
+        final EnviromentConfig enviroment = enviroments.get(activeEnviroment.get());
         if (Objects.nonNull(enviroment))
             return enviroment;
         else

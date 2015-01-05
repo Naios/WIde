@@ -21,12 +21,11 @@ import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public class DatabaseConfigImpl implements DatabaseConfig
 {
-    private StringProperty id = new SimpleStringProperty(""),
-                name = new SimpleStringProperty(""),
-                    host = new SimpleStringProperty(""),
-                        user = new SimpleStringProperty(""),
-                            password = new SimpleStringProperty(""),
-                                schema = new SimpleStringProperty("");
+    private StringProperty name = new SimpleStringProperty(""),
+                host = new SimpleStringProperty(""),
+                    user = new SimpleStringProperty(""),
+                        password = new SimpleStringProperty(""),
+                            schema = new SimpleStringProperty("");
 
     // We need to late bind the connection property to user and host
     // because user & host might be null sometimes

@@ -1,13 +1,14 @@
 {
   "title": "WIde framework main configuration file.",
   "description": "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
+  "license": "Creative Commons 4.0 (by-nc-sa) - Non Commercial!",
   "ui": "any",
-  "active_enviroment": "6.x",
+  "activeEnviroment": "6.x",
   "enviroments": {
     "3.3.5": {
       "build": "V3_3_5a_12340",
-      "alias_definition": "schematics/alias.json",
-      "client_storages": {
+      "aliasDefinition": "schematics/alias.json",
+      "clientStorages": {
         "path": "data/3.3.5/dbc",
         "schema": "schematics/3.3.5/dbc.json"
       },
@@ -37,8 +38,8 @@
     },
     "4.3.4": {
       "build": "V4_3_4_15595",
-      "alias_definition": "schematics/alias.json",
-      "client_storages": {
+      "aliasDefinition": "schematics/alias.json",
+      "clientStorages": {
         "path": "data/4.3.4/dbc",
         "schema": "schematics/4.3.4/dbc.json"
       },
@@ -68,8 +69,8 @@
     },
     "6.x": {
       "build": "V6_0_3_19103",
-      "alias_definition": "schematics/alias.json",
-      "client_storages": {
+      "aliasDefinition": "schematics/alias.json",
+      "clientStorages": {
         "path": "data/6.0.3/dbc",
         "schema": "schematics/6.x/dbc.json"
       },
@@ -99,19 +100,13 @@
     }
   },
   "querys": {
-    "compress": false,
     "types": {
       "INSERT": {
-        "custom": true,
-        "names": false,
-        "enums": false,
-        "flags": false
+        "custom": true
       },
       "DELETE": {
         "custom": true,
-        "names": true,
-        "enums": false,
-        "flags": false
+        "names": true
       },
       "UPDATE": {
         "custom": true,

@@ -153,6 +153,12 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
+    public ReadOnlyStringProperty license()
+    {
+        return config.get(PATH).get().license();
+    }
+
+    @Override
     public StringProperty ui()
     {
         return config.get(PATH).get().ui();

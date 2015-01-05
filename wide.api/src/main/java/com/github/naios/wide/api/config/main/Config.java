@@ -38,6 +38,11 @@ public interface Config
     public ReadOnlyStringProperty description();
 
     /**
+     * @return The WIde license
+     */
+    public ReadOnlyStringProperty license();
+
+    /**
      * @return The preferred User Interface
      */
     public StringProperty ui();
