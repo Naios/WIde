@@ -24,7 +24,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>provision</module>
         <module>wrappers</module>
         <module>compiled</module>
     </modules>
