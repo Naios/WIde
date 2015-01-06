@@ -244,7 +244,6 @@
 
     <modules>
         <module>poms</module>
-        <module>provision</module>
         <module>src/api</module>
         <module>src/entities</module>
         <module>src/config</module>
