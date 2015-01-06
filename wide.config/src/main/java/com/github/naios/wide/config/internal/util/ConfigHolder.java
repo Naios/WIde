@@ -44,6 +44,7 @@ import com.github.naios.wide.config.internal.ConfigServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.stream.MalformedJsonException;
 
 class Reference
 {
@@ -209,6 +210,10 @@ public class ConfigHolder<T>
                    new FileInputStream(origin)))
             {
                 object = INSTANCE.fromJson(reader, type);
+            }
+            catch (final MalformedJsonException e)
+            {
+                throw new Error(e);
             }
             catch (final Throwable t)
             {

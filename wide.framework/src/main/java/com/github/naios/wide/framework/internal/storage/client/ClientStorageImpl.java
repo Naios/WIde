@@ -170,6 +170,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
 
         if (Objects.nonNull(schema))
         {
+            // FIXME Empty catch clause is bad!
             try
             {
                 final TableSchema tableSchema = schema.getSchemaOf(file.getName());
@@ -182,7 +183,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         }
 
         if (!policy.isSchemaEstimated())
-            throw new MissingSchemaException(path);
+            throw new MissingSchemaException(file.getName());
 
         dataTable = new UnknownSchemaDataTable<>(this, buffer);
      }
