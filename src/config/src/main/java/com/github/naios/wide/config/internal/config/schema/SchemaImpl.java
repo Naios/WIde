@@ -14,6 +14,10 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -30,25 +34,27 @@ class MissingSchemaException extends RuntimeException
 
 public class SchemaImpl implements Schema
 {
-    private String name, description,
-        version = WIdeConstants.VERSION_WIDE_SCHEMATIC_CONFIG.toString();
+    private StringProperty name = new SimpleStringProperty(""),
+                description = new SimpleStringProperty(""),
+                    version = new SimpleStringProperty(
+                            WIdeConstants.VERSION_WIDE_SCHEMATIC_CONFIG.toString());
 
     private Map<String, TableSchemaImpl> tables = new HashMap<>();
 
     @Override
-    public String getName()
+    public ReadOnlyStringProperty name()
     {
         return name;
     }
 
     @Override
-    public String getDescription()
+    public ReadOnlyStringProperty description()
     {
         return description;
     }
 
     @Override
-    public String getVersion()
+    public StringProperty version()
     {
         return version;
     }

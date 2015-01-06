@@ -11,14 +11,16 @@ package com.github.naios.wide.api.config.schema;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.StringProperty;
+
 public interface Schema
 {
-    // TODO convert this into properties
-    public String getName();
+    public ReadOnlyStringProperty name();
 
-    public String getDescription();
+    public ReadOnlyStringProperty description();
 
-    public String getVersion();
+    public StringProperty version();
 
     public Set<Entry<String, TableSchema>> getTables();
 
