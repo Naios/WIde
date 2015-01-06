@@ -1,67 +1,65 @@
 {
   "name": "WIde alias definition schema",
-  "description": "This file defines multiple useable enum and namestorage aliases",
+  "description": "This file defines multiple useable enum and namestorage aliases that are useable in schematic files.",
+  "version": 1.0,
   "alias": [
-    {
-      "name": "UnitClass",
-      "type": ENUM,
-      "target": "com.github.naios.wide.core.framework.game.UnitClass",
+    "UnitClass": {
+      "type": "ENUM",
+      "target": "com.github.naios.wide.entities.enums.UnitClass",
     },
-    {
-      "name": "UnitFlags",
-      "type": ENUM,
-      "target": "com.github.naios.wide.core.framework.game.UnitFlags",
+    "UnitFlags": {
+      "type": "ENUM",
+      "target": "com.github.naios.wide.entities.enums.UnitFlags",
     },
-    {
-      "name": "Classes",
-      "type": ENUM,
-      "target": "com.github.naios.wide.core.framework.game.Classes",
+    "Classes": {
+      "type": "ENUM",
+      "target": "com.github.naios.wide.entities.enums.Classes",
     },
-    {
-      "name": "Expansion",
-      "type": ENUM,
-      "target": "com.github.naios.wide.core.framework.game.Expansion",
+    "Expansion": {
+      "type": "ENUM",
+      "target": "com.github.naios.wide.entities.enums.Expansion",
     },
-    {
-      "name": "Races",
-      "type": ENUM,
-      "target": "com.github.naios.wide.core.framework.game.Races",
+    "Races": {
+      "type": "ENUM",
+      "target": "com.github.naios.wide.entities.enums.Races",
     },
-    {
-      "name": "CreatureName",
-      "type": SERVER,
+    "CreatureName": {
+      "type": "SERVER",
+      "database": world
       "target": "creature_template",
-      "entry_column": "entry",
-      "name_column": "name",
+      "entryColumn": "entry",
+      "nameColumn": "name",
       "prefix": "NPC",
-      "fail": "unk %s"
+      "zeroName": "none",
+      "failPrefix": "unk %s"
     },
-    {
-      "name": "GameObjectName",
-      "type": SERVER,
+    "GameObjectName": {
+      "type": "SERVER",
+      "database": world
       "target": "gameobject_template",
-      "entry_column": "entry",
-      "name_column": "name",
+      "entryColumn": "entry",
+      "nameColumn": "name",
       "prefix": "GOB",
-      "fail": "unk %s"
+      "zeroName": "none",
+      "failPrefix": "unk %s"
     },
-    {
-      "name": "MapName",
-      "type": CLIENT,
+    "MapName": {
+      "type": "CLIENT",
       "target": "Map.dbc",
-      "entry_column_index": 0,
-      "name_column_index": 1,
+      "entryColumnIndex": 0,
+      "nameColumnIndex": 1,
       "prefix": "MAP",
-      "fail": "unk %s"
+      "zeroName": "none",
+      "failPrefix": "unk %s"
     },
-    {
-      "name": "SpellName",
-      "type": CLIENT,
+    "SpellName": {
+      "type": "CLIENT",
       "target": "Spell.dbc",
-      "entry_column_index": 0,
-      "name_column_index": 1,
+      "entryColumnIndex": 0,
+      "nameColumnIndex": 1,
       "prefix": "SPELL",
-      "fail": "unk %s"
+      "zeroName": "none",
+      "failPrefix": "unk %s"
     }
   ]
 }

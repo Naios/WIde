@@ -11,8 +11,10 @@ package com.github.naios.wide.api.config.main;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.api.config.alias.AliasConfig;
 import com.github.naios.wide.api.entities.GameBuild;
 
 public interface EnviromentConfig
@@ -23,7 +25,12 @@ public interface EnviromentConfig
     public StringProperty aliasDefinition();
 
     /**
-     * @return The {@link ClientStorageConfig}
+     * @return Returns the {@link AliasConfig}
+     */
+    public ReadOnlyObjectProperty<AliasConfig> getAliasDefinitionConfig();
+
+    /**
+     * @return Returns the {@link ClientStorageConfig}
      */
     public ClientStorageConfig getClientStorageConfig();
 

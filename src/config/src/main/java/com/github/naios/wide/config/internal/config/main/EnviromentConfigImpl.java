@@ -14,12 +14,15 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.api.config.alias.AliasConfig;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.entities.GameBuild;
+import com.github.naios.wide.config.internal.config.alias.AliasConfigImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 @SuppressWarnings("serial")
@@ -37,6 +40,11 @@ public class EnviromentConfigImpl implements EnviromentConfig
 
     private StringProperty aliasDefinition = new SimpleStringProperty("");
 
+    private final static String DEFAULT_ALIAS_PATH = "default/Alias.json";
+
+    private final ConfigHolder<AliasConfigImpl> aliasObject =
+            new ConfigHolder<>(DEFAULT_ALIAS_PATH, AliasConfigImpl.class);
+
     private ClientStorageConfigImpl clientStorages;
 
     private Map<String, DatabaseConfigImpl> databases =
@@ -46,6 +54,13 @@ public class EnviromentConfigImpl implements EnviromentConfig
     public StringProperty aliasDefinition()
     {
         return aliasDefinition;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public ReadOnlyObjectProperty<AliasConfig> getAliasDefinitionConfig()
+    {
+        return (ReadOnlyObjectProperty)aliasObject.get(aliasDefinition.get());
     }
 
     @Override

@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.config.internal.config.main;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -41,9 +41,9 @@ public class ClientStorageConfigImpl implements ClientStorageConfig
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public ObjectProperty<Schema> schema()
+    public ReadOnlyObjectProperty<Schema> schema()
     {
-        return (ObjectProperty)schemaObject.get(schemaPath().get());
+        return (ReadOnlyObjectProperty)schemaObject.get(schemaPath().get());
     }
 
     @Override

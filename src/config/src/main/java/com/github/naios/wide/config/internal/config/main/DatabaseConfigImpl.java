@@ -9,7 +9,7 @@
 package com.github.naios.wide.config.internal.config.main;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -77,9 +77,9 @@ public class DatabaseConfigImpl implements DatabaseConfig
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public ObjectProperty<Schema> schema()
+    public ReadOnlyObjectProperty<Schema> schema()
     {
-        return (ObjectProperty)schemaObject.get(schemaPath().get());
+        return (ReadOnlyObjectProperty)schemaObject.get(schemaPath().get());
     }
 
     @Override

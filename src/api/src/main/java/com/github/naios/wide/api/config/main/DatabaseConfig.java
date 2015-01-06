@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.api.config.main;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.schema.Schema;
@@ -46,7 +46,7 @@ public interface DatabaseConfig
     /**
      * @return Returns the schema matching the schema Path
      */
-    public ObjectProperty<Schema> schema();
+    public ReadOnlyObjectProperty<Schema> schema();
 
     /**
      * @return The endpoint representing string (for example "user@localhost")
