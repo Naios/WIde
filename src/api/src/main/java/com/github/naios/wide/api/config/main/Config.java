@@ -43,6 +43,11 @@ public interface Config
     public ReadOnlyStringProperty license();
 
     /**
+     * @return Returns the version of the config
+     */
+    public StringProperty version();
+
+    /**
      * @return The preferred User Interface
      */
     public StringProperty ui();

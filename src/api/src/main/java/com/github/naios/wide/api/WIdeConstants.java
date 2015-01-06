@@ -8,8 +8,14 @@
 
 package com.github.naios.wide.api;
 
-public enum Constants
+public enum WIdeConstants
 {
+    ////////////////////////////////////////////////////////
+    // Version
+    VERSION_WIDE_MAIN_CONFIG("1.0"),
+    VERSION_WIDE_SCHEMATIC_CONFIG("1.0"),
+    VERSION_WIDE_ALIAS_CONFIG("1.0"),
+
     ////////////////////////////////////////////////////////
     // Strings
     STRING_EMPTY(""),
@@ -36,7 +42,7 @@ public enum Constants
 
     private final String constant;
 
-    Constants(final String constant)
+    WIdeConstants(final String constant)
     {
         this.constant = constant;
     }

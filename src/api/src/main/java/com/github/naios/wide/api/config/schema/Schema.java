@@ -13,9 +13,12 @@ import java.util.Set;
 
 public interface Schema
 {
+    // TODO convert this into properties
     public String getName();
 
     public String getDescription();
+
+    public String getVersion();
 
     public Set<Entry<String, TableSchema>> getTables();
 

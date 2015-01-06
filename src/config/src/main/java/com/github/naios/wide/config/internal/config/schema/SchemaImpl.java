@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
@@ -29,7 +30,8 @@ class MissingSchemaException extends RuntimeException
 
 public class SchemaImpl implements Schema
 {
-    private String name, description;
+    private String name, description,
+        version = WIdeConstants.VERSION_WIDE_SCHEMATIC_CONFIG.toString();
 
     private Map<String, TableSchemaImpl> tables = new HashMap<>();
 
@@ -43,6 +45,12 @@ public class SchemaImpl implements Schema
     public String getDescription()
     {
         return description;
+    }
+
+    @Override
+    public String getVersion()
+    {
+        return version;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

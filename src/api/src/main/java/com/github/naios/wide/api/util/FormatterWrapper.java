@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.naios.wide.api.Constants;
+import com.github.naios.wide.api.WIdeConstants;
 
 public class FormatterWrapper
 {
@@ -38,7 +38,7 @@ public class FormatterWrapper
     public String toString()
     {
         if (obj == null)
-            return Constants.STRING_NULL.toString();
+            return WIdeConstants.STRING_NULL.toString();
         else if (obj instanceof Integer)
             return obj.toString();
         else if ((obj instanceof Float) && !hasOption(Options.NO_FLOAT_DOUBLE_POSTFIX))

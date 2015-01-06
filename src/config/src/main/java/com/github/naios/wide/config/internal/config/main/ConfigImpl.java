@@ -20,6 +20,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.main.Config;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
@@ -39,8 +40,9 @@ public class ConfigImpl implements Config
     private StringProperty title = new SimpleStringProperty(""),
                 description = new SimpleStringProperty(""),
                         license = new SimpleStringProperty(""),
-                            ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
-                                activeEnviroment = new SimpleStringProperty("");
+                            version = new SimpleStringProperty(WIdeConstants.VERSION_WIDE_MAIN_CONFIG.toString()),
+                                ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
+                                    activeEnviroment = new SimpleStringProperty("");
 
     private Map<String, EnviromentConfigImpl> enviroments =
             new HashMap<String, EnviromentConfigImpl>();
@@ -65,6 +67,12 @@ public class ConfigImpl implements Config
     public ReadOnlyStringProperty license()
     {
         return license;
+    }
+
+    @Override
+    public StringProperty version()
+    {
+        return version;
     }
 
     @Override

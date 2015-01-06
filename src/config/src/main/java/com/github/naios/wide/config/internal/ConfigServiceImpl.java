@@ -159,6 +159,12 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
+    public StringProperty version()
+    {
+        return config.get(PATH).get().version();
+    }
+
+    @Override
     public StringProperty ui()
     {
         return config.get(PATH).get().ui();

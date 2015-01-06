@@ -10,7 +10,7 @@ package com.github.naios.wide.entities.util;
 
 import javafx.beans.property.SimpleIntegerProperty;
 
-import com.github.naios.wide.api.Constants;
+import com.github.naios.wide.api.WIdeConstants;
 
 public class EnumProperty<T extends Enum<T>>
     extends SimpleIntegerProperty
@@ -58,7 +58,7 @@ public class EnumProperty<T extends Enum<T>>
         }
         catch (final Exception e)
         {
-            enumName = Constants.STRING_MISSIN_ENTRY.toString();
+            enumName = WIdeConstants.STRING_MISSIN_ENTRY.toString();
         }
 
         return String.format("EnumProperty [value: %s (%s)]", enumName, get());

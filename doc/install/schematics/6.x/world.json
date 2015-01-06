@@ -1,6 +1,7 @@
 {
   "name": "6.x TC database schema",
   "description": "a simple reduced schema for testing purposes.",
+  "version": 1.0,
   "tables": {
     "creature_template": {
       "name": ,
