@@ -213,15 +213,17 @@ public class ConfigHolder<T>
             }
             catch (final MalformedJsonException e)
             {
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug(e.getMessage());
                 throw new Error(e);
             }
-            catch (final Throwable t)
+            catch (final Exception e)
             {
                 try (final Reader reader = new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream(defaultConfig)))
                 {
                     if (LOGGER.isDebugEnabled())
-                        LOGGER.debug("Error while loading provided config file {}, switched to default config {}!", origin, defaultConfig);
+                        LOGGER.debug("Error while loading provided config file {}, switched to default config {} ({})!", origin, defaultConfig, e.getMessage());
 
                     object = INSTANCE.fromJson(reader, type);
                 }

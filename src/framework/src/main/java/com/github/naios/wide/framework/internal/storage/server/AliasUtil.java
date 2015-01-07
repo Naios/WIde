@@ -17,7 +17,7 @@ public class AliasUtil
     @SuppressWarnings("rawtypes")
     public static Class<? extends Enum> getEnum(final String name)
     {
-        return FrameworkServiceImpl.getEntityService().requestEnum(name);
+        return FrameworkServiceImpl.getEntityService().requestEnumForName(name);
     }
 
     public static String getNamstorageEntry(final String name, final int entry)

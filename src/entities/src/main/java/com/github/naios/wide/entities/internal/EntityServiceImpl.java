@@ -56,13 +56,21 @@ public class EntityServiceImpl implements EntityService
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Class<? extends Enum> requestEnum(final String shortName) throws NoSucheEntityException
+    @SuppressWarnings({ "rawtypes" })
+    public Class<? extends Enum> requestEnumForName(final String shortName) throws NoSucheEntityException
+    {
+        return requestEnum(Classes.class.getPackage().getName() + "." + shortName);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public Class<? extends Enum> requestEnum(final String fullName)
+            throws NoSucheEntityException
     {
         final Class<?> type;
         try
         {
-            type = requestClass(Classes.class.getPackage().getName() + "." + shortName);
+            type = requestClass(fullName);
         }
         catch (final NoSucheEntityException e)
         {
@@ -70,7 +78,7 @@ public class EntityServiceImpl implements EntityService
         }
 
         if (!type.isEnum())
-            throw new NoSucheEntityException(shortName, Enum.class);
+            throw new NoSucheEntityException(fullName, Enum.class);
 
         return (Class)type;
     }
@@ -134,7 +142,7 @@ public class EntityServiceImpl implements EntityService
             @Descriptor("The value you want to translate (in decimal or hex)") final String value)
     {
         final int val = valueConverter(value);
-        final Class<? extends Enum> enumeration = requestEnum(name);
+        final Class<? extends Enum> enumeration = requestEnumForName(name);
         final List<String> result = new ArrayList<>();
 
         final Enum enumValue;
@@ -157,7 +165,7 @@ public class EntityServiceImpl implements EntityService
             @Descriptor("The flags you want to show (in decimal or hex).") final String value)
     {
         final int val = valueConverter(value);
-        final Class<? extends Enum> enumeration = requestEnum(name);
+        final Class<? extends Enum> enumeration = requestEnumForName(name);
         final List<? extends Enum> flags = FlagUtil.getFlagList(enumeration, val);
 
         final List<String> result = new ArrayList<>();

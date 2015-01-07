@@ -39,10 +39,11 @@ public class AliasImpl implements Alias
         return type;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public Class<?> getTarget()
+    public Class<? extends Enum> getTarget()
     {
-        return ConfigServiceImpl.getEntityService().requestClass(target.get());
+        return ConfigServiceImpl.getEntityService().requestEnum(target.get());
     }
 
     @Override

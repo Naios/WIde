@@ -16,7 +16,10 @@ public interface EntityService
     public Class<?> requestClass(final String fullName) throws NoSucheEntityException;
 
     @SuppressWarnings("rawtypes")
-    public Class<? extends Enum> requestEnum(final String shortName) throws NoSucheEntityException;
+    public Class<? extends Enum> requestEnumForName(final String shortName) throws NoSucheEntityException;
+
+    @SuppressWarnings("rawtypes")
+    public Class<? extends Enum> requestEnum(final String fullName) throws NoSucheEntityException;
 
     public Class<? extends ClientStorageStructure> requestClientStorage(final String fullName) throws NoSucheEntityException;
 
