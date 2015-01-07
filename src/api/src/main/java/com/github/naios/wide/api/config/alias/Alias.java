@@ -28,7 +28,13 @@ public interface Alias
      * Needed in enum aliases
      * @return Returns the name of the associated class defined in the entities bundle.
      */
-    public StringProperty targetName();
+    public StringProperty target();
+
+    /**
+     * Needed in server namestorages
+     * @return Returns database name
+     */
+    public StringProperty database();
 
     /**
      * Needed in server namestorages

@@ -9,81 +9,93 @@
 package com.github.naios.wide.config.internal.config.alias;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.alias.Alias;
 import com.github.naios.wide.api.config.alias.AliasType;
+import com.github.naios.wide.config.internal.ConfigServiceImpl;
 
 public class AliasImpl implements Alias
 {
+    private AliasType type;
+
+    private StringProperty database = new SimpleStringProperty(""),
+            target = new SimpleStringProperty(""),
+                    entryColumn = new SimpleStringProperty(""),
+                        nameColumn = new SimpleStringProperty("");
+
+    private IntegerProperty entryColumnIndex = new SimpleIntegerProperty(0),
+        nameColumnIndex = new SimpleIntegerProperty(0);
+
+    private StringProperty prefix = new SimpleStringProperty(""),
+            zeroName = new SimpleStringProperty(""),
+                    failPrefix = new SimpleStringProperty("");
+
     @Override
     public AliasType getAliasType()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return type;
     }
 
     @Override
     public Class<?> getTarget()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return ConfigServiceImpl.getEntityService().requestClass(target.get());
     }
 
     @Override
-    public StringProperty targetName()
+    public StringProperty target()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return target;
+    }
+
+    @Override
+    public StringProperty database()
+    {
+        return database;
     }
 
     @Override
     public StringProperty entryColumn()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return entryColumn;
     }
 
     @Override
     public IntegerProperty entryColumnIndex()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return entryColumnIndex;
     }
 
     @Override
     public StringProperty nameColumn()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return nameColumn;
     }
 
     @Override
     public IntegerProperty nameColumnIndex()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return nameColumnIndex;
     }
 
     @Override
     public StringProperty prefix()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return prefix;
     }
 
     @Override
     public StringProperty zeroName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return zeroName;
     }
 
     @Override
     public StringProperty failPrefix()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return failPrefix;
     }
-
 }

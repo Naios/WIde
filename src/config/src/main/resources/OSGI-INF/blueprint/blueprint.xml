@@ -10,8 +10,14 @@
 
     <description>WIde - MMORPG Framework Tools</description>
 
+    <reference id="entityService" interface="com.github.naios.wide.api.entities.EntityService"/>
+
     <bean id="config" class="com.github.naios.wide.config.internal.ConfigServiceImpl"
-          init-method="reload" destroy-method="close"/>
+          init-method="reload" destroy-method="close">
+
+        <property name="entityService" ref="entityService"/>
+
+    </bean>
 
     <service id="configService" ref="config"
              interface="com.github.naios.wide.api.config.ConfigService">

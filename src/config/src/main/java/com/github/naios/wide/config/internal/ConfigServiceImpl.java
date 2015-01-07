@@ -24,12 +24,15 @@ import org.slf4j.LoggerFactory;
 import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
+import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.config.internal.config.main.ConfigImpl;
 import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public final class ConfigServiceImpl implements ConfigService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigServiceImpl.class);
+
+    private static EntityService entityService;
 
     /**
      * Declares the name of our config file to load
@@ -95,6 +98,16 @@ public final class ConfigServiceImpl implements ConfigService
     public static ConfigService getService()
     {
         return THIS_SERVICE;
+    }
+
+    public void setEntityService(final EntityService entityService)
+    {
+        ConfigServiceImpl.entityService = entityService;
+    }
+
+    public static EntityService getEntityService()
+    {
+        return entityService;
     }
 
     /**
