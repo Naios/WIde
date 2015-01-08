@@ -70,6 +70,19 @@ public class SQLVariableHolder
 
         final String format = SQLMaker.createVariableFormat(varNameMaxLength, varValueMaxLength);
 
+        class Variable implements Comparable<Variable>
+        {
+            @Override
+            public int compareTo(final Variable o)
+            {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+        }
+
+        // TODO
+        // final Multimap<String /*prefix*/, Variable> vars = Maps.
+
         String prefix = PREFIX_NONE;
 
         // Orders variables by name
