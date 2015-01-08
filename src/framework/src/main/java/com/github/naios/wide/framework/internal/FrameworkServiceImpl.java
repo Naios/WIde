@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.felix.service.command.Descriptor;
 import org.slf4j.Logger;
@@ -33,6 +34,7 @@ import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 
@@ -46,8 +48,14 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     private static EntityService entityService;
 
+    private final AliasStorage aliases = new AliasStorage();
+
+    private static FrameworkServiceImpl INSTANCE;
+
     public void start()
     {
+        INSTANCE = this;
+
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("WIde Framework Service started!");
     }
@@ -88,6 +96,11 @@ public final class FrameworkServiceImpl implements FrameworkService
         return entityService;
     }
 
+    public static FrameworkServiceImpl getInstance()
+    {
+        return INSTANCE;
+    }
+
     @Override
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
             final String name)
@@ -104,6 +117,24 @@ public final class FrameworkServiceImpl implements FrameworkService
         return null;
     }
 
+    @Override
+    public String requestAlias(final String name, final int value)
+    {
+        return aliases.requestAlias(name, value);
+    }
+
+    @Override
+    public Map<Integer, String> requestAllAliases(final String name)
+    {
+        return aliases.requestAllAliases(name);
+    }
+
+    @Override
+    public void reloadAliases()
+    {
+        aliases.reloadAliases();
+    }
+
     private ClientStorage<?> getStorgeOfCommand(final String name, final int policy)
     {
         if ((policy < 0) || (policy > ClientStoragePolicy.values().length))
@@ -115,7 +146,6 @@ public final class FrameworkServiceImpl implements FrameworkService
     }
 
     @Descriptor("Returns any .dbc, .db2 or .adb storage (located in the data dir).")
-
     public Collection<Object[]> dbc(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name,
             @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER (default)")
                 /*FIXME @Parameter(names={"-p", "--policy"}, absentValue="2") */ final int policy)

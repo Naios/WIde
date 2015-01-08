@@ -6,13 +6,9 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.name;
+package com.github.naios.wide.framework.internal.alias;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
-import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageImpl;
-import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
-import com.github.naios.wide.framework.internal.storage.client.UnknownClientStorageStructure;
 
 public class ClientNameStorage extends NameStorage
 {
@@ -38,13 +34,7 @@ public class ClientNameStorage extends NameStorage
 
         try
         {
-            final ClientStorageImpl<UnknownClientStorageStructure> storage =
-                    new ClientStorageSelector<UnknownClientStorageStructure>
-                            (name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
 
-            final Object[][] objects = storage.asObjectArray();
-            for (int i = 0; i < storage.getRecordsCount(); ++i)
-                add((int)objects[i][entryColumn], (String)objects[i][nameColumn]);
         }
         catch (final ClientStorageException e)
         {

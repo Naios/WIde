@@ -25,7 +25,7 @@
     },
     "CreatureName": {
       "type": "SERVER",
-      "database": world
+      "storage": world
       "target": "creature_template",
       "entryColumn": "entry",
       "nameColumn": "name",
@@ -35,8 +35,8 @@
     },
     "GameObjectName": {
       "type": "SERVER",
-      "database": world
-      "target": "gameobject_template",
+      "storage": world
+      "storage": "gameobject_template",
       "entryColumn": "entry",
       "nameColumn": "name",
       "prefix": "GOB",
@@ -45,7 +45,7 @@
     },
     "MapName": {
       "type": "CLIENT",
-      "target": "Map.dbc",
+      "storage": "Map.dbc",
       "entryColumnIndex": 0,
       "nameColumnIndex": 1,
       "prefix": "MAP",
@@ -54,7 +54,7 @@
     },
     "SpellName": {
       "type": "CLIENT",
-      "target": "Spell.dbc",
+      "storage": "Spell.dbc",
       "entryColumnIndex": 0,
       "nameColumnIndex": 1,
       "prefix": "SPELL",

@@ -29,6 +29,7 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.FlagUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
@@ -313,7 +314,7 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         try
                         {
-                            return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
+                            return new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getName()));
                         }
                         catch (final SQLException e)
                         {
@@ -356,7 +357,7 @@ public class SQLToPropertyMappingAdapterHolder
                     public EnumProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new EnumProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                        return createHelper(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
                 })
             // Flag Property
@@ -370,7 +371,7 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         try
                         {
-                            return new FlagProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getName()));
+                            return new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getName()));
                         }
                         catch (final SQLException e)
                         {
@@ -402,7 +403,7 @@ public class SQLToPropertyMappingAdapterHolder
                     public FlagProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new FlagProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                        return createHelper(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
                 });
 

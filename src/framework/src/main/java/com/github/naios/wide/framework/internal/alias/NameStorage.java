@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.name;
+package com.github.naios.wide.framework.internal.alias;
 
 import java.util.HashMap;
 import java.util.Map;

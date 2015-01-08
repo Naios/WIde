@@ -28,7 +28,7 @@ import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
-import com.github.naios.wide.framework.internal.storage.server.AliasUtil;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
 import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 
@@ -167,7 +167,7 @@ public class SQLMaker
             if ((value instanceof EnumProperty || value instanceof FlagProperty)
                     && !mappingMetaData.getAlias().isEmpty())
             {
-                final Class<? extends Enum> enumeration = AliasUtil.getEnum(mappingMetaData.getAlias());
+                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(mappingMetaData.getAlias());
 
                 // Enum Property (Absolute value)
                 if (value instanceof EnumProperty)
@@ -237,7 +237,7 @@ public class SQLMaker
             // Namestorage alias
             else if ((value instanceof ReadOnlyIntegerProperty) && !mappingMetaData.getAlias().isEmpty())
             {
-                final String name = AliasUtil.getNamstorageEntry(mappingMetaData.getAlias(), (int)value.getValue());
+                final String name = FrameworkServiceImpl.getInstance().requestAlias(mappingMetaData.getAlias(), (int)value.getValue());
                 if (name != null)
                     return vars.addVariable(name, value.getValue());
             }

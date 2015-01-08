@@ -23,10 +23,10 @@ import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.entities.util.ReadOnlyEnumProperty;
 import com.github.naios.wide.entities.util.ReadOnlyFlagProperty;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
-import com.github.naios.wide.framework.internal.storage.server.AliasUtil;
 import com.google.common.reflect.TypeToken;
 
 public class ClientStorageRecordToPropertyMappingAdapterHolder
@@ -156,7 +156,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return new EnumProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getIndex()));
+                        return new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getIndex()));
                     }
 
                     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -164,7 +164,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     public ReadOnlyEnumProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new EnumProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                        return createHelper(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
 
                     @Override
@@ -182,7 +182,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return new FlagProperty(AliasUtil.getEnum(metaData.getAlias()), from.getInt(metaData.getIndex()));
+                        return new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getIndex()));
                     }
 
                     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -190,7 +190,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     public ReadOnlyFlagProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return createHelper(new FlagProperty(AliasUtil.getEnum(metaData.getAlias())), value);
+                        return createHelper(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
 
                     @Override

@@ -13,9 +13,20 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 
-public interface FrameworkService
+public interface FrameworkService extends AliasFactory
 {
+    /**
+     * TODO
+     * @param name
+     * @return
+     */
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(String name);
 
+    /**
+     * TODO
+     * @param databaseId
+     * @param name
+     * @return
+     */
     public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(String databaseId, String name);
 }
