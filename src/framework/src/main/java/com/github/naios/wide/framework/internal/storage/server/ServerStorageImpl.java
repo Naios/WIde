@@ -26,8 +26,8 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
-import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -44,47 +44,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 @SuppressWarnings("serial")
-class NoKeyException extends ServerStorageException
-{
-    public NoKeyException(final Class<? extends ServerStorageStructure> type)
-    {
-        super(String.format("Structure %s defines no keys!", type));
-    }
-}
-
-@SuppressWarnings("serial")
 class BadKeyException extends ServerStorageException
 {
     public BadKeyException(final int givenKeyCount, final int structureKeyCount)
     {
         super(String.format("Count of passed keys {%s} does not match to the count of the structure {%s}!", givenKeyCount, structureKeyCount));
-    }
-}
-
-@SuppressWarnings("serial")
-class BadMappingException extends ServerStorageException
-{
-    public BadMappingException(final Class<? extends ServerStorageStructure> type)
-    {
-        super(String.format("Can't create or map to the structure %s", type.getName()));
-    }
-}
-
-@SuppressWarnings("serial")
-class IllegalTypeException extends ServerStorageException
-{
-    public IllegalTypeException(final Class<?> type)
-    {
-        super(String.format("Class can't be used in StorageStructures %s", type.getName()));
-    }
-}
-
-@SuppressWarnings("serial")
-class IllegalTypeAsKeyException extends ServerStorageException
-{
-    public IllegalTypeAsKeyException(final Class<?> type)
-    {
-        super(String.format("Class %s can't be used as key in StorageStructures", type.getName()));
     }
 }
 

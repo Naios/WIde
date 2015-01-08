@@ -11,8 +11,6 @@ import java.util.List;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
-import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
-
 public interface ServerStorage<T extends ServerStorageStructure>
 {
     public String getTableName();

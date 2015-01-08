@@ -22,8 +22,8 @@ public class StringUtil
     {
         return str
                 .toUpperCase()
-                    .replaceAll(" +", "_")
-                        .replaceAll("[:punct:\\(\\)\\]\\[']", "");
+                    .replaceAll("[:punct:\\(\\)\\]\\[']-", "")
+                        .replaceAll(" +", "_");
     }
 
     public static String fillWithSpaces(final Object... array)
@@ -97,5 +97,18 @@ public class StringUtil
     public static String asBin(final int value)
     {
         return "0b" + Integer.toBinaryString(value);
+    }
+
+    /**
+     * Converts hex and bin into int if necessary
+     */
+    public static int convertToInt(final String value)
+    {
+        if (value.startsWith("0x"))
+            return Integer.parseInt(value.substring(2), 16);
+        else if (value.startsWith("0b"))
+            return Integer.parseInt(value.substring(2), 1);
+        else
+            return Integer.valueOf(value);
     }
 }

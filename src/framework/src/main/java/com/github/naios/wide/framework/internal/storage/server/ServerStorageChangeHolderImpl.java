@@ -29,7 +29,7 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.database.Database;
-import com.github.naios.wide.api.framework.storage.client.ServerStorageChangeHolder;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.FormatterWrapper;

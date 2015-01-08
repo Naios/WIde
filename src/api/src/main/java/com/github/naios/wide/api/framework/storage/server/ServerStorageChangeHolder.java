@@ -6,16 +6,13 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.framework.storage.client;
+package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.Collection;
 
 import javafx.beans.Observable;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-
-import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.StructureState;
 
 /**
  * Most of this methods are deprecated and will be changed in the near future!

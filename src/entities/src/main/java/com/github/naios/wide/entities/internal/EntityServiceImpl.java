@@ -123,25 +123,12 @@ public class EntityServiceImpl implements EntityService
         return (Class)type;
     }
 
-    /**
-     * Converts hex into int if necessary
-     */
-    private int valueConverter(final String value)
-    {
-        if (value.startsWith("0x"))
-            return Integer.parseInt(value.substring(2), 16);
-        else if (value.startsWith("0b"))
-            return Integer.parseInt(value.substring(2), 1);
-        else
-            return Integer.valueOf(value);
-    }
-
     @SuppressWarnings("rawtypes")
     @Descriptor("Shows an enum constant of the given enum")
     public List<String> enums(@Descriptor("The enum name (UnitFlags, UnitClass for example)") final String name,
             @Descriptor("The value you want to translate (in decimal or hex)") final String value)
     {
-        final int val = valueConverter(value);
+        final int val = StringUtil.convertToInt(value);
         final Class<? extends Enum> enumeration = requestEnumForName(name);
         final List<String> result = new ArrayList<>();
 
@@ -164,7 +151,7 @@ public class EntityServiceImpl implements EntityService
     public List<String> flags(@Descriptor("The enum name (UnitFlags, UnitClass for example)") final String name,
             @Descriptor("The flags you want to show (in decimal or hex).") final String value)
     {
-        final int val = valueConverter(value);
+        final int val = StringUtil.convertToInt(value);
         final Class<? extends Enum> enumeration = requestEnumForName(name);
         final List<? extends Enum> flags = FlagUtil.getFlagList(enumeration, val);
 
@@ -181,18 +168,18 @@ public class EntityServiceImpl implements EntityService
     @Descriptor("Converts hex or bin values to decimal.")
     public int todec(final String value)
     {
-        return valueConverter(value);
+        return StringUtil.convertToInt(value);
     }
 
     @Descriptor("Converts decimal or bin vaues to hex.")
     public String tohex(final String value)
     {
-        return StringUtil.asHex(valueConverter(value));
+        return StringUtil.asHex(StringUtil.convertToInt(value));
     }
 
     @Descriptor("Converts decimal or hex values to bin.")
     public String tobin(final String value)
     {
-        return StringUtil.asBin(valueConverter(value));
+        return StringUtil.asBin(StringUtil.convertToInt(value));
     }
 }
