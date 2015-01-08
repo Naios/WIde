@@ -22,9 +22,9 @@ public class SQLVariableHolder
 {
     private final Map<String, String> variables = new HashMap<>();
 
-    private final static String PREFIX_DELIMITER = "_";
+    protected final static String PREFIX_DELIMITER = "_";
 
-    private final static String PREFIX_NONE = "";
+    protected final static String PREFIX_NONE = "";
 
     public String addVariable(final String id, final Object value)
     {
@@ -58,7 +58,7 @@ public class SQLVariableHolder
         if (variables.isEmpty())
             return;
 
-        final Set<String> keys = new TreeSet<String>(variables.keySet());
+        final Set<SQLVariable> orderedVariables = new TreeSet<>();
 
         // Get the max length (used to format the var declaration)
         int varNameMaxLength = 0, varValueMaxLength = 0;
@@ -66,44 +66,25 @@ public class SQLVariableHolder
         {
             varNameMaxLength = Math.max(entry.getKey().length(), varNameMaxLength);
             varValueMaxLength = Math.max(entry.getValue().length(), varValueMaxLength);
+
+            orderedVariables.add(new SQLVariable(entry.getKey(), entry.getValue()));
         }
 
         final String format = SQLMaker.createVariableFormat(varNameMaxLength, varValueMaxLength);
 
-        class Variable implements Comparable<Variable>
-        {
-            @Override
-            public int compareTo(final Variable o)
-            {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-        }
-
-        // TODO
-        // final Multimap<String /*prefix*/, Variable> vars = Maps.
-
         String prefix = PREFIX_NONE;
 
         // Orders variables by name
-        for (final String key : keys)
+        for (final SQLVariable var : orderedVariables)
         {
             // Inserts newlines after prefix changed, useful to group enums or namestorage declarations
-            final int prefixIdx = key.indexOf(PREFIX_DELIMITER);
-
-            final String keyPrefix;
-            if (prefixIdx == -1)
-                keyPrefix = PREFIX_NONE;
-            else
-                keyPrefix = key.substring(0, prefixIdx);
-
-            if (!keyPrefix.equals(prefix))
+            if (!var.getPrefix().equals(prefix))
             {
-                prefix = keyPrefix;
+                prefix = var.getPrefix();
                 writer.println();
             }
 
-            writer.println(SQLMaker.createVariable(format, key, variables.get(key)));
+            writer.println(SQLMaker.createVariable(format, var.getName(), var.getValue()));
         }
 
         writer.println();
