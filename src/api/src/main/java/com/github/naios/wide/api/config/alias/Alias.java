@@ -19,14 +19,7 @@ public interface Alias
     public AliasType getAliasType();
 
     /**
-     * Needed in enum aliases
-     * @return Returns the associated class defined in the entities bundle.
-     */
-    public Class<?> getTarget();
-
-    /**
-     * Needed in enum aliases
-     * @return Returns the name of the associated class defined in the entities bundle.
+     * @return Returns the name of the associated target.
      */
     public StringProperty target();
 

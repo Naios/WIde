@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
-import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageImpl;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.client.UnknownClientStorageStructure;
@@ -26,7 +25,7 @@ public class ClientAliasConverter implements AliasConverter
 
         final ClientStorageImpl<UnknownClientStorageStructure> storage =
                 new ClientStorageSelector<UnknownClientStorageStructure>
-                        (name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY).select();
+                        (alias.target().get()).select();
 
         final Object[][] objects = storage.asObjectArray();
         for (int i = 0; i < storage.getRecordsCount(); ++i)

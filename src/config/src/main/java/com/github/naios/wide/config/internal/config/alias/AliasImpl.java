@@ -15,11 +15,11 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.alias.Alias;
 import com.github.naios.wide.api.config.alias.AliasType;
-import com.github.naios.wide.config.internal.ConfigServiceImpl;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class AliasImpl implements Alias
 {
-    private AliasType type;
+    private AliasType type = AliasType.ENUM;
 
     private StringProperty database = new SimpleStringProperty(""),
             target = new SimpleStringProperty(""),
@@ -37,13 +37,6 @@ public class AliasImpl implements Alias
     public AliasType getAliasType()
     {
         return type;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Class<? extends Enum> getTarget()
-    {
-        return ConfigServiceImpl.getEntityService().requestEnum(target.get());
     }
 
     @Override
@@ -98,5 +91,11 @@ public class AliasImpl implements Alias
     public StringProperty failPrefix()
     {
         return failPrefix;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }

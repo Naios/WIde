@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.config.internal.util;
+package com.github.naios.wide.config.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
 import com.github.naios.wide.api.util.IdentitySet;
 import com.github.naios.wide.api.util.StringUtil;
-import com.github.naios.wide.config.internal.ConfigServiceImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -230,6 +229,7 @@ public class ConfigHolder<T>
                 catch (final Throwable tt)
                 {
                     tt.printStackTrace();
+                    throw new Error(tt);
                 }
             }
 

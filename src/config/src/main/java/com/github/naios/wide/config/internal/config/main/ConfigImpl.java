@@ -24,7 +24,7 @@ import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.main.Config;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 @SuppressWarnings("serial")
 class MissingActiveEnviroment extends RuntimeException

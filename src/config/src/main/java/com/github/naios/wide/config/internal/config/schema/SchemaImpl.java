@@ -21,7 +21,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 @SuppressWarnings("serial")
 class MissingSchemaException extends RuntimeException

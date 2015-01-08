@@ -22,8 +22,8 @@ import com.github.naios.wide.api.config.alias.AliasConfig;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.main.EnviromentConfig;
 import com.github.naios.wide.api.entities.GameBuild;
+import com.github.naios.wide.config.internal.ConfigHolder;
 import com.github.naios.wide.config.internal.config.alias.AliasConfigImpl;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 @SuppressWarnings("serial")
 class MissingDatabaseConfig extends RuntimeException

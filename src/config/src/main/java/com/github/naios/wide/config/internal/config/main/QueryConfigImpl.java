@@ -20,7 +20,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class QueryConfigImpl implements QueryConfig
 {

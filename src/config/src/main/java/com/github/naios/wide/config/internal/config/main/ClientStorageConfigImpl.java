@@ -14,8 +14,8 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.main.ClientStorageConfig;
 import com.github.naios.wide.api.config.schema.Schema;
+import com.github.naios.wide.config.internal.ConfigHolder;
 import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public class ClientStorageConfigImpl implements ClientStorageConfig
 {

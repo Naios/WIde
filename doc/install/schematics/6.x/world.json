@@ -10,12 +10,12 @@
           "name": "entry",
           "description": "creature entry (primary key).",
           "key": true,
-          "alias": "creature_name"
+          "alias": "CreatureName"
         },
         {
           "name": "KillCredit1",
           "target": "kill_credit1",
-          "alias": "creature_name"
+          "alias": "CreatureName"
         },
         {
           "name": "name"

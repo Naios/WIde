@@ -12,7 +12,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig
 {

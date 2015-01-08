@@ -26,6 +26,9 @@ public class AliasStorage implements AliasFactory
             new HashMap<AliasType, AliasConverter>()
     {
         {
+            put(AliasType.CLIENT, new ClientAliasConverter());
+            put(AliasType.SERVER, new ServerAliasConverter());
+            put(AliasType.ENUM, new EnumAliasConverter());
         }
     };
 
@@ -55,6 +58,14 @@ public class AliasStorage implements AliasFactory
         return alias;
     }
 
+    private static String createPrefix(final String prefix)
+    {
+        if (Objects.isNull(prefix) || prefix.isEmpty())
+            return "";
+        else
+            return prefix + " ";
+    }
+
     private String createAliasFromMap(final Pair<Alias, Map<Integer, String>> map, final int value)
     {
         // Zero values
@@ -62,17 +73,17 @@ public class AliasStorage implements AliasFactory
         {
             final String zeroValue = map.first().zeroName().get();
             if (Objects.nonNull(zeroValue) && !zeroValue.isEmpty())
-                return map.first().prefix().get() + zeroValue;
+                return createPrefix(map.first().prefix().get()) + zeroValue;
         }
 
         final String alias = map.second().get(value);
 
         // Fail prefix
         if (Objects.isNull(alias))
-            return map.first().prefix().get() +
+            return createPrefix(map.first().prefix().get()) +
                     String.format(map.first().failPrefix().get(), value);
 
-        return map.first().prefix().get() + alias;
+        return createPrefix(map.first().prefix().get()) + alias;
     }
 
     @Override

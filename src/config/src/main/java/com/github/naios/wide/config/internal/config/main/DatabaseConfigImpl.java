@@ -16,8 +16,8 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.util.LateAllocator;
+import com.github.naios.wide.config.internal.ConfigHolder;
 import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
 
 public class DatabaseConfigImpl implements DatabaseConfig
 {

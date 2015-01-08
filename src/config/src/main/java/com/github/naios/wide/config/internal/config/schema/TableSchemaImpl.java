@@ -14,7 +14,7 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
-import com.github.naios.wide.config.internal.util.ConfigHolder;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class TableSchemaImpl implements TableSchema
 {

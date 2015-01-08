@@ -20,6 +20,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.alias.Alias;
 import com.github.naios.wide.api.config.alias.AliasConfig;
+import com.github.naios.wide.config.internal.ConfigHolder;
 
 @SuppressWarnings("serial")
 class MissingAliasException extends RuntimeException
@@ -71,5 +72,11 @@ public class AliasConfigImpl implements AliasConfig
     public Set<Entry<String, Alias>> getAliases()
     {
         return (Set)aliases.entrySet();
+    }
+
+    @Override
+    public String toString()
+    {
+        return ConfigHolder.toJsonExcludeDefaultValues(this);
     }
 }
