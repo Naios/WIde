@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
 public interface ServerStoragePublicBase
@@ -16,7 +17,30 @@ public interface ServerStoragePublicBase
 
     public ReadOnlyObjectProperty<StructureState> state();
 
+    /**
+     * Resets all non-key values to its default value
+     */
+    public void reset();
+
+    /**
+     * Deletes the structure in the database
+     */
     public void delete();
 
-    public void reset();
+    /**
+     * Release all references as soon as the structure is in sync with the database<br>
+     * This will drop the history
+     */
+    public void release();
+
+    /**
+     * Rolls back all changes until the time where the event occurred
+     * @param event The Event where you want to revert to
+     */
+    public void rollback(StructureChangeEvent event);
+
+    /**
+     * @return Returns the history of the structure
+     */
+    public ReadOnlyListProperty<StructureChangeEvent> history();
 }

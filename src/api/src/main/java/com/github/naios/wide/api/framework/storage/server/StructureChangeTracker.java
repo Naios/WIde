@@ -20,13 +20,6 @@ public interface StructureChangeTracker
     extends ScopedStructureChange
 {
     // Policy decides whether we track a structure detailed or fast forward
-
-    public void onInsert(ServerStorageStructure storage, ObservableValue<?> observable, Object oldValue);
-
-    public void onCreate(ServerStorageStructure storage);
-
-    public void onDelete(ServerStorageStructure storage);
-
     public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyCreated();
 
     public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyDeleted();
@@ -34,13 +27,6 @@ public interface StructureChangeTracker
     public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> observablesRecentlyChanged();
 
     public ReadOnlyObjectProperty<Object> remoteValue(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> value);
-
-    /**
-     * Resets all changes until the time where the event occurred
-     * @param structure The structure you want to revert
-     * @param event     The Event where you want to revert to
-     */
-    public void reset(ServerStorageStructure structure, StructureChangeEvent event);
 
     /**
      * @return Returns all versions of a single structure

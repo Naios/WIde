@@ -11,38 +11,30 @@ package com.github.naios.wide.api.framework.storage.server;
 public enum StructureState
 {
     /**
-     * The structure is in sync with the database
+     * The structure is alive and usable.
      */
-    STATE_IN_SYNC,
-
-    /**
-     * The structure was updated, and is not in sync of the database anymore.
-     */
-    STATE_UPDATED,
-
-    /**
-     * The current state of the structure is unknown (caused by database connection lost).
-     */
-    STATE_UNKNOWN,
-
-    /**
-     * Is pushed on the history stack so we know if the value was created
-     */
-    STATE_CREATED,
+    STATE_ALIVE
+    {
+        @Override
+        public final boolean isAlive()
+        {
+            return true;
+        }
+    },
 
     /**
      * The structure was deleted and is not useable anymore.<br>
      * <b>Further access will cause exceptions</b>
      */
-    STATE_DELETED;
+    STATE_DELETED,
 
-    public boolean isInSync()
-    {
-        return this.equals(STATE_IN_SYNC);
-    }
+    /**
+     * Is pushed on the history stack so we know if the value was created
+     */
+    STATE_REQUEST_RELEASE;
 
     public boolean isAlive()
     {
-        return !this.equals(STATE_DELETED);
+        return false;
     }
 }

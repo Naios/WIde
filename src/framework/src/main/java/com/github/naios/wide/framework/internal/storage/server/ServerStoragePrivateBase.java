@@ -8,14 +8,19 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStoragePublicBase;
-import com.github.naios.wide.api.framework.storage.server.StructureState;
+import com.github.naios.wide.api.util.Pair;
 
 public interface ServerStoragePrivateBase extends ServerStoragePublicBase
 {
     public void setOwner(final ServerStorageImpl<?> owner);
 
-    public ObjectProperty<StructureState> writeableState();
+    public void onCreate();
+
+    public void onDelete();
+
+    public void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue);
 }

@@ -11,4 +11,24 @@ package com.github.naios.wide.api.framework.storage.server;
 public class RollbackFailedException extends Exception
 {
     private static final long serialVersionUID = -5170678578086981335L;
+
+    public RollbackFailedException()
+    {
+        super();
+    }
+
+    public RollbackFailedException(final String message)
+    {
+        super(message);
+    }
+
+    public RollbackFailedException(final String message, final Throwable cause)
+    {
+        super(message, cause);
+    }
+
+    public RollbackFailedException(final Throwable cause)
+    {
+        super(cause);
+    }
 }

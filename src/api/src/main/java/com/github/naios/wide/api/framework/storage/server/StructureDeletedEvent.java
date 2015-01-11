@@ -8,9 +8,11 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-
 public interface StructureDeletedEvent
     extends StructureChangeEvent
 {
+    /**
+     * @return Returns the related {@link ServerStorageStructure}
+     */
     public ServerStorageStructure getStorageStructure();
 }

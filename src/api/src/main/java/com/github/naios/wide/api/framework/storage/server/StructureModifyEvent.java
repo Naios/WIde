@@ -16,4 +16,9 @@ public interface StructureModifyEvent
     public ObservableValue<?> getObservable();
 
     public Object getOldValue();
+
+    /**
+     * @return Returns the related {@link ServerStorageStructure}
+     */
+    public ServerStorageStructure getStorageStructure();
 }

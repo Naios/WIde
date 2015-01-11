@@ -11,6 +11,7 @@ package com.github.naios.wide.api.framework.storage.server;
 public enum UpdatePolicy
 {
     VERSIONED,
+    FAST_FORWARD;
 
-    FAST_FORWARD,
+    public static final UpdatePolicy DEFAULT_POLICY = VERSIONED;
 }

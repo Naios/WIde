@@ -8,7 +8,11 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-public interface FastForwardStructureChangeTracker
-    extends StructureChangeTracker
+public interface StructureResetEvent
+    extends StructureChangeEvent
 {
+    /**
+     * @return Returns the related {@link ServerStorageStructure}
+     */
+    public ServerStorageStructure getStorageStructure();
 }
