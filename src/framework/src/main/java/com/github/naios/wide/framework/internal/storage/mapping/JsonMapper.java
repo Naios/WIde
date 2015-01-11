@@ -26,7 +26,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 
     @SuppressWarnings("rawtypes")
     public JsonMapper(final TableSchema schema, final List<Class<?>> interfaces,
-                final Class<? extends MappingImplementation> implementation)
+                final Class<? extends MappingCallback> implementation)
     {
         this(schema, new MappingAdapterHolder<>(), interfaces, implementation);
     }
@@ -34,7 +34,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final List<Class<?>> interfaces,
-                final Class<? extends MappingImplementation> implementation)
+                final Class<? extends MappingCallback> implementation)
     {
         super(adapterHolder, getTargetOfSchema(schema), interfaces, implementation);
         this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());

@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.mapping;
 
-public interface MappingImplementation<TO>
+public interface MappingCallback<TO>
 {
     public default void callback(final TO to)
     {

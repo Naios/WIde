@@ -9,9 +9,7 @@
 package com.github.naios.wide.framework.internal.storage.server;
 
 import java.util.ListIterator;
-import java.util.Stack;
 
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -30,34 +28,64 @@ import com.github.naios.wide.api.framework.storage.server.StructureResetEvent;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.framework.storage.server.UpdatePolicy;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingImplementation;
+import com.github.naios.wide.framework.internal.storage.mapping.MappingCallback;
 
-class StructureChangeEventComposition implements StructureChangeEvent
+interface Rollbackable
 {
-    private Stack<StructureChangeEvent> subEvents =
-            new Stack<>();
+    public boolean rollback(StructureChangeEvent event) throws RollbackFailedException;
+}
 
-    public void add(final StructureChangeEvent event)
-    {
-        subEvents.push(event);
-    }
-
+class StructureChangeEventCompositum
+    extends SimpleListProperty<StructureChangeEvent>
+    implements StructureChangeEvent
+{
     @Override
     public void revert() throws RollbackFailedException
     {
-        while (!subEvents.isEmpty())
+        backwardRollback(new Rollbackable()
         {
-            subEvents.pop().revert();
-        }
+            @Override
+            public boolean rollback(final StructureChangeEvent event)
+                    throws RollbackFailedException
+            {
+                event.revert();
+                return true;
+            }
+        });
     }
 
     @Override
     public void drop() throws RollbackFailedException
     {
-        while (!subEvents.isEmpty())
+        backwardRollback(new Rollbackable()
         {
-            subEvents.pop().drop();
+            @Override
+            public boolean rollback(final StructureChangeEvent event)
+                    throws RollbackFailedException
+            {
+                event.drop();
+                return true;
+            }
+        });
+    }
+
+    public void backwardRollback(final Rollbackable rollbackable)
+    {
+        final ListIterator<StructureChangeEvent> itr = listIterator(size());
+        boolean _continue = true;
+        while (_continue && itr.hasPrevious())
+        {
+            final StructureChangeEvent current = itr.previous();
+            try
+            {
+                _continue = rollbackable.rollback(current);
+            }
+            catch (final RollbackFailedException e)
+            {
+                throw new IllegalStateException(e);
+            }
         }
+        clear();
     }
 }
 
@@ -93,13 +121,74 @@ abstract class AbstractStructureModifyEvent
     }
 }
 
+class HistoryRedirect
+{
+    private final StructureChangeEventCompositum history =
+            new StructureChangeEventCompositum();
+
+    private final StructureChangeEventCompositum DEFAULT_HISTORY = history;
+
+    private final ObjectProperty<StructureChangeEventCompositum> currentEventStack =
+            new SimpleObjectProperty<StructureChangeEventCompositum>(DEFAULT_HISTORY);
+
+    protected ReadOnlyListProperty<StructureChangeEvent> defaultHistory()
+    {
+        return history;
+    }
+
+    protected void pushEvent(final StructureChangeEvent event)
+    {
+        currentEventStack.get().add(event);
+    }
+
+    protected void setEventHistory(final StructureChangeEventCompositum history)
+    {
+        if (currentEventStack.get() != DEFAULT_HISTORY)
+            throw new IllegalStateException("Current history is not the default history!");
+
+        currentEventStack.set(history);
+    }
+
+    protected void releaseEventHistory(final StructureChangeEventCompositum history)
+    {
+        if (currentEventStack.get() != history)
+            throw new IllegalStateException("History you want to release is not the current history!");
+
+        currentEventStack.set(DEFAULT_HISTORY);
+    }
+
+    public StructureChangeEvent getLastEvent()
+    {
+        return history.get(history.size());
+    }
+
+    protected void rollback(final StructureChangeEvent eventToRollback)
+    {
+        history.backwardRollback(new Rollbackable()
+        {
+            @Override
+            public boolean rollback(final StructureChangeEvent event)
+                    throws RollbackFailedException
+            {
+                if (event.equals(eventToRollback))
+                    return false;
+
+                event.drop();
+                return true;
+            }
+        });
+    }
+}
+
 public class ServerStorageBaseImplementation
-    implements ServerStoragePrivateBase, MappingImplementation<ServerStorageStructure>
+    implements ServerStoragePrivateBase, MappingCallback<ServerStorageStructure>
 {
     private ServerStorageStructure me;
 
-    private final ListProperty<StructureChangeEvent> history =
-            new SimpleListProperty<>();
+    private final HistoryRedirect history = new HistoryRedirect();
+
+    private final ObjectProperty<StructureChangeEvent> head =
+            new SimpleObjectProperty<StructureChangeEvent>();
 
     private final ObjectProperty<StructureState> structureState =
             new SimpleObjectProperty<>(StructureState.STATE_ALIVE);
@@ -135,15 +224,15 @@ public class ServerStorageBaseImplementation
 
     private void addEvent(final StructureChangeEvent event)
     {
-        history.add(event);
+        history.pushEvent(event);
     }
 
     private StructureDeletedEvent deleteEvent()
     {
         return new StructureDeletedEvent()
         {
-            private StructureChangeEventComposition subEvents =
-                    new StructureChangeEventComposition();
+            private StructureChangeEventCompositum subEvents =
+                    new StructureChangeEventCompositum();
 
             {
                 subEvents.add(resetEvent());
@@ -152,7 +241,7 @@ public class ServerStorageBaseImplementation
 
             public void requiresLastCommitIsDeletedEvent() throws RollbackFailedException
             {
-                if (history.get(history.size()) instanceof StructureDeletedEvent)
+                if (history.getLastEvent() instanceof StructureDeletedEvent)
                     throw new RollbackFailedException("Last ChangeEvent isn't instanceof StructureDeletedEvent!");
 
                 if (!structureState.get().equals(StructureState.STATE_DELETED))
@@ -192,7 +281,7 @@ public class ServerStorageBaseImplementation
 
             public void requiresLastCommitIsCreatedEvent() throws RollbackFailedException
             {
-                if (history.get(history.size()) instanceof StructureCreatedEvent)
+                if (history.getLastEvent() instanceof StructureCreatedEvent)
                     throw new RollbackFailedException("Last ChangeEvent isn't instanceof requiresLastCommitIsCreatedEvent!");
 
                 if (!structureState.get().equals(StructureState.STATE_ALIVE))
@@ -225,15 +314,21 @@ public class ServerStorageBaseImplementation
     {
         return new StructureResetEvent()
         {
-            private StructureChangeEventComposition subEvents =
-                    new StructureChangeEventComposition();
+            private StructureChangeEventCompositum subEvents =
+                    new StructureChangeEventCompositum();
+
             {
-                subEvents.add(null);
+                history.setEventHistory(subEvents);
+
+                for (final Pair<ObservableValue<?>, MappingMetaData> entry : me)
+                    owner.resetValueOfObservable(entry);
+
+                history.releaseEventHistory(subEvents);
             }
 
             public void requiresStructureIsAlive() throws RollbackFailedException
             {
-                if (history.get(history.size()) instanceof StructureCreatedEvent)
+                if (history.getLastEvent() instanceof StructureCreatedEvent)
                     throw new RollbackFailedException("Last ChangeEvent isn't instanceof requiresLastCommitIsCreatedEvent!");
 
                 if (!structureState.get().equals(StructureState.STATE_ALIVE))
@@ -269,7 +364,7 @@ public class ServerStorageBaseImplementation
             @Override
             public void revert() throws RollbackFailedException
             {
-               onUpdate(entry, oldValue);
+                onUpdate(entry, oldValue);
             }
 
             @Override
@@ -287,15 +382,15 @@ public class ServerStorageBaseImplementation
     }
 
     @Override
-    public void reset()
-    {
-        me.reset();
-    }
-
-    @Override
     public ReadOnlyObjectProperty<StructureState> state()
     {
         return structureState;
+    }
+
+    @Override
+    public ObjectProperty<UpdatePolicy> updatePolicy()
+    {
+        return updatePolicy;
     }
 
     @Override
@@ -305,48 +400,41 @@ public class ServerStorageBaseImplementation
     }
 
     @Override
-    public void rollback(final StructureChangeEvent event)
+    public void rollback(final StructureChangeEvent eventToRollback)
     {
-        if (!history.contains(event))
-            throw new IllegalArgumentException(String.format("%s is not contained in this structure (%s)!", event, me));
+        if (!history.defaultHistory().contains(eventToRollback))
+            throw new IllegalArgumentException(String.format("%s is not contained in this structure (%s)!", eventToRollback, me));
 
-        final ListIterator<StructureChangeEvent> itr = history.listIterator(history.size());
-        while (itr.hasPrevious())
-        {
-            final StructureChangeEvent cur = itr.previous();
-            try
-            {
-                cur.drop();
-            }
-            catch (final RollbackFailedException e)
-            {
-                throw new IllegalStateException(e);
-            }
-            itr.remove();
-        }
+        history.rollback(eventToRollback);
     }
 
     @Override
     public ReadOnlyListProperty<StructureChangeEvent> history()
     {
-        return history;
+        return history.defaultHistory();
+    }
+
+    @Override
+    public void reset()
+    {
+        history.pushEvent(resetEvent());
     }
 
     @Override
     public void onCreate()
     {
-        history.add(createEvent());
+        history.pushEvent(createEvent());
     }
 
     @Override
     public void onDelete()
     {
-        history.add(deleteEvent());
+        history.pushEvent(deleteEvent());
     }
 
     @Override
     public void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
     {
-        history.add(updateEvent(entry, oldValue));
+        history.pushEvent(updateEvent(entry, oldValue));
     }
 }

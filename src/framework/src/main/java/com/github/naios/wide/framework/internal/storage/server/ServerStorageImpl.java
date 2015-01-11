@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
@@ -33,6 +34,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.CrossIterator;
+import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
@@ -359,15 +361,14 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         changeHolder.reset(storage);
     }
 
-    protected boolean setValueOfObservable(final String name, final ObservableValue<?> observable, final Object value)
+    protected boolean setValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object value)
     {
-        return mapper.set(name, observable, value);
+        return mapper.set(entry.second().getName(), entry.first(), value);
     }
 
-    protected boolean resetValueOfObservable(final String name,
-            final ObservableValue<?> observable)
+    protected boolean resetValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry)
     {
-        return mapper.reset(name, observable);
+        return mapper.reset(entry.second().getName(), entry.first());
     }
 
     public SQLBuilder createBuilder()

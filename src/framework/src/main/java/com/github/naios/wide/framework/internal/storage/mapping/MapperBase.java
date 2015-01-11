@@ -24,11 +24,11 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     private final Class<?>[] interfaces;
 
     @SuppressWarnings("rawtypes")
-    private final Class<? extends MappingImplementation> implementation;
+    private final Class<? extends MappingCallback> implementation;
 
     public MapperBase(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final Class<? extends TO> target, final List<Class<?>> interfaces,
-                @SuppressWarnings("rawtypes") final Class<? extends MappingImplementation> implementation)
+                @SuppressWarnings("rawtypes") final Class<? extends MappingCallback> implementation)
     {
         this.adapterHolder = adapterHolder;
 
@@ -73,7 +73,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     }
 
     @SuppressWarnings("unchecked")
-    private MappingImplementation<TO> newImplementation()
+    private MappingCallback<TO> newImplementation()
     {
         try
         {
@@ -104,7 +104,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     @SuppressWarnings("unchecked")
     private TO createNewBasedOnMapping(final Mapping<BASE> mapping)
     {
-        final MappingImplementation<TO> implementation = newImplementation();
+        final MappingCallback<TO> implementation = newImplementation();
 
         final MappingProxy proxy = new MappingProxy(implementation, mapping);
 

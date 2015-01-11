@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
@@ -16,6 +17,8 @@ public interface ServerStoragePublicBase
     public ServerStorage<?> getOwner();
 
     public ReadOnlyObjectProperty<StructureState> state();
+
+    public ObjectProperty<UpdatePolicy> updatePolicy();
 
     /**
      * Resets all non-key values to its default value
