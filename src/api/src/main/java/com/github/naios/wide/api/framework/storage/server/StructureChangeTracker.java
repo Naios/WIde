@@ -8,7 +8,8 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import javafx.beans.property.ReadOnlyListProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -17,19 +18,26 @@ import com.github.naios.wide.api.util.Pair;
 public interface StructureChangeTracker
     extends ScopedStructureChange
 {
-    public void onInsert(final ServerStorageStructure storage, final ObservableValue<?> observable, final Object oldValue);
+    public void onInsert(ServerStorageStructure storage, ObservableValue<?> observable, Object oldValue);
 
-    public void onCreate(final ServerStorageStructure storage);
+    public void onCreate(ServerStorageStructure storage);
 
-    public void onDelete(final ServerStorageStructure storage);
+    public void onDelete(ServerStorageStructure storage);
 
-    public ReadOnlyListProperty<ServerStorageStructure> getAllStructuresCreated();
+    public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyCreated();
 
-    public ReadOnlyListProperty<ServerStorageStructure> getAllStructuresDeleted();
+    public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyDeleted();
 
-    public ReadOnlyListProperty<Pair<ObservableValue<?>, MappingMetaData>> getAllObservablesChanged();
+    public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> observablesRecentlyChanged();
 
-    public Object getValueAtRemote(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
+    public ReadOnlyObjectProperty<Object> remoteValue(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> value);
+
+
+    // TODO Move this to ServerStorage
+    /**
+     * Drops all changes so the change tracker is in sync with the remote database
+     */
+    public void drop();
 
     /**
      * Commits the current content to the database

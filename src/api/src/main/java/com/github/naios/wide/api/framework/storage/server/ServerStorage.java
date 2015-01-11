@@ -27,5 +27,6 @@ public interface ServerStorage<T extends ServerStorageStructure>
 
     public T create(ServerStorageKey<T> key);
 
+    @Deprecated
     public ServerStorageChangeHolder getChangeHolder();
 }
