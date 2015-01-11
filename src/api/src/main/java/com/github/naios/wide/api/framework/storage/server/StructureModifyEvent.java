@@ -8,7 +8,12 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-public interface ServerStorageVersionStamp
-{
+import javafx.beans.value.ObservableValue;
 
+public interface StructureModifyEvent
+    extends StructureChangeEvent
+{
+    public ObservableValue<?> getObservable();
+
+    public Object getOldValue();
 }

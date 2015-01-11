@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-public interface ServerStorageVersion
+public interface FastForwardStructureChangeTracker
+    extends StructureChangeTracker
 {
-    public ServerStorageVersionStamp getStamp();
 }

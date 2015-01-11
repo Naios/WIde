@@ -8,10 +8,9 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
-public interface ServerStorageVersionMap
-    extends ObservableMap<ServerStorage<?>, ObservableMap<ServerStorageStructure, ObservableList<ServerStorageVersion>>>
+public interface StructureCreatedEvent
+    extends StructureChangeEvent
 {
+    public ServerStorageStructure getStorageStructure();
 }
