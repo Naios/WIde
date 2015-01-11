@@ -22,7 +22,7 @@ public class StringUtil
     {
         return str
                 .toUpperCase()
-                    .replaceAll("[:punct:\\(\\)\\]\\[']-", "")
+                    .replaceAll("[:punct:\\(\\)\\]\\['-]", "")
                         .replaceAll(" +", "_");
     }
 
