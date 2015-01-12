@@ -11,7 +11,6 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,23 +21,12 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
-import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
  */
 public class SQLBuilder
 {
-    private final Collection<ServerStorageStructure> insert =
-            new ArrayList<>();
-
-    private final Collection<ServerStorageStructure> delete =
-            new ArrayList<>();
-
-    private final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update =
-            new ArrayList<>();
-
     private final ServerStorageChangeHolderImpl changeholder;
 
     private final boolean variablize;
