@@ -28,11 +28,9 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
-import com.github.naios.wide.api.framework.storage.server.ServerStorageChangeHolder;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
@@ -41,7 +39,6 @@ import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
-import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -112,8 +109,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private final Mapper<ResultSet, T, ObservableValue<?>> mapper;
 
-    private final ServerStorageChangeHolderImpl changeHolder;
-
     private final String structureName;
 
     public ServerStorageImpl(final String databaseId, final String tableName) throws ServerStorageException
@@ -156,8 +151,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         });
 
         this.database.bind(FrameworkServiceImpl.getDatabasePoolService().requestConnection(databaseId));
-
-        this.changeHolder = ServerStorageChangeHolderFactory.instance(databaseId);
     }
 
     @Override
@@ -170,12 +163,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     public String getDatabaseId()
     {
         return databaseId;
-    }
-
-    @Override
-    public ServerStorageChangeHolder getChangeHolder()
-    {
-        return changeHolder;
     }
 
     @Override
@@ -312,53 +299,11 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
         cache.put(structure.hashCode(), structure);
 
-        ((ServerStoragePrivateBase)structure).setOwner(this);
-        ((ServerStoragePrivateBase)structure).writeableState().set(created ? StructureState.STATE_CREATED : StructureState.STATE_IN_SYNC);
+        final ServerStoragePrivateBase privateBase = ((ServerStoragePrivateBase)structure);
 
-        changeHolder.register(structure);
-
-        if (created)
-            onStructureCreated(structure);
-
+        privateBase.setOwner(this);
+        privateBase.onCreate();
         return structure;
-    }
-
-    private void checkInvalidAccess(final ServerStorageStructure storage)
-    {
-        if (!((ServerStoragePrivateBase)storage).writeableState().get().isAlive())
-            throw new AccessedDeletedStructureException(storage);
-    }
-
-    protected void onValueChanged(final ObservableValueStorageInfo info, final ObservableValue<?> observable, final Object oldValue)
-    {
-        checkInvalidAccess(info.getStructure());
-
-        ((ServerStoragePrivateBase)info.getStructure()).writeableState().set(StructureState.STATE_UPDATED);
-        changeHolder.insert(info, observable, oldValue);
-    }
-
-    protected void onStructureCreated(final ServerStorageStructure storage)
-    {
-        checkInvalidAccess(storage);
-
-        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_CREATED);
-        changeHolder.create(storage);
-    }
-
-    protected void onStructureDeleted(final ServerStorageStructure storage)
-    {
-        checkInvalidAccess(storage);
-        changeHolder.delete(storage);
-
-        storage.reset();
-
-        ((ServerStoragePrivateBase)storage).writeableState().set(StructureState.STATE_DELETED);
-    }
-
-    protected void onStructureReset(final ServerStorageStructure storage)
-    {
-        checkInvalidAccess(storage);
-        changeHolder.reset(storage);
     }
 
     protected boolean setValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object value)
@@ -374,7 +319,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     public SQLBuilder createBuilder()
     {
         // TODO Adapt builder
-        return new SQLBuilder(changeHolder, true);
+        return null; // new SQLBuilder(changeHolder, true);
     }
 
     @Override

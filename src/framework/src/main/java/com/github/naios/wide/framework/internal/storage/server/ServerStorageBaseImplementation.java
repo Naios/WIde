@@ -15,6 +15,7 @@ import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -202,6 +203,17 @@ public class ServerStorageBaseImplementation
     public void callback(final ServerStorageStructure structure)
     {
         this.me = structure;
+
+        for (final Pair<ObservableValue<?>, MappingMetaData> entry : me)
+            entry.first().addListener(new ChangeListener<Object>()
+        {
+            @Override
+            public void changed(final ObservableValue<? extends Object> observable,
+                    final Object oldValue, final Object newValue)
+            {
+                onUpdate(entry, oldValue);
+            }
+        });
     }
 
     @Override
@@ -216,15 +228,17 @@ public class ServerStorageBaseImplementation
         this.owner = owner;
     }
 
-    @Override
-    public void delete()
+    /**
+     * Empty method to show that the event is dropped.
+     */
+    private static void dropEvent(final StructureChangeEvent event)
     {
-        addEvent(deleteEvent());
     }
 
-    private void addEvent(final StructureChangeEvent event)
+    @Override
+    public synchronized void delete()
     {
-        history.pushEvent(event);
+        history.pushEvent(deleteEvent());
     }
 
     private StructureDeletedEvent deleteEvent()
@@ -259,7 +273,7 @@ public class ServerStorageBaseImplementation
             public void drop() throws RollbackFailedException
             {
                 requiresLastCommitIsDeletedEvent();
-                createEvent();
+                dropEvent(createEvent());
                 subEvents.drop();
             }
 
@@ -299,7 +313,7 @@ public class ServerStorageBaseImplementation
             public void drop() throws RollbackFailedException
             {
                 requiresLastCommitIsCreatedEvent();
-                deleteEvent();
+                dropEvent(deleteEvent());
             }
 
             @Override
@@ -370,7 +384,7 @@ public class ServerStorageBaseImplementation
             @Override
             public void drop() throws RollbackFailedException
             {
-                updateEvent(entry, oldValue);
+                dropEvent(updateEvent(entry, oldValue));
             }
 
             @Override
@@ -400,7 +414,7 @@ public class ServerStorageBaseImplementation
     }
 
     @Override
-    public void rollback(final StructureChangeEvent eventToRollback)
+    public synchronized void rollback(final StructureChangeEvent eventToRollback)
     {
         if (!history.defaultHistory().contains(eventToRollback))
             throw new IllegalArgumentException(String.format("%s is not contained in this structure (%s)!", eventToRollback, me));
@@ -415,25 +429,25 @@ public class ServerStorageBaseImplementation
     }
 
     @Override
-    public void reset()
+    public synchronized void reset()
     {
         history.pushEvent(resetEvent());
     }
 
     @Override
-    public void onCreate()
+    public synchronized void onCreate()
     {
         history.pushEvent(createEvent());
     }
 
     @Override
-    public void onDelete()
+    public synchronized void onDelete()
     {
         history.pushEvent(deleteEvent());
     }
 
     @Override
-    public void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+    public synchronized void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
     {
         history.pushEvent(updateEvent(entry, oldValue));
     }

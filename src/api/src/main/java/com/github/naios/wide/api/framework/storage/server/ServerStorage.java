@@ -26,7 +26,4 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public List<T> getWhere(String where);
 
     public T create(ServerStorageKey<T> key);
-
-    @Deprecated
-    public ServerStorageChangeHolder getChangeHolder();
 }
