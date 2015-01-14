@@ -202,7 +202,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                 final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151));
                 final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69));
 
-                table.getChangeHolder().setScope("test scope", "simple modify test");
+                table.getchangeTracker().setScope("test scope", "simple modify test");
 
                 ct1.name().set("blub");
 
@@ -211,9 +211,9 @@ public final class FrameworkServiceImpl implements FrameworkService
                 ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
                 ct3.kill_credit1().set(123456);
-                table.getChangeHolder().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
+                table.getchangeTracker().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
 
-                table.getChangeHolder().setScope(
+                table.getchangeTracker().setScope(
                         "test flag scope",
                         "some flag tests\nadds some strange flags to maloriak\n"
                                 + "it only updates flags that have changed");
@@ -226,10 +226,10 @@ public final class FrameworkServiceImpl implements FrameworkService
                 ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
                 ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
 
-                table.getChangeHolder().setScope("delete scope", "deletes a creature template");
+                table.getchangeTracker().setScope("delete scope", "deletes a creature template");
                 ct4.delete();
 
-                table.getChangeHolder().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
+                table.getchangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
                 {
                     final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i));
@@ -237,11 +237,11 @@ public final class FrameworkServiceImpl implements FrameworkService
                         deleteMe.delete();
                 }
 
-                table.getChangeHolder().setScope("create scope 1", "creates one new creature template...");
+                table.getchangeTracker().setScope("create scope 1", "creates one new creature template...");
                 final CreatureTemplate myqueryentry = table.create(new ServerStorageKey<>(1000000));
                 myqueryentry.name().set("my test name");
 
-                table.getChangeHolder().setScope("create scope 2", "creates 5 templates with random values");
+                table.getchangeTracker().setScope("create scope 2", "creates 5 templates with random values");
                 for (int i = 2000000; i < 2000005; ++i)
                 {
                     final CreatureTemplate template = table.create(new ServerStorageKey<>(i));
@@ -252,8 +252,8 @@ public final class FrameworkServiceImpl implements FrameworkService
                     template.name().set(RandomUtil.getString(RandomUtil.getInt(3, 15)));
                 }
 
-                System.out.println(table.getChangeHolder());
-                System.out.println(table.getChangeHolder().getQuery());
+                System.out.println(table.getchangeTracker());
+                System.out.println(table.getchangeTracker().getQuery());
              }
 
         }).start();

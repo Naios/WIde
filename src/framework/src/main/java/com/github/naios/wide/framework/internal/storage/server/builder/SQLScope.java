@@ -15,18 +15,18 @@ import java.util.Map.Entry;
 
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageChangeHolderImpl;
-import com.github.naios.wide.framework.internal.storage.server.helper.ObservableValueStorageInfo;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
 public class SQLScope
 {
-    private final Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> update = HashMultimap.create();
+    private final Multimap<ServerStorage<?>, Pair<ObservableValue<?>, MappingMetaData>> update = HashMultimap.create();
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
@@ -34,7 +34,7 @@ public class SQLScope
     {
     }
 
-    protected Multimap<ServerStorage<?>, Pair<ObservableValue<?>, ObservableValueStorageInfo>> getUpdate()
+    protected Multimap<ServerStorage<?>, Pair<ObservableValue<?>, MappingMetaData>> getUpdate()
     {
         return update;
     }
@@ -57,37 +57,37 @@ public class SQLScope
     /**
      * Splits collections containing update, insert & delete structures into its scopes
      */
-    protected static Map<String, SQLScope> split(final ServerStorageChangeHolderImpl holder,
-            final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> update,
+    protected static Map<String, SQLScope> split(final StructureChangeTracker changeTracker,
+            final Collection<Pair<ObservableValue<?>, MappingMetaData>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
         final Map<String, SQLScope> scopes = new HashMap<>();
 
-        update.forEach(new SQLScopeSplitter<Pair<ObservableValue<?>, ObservableValueStorageInfo>>(holder, scopes)
+        update.forEach(new SQLScopeSplitter<Pair<ObservableValue<?>, MappingMetaData>>(changeTracker, scopes)
         {
             @Override
             public String getScope(
-                    final Pair<ObservableValue<?>, ObservableValueStorageInfo> entry)
+                    final Pair<ObservableValue<?>, MappingMetaData> entry)
             {
-                return holder.getScopeOfObservable(entry.first());
+                return changeTracker.getScopeOfObservable(entry.first());
             }
 
             @Override
             public void addObservable(final SQLScope scope,
-                    final Pair<ObservableValue<?>, ObservableValueStorageInfo> entry)
+                    final Pair<ObservableValue<?>, MappingMetaData> entry)
             {
                 scope.update.put(entry.second().getStructure().getOwner(), entry);
             }
         });
 
-        insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(holder, scopes)
+        insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(changeTracker, scopes)
         {
             @Override
             public String getScope(
                     final ServerStorageStructure entry)
             {
-                return holder.getScopeOfStructure(entry);
+                return changeTracker.getScopeOfStructure(entry);
             }
 
             @Override
@@ -98,13 +98,13 @@ public class SQLScope
             }
         });
 
-        delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(holder, scopes)
+        delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(changeTracker, scopes)
         {
             @Override
             public String getScope(
                     final ServerStorageStructure entry)
             {
-                return holder.getScopeOfStructure(entry);
+                return changeTracker.getScopeOfStructure(entry);
             }
 
             @Override
@@ -118,33 +118,33 @@ public class SQLScope
         return scopes;
     }
 
-    protected String buildQuery(final String key, final SQLVariableHolder vars,  final ServerStorageChangeHolderImpl changeHolder, final boolean variablize)
+    protected String buildQuery(final String key, final SQLVariableHolder vars,  final StructureChangeTracker changeTracker, final boolean variablize)
     {
         final StringBuilder builder = new StringBuilder();
 
         // Build delete querys for each structure
         for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
-            buildDeletes(builder, changeHolder, structure, vars, variablize);
+            buildDeletes(builder, changeTracker, structure, vars, variablize);
 
         // Build insert querys for each structure
         for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : insert.asMap().entrySet())
-            buildInserts(builder, changeHolder, structure, vars, variablize);
+            buildInserts(builder, changeTracker, structure, vars, variablize);
 
         // Build upate querys for each structure
-        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> structure : update.asMap().entrySet())
-            buildUpdates(builder, changeHolder, structure.getValue(), vars, variablize);
+        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, MappingMetaData>>> structure : update.asMap().entrySet())
+            buildUpdates(builder, changeTracker, structure.getValue(), vars, variablize);
 
         return builder.toString();
     }
 
     private void buildUpdates(
             final StringBuilder builder,
-            final ServerStorageChangeHolderImpl changeHolder,
-            final Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>> values,
+            final StructureChangeTracker changeTracker,
+            final Collection<Pair<ObservableValue<?>, MappingMetaData>> values,
             final SQLVariableHolder vars, final boolean variablize)
     {
         // TODO Group updates by key or updates
-        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, ObservableValueStorageInfo>> observableGroup = HashMultimap.create();
+        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>> observableGroup = HashMultimap.create();
         values.forEach((value) ->
         {
             observableGroup.put(value.second().getStructure(), value);
@@ -153,15 +153,15 @@ public class SQLScope
         final Multimap<String /*changes*/, ServerStorageStructure> changesPerStructure = HashMultimap.create();
 
         // Build Changeset (updates without key)
-        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, ObservableValueStorageInfo>>> entry
+        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>>> entry
                 : observableGroup.asMap().entrySet())
-            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeHolder, entry.getValue()), entry.getKey());
+            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeTracker, entry.getValue()), entry.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = Iterables.get(change.getValue(), 0).getOwner().getTableName();
 
-            final String keyPart = SQLMaker.createKeyPart(vars, changeHolder,
+            final String keyPart = SQLMaker.createKeyPart(vars, changeTracker,
                     change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
@@ -170,13 +170,13 @@ public class SQLScope
 
     private void buildDeletes(
             final StringBuilder builder,
-            final ServerStorageChangeHolderImpl changeHolder,
+            final StructureChangeTracker changeTracker,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
-        final String keyPart = SQLMaker.createKeyPart(vars, changeHolder,
+        final String keyPart = SQLMaker.createKeyPart(vars, changeTracker,
                 structures.getValue().toArray(new ServerStorageStructure[structures.getValue().size()]));
 
         builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
@@ -184,15 +184,15 @@ public class SQLScope
 
     private void buildInserts(
             final StringBuilder builder,
-            final ServerStorageChangeHolderImpl changeHolder,
+            final StructureChangeTracker changeTracker,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures,
             final SQLVariableHolder vars, final boolean variablize)
     {
         // Build delete before insert querys
-        buildDeletes(builder, changeHolder, structures, vars, variablize);
+        buildDeletes(builder, changeTracker, structures, vars, variablize);
 
         final ServerStorageStructure anyStructure = Iterables.get(structures.getValue(), 0);
-        final String valuePart = SQLMaker.createInsertValuePart(vars, changeHolder, structures.getValue());
+        final String valuePart = SQLMaker.createInsertValuePart(vars, changeTracker, structures.getValue());
 
         builder.append(SQLMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
                 anyStructure.getValues(), valuePart)).append("\n");

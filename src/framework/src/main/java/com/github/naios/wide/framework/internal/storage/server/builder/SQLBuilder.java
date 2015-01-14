@@ -11,136 +11,22 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javafx.beans.value.ObservableValue;
-
-import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
  */
 public class SQLBuilder
 {
-    private final ServerStorageChangeHolderImpl changeholder;
+    private final StructureChangeTracker changeTracker;
 
-    private final boolean variablize;
-
-    public SQLBuilder(final ServerStorageChangeHolderImpl changeholder, final boolean variablize)
+    public SQLBuilder(final StructureChangeTracker changeTracker, final boolean variablize)
     {
-        this.changeholder = changeholder;
-        this.variablize = variablize;
-    }
-
-    /**
-     * Adds all Observables that has changed since the last database sync
-     */
-    public SQLBuilder addRecentChanged()
-    {
-        addUpdates(changeholder.getObservablesChanged());
-        return this;
-    }
-
-    /**
-     * Adds all Observables that has changed (ignores database sync)
-     */
-    public SQLBuilder addAllChanged()
-    {
-        addUpdates(changeholder.getAllObservablesChanged());
-        return this;
-    }
-
-    /**
-     * Adds some Observables to the builder
-     */
-    public SQLBuilder add(final ObservableValue<?>... value)
-    {
-        addUpdates(Arrays.asList(value));
-        return this;
-    }
-
-    private void addUpdates(final Collection<ObservableValue<?>> values)
-    {
-        values.forEach((value) ->
-        {
-            final ObservableValueStorageInfo info =
-                    changeholder.getStorageInformationOfObservable(value);
-
-            // Observable hasn't changed, do nothing
-            // TODO maybe we want to add support to build querys from non changed records later
-            if (info == null)
-                return;
-
-            update.add(new Pair<>(value, info));
-        });
-    }
-
-    /**
-     * Adds some Structures to the builder to build insert querys
-     */
-    public SQLBuilder addCreate(final ServerStorageStructure... structure)
-    {
-        return addCreate(Arrays.asList(structure));
-    }
-
-    /**
-     * Adds some Structures to the builder to build insert querys
-     */
-    public SQLBuilder addCreate(final Collection<ServerStorageStructure> structures)
-    {
-        insert.addAll(structures);
-        return this;
-    }
-
-    /**
-     * Adds some Structures to the builder to build delete querys
-     */
-    public SQLBuilder addDelete(final ServerStorageStructure... structure)
-    {
-        return addDelete(Arrays.asList(structure));
-    }
-
-    /**
-     * Adds some Structures to the builder to build insert querys
-     */
-    public SQLBuilder addDelete(final Collection<ServerStorageStructure> structures)
-    {
-        delete.addAll(structures);
-        return this;
-    }
-
-    /**
-     * Clears the builder
-     */
-    public SQLBuilder clear()
-    {
-        update.clear();
-        insert.clear();
-        delete.clear();
-        return this;
-    }
-
-    /**
-     * Cleans our storage & value collections of invalid entrys
-     */
-    private void cleanStores()
-    {
-        // Delete all structures contained in delete from create.
-        insert.removeAll(delete);
-
-        // Delete all values from update querys that are inserted in insert statements anyway
-        update.removeIf((value) ->
-        {
-            final ObservableValueStorageInfo info = value.second();
-            return insert.contains(info.getStructure()) ||
-                   // value should never exist in delete structures but we handle it.
-                   delete.contains(info.getStructure());
-        });
+        this.changeTracker = changeTracker;
     }
 
     /**
@@ -150,22 +36,19 @@ public class SQLBuilder
     {
         final PrintWriter writer = new PrintWriter(stream);
 
-        // Clean our stores of bad entrys
-        cleanStores();
-
         // Pre calculate everything
         final SQLVariableHolder vars = new SQLVariableHolder();
-        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(changeholder, update, insert, delete);
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(changeTracker, update, insert, delete);
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, changeholder, variablize));
+            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, changeTracker, variablize));
 
         vars.writeQuery(writer);
 
         for (final Entry<String, String> entry : querys.entrySet())
         {
-            final String comment = changeholder.getScopeComment(entry.getKey());
+            final String comment = changeTracker.getScopeComment(entry.getKey());
 
             if (!comment.isEmpty())
                 writer.println(SQLMaker.createComment(comment));
@@ -182,10 +65,10 @@ public class SQLBuilder
      */
     public boolean commit()
     {
-        if (changeholder.connection().get() == null)
+        if (changeTracker.connection().get() == null)
             return false;
 
-        changeholder.connection().get().asyncExecute(toString());
+        changeTracker.connection().get().asyncExecute(toString());
         return true;
     }
 
