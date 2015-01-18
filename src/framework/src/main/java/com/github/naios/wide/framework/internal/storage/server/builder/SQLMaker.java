@@ -124,11 +124,10 @@ public class SQLMaker
             final MappingMetaData mappingMetaData, final ServerStorageStructure[] structures)
     {
         final String query = StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<>(Arrays.asList(structures),
-                        (structure) ->
+                new CrossIterator<>(Arrays.asList(structures), structure ->
                 {
-                    final ObservableValue<?> value = structure.getKeys().get(0).first();
-                    return createValueOfObservableValue(vars, changeTracker, mappingMetaData, value, true);
+                    final Pair<ObservableValue<?>, MappingMetaData> field = structure.getKeys().get(0);
+                    return createValueOfObservableValue(vars, changeTracker, structure, field, true);
                 }));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
@@ -146,38 +145,38 @@ public class SQLMaker
      * Creates field equals value clause.
      */
     protected static String createNameEqualsValue(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final MappingMetaData metaData, final ObservableValue<?> value, final boolean variablize)
+            final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> field, final boolean variablize)
     {
-        return createNameEqualsName(createName(metaData), createValueOfObservableValue(vars, changeTracker, metaData, value, variablize));
+        return createNameEqualsName(createName(field.second()), createValueOfObservableValue(vars, changeTracker, structure, field, variablize));
     }
 
     @SuppressWarnings({ "rawtypes" })
     private static String createValueOfObservableValue(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final MappingMetaData mappingMetaData, final ObservableValue value, final boolean variablize)
+            final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> field, final boolean variablize)
     {
         if (variablize)
         {
             // If the observable has a custom var use it
-            final String customVar = changeTracker.getCustomVariable(value);
+            final String customVar = changeTracker.getCustomVariable(field.first());
             if (customVar != null)
-                return vars.addVariable(customVar, value.getValue());
+                return vars.addVariable(customVar, field.first().getValue());
 
             // Enum alias
-            if ((value instanceof EnumProperty || value instanceof FlagProperty)
-                    && !mappingMetaData.getAlias().isEmpty())
+            if ((field.first() instanceof EnumProperty || field.first() instanceof FlagProperty)
+                    && !field.second().getAlias().isEmpty())
             {
-                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(mappingMetaData.getAlias());
+                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(field.second().getAlias());
 
                 // Enum Property (Absolute value)
-                if (value instanceof EnumProperty)
-                    return vars.addVariable(enumeration.getEnumConstants()[(int)value.getValue()].name(), value.getValue());
+                if (field.first() instanceof EnumProperty)
+                    return vars.addVariable(enumeration.getEnumConstants()[(int)field.first().getValue()].name(), field.first().getValue());
                 // Flag Property (Relative value)
-                else if (value instanceof FlagProperty)
+                else if (field.first() instanceof FlagProperty)
                 {
                     // FlagProperties only occur in set statements
-                    final int currentFlagValue = ((FlagProperty) value).get();
+                    final int currentFlagValue = ((FlagProperty) field.first()).get();
                     final int oldFlagValue;
-                    final Object oldValue = changeTracker.getRemoteValue(structure, value);
+                    final Object oldValue = changeTracker.getRemoteValue(structure, field);
                     if (oldValue == null || !(oldValue instanceof Integer))
                         oldFlagValue = 0;
                     else
@@ -206,7 +205,7 @@ public class SQLMaker
                             builder.append("(");
 
                         if (!oldFlags.isEmpty())
-                            builder.append(createName(mappingMetaData));
+                            builder.append(createName(field.second()));
 
                         if (!removeFlags.isEmpty())
                         {
@@ -234,15 +233,15 @@ public class SQLMaker
                 }
             }
             // Namestorage alias
-            else if ((value instanceof ReadOnlyIntegerProperty) && !mappingMetaData.getAlias().isEmpty())
+            else if ((field.first() instanceof ReadOnlyIntegerProperty) && !field.second().getAlias().isEmpty())
             {
-                final String name = FrameworkServiceImpl.getInstance().requestAlias(mappingMetaData.getAlias(), (int)value.getValue());
+                final String name = FrameworkServiceImpl.getInstance().requestAlias(field.second().getAlias(), (int)field.first().getValue());
                 if (name != null)
-                    return vars.addVariable(name, value.getValue());
+                    return vars.addVariable(name, field.first().getValue());
             }
         }
 
-        return new FormatterWrapper(value.getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
+        return new FormatterWrapper(field.first().getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
     }
 
     /**
@@ -288,11 +287,11 @@ public class SQLMaker
         {
             // Yay, nested concat iterator!
             return StringUtil.concat(SPACE + OR + SPACE,
-                    new CrossIterator<ServerStorageStructure, String>(Arrays.asList(structures), (structure) ->
+                    new CrossIterator<ServerStorageStructure, String>(Arrays.asList(structures), structure ->
                     {
-                        return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), (entry) ->
+                        return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), field ->
                         {
-                            return createNameEqualsValue(vars, changeTracker, entry.second(), entry.first(), true);
+                            return createNameEqualsValue(vars, changeTracker, structure, field, true);
                         }));
                     }));
         }
@@ -302,17 +301,10 @@ public class SQLMaker
      * Creates only the update fields part of a collection containing observables with storage infos
      */
     protected static String createUpdateFields(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final Collection<Pair<ObservableValue<?>, MappingMetaData>> fields)
+            final ServerStorageStructure structure, final Collection<Pair<ObservableValue<?>, MappingMetaData>> fields)
     {
         final Set<String> statements = new TreeSet<>();
-
-        for (final Pair<ObservableValue<?>, MappingMetaData> entry : fields)
-        {
-            final Pair<ObservableValue<?>, MappingMetaData> data = entry.second().getStructure().getEntryByName(entry.second().getName());
-            assert (data.first() == entry.first());
-
-            statements.add(createNameEqualsValue(vars, changeTracker, data.second(), entry.first(), true));
-        }
+        fields.forEach(field -> statements.add(createNameEqualsValue(vars, changeTracker, structure, field, true)));
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }
@@ -353,7 +345,7 @@ public class SQLMaker
                 {
                     return "(" + StringUtil.concat(COMMA + SPACE,
                             new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(structure,
-                                    (entry) -> createValueOfObservableValue(vars, changeTracker, entry.second(), entry.first(), true))) + ")";
+                                    field -> createValueOfObservableValue(vars, changeTracker, structure, field, true))) + ")";
                 }));
     }
 
