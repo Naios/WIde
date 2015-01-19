@@ -11,11 +11,17 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javafx.beans.value.ObservableValue;
+
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
+import com.github.naios.wide.api.util.Pair;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
@@ -24,9 +30,18 @@ public class SQLBuilder
 {
     private final StructureChangeTracker changeTracker;
 
-    public SQLBuilder(final StructureChangeTracker changeTracker, final boolean variablize)
+    private final Collection<Pair<ObservableValue<?>, MappingMetaData>> update;
+    private final Collection<ServerStorageStructure> insert, delete;
+
+    public SQLBuilder(final StructureChangeTracker changeTracker,
+            final Collection<Pair<ObservableValue<?>, MappingMetaData>> update,
+            final Collection<ServerStorageStructure> insert,
+            final Collection<ServerStorageStructure> delete)
     {
         this.changeTracker = changeTracker;
+        this.update = update;
+        this.insert = insert;
+        this.delete = delete;
     }
 
     /**
