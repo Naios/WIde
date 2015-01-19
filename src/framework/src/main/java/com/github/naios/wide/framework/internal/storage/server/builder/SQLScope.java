@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
 
 public class SQLScope
 {
-    private final Multimap<ServerStorage<?>, Pair<ObservableValue<?>, MappingMetaData>> update = HashMultimap.create();
+    private final Map<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> update = new HashMap<>();
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
@@ -45,7 +45,7 @@ public class SQLScope
         deleteConfig = config.getConfigForType(QueryType.DELETE);
     }
 
-    protected Multimap<ServerStorage<?>, Pair<ObservableValue<?>, MappingMetaData>> getUpdate()
+    protected Map<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> getUpdate()
     {
         return update;
     }
@@ -142,7 +142,7 @@ public class SQLScope
             buildInserts(builder, changeTracker, structure, vars);
 
         // Build upate querys for each structure
-        for (final Entry<ServerStorage<?>, Collection<Pair<ObservableValue<?>, MappingMetaData>>> structure : update.asMap().entrySet())
+        for (final Entry<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> structure : update.entrySet())
             buildUpdates(builder, changeTracker, structure.getValue(), vars);
 
         return builder.toString();
@@ -151,29 +151,21 @@ public class SQLScope
     private void buildUpdates(
             final StringBuilder builder,
             final StructureChangeTracker changeTracker,
-            final Collection<Pair<ObservableValue<?>, MappingMetaData>> values,
+            final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>> values,
             final SQLVariableHolder vars)
     {
         // TODO Group updates by key or updates
-        final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>> observableGroup = HashMultimap.create();
-        values.forEach((value) ->
-        {
-            observableGroup.put(value.second().getStructure(), value);
-        });
-
         final Multimap<String /*changes*/, ServerStorageStructure> changesPerStructure = HashMultimap.create();
 
         // Build Changeset (updates without key)
-        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>>> entry
-                : observableGroup.asMap().entrySet())
-            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeTracker, entry.getKey(), entry.getValue()));
+        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>>> entry : values.asMap().entrySet())
+            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeTracker, entry.getKey(), entry.getValue()), entry.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = Iterables.get(change.getValue(), 0).getOwner().getTableName();
 
-            final String keyPart = SQLMaker.createKeyPart(vars, changeTracker,
-                    change.getValue().toArray(new ServerStorageStructure[change.getValue().size()]));
+            final String keyPart = SQLMaker.createKeyPart(vars, changeTracker, change.getValue());
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
@@ -187,9 +179,7 @@ public class SQLScope
     {
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
-        final String keyPart = SQLMaker.createKeyPart(vars, changeTracker,
-                structures.getValue().toArray(new ServerStorageStructure[structures.getValue().size()]));
-
+        final String keyPart = SQLMaker.createKeyPart(vars, changeTracker,structures.getValue());
         builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
     }
 

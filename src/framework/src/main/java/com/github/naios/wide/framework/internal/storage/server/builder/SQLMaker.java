@@ -9,7 +9,6 @@
 package com.github.naios.wide.framework.internal.storage.server.builder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +29,7 @@ import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
+import com.google.common.collect.Iterables;
 
 public class SQLMaker
 {
@@ -121,10 +121,10 @@ public class SQLMaker
      * Creates a sql in clause.
      */
     protected static String createInClause(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final MappingMetaData mappingMetaData, final ServerStorageStructure[] structures)
+            final MappingMetaData mappingMetaData, final Collection<ServerStorageStructure> structures)
     {
         final String query = StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<>(Arrays.asList(structures), structure ->
+                new CrossIterator<>(structures, structure ->
                 {
                     final Pair<ObservableValue<?>, MappingMetaData> field = structure.getKeys().get(0);
                     return createValueOfObservableValue(vars, changeTracker, structure, field, true);
@@ -272,22 +272,22 @@ public class SQLMaker
     /**
      * creates the key part of an structure
      */
-    protected static String createKeyPart(final SQLVariableHolder vars, final StructureChangeTracker changeTracker, final ServerStorageStructure... structures)
+    protected static String createKeyPart(final SQLVariableHolder vars, final StructureChangeTracker changeTracker, final Collection<ServerStorageStructure> structures)
     {
-        if (structures.length == 0)
+        if (structures.size() == 0)
             return "";
 
-        final List<Pair<ObservableValue<?>, MappingMetaData>> keys = structures[0].getKeys();
+        final List<Pair<ObservableValue<?>, MappingMetaData>> keys = Iterables.get(structures, 0).getKeys();
 
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
-        if (keys.size() == 1 && (structures.length > 1))
+        if (keys.size() == 1 && (structures.size() > 1))
             return createInClause(vars, changeTracker, keys.get(0).second(), structures);
         else
         {
             // Yay, nested concat iterator!
             return StringUtil.concat(SPACE + OR + SPACE,
-                    new CrossIterator<ServerStorageStructure, String>(Arrays.asList(structures), structure ->
+                    new CrossIterator<ServerStorageStructure, String>(structures, structure ->
                     {
                         return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), field ->
                         {
