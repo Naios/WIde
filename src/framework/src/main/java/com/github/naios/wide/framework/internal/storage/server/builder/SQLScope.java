@@ -34,6 +34,7 @@ public class SQLScope
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
+    // TODO make use of this
     private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
 
     protected SQLScope()
