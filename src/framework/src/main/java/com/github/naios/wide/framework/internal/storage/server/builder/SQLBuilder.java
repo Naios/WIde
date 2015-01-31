@@ -20,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
 import com.github.naios.wide.api.util.Pair;
 
 /**
@@ -28,17 +27,17 @@ import com.github.naios.wide.api.util.Pair;
  */
 public class SQLBuilder
 {
-    private final StructureChangeTracker changeTracker;
+    private final SQLScopeRetriever scopeRetriever;
 
-    private final Collection<Pair<ObservableValue<?>, MappingMetaData>> update;
+    private final Collection<Pair<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>, Object>>> update;
     private final Collection<ServerStorageStructure> insert, delete;
 
-    public SQLBuilder(final StructureChangeTracker changeTracker,
-            final Collection<Pair<ObservableValue<?>, MappingMetaData>> update,
+    public SQLBuilder(final SQLScopeRetriever scopeRetriever,
+            final Collection<Pair<Pair<ObservableValue<?>, MappingMetaData>, Object>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
-        this.changeTracker = changeTracker;
+        this.scopeRetriever = scopeRetriever;
         this.update = update;
         this.insert = insert;
         this.delete = delete;
