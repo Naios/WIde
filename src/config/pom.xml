@@ -31,20 +31,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>org.apache.aries.blueprint.api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
