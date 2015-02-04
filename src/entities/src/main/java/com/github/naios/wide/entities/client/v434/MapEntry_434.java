@@ -6,10 +6,10 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.entities.client.v6x;
+package com.github.naios.wide.entities.client.v434;
 
-import com.github.naios.wide.entities.client.v434.DBCMapEntry_434;
+import com.github.naios.wide.entities.client.MapEntry;
 
-public interface DBCMapEntry_6x extends DBCMapEntry_434
+public interface MapEntry_434 extends MapEntry
 {
 }

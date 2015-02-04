@@ -13,7 +13,7 @@ import javafx.beans.property.ReadOnlyStringProperty;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 
-public interface DBCMapEntry extends ClientStorageStructure
+public interface MapEntry extends ClientStorageStructure
 {
     public ReadOnlyIntegerProperty entry();
 
