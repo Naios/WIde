@@ -11,8 +11,6 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
-
 /**
  * Helps us to split scopes of multiple collections
  */
@@ -20,7 +18,7 @@ public abstract class SQLScopeSplitter<T> implements Consumer<T>
 {
     private final Map<String, SQLScope> scopes;
 
-    protected SQLScopeSplitter(final StructureChangeTracker holder, final Map<String, SQLScope> scopes)
+    protected SQLScopeSplitter(final Map<String, SQLScope> scopes)
     {
         this.scopes = scopes;
     }

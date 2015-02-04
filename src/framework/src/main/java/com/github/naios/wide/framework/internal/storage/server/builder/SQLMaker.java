@@ -19,6 +19,7 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
 import com.github.naios.wide.api.util.CrossIterator;
@@ -145,9 +146,9 @@ public class SQLMaker
      * Creates field equals value clause.
      */
     protected static String createNameEqualsValue(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> field, final boolean variablize)
+            final ServerStorageStructure structure, final SQLUpdateInfo updateInfo, final boolean variablize)
     {
-        return createNameEqualsName(createName(field.second()), createValueOfObservableValue(vars, changeTracker, structure, field, variablize));
+        return createNameEqualsName(createName(updateInfo.second()), createValueOfObservableValue(vars, changeTracker, structure, updateInfo, variablize));
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -301,10 +302,10 @@ public class SQLMaker
      * Creates only the update fields part of a collection containing observables with storage infos
      */
     protected static String createUpdateFields(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final ServerStorageStructure structure, final Collection<Pair<ObservableValue<?>, MappingMetaData>> fields)
+            final ServerStorageStructure structure, final Collection<SQLUpdateInfo> collection)
     {
         final Set<String> statements = new TreeSet<>();
-        fields.forEach(field -> statements.add(createNameEqualsValue(vars, changeTracker, structure, field, true)));
+        collection.forEach(field -> statements.add(createNameEqualsValue(vars, changeTracker, structure, field, true)));
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }

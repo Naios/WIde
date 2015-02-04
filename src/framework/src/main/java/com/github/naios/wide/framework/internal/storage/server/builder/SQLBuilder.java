@@ -16,28 +16,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javafx.beans.value.ObservableValue;
-
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.SQLScopeProvider;
+import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.Pair;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
  */
 public class SQLBuilder
 {
-    private final SQLScopeRetriever scopeRetriever;
+    private final SQLScopeProvider scopeProvider;
 
-    private final Collection<Pair<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>, Object>>> update;
+    private final Collection<Map<ServerStorageStructure, SQLUpdateInfo>> update;
     private final Collection<ServerStorageStructure> insert, delete;
 
-    public SQLBuilder(final SQLScopeRetriever scopeRetriever,
-            final Collection<Pair<Pair<ObservableValue<?>, MappingMetaData>, Object>> update,
+    public SQLBuilder(final SQLScopeProvider scopeProvider,
+            final Collection<Map<ServerStorageStructure, SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
-        this.scopeRetriever = scopeRetriever;
+        this.scopeProvider = scopeProvider;
         this.update = update;
         this.insert = insert;
         this.delete = delete;
@@ -52,7 +50,7 @@ public class SQLBuilder
 
         // Pre calculate everything
         final SQLVariableHolder vars = new SQLVariableHolder();
-        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(changeTracker, update, insert, delete);
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(scopeProvider, update, insert, delete);
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())

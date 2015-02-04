@@ -12,17 +12,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javafx.beans.value.ObservableValue;
+import java.util.Objects;
 
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.SQLScopeProvider;
+import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -30,7 +29,7 @@ import com.google.common.collect.Multimap;
 
 public class SQLScope
 {
-    private final Map<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> update = new HashMap<>();
+    private final Map<ServerStorage<?>, Multimap<ServerStorageStructure, SQLUpdateInfo>> update = new HashMap<>();
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
@@ -41,22 +40,23 @@ public class SQLScope
     {
         final QueryConfig config = FrameworkServiceImpl.getConfigService().getQueryConfig();
 
+        // FIXME This is garbage
         updateConfig = config.getConfigForType(QueryType.UPDATE);
         insertConfig = config.getConfigForType(QueryType.INSERT);
         deleteConfig = config.getConfigForType(QueryType.DELETE);
     }
 
-    protected Map<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> getUpdate()
+    Map<ServerStorage<?>, Multimap<ServerStorageStructure, SQLUpdateInfo>> getUpdate()
     {
         return update;
     }
 
-    protected Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
+    Multimap<ServerStorage<?>, ServerStorageStructure> getInsert()
     {
         return insert;
     }
 
-    protected Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
+    Multimap<ServerStorage<?>, ServerStorageStructure> getDelete()
     {
         return delete;
     }
@@ -69,59 +69,63 @@ public class SQLScope
     /**
      * Splits collections containing update, insert & delete structures into its scopes
      */
-    protected static Map<String, SQLScope> split(final StructureChangeTracker changeTracker,
-            final Collection<Pair<ObservableValue<?>, MappingMetaData>> update,
+    protected static Map<String, SQLScope> split(final SQLScopeProvider scopeProvider,
+            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
         final Map<String, SQLScope> scopes = new HashMap<>();
 
-        update.forEach(new SQLScopeSplitter<Pair<ObservableValue<?>, MappingMetaData>>(changeTracker, scopes)
+        update.forEach((structure, infos) ->
         {
-            @Override
-            public String getScope(
-                    final Pair<ObservableValue<?>, MappingMetaData> entry)
+            infos.forEach(new SQLScopeSplitter<SQLUpdateInfo>(scopes)
             {
-                return changeTracker.getScopeOfObservable(entry.first());
-            }
+                @Override
+                public String getScope(final SQLUpdateInfo info)
+                {
+                    return scopeProvider.getScopeOfEntry(structure, info.getEntry());
+                }
 
-            @Override
-            public void addObservable(final SQLScope scope,
-                    final Pair<ObservableValue<?>, MappingMetaData> entry)
-            {
-                scope.update.put(entry.second().getStructure().getOwner(), entry);
-            }
+                @Override
+                public void addObservable(final SQLScope scope, final SQLUpdateInfo info)
+                {
+                    Multimap<ServerStorageStructure, SQLUpdateInfo> map = scope.update.get(structure.getOwner());
+                    if (Objects.isNull(map))
+                    {
+                        map = HashMultimap.create();
+                        scope.update.put(structure.getOwner(), map);
+                    }
+
+                    map.put(structure, info);
+                }
+            });
         });
 
-        insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(changeTracker, scopes)
+        insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(scopes)
         {
             @Override
-            public String getScope(
-                    final ServerStorageStructure entry)
+            public String getScope(final ServerStorageStructure entry)
             {
-                return changeTracker.getScopeOfStructure(entry);
+                return scopeProvider.getScopeOfStructure(entry);
             }
 
             @Override
-            public void addObservable(final SQLScope scope,
-                    final ServerStorageStructure entry)
+            public void addObservable(final SQLScope scope, final ServerStorageStructure entry)
             {
                 scope.insert.put(entry.getOwner(), entry);
             }
         });
 
-        delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(changeTracker, scopes)
+        delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(scopes)
         {
             @Override
-            public String getScope(
-                    final ServerStorageStructure entry)
+            public String getScope(final ServerStorageStructure entry)
             {
-                return changeTracker.getScopeOfStructure(entry);
+                return scopeProvider.getScopeOfStructure(entry);
             }
 
             @Override
-            public void addObservable(final SQLScope scope,
-                    final ServerStorageStructure entry)
+            public void addObservable(final SQLScope scope, final ServerStorageStructure entry)
             {
                 scope.delete.put(entry.getOwner(), entry);
             }
@@ -143,7 +147,7 @@ public class SQLScope
             buildInserts(builder, changeTracker, structure, vars);
 
         // Build upate querys for each structure
-        for (final Entry<ServerStorage<?>, Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>>> structure : update.entrySet())
+        for (final Entry<ServerStorage<?>, Multimap<ServerStorageStructure, SQLUpdateInfo>> structure : update.entrySet())
             buildUpdates(builder, changeTracker, structure.getValue(), vars);
 
         return builder.toString();
@@ -152,15 +156,15 @@ public class SQLScope
     private void buildUpdates(
             final StringBuilder builder,
             final StructureChangeTracker changeTracker,
-            final Multimap<ServerStorageStructure, Pair<ObservableValue<?>, MappingMetaData>> values,
+            final Multimap<ServerStorageStructure, SQLUpdateInfo> multimap,
             final SQLVariableHolder vars)
     {
         // TODO Group updates by key or updates
         final Multimap<String /*changes*/, ServerStorageStructure> changesPerStructure = HashMultimap.create();
 
         // Build Changeset (updates without key)
-        for (final Entry<ServerStorageStructure, Collection<Pair<ObservableValue<?>, MappingMetaData>>> entry : values.asMap().entrySet())
-            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeTracker, entry.getKey(), entry.getValue()), entry.getKey());
+        for (final Entry<ServerStorageStructure, Collection<SQLUpdateInfo>> info : multimap.asMap().entrySet())
+            changesPerStructure.put(SQLMaker.createUpdateFields(vars, changeTracker, info.getKey(), info.getValue()), info.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {

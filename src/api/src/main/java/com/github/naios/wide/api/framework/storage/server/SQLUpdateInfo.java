@@ -6,17 +6,16 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.server.builder;
+package com.github.naios.wide.api.framework.storage.server;
 
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.Pair;
 
-public interface SQLScopeRetriever
+public interface SQLUpdateInfo
 {
-    String getScopeOfEntry(Pair<ObservableValue<?>, MappingMetaData> entry);
+    public Pair<ObservableValue<?>, MappingMetaData> getEntry();
 
-    String getScopeOfStructure(ServerStorageStructure structure);
+    public Object getOldValue();
 }
