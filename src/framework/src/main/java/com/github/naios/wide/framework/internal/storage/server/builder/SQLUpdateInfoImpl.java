@@ -74,4 +74,10 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
             return false;
         return true;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("UpdateInfo(%s -> %s)", entry, oldValue);
+    }
 }

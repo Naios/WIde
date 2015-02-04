@@ -14,6 +14,7 @@ import java.util.Map;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
@@ -70,4 +71,25 @@ public interface FrameworkService extends AliasFactory
             final QueryTypeConfig updateConfig,
             final QueryTypeConfig insertConfig,
             final QueryTypeConfig deleteConfig);
+
+    /**
+     * TODO
+     *
+     * @param changeTracker
+     * @return
+     */
+    public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker);
+
+    /**
+     * TODO
+     *
+     * @param changeTracker
+     * @param updateConfig
+     * @param insertConfig
+     * @param deleteConfig
+     * @return
+     */
+    public SQLBuilder createSQLBuilder(ChangeTracker changeTracker,
+            QueryTypeConfig updateConfig, QueryTypeConfig insertConfig,
+            QueryTypeConfig deleteConfig);
 }

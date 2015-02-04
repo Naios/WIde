@@ -28,4 +28,10 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public T create(ServerStorageKey<T> key);
 
     public ChangeTracker getChangeTracker();
+
+    @Override
+    public int hashCode();
+
+    @Override
+    public boolean equals(final Object obj);
 }

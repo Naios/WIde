@@ -34,6 +34,11 @@ public interface ChangeTracker
     public StringProperty scope();
 
     /**
+     * @return Returns a boolean that identifies if a scope was set.
+     */
+    public boolean hasScopeSet();
+
+    /**
      * Sets our current scope
      * @param scope unique Scope identifier
      */

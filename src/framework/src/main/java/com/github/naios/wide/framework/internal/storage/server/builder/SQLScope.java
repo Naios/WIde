@@ -177,7 +177,7 @@ public final class SQLScope
 
             final String keyPart = sqlMaker.createKeyPart(change.getValue());
 
-            builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
+            builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart));
         }
     }
 

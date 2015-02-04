@@ -35,6 +35,7 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
@@ -373,10 +374,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 System.out.println("\n--\n");
 
-                System.out.println(createSQLBuilder(sqlInfoProvider,
-                        (Map)table.getChangeTracker().entriesChanged(),
-                        table.getChangeTracker().structuresCreated(),
-                        table.getChangeTracker().structuresDeleted()));
+                System.out.println(createSQLBuilder(table.getChangeTracker()));
 
                 System.out.println(table.getChangeTracker());
 
@@ -384,6 +382,32 @@ public final class FrameworkServiceImpl implements FrameworkService
              }
 
         }).start();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker)
+    {
+        return createSQLBuilder(changeTracker,
+                (Map)changeTracker.entriesChanged(),
+                changeTracker.structuresCreated(),
+                changeTracker.structuresDeleted());
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker,
+                final QueryTypeConfig updateConfig,
+                    final QueryTypeConfig insertConfig,
+                        final QueryTypeConfig deleteConfig)
+    {
+        return createSQLBuilder(changeTracker,
+                (Map)changeTracker.entriesChanged(),
+                changeTracker.structuresCreated(),
+                changeTracker.structuresDeleted(),
+                updateConfig,
+                insertConfig,
+                deleteConfig);
     }
 
     @Override

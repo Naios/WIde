@@ -42,6 +42,12 @@ public class ChangeTrackerImpl
     private final Map<String, String> scopeComments =
             new HashMap<>();
 
+    private final Map<ServerStorageStructure, String> structureScopes =
+            new HashMap<>();
+
+    private final Map<StructureEntryStorageIndex, String> entryScopes =
+            new HashMap<>();
+
     private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
             deleted = new SimpleSetProperty<>(FXCollections.observableSet());
 
@@ -62,6 +68,9 @@ public class ChangeTrackerImpl
             }
 
             set.add(new SQLUpdateInfoImpl(entry, oldValue));
+
+            if (hasScopeSet())
+                entryScopes.put(new StructureEntryStorageIndex(structure, entry), scope.get());
         }
 
         public void removeUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry)
@@ -75,13 +84,18 @@ public class ChangeTrackerImpl
                         set.remove(info);
 
                 if (set.isEmpty())
-                    remove(structure);
+                    removeUpdates(structure);
             }
         }
 
         public void removeUpdates(final ServerStorageStructure structure)
         {
-            remove(structure);
+            final SetProperty<SQLUpdateInfo> set = get(structure);
+            if (Objects.nonNull(set))
+            {
+                set.forEach(entry -> entryScopes.remove(new StructureEntryStorageIndex(structure, entry.getEntry())));
+                remove(structure);
+            }
         }
     }
 
@@ -91,6 +105,9 @@ public class ChangeTrackerImpl
     {
         deleted.remove(created);
         created.add(structure);
+
+        if (hasScopeSet())
+            structureScopes.put(structure, scope.get());
     }
 
     public void onDelete(final ServerStorageStructure structure)
@@ -98,6 +115,9 @@ public class ChangeTrackerImpl
         created.remove(created);
         updates.removeUpdates(structure);
         deleted.add(structure);
+
+        if (hasScopeSet())
+            structureScopes.put(structure, scope.get());
     }
 
     public void onUpdate(final ServerStorageStructure structure,
@@ -140,15 +160,17 @@ public class ChangeTrackerImpl
     public String getScopeOfEntry(final ServerStorageStructure structure,
             final Pair<ObservableValue<?>, MappingMetaData> entry)
     {
-        // TODO Auto-generated method stub
-        return null;
+        final String scope = entryScopes.get(new StructureEntryStorageIndex(structure, entry));
+        if (Objects.nonNull(scope))
+            return scope;
+        else
+            return getScopeOfStructure(structure);
     }
 
     @Override
     public String getScopeOfStructure(final ServerStorageStructure structure)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return structureScopes.get(structure);
     }
 
     @Override
@@ -163,6 +185,12 @@ public class ChangeTrackerImpl
     public StringProperty scope()
     {
         return scope;
+    }
+
+    @Override
+    public boolean hasScopeSet()
+    {
+        return !scope.get().equals(DEFAULT_SCOPE);
     }
 
     @Override
@@ -235,6 +263,7 @@ public class ChangeTrackerImpl
     @Override
     public String toString()
     {
-        return String.format("Updated  : %s\nInserted : %s\nUpdated  : %s", updates, created, deleted);
+        return String.format("Updated  : %s\nInserted : %s\nUpdated  : %s\nStructure Scopes  : %s\nEntry Scopes  : %s\nScope Comments  : %s",
+                updates, created, deleted, structureScopes, entryScopes, scopeComments);
     }
 }
