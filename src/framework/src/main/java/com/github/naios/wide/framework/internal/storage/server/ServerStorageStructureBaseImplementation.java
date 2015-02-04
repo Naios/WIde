@@ -450,7 +450,6 @@ public class ServerStorageStructureBaseImplementation
         return structureState;
     }
 
-    @Override
     public ObjectProperty<UpdatePolicy> updatePolicy()
     {
         return updatePolicy;

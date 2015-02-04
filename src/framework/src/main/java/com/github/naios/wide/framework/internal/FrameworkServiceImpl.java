@@ -260,11 +260,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 table.getChangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
-                {
-                    final CreatureTemplate deleteMe = table.request(ServerStorageKeys.ofCreatureTemplate(i)).get();
-                    if (deleteMe != null)
-                        deleteMe.delete();
-                }
+                    table.request(ServerStorageKeys.ofCreatureTemplate(i)).ifPresent(template -> template.delete());
 
                 table.getChangeTracker().setScope("create scope 1", "creates one new creature template...");
                 final CreatureTemplate myqueryentry = table.create(ServerStorageKeys.ofCreatureTemplate(1000000));
