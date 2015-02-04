@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="true" context="java" deleted="false" description="" enabled="true" name="isNull">Objects.isNull(${msg})</template><template autoinsert="true" context="java" deleted="false" description="" enabled="true" name="nonNull">Objects.nonNull(${msg})</template></templates>
