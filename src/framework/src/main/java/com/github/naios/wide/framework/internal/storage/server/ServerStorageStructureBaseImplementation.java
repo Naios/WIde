@@ -186,6 +186,8 @@ public class ServerStorageStructureBaseImplementation
 {
     private ServerStorageStructure me;
 
+    private ChangeTrackerImpl changeTracker;
+
     private final HistoryRedirect history = new HistoryRedirect();
 
     private final ObjectProperty<StructureChangeEvent> head =
@@ -197,7 +199,7 @@ public class ServerStorageStructureBaseImplementation
     private final ObjectProperty<UpdatePolicy> updatePolicy =
             new SimpleObjectProperty<>(UpdatePolicy.DEFAULT_POLICY);
 
-    private ServerStorageStructureImpl<?> owner;
+    private ServerStorageImpl<?> owner;
 
     @Override
     public void callback(final ServerStorageStructure structure)
@@ -217,15 +219,16 @@ public class ServerStorageStructureBaseImplementation
     }
 
     @Override
-    public ServerStorageStructureImpl<?> getOwner()
+    public ServerStorageImpl<?> getOwner()
     {
         return owner;
     }
 
     @Override
-    public void setOwner(final ServerStorageStructureImpl<?> owner)
+    public void setOwnerAndTracker(final ServerStorageImpl<?> owner, final ChangeTrackerImpl changeTracker)
     {
         this.owner = owner;
+        this.changeTracker = changeTracker;
     }
 
     /**
@@ -238,7 +241,7 @@ public class ServerStorageStructureBaseImplementation
     @Override
     public synchronized void delete()
     {
-        history.pushEvent(deleteEvent());
+        onDelete();
     }
 
     private StructureDeletedEvent deleteEvent()

@@ -8,30 +8,126 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlySetProperty;
+import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleSetProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
+import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeEvent;
 import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
 public class ChangeTrackerImpl
     implements ChangeTracker
 {
-    public void track(final ServerStorageStructure structure)
-    {
+    private final static String DEFAULT_SCOPE = "";
 
+    private final static String DEFAULT_SCOPE_COMMENT = "";
+
+    private final StringProperty scope =
+            new SimpleStringProperty(DEFAULT_SCOPE);
+
+    private final Map<String, String> scopeComments =
+            new HashMap<>();
+
+    private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(),
+            deleted = new SimpleSetProperty<>();
+
+    class UpdateMap extends SimpleMapProperty<ServerStorageStructure, SetProperty<SQLUpdateInfo>>
+    {
+        public void addUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+        {
+            SetProperty<SQLUpdateInfo> set = get(structure);
+            if (Objects.isNull(set))
+            {
+                set = new SimpleSetProperty<>();
+                put(structure, set);
+            }
+
+            set.add(new SQLUpdateInfoImpl(entry, oldValue));
+        }
+
+        public void removeUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry)
+        {
+            final SetProperty<SQLUpdateInfo> set = get(structure);
+            if (Objects.nonNull(set))
+            {
+                // Use reference equality here
+                for (final SQLUpdateInfo info : set)
+                    if (info.getEntry() == entry)
+                        set.remove(info);
+
+                if (set.isEmpty())
+                    remove(structure);
+            }
+        }
+
+        public void removeUpdates(final ServerStorageStructure structure)
+        {
+            remove(structure);
+        }
     }
 
-    public void untrack(final ServerStorageStructure structure)
-    {
+    private final UpdateMap updates = new UpdateMap();
 
+    public void onCreate(final ServerStorageStructure structure)
+    {
+        deleted.remove(created);
+        created.add(structure);
+    }
+
+    public void onDelete(final ServerStorageStructure structure)
+    {
+        created.remove(created);
+        updates.removeUpdates(structure);
+        deleted.add(structure);
+    }
+
+    public void onUpdate(final ServerStorageStructure structure,
+            final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+    {
+        if (!created.contains(structure))
+            updates.addUpdate(structure, entry, oldValue);
+    }
+
+    @Override
+    public ReadOnlySetProperty<ServerStorageStructure> structuresCreated()
+    {
+        return created;
+    }
+
+    @Override
+    public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted()
+    {
+        return deleted;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged()
+    {
+        return (ReadOnlyMapProperty)updates;
+    }
+
+    @Override
+    public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
@@ -50,13 +146,6 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public String getCommentOfScope(final String scope)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public String getCustomVariable(final ServerStorageStructure structure,
             final Pair<ObservableValue<?>, MappingMetaData> entry)
     {
@@ -65,59 +154,44 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public ReadOnlySetProperty<ServerStorageStructure> structuresCreated()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> entriesChanged()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public StringProperty scope()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return scope;
     }
 
     @Override
     public void setScope(final String scope)
     {
-        // TODO Auto-generated method stub
-
+        this.scope.set(scope);
     }
 
     @Override
     public void setScope(final String scope, final String comment)
     {
-        // TODO Auto-generated method stub
-
+        scopeComments.put(scope, comment);
+        setScope(scope);
     }
 
     @Override
     public void releaseScope()
     {
-        // TODO Auto-generated method stub
+        scope.set(DEFAULT_SCOPE);
+    }
 
+    @Override
+    public String getCommentOfScope(final String scope)
+    {
+        return scopeComments.getOrDefault(scope, DEFAULT_SCOPE_COMMENT);
+    }
+
+    /**
+     * Sets the comment of the current scope
+     * @param comment the comment you want to set
+     */
+    @Override
+    public void setScopeComment(final String comment)
+    {
+        scopeComments.put(scope.get(), comment);
     }
 
     @Override
@@ -129,13 +203,6 @@ public class ChangeTrackerImpl
 
     @Override
     public void releaseCustomVariable(final ObservableValue<?> value)
-    {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setScopeComment(final String comment)
     {
         // TODO Auto-generated method stub
 

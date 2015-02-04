@@ -10,8 +10,11 @@ package com.github.naios.wide.framework.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javafx.beans.value.ObservableValue;
 
 import org.apache.felix.service.command.Descriptor;
 import org.slf4j.Logger;
@@ -21,6 +24,7 @@ import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.framework.FrameworkService;
@@ -35,6 +39,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
@@ -42,7 +47,9 @@ import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructureImpl;
+import com.github.naios.wide.framework.internal.storage.server.ChangeTrackerImpl;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
+import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilderImpl;
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
@@ -192,12 +199,22 @@ public final class FrameworkServiceImpl implements FrameworkService
             @Override
             public void run()
             {
+                try
+                {
+                    testMe();
+                }
+                catch (final Throwable e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            public void testMe()
+            {
                 final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
                 System.out.println(String.format("DEBUG: %s", me));
 
-                final ServerStorage<CreatureTemplate> table = new ServerStorageStructureImpl<>("world", "creature_template", null);
-
-                System.getProperties().forEach((key, value) -> System.out.println(String.format("%s = %s", key, value)));
+                final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
 
                 System.out.println(String.format("DEBUG: %s", table.get(new ServerStorageKey<>(41378))));
 
@@ -261,6 +278,41 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 // System.out.println(table.getchangeTracker());
                 // System.out.println(table.getchangeTracker().getQuery());
+
+                final SQLInfoProvider sqlInfoProvider = new SQLInfoProvider()
+                {
+                    @Override
+                    public String getScopeOfStructure(final ServerStorageStructure structure)
+                    {
+                        return "";
+                    }
+
+                    @Override
+                    public String getScopeOfEntry(final ServerStorageStructure structure,
+                            final Pair<ObservableValue<?>, MappingMetaData> entry)
+                    {
+                        return "";
+                    }
+
+                    @Override
+                    public String getCustomVariable(final ServerStorageStructure structure,
+                            final Pair<ObservableValue<?>, MappingMetaData> entry)
+                    {
+                        return null;
+                    }
+
+                    @Override
+                    public String getCommentOfScope(final String scope)
+                    {
+                        return "";
+                    }
+                };
+
+                final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update = new HashMap<>();
+                final Collection<ServerStorageStructure> insert = new ArrayList<>();
+                final Collection<ServerStorageStructure> delete = new ArrayList<>();
+
+                final SQLBuilder builder = createSQLBuilder(sqlInfoProvider, update, insert, delete);
              }
 
         }).start();
@@ -288,7 +340,6 @@ public final class FrameworkServiceImpl implements FrameworkService
             final QueryTypeConfig insertConfig,
             final QueryTypeConfig deleteConfig)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new SQLBuilderImpl(sqlInfoProvider, update, insert, delete, updateConfig, insertConfig, deleteConfig);
     }
 }

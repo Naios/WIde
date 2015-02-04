@@ -16,9 +16,4 @@ public interface SQLBuilder
      * Builds our SQL query
      */
     public void write(final OutputStream stream);
-
-    /**
-     * Executes our sql batch on the connection
-     */
-    public boolean commit();
 }

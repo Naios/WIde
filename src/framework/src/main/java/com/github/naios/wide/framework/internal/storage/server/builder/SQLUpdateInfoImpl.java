@@ -45,4 +45,33 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
     {
         return oldValue;
     }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((entry == null) ? 0 : entry.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (!(obj instanceof SQLUpdateInfoImpl))
+            return false;
+        final SQLUpdateInfoImpl other = (SQLUpdateInfoImpl) obj;
+        if (entry == null)
+        {
+            if (other.entry != null)
+                return false;
+        }
+        else if (!entry.equals(other.entry))
+            return false;
+        return true;
+    }
 }

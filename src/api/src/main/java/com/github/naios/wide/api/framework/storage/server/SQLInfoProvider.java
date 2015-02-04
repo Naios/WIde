@@ -31,9 +31,8 @@ public interface SQLInfoProvider
     public String getScopeOfStructure(ServerStorageStructure structure);
 
     /**
-     *
-     * @param scope
-     * @return
+     * Returns a scope comment for the given scope
+     * @return A scope comment (never null)
      */
     public String getCommentOfScope(String scope);
 

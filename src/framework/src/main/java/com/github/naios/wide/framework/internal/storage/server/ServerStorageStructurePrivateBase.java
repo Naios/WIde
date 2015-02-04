@@ -16,7 +16,7 @@ import com.github.naios.wide.api.util.Pair;
 
 public interface ServerStorageStructurePrivateBase extends ServerStorageStructurePublicBase
 {
-    public void setOwner(final ServerStorageStructureImpl<?> owner);
+    public void setOwnerAndTracker(final ServerStorageImpl<?> owner, final ChangeTrackerImpl changeTracker);
 
     public void onCreate();
 

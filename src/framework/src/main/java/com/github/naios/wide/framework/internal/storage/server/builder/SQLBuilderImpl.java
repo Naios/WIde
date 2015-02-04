@@ -114,22 +114,6 @@ public final class SQLBuilderImpl implements SQLBuilder
         writer.close();
     }
 
-    /**
-     * Executes our sql batch on the connection
-     */
-    @Override
-    public boolean commit()
-    {
-        /*
-        if (changeTracker.connection().get() == null)
-            return false;
-
-        changeTracker.connection().get().asyncExecute(toString());
-        */
-
-        return true;
-    }
-
     @Override
     public String toString()
     {

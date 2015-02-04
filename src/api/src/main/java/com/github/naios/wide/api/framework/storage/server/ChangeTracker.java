@@ -14,9 +14,6 @@ import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.util.Pair;
-
 public interface ChangeTracker
     extends SQLInfoProvider
 {
@@ -24,7 +21,7 @@ public interface ChangeTracker
 
     public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted();
 
-    public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> entriesChanged();
+    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged();
 
     public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap();
 

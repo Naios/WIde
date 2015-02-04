@@ -88,7 +88,7 @@ class AccessedDeletedStructureException extends ServerStorageException
     }
 }
 
-public class ServerStorageStructureImpl<T extends ServerStorageStructure> implements ServerStorage<T>
+public class ServerStorageImpl<T extends ServerStorageStructure> implements ServerStorage<T>
 {
     enum PreparedStatements
     {
@@ -114,7 +114,7 @@ public class ServerStorageStructureImpl<T extends ServerStorageStructure> implem
 
     private final ChangeTrackerImpl changeTracker;
 
-    public ServerStorageStructureImpl(final String databaseId, final String tableName, final ChangeTrackerImpl changeTracker) throws ServerStorageException
+    public ServerStorageImpl(final String databaseId, final String tableName, final ChangeTrackerImpl changeTracker) throws ServerStorageException
     {
         this.databaseId = databaseId;
         this.tableName = tableName;
@@ -311,7 +311,7 @@ public class ServerStorageStructureImpl<T extends ServerStorageStructure> implem
 
         final ServerStorageStructurePrivateBase privateBase = ((ServerStorageStructurePrivateBase)structure);
 
-        privateBase.setOwner(this);
+        privateBase.setOwnerAndTracker(this, changeTracker);
         privateBase.onCreate();
         return structure;
     }
@@ -361,7 +361,7 @@ public class ServerStorageStructureImpl<T extends ServerStorageStructure> implem
         if (getClass() != obj.getClass())
             return false;
         @SuppressWarnings("rawtypes")
-        final ServerStorageStructureImpl other = (ServerStorageStructureImpl) obj;
+        final ServerStorageImpl other = (ServerStorageImpl) obj;
         if (databaseId != other.databaseId)
             return false;
         if (tableName == null)
