@@ -12,7 +12,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 
-public interface ServerStoragePublicBase
+public interface ServerStorageStructurePublicBase
 {
     public ServerStorage<?> getOwner();
 

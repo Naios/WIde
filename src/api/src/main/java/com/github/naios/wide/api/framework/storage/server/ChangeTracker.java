@@ -17,12 +17,9 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.Pair;
 
-public interface StructureChangeTracker
+public interface ChangeTracker
+    extends SQLInfoProvider
 {
-    public void track(ServerStorageStructure structure);
-
-    public void untrack(ServerStorageStructure structure);
-
     public ReadOnlySetProperty<ServerStorageStructure> structuresCreated();
 
     public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted();
@@ -65,13 +62,6 @@ public interface StructureChangeTracker
      * Releases a custom variable of an observable value
      */
     public void releaseCustomVariable(ObservableValue<?> value);
-
-    /**
-     * Gets the custom variable of the observable value
-     * @param value The observable value we want to get the variable name of
-     * @return null if not existing, variable name otherwise
-     */
-    public String getCustomVariable(ObservableValue<?> value);
 
     /**
      * Sets the comment of the current scope

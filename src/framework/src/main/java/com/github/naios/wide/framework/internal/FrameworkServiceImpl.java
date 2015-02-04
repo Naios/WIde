@@ -36,13 +36,13 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.RandomUtil;
-import com.github.naios.wide.entities.client.MapEntry;
+import com.github.naios.wide.entities.client.DBCMapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
-import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
+import com.github.naios.wide.framework.internal.storage.server.ServerStorageStructureImpl;
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
@@ -192,10 +192,10 @@ public final class FrameworkServiceImpl implements FrameworkService
             @Override
             public void run()
             {
-                final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
+                final ClientStorage<DBCMapEntry> me = new ClientStorageSelector<DBCMapEntry>("Map.dbc").select();
                 System.out.println(String.format("DEBUG: %s", me));
 
-                final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template");
+                final ServerStorage<CreatureTemplate> table = new ServerStorageStructureImpl<>("world", "creature_template", null);
 
                 System.getProperties().forEach((key, value) -> System.out.println(String.format("%s = %s", key, value)));
 

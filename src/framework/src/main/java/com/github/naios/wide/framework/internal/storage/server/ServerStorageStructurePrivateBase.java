@@ -11,12 +11,12 @@ package com.github.naios.wide.framework.internal.storage.server;
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.ServerStoragePublicBase;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructurePublicBase;
 import com.github.naios.wide.api.util.Pair;
 
-public interface ServerStoragePrivateBase extends ServerStoragePublicBase
+public interface ServerStorageStructurePrivateBase extends ServerStorageStructurePublicBase
 {
-    public void setOwner(final ServerStorageImpl<?> owner);
+    public void setOwner(final ServerStorageStructureImpl<?> owner);
 
     public void onCreate();
 

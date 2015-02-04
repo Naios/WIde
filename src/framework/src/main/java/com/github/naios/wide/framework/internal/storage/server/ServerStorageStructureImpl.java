@@ -27,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
@@ -87,7 +88,7 @@ class AccessedDeletedStructureException extends ServerStorageException
     }
 }
 
-public class ServerStorageImpl<T extends ServerStorageStructure> implements ServerStorage<T>
+public class ServerStorageStructureImpl<T extends ServerStorageStructure> implements ServerStorage<T>
 {
     enum PreparedStatements
     {
@@ -111,10 +112,13 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private final String structureName;
 
-    public ServerStorageImpl(final String databaseId, final String tableName) throws ServerStorageException
+    private final ChangeTrackerImpl changeTracker;
+
+    public ServerStorageStructureImpl(final String databaseId, final String tableName, final ChangeTrackerImpl changeTracker) throws ServerStorageException
     {
         this.databaseId = databaseId;
         this.tableName = tableName;
+        this.changeTracker = changeTracker;
 
         final TableSchema schema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
                 .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
@@ -126,7 +130,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                 (MappingAdapterHolder<ResultSet, T, ObservableValue<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
 
         mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema, adapter,
-                Arrays.asList(ServerStoragePrivateBase.class), ServerStorageBaseImplementation.class);
+                Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -163,6 +167,12 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     public String getDatabaseId()
     {
         return databaseId;
+    }
+
+    @Override
+    public ChangeTracker getChangeTracker()
+    {
+        return changeTracker;
     }
 
     @Override
@@ -299,7 +309,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
         cache.put(structure.hashCode(), structure);
 
-        final ServerStoragePrivateBase privateBase = ((ServerStoragePrivateBase)structure);
+        final ServerStorageStructurePrivateBase privateBase = ((ServerStorageStructurePrivateBase)structure);
 
         privateBase.setOwner(this);
         privateBase.onCreate();
@@ -351,7 +361,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         if (getClass() != obj.getClass())
             return false;
         @SuppressWarnings("rawtypes")
-        final ServerStorageImpl other = (ServerStorageImpl) obj;
+        final ServerStorageStructureImpl other = (ServerStorageStructureImpl) obj;
         if (databaseId != other.databaseId)
             return false;
         if (tableName == null)

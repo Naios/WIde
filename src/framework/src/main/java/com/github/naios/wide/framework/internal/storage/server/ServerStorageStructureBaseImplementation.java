@@ -181,8 +181,8 @@ class HistoryRedirect
     }
 }
 
-public class ServerStorageBaseImplementation
-    implements ServerStoragePrivateBase, MappingCallback<ServerStorageStructure>
+public class ServerStorageStructureBaseImplementation
+    implements ServerStorageStructurePrivateBase, MappingCallback<ServerStorageStructure>
 {
     private ServerStorageStructure me;
 
@@ -197,7 +197,7 @@ public class ServerStorageBaseImplementation
     private final ObjectProperty<UpdatePolicy> updatePolicy =
             new SimpleObjectProperty<>(UpdatePolicy.DEFAULT_POLICY);
 
-    private ServerStorageImpl<?> owner;
+    private ServerStorageStructureImpl<?> owner;
 
     @Override
     public void callback(final ServerStorageStructure structure)
@@ -217,13 +217,13 @@ public class ServerStorageBaseImplementation
     }
 
     @Override
-    public ServerStorageImpl<?> getOwner()
+    public ServerStorageStructureImpl<?> getOwner()
     {
         return owner;
     }
 
     @Override
-    public void setOwner(final ServerStorageImpl<?> owner)
+    public void setOwner(final ServerStorageStructureImpl<?> owner)
     {
         this.owner = owner;
     }
