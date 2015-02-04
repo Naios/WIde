@@ -18,9 +18,7 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.CrossIterator;
@@ -73,21 +71,14 @@ public class SQLMaker
 
     protected static final String NEWLINE = "\n";
 
+    private final SQLBuilder builder;
+
     private final SQLVariableHolder vars;
 
-    private final SQLInfoProvider sqlInfoProvider;
-
-    private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
-
-    public SQLMaker(final SQLVariableHolder vars, final SQLInfoProvider sqlInfoProvider,
-            final QueryTypeConfig updateConfig, final QueryTypeConfig insertConfig,
-            final QueryTypeConfig deleteConfig)
+    public SQLMaker(final SQLBuilder builder, final SQLVariableHolder vars)
     {
         this.vars = vars;
-        this.sqlInfoProvider = sqlInfoProvider;
-        this.updateConfig = updateConfig;
-        this.insertConfig = insertConfig;
-        this.deleteConfig = deleteConfig;
+        this.builder = builder;
     }
 
     /**
@@ -173,7 +164,7 @@ public class SQLMaker
         if (variablize)
         {
             // If the observable has a custom var use it
-            final String customVar = sqlInfoProvider.getCustomVariable(structure, sqlUpdateInfo.getEntry());
+            final String customVar = builder.getSQLInfoProvider().getCustomVariable(structure, sqlUpdateInfo.getEntry());
             if (customVar != null)
                 return vars.addVariable(customVar, sqlUpdateInfo.getEntry().first().getValue());
 

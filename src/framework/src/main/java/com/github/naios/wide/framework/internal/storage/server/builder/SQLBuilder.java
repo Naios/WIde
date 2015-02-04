@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -23,22 +24,61 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 /**
  * Implementation of an SQLBuilder based on storage holders
  */
-public class SQLBuilder
+public final class SQLBuilder
 {
     private final SQLInfoProvider sqlInfoProvider;
+
+    private final SQLMaker sqlMaker;
 
     private final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update;
     private final Collection<ServerStorageStructure> insert, delete;
 
+    private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
+
     public SQLBuilder(final SQLInfoProvider sqlInfoProvider,
             final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
-            final Collection<ServerStorageStructure> delete)
+            final Collection<ServerStorageStructure> delete,
+            final QueryTypeConfig updateConfig,
+            final QueryTypeConfig insertConfig,
+            final QueryTypeConfig deleteConfig)
     {
         this.sqlInfoProvider = sqlInfoProvider;
+
         this.update = update;
         this.insert = insert;
         this.delete = delete;
+
+        this.updateConfig = updateConfig;
+        this.insertConfig = insertConfig;
+        this.deleteConfig = deleteConfig;
+
+        this.sqlMaker = new SQLMaker(this, new SQLVariableHolder());
+    }
+
+    public SQLInfoProvider getSQLInfoProvider()
+    {
+        return sqlInfoProvider;
+    }
+
+    public SQLMaker getSqlMaker()
+    {
+        return sqlMaker;
+    }
+
+    public QueryTypeConfig getUpdateConfig()
+    {
+        return updateConfig;
+    }
+
+    public QueryTypeConfig getInsertConfig()
+    {
+        return insertConfig;
+    }
+
+    public QueryTypeConfig getDeleteConfig()
+    {
+        return deleteConfig;
     }
 
     /**
@@ -50,7 +90,7 @@ public class SQLBuilder
 
         // Pre calculate everything
         final SQLVariableHolder vars = new SQLVariableHolder();
-        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(sqlInfoProvider, update, insert, delete);
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(this, update, insert, delete);
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())

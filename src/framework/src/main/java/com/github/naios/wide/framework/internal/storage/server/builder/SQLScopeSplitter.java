@@ -31,12 +31,14 @@ public abstract class SQLScopeSplitter<T> implements Consumer<T>
         SQLScope scope = scopes.get(name);
         if (scope == null)
         {
-            scope = new SQLScope();
+            scope = new SQLScope(getSQLBuilder());
             scopes.put(name, scope);
         }
 
         addObservable(scope, entry);
     }
+
+    public abstract SQLBuilder getSQLBuilder();
 
     public abstract String getScope(T entry);
 
