@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
 import org.apache.felix.service.command.Descriptor;
@@ -226,7 +229,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                 final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151));
                 final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69));
 
-                // table.getchangeTracker().setScope("test scope", "simple modify test");
+                table.getChangeTracker().setScope("test scope", "simple modify test");
 
                 ct1.name().set("blub");
 
@@ -235,13 +238,12 @@ public final class FrameworkServiceImpl implements FrameworkService
                 ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
                 ct3.kill_credit1().set(123456);
-                // table.getchangeTracker().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
+                table.getChangeTracker().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
 
-                /* table.getchangeTracker().setScope(
+                table.getChangeTracker().setScope(
                         "test flag scope",
                         "some flag tests\nadds some strange flags to maloriak\n"
                                 + "it only updates flags that have changed");
-                                */
 
                 ct2.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_UNK_6);
 
@@ -252,10 +254,10 @@ public final class FrameworkServiceImpl implements FrameworkService
                 ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
                 ct2.name().set("hey im here");
 
-                // table.getchangeTracker().setScope("delete scope", "deletes a creature template");
+                table.getChangeTracker().setScope("delete scope", "deletes a creature template");
                 ct4.delete();
 
-                // table.getchangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
+                table.getChangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
                 {
                     final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i));
@@ -263,11 +265,11 @@ public final class FrameworkServiceImpl implements FrameworkService
                         deleteMe.delete();
                 }
 
-                // table.getchangeTracker().setScope("create scope 1", "creates one new creature template...");
+                table.getChangeTracker().setScope("create scope 1", "creates one new creature template...");
                 final CreatureTemplate myqueryentry = table.create(new ServerStorageKey<>(1000000));
                 myqueryentry.name().set("my test name");
 
-                // table.getchangeTracker().setScope("create scope 2", "creates 5 templates with random values");
+                table.getChangeTracker().setScope("create scope 2", "creates 5 templates with random values");
                 for (int i = 2000000; i < 2000005; ++i)
                 {
                     final CreatureTemplate template = table.create(new ServerStorageKey<>(i));
@@ -278,8 +280,8 @@ public final class FrameworkServiceImpl implements FrameworkService
                     template.name().set(RandomUtil.getString(RandomUtil.getInt(3, 15)));
                 }
 
-                // System.out.println(table.getchangeTracker());
-                // System.out.println(table.getchangeTracker().getQuery());
+                System.out.println(table.getChangeTracker());
+                // System.out.println(table.getChangeTracker().getQuery());
 
                 final SQLInfoProvider sqlInfoProvider = new SQLInfoProvider()
                 {
@@ -324,7 +326,50 @@ public final class FrameworkServiceImpl implements FrameworkService
                 final Collection<ServerStorageStructure> delete = new ArrayList<>();
                 insert.add(ct4);
 
-                System.out.println(createSQLBuilder(sqlInfoProvider, update, insert, delete));
+                final QueryTypeConfig falseConfig = new QueryTypeConfig()
+                {
+                    private final BooleanProperty falseProperty = new SimpleBooleanProperty(false)
+                    {
+                        {
+                            addListener(new ChangeListener<Boolean>()
+                            {
+                                @Override
+                                public void changed(
+                                        final ObservableValue<? extends Boolean> observable,
+                                        final Boolean oldValue, final Boolean newValue)
+                                {
+                                    throw new UnsupportedOperationException();
+                                }
+                            });
+                        }
+                    };
+
+                    @Override
+                    public BooleanProperty alias()
+                    {
+                        return falseProperty;
+                    }
+
+                    @Override
+                    public BooleanProperty flags()
+                    {
+                        return falseProperty;
+                    }
+
+                    @Override
+                    public BooleanProperty enums()
+                    {
+                        return falseProperty;
+                    }
+
+                    @Override
+                    public BooleanProperty custom()
+                    {
+                        return falseProperty;
+                    }
+                };
+
+                System.out.println(createSQLBuilder(sqlInfoProvider, update, insert, delete, falseConfig, falseConfig, falseConfig));
 
                 System.out.println("\n--\n");
 

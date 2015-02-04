@@ -29,8 +29,6 @@ public final class SQLBuilderImpl implements SQLBuilder
 {
     private final SQLInfoProvider sqlInfoProvider;
 
-    private final SQLMaker sqlMaker;
-
     private final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update;
     private final Collection<ServerStorageStructure> insert, delete;
 
@@ -55,8 +53,6 @@ public final class SQLBuilderImpl implements SQLBuilder
         this.updateConfig = updateConfig;
         this.insertConfig = insertConfig;
         this.deleteConfig = deleteConfig;
-
-        this.sqlMaker = new SQLMaker(this, variableHolder);
     }
 
     public SQLInfoProvider getSQLInfoProvider()
@@ -64,9 +60,9 @@ public final class SQLBuilderImpl implements SQLBuilder
         return sqlInfoProvider;
     }
 
-    public SQLMaker getSQLMaker()
+    public SQLVariableHolder getVariableHolder()
     {
-        return sqlMaker;
+        return variableHolder;
     }
 
     public QueryTypeConfig getUpdateConfig()

@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -75,10 +76,13 @@ public final class SQLMaker
 
     private final SQLVariableHolder vars;
 
-    public SQLMaker(final SQLBuilderImpl builder, final SQLVariableHolder vars)
+    private final QueryTypeConfig queryConfig;
+
+    public SQLMaker(final SQLBuilderImpl builder, final QueryTypeConfig queryConfig)
     {
-        this.vars = vars;
+        this.vars = builder.getVariableHolder();
         this.builder = builder;
+        this.queryConfig = queryConfig;
     }
 
     /**
@@ -136,7 +140,7 @@ public final class SQLMaker
                 new CrossIterator<>(structures, structure ->
                 {
                     final Pair<ObservableValue<?>, MappingMetaData> field = structure.getKeys().get(0);
-                    return createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field), true);
+                    return createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field));
                 }));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
@@ -153,107 +157,121 @@ public final class SQLMaker
     /**
      * Creates field equals value clause.
      */
-    private String createNameEqualsValue(final ServerStorageStructure structure, final SQLUpdateInfo field, final boolean variablize)
+    private String createNameEqualsValue(final ServerStorageStructure structure, final SQLUpdateInfo field)
     {
-        return createNameEqualsName(createName(field.getEntry().second()), createValueOfObservableValue(structure, field, variablize));
+        return createNameEqualsName(createName(field.getEntry().second()), createValueOfObservableValue(structure, field));
     }
 
     @SuppressWarnings({ "rawtypes" })
-    private String createValueOfObservableValue(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo, final boolean variablize)
+    private String createValueOfObservableValue(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo)
     {
-        if (variablize)
+        // If the observable has a custom var use it
+        if (queryConfig.custom().get())
         {
-            // If the observable has a custom var use it
             final String customVar = builder.getSQLInfoProvider().getCustomVariable(structure, sqlUpdateInfo.getEntry());
             if (customVar != null)
                 return vars.addVariable(customVar, sqlUpdateInfo.getEntry().first().getValue());
-
-            // Enum alias
-            if ((sqlUpdateInfo.getEntry().first() instanceof EnumProperty || sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
-                    && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
-            {
-                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(sqlUpdateInfo.getEntry().second().getAlias());
-
-                final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getEntry().first();
-
-                // Enum Property (Absolute value)
-                if (sqlUpdateInfo.getEntry().first() instanceof EnumProperty)
-                    return vars.addVariable(enumeration.getEnumConstants()[integerProperty.get()].name(), sqlUpdateInfo.getEntry().first().getValue());
-                // Flag Property (Relative value)
-                else if (sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
-                {
-                    // FlagProperties only occur in set statements
-                    final int currentFlagValue = ((FlagProperty) sqlUpdateInfo.getEntry().first()).get();
-                    final int oldFlagValue;
-
-                    if (!sqlUpdateInfo.getOldValue().isPresent() ||
-                        !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
-                        oldFlagValue = 0;
-                    else
-                        oldFlagValue = (int) sqlUpdateInfo.getOldValue().get();
-
-                    // Get flag values of flags in database and in the current observable
-                    final List<? extends Enum> currentFlags = FlagUtil.getFlagList(enumeration, currentFlagValue);
-                    final List<? extends Enum> oldFlags = FlagUtil.getFlagList(enumeration, oldFlagValue);
-
-                    // Now we calculate the difference
-                    // Add Flags:
-                    final List<Enum> addFlags = new ArrayList<>();
-                    addFlags.addAll(currentFlags);
-                    addFlags.removeAll(oldFlags);
-
-                    // Remove Flags:
-                    final List<Enum> removeFlags = new ArrayList<>();
-                    removeFlags.addAll(oldFlags);
-                    removeFlags.removeAll(currentFlags);
-
-                    if ((!addFlags.isEmpty()) || (!removeFlags.isEmpty()))
-                    {
-                        final StringBuilder builder = new StringBuilder();
-
-                        if (!removeFlags.isEmpty())
-                            builder.append("(");
-
-                        if (!oldFlags.isEmpty())
-                            builder.append(createName(sqlUpdateInfo.getEntry().second()));
-
-                        if (!removeFlags.isEmpty())
-                        {
-                            builder.append(" &~ (");
-
-                            builder.append(concatFlags(removeFlags));
-
-                            builder.append("))");
-                        }
-
-                        if (!addFlags.isEmpty())
-                        {
-                            if (!oldFlags.isEmpty())
-                                builder.append(FLAG_DELEMITER);
-
-                            builder.append(concatFlags(addFlags));
-                        }
-
-                        return builder.toString();
-                    }
-                    else if (currentFlags.isEmpty())
-                        return String.valueOf(FlagUtil.DEFAULT_VALUE);
-                    else // If Values are not different
-                        return concatFlags(currentFlags);
-                }
-            }
-            // Namestorage alias
-            else if ((sqlUpdateInfo.getEntry().first() instanceof ReadOnlyIntegerProperty) && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
-            {
-                final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getEntry().first();
-
-                final String name = FrameworkServiceImpl.getInstance().requestAlias(sqlUpdateInfo.getEntry().second().getAlias(), integerProperty.get());
-                if (name != null)
-                    return vars.addVariable(name, sqlUpdateInfo.getEntry().first().getValue());
-            }
         }
 
-        return new FormatterWrapper(sqlUpdateInfo.getEntry().first().getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
+        // Enum alias
+        if ((((sqlUpdateInfo.getEntry().first() instanceof EnumProperty) && queryConfig.enums().get())
+                || ((sqlUpdateInfo.getEntry().first() instanceof FlagProperty) && queryConfig.flags().get()))
+                && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
+        {
+            final Class<? extends Enum> enumeration = FrameworkServiceImpl
+                    .getEntityService().requestEnumForName(
+                            sqlUpdateInfo.getEntry().second().getAlias());
+
+            final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo
+                    .getEntry().first();
+
+            // Enum Property (Absolute value)
+            if (sqlUpdateInfo.getEntry().first() instanceof EnumProperty)
+                return vars.addVariable(enumeration.getEnumConstants()[integerProperty.get()].name(), sqlUpdateInfo.getEntry().first().getValue());
+            // Flag Property (Relative value)
+            else if (sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
+            {
+                // FlagProperties only occur in set statements
+                final int currentFlagValue = ((FlagProperty) sqlUpdateInfo
+                        .getEntry().first()).get();
+                final int oldFlagValue;
+
+                if (!sqlUpdateInfo.getOldValue().isPresent()
+                        || !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
+                    oldFlagValue = 0;
+                else
+                    oldFlagValue = (int) sqlUpdateInfo.getOldValue().get();
+
+                // Get flag values of flags in database and in the current
+                // observable
+                final List<? extends Enum> currentFlags = FlagUtil.getFlagList(
+                        enumeration, currentFlagValue);
+                final List<? extends Enum> oldFlags = FlagUtil.getFlagList(
+                        enumeration, oldFlagValue);
+
+                // Now we calculate the difference
+                // Add Flags:
+                final List<Enum> addFlags = new ArrayList<>();
+                addFlags.addAll(currentFlags);
+                addFlags.removeAll(oldFlags);
+
+                // Remove Flags:
+                final List<Enum> removeFlags = new ArrayList<>();
+                removeFlags.addAll(oldFlags);
+                removeFlags.removeAll(currentFlags);
+
+                if ((!addFlags.isEmpty()) || (!removeFlags.isEmpty()))
+                {
+                    final StringBuilder builder = new StringBuilder();
+
+                    if (!removeFlags.isEmpty())
+                        builder.append("(");
+
+                    if (!oldFlags.isEmpty())
+                        builder.append(createName(sqlUpdateInfo.getEntry().second()));
+
+                    if (!removeFlags.isEmpty())
+                    {
+                        builder.append(" &~ (");
+
+                        builder.append(concatFlags(removeFlags));
+
+                        builder.append("))");
+                    }
+
+                    if (!addFlags.isEmpty())
+                    {
+                        if (!oldFlags.isEmpty())
+                            builder.append(FLAG_DELEMITER);
+
+                        builder.append(concatFlags(addFlags));
+                    }
+
+                    return builder.toString();
+                }
+                else if (currentFlags.isEmpty())
+                    return String.valueOf(FlagUtil.DEFAULT_VALUE);
+                else
+                    // If Values are not different
+                    return concatFlags(currentFlags);
+            }
+        }
+        // Namestorage alias
+        else if ((sqlUpdateInfo.getEntry().first() instanceof ReadOnlyIntegerProperty)
+                    && queryConfig.alias().get()
+                        && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
+        {
+            final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getEntry().first();
+
+            final String name = FrameworkServiceImpl.getInstance()
+                    .requestAlias(sqlUpdateInfo.getEntry().second().getAlias(), integerProperty.get());
+
+            if (name != null)
+                return vars.addVariable(name, sqlUpdateInfo.getEntry().first().getValue());
+        }
+
+        return new FormatterWrapper(sqlUpdateInfo.getEntry().first().getValue(),
+                FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
     }
 
     /**
@@ -303,7 +321,7 @@ public final class SQLMaker
                     {
                         return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), field ->
                         {
-                            return createNameEqualsValue(structure, new SQLUpdateInfoImpl(field), true);
+                            return createNameEqualsValue(structure, new SQLUpdateInfoImpl(field));
                         }));
                     }));
         }
@@ -315,7 +333,7 @@ public final class SQLMaker
     protected String createUpdateFields(final ServerStorageStructure structure, final Collection<SQLUpdateInfo> collection)
     {
         final Set<String> statements = new TreeSet<>();
-        collection.forEach(field -> statements.add(createNameEqualsValue(structure, field, true)));
+        collection.forEach(field -> statements.add(createNameEqualsValue(structure, field)));
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }
@@ -355,7 +373,7 @@ public final class SQLMaker
                 {
                     return "(" + StringUtil.concat(COMMA + SPACE,
                             new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(structure,
-                                    field -> createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field), true))) + ")";
+                                    field -> createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field)))) + ")";
                 }));
     }
 

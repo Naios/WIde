@@ -106,11 +106,11 @@
       },
       "DELETE": {
         "custom": true,
-        "names": true
+        "alias": true
       },
       "UPDATE": {
         "custom": true,
-        "names": true,
+        "alias": true,
         "enums": true,
         "flags": true
       }

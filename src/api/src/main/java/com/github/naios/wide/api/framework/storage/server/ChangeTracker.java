@@ -8,7 +8,6 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.StringProperty;
@@ -23,7 +22,11 @@ public interface ChangeTracker
 
     public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged();
 
-    public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap();
+    /**
+     * Planned but not supported yet!
+     * @return
+     */
+    // public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap();
 
     /**
      * @return Our scope property

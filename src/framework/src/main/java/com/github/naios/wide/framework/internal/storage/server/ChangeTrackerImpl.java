@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.SetProperty;
@@ -26,9 +25,7 @@ import javafx.collections.FXCollections;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.StructureChangeEvent;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
@@ -129,12 +126,15 @@ public class ChangeTrackerImpl
         return (ReadOnlyMapProperty)updates;
     }
 
-    @Override
-    public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    /*
+     * Planned but not supported yet!
+     * @Override
+     * public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap()
+     * {
+     *     // TODO Auto-generated method stub
+     *     return null;
+     * }
+     */
 
     @Override
     public String getScopeOfEntry(final ServerStorageStructure structure,
@@ -204,14 +204,12 @@ public class ChangeTrackerImpl
     public void setCustomVariable(final ObservableValue<?> value, final String name)
     {
         // TODO Auto-generated method stub
-
     }
 
     @Override
     public void releaseCustomVariable(final ObservableValue<?> value)
     {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -225,7 +223,6 @@ public class ChangeTrackerImpl
     public void commit()
     {
         // TODO Auto-generated method stub
-
     }
 
     @Override

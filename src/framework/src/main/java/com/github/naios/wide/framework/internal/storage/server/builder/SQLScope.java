@@ -162,18 +162,20 @@ public final class SQLScope
     private void buildUpdates(final StringBuilder builder,
             final Multimap<ServerStorageStructure, SQLUpdateInfo> multimap)
     {
+        final SQLMaker sqlMaker = new SQLMaker(sqlBuilder, sqlBuilder.getUpdateConfig());
+
         // TODO Group updates by key or updates
         final Multimap<String /*changes*/, ServerStorageStructure> changesPerStructure = HashMultimap.create();
 
         // Build Changeset (updates without key)
         for (final Entry<ServerStorageStructure, Collection<SQLUpdateInfo>> info : multimap.asMap().entrySet())
-            changesPerStructure.put(sqlBuilder.getSQLMaker().createUpdateFields(info.getKey(), info.getValue()), info.getKey());
+            changesPerStructure.put(sqlMaker.createUpdateFields(info.getKey(), info.getValue()), info.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = Iterables.get(change.getValue(), 0).getOwner().getTableName();
 
-            final String keyPart = sqlBuilder.getSQLMaker().createKeyPart(change.getValue());
+            final String keyPart = sqlMaker.createKeyPart(change.getValue());
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
@@ -182,9 +184,11 @@ public final class SQLScope
     private void buildDeletes(final StringBuilder builder,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures)
     {
+        final SQLMaker sqlMaker = new SQLMaker(sqlBuilder, sqlBuilder.getDeleteConfig());
+
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
-        final String keyPart = sqlBuilder.getSQLMaker().createKeyPart(structures.getValue());
+        final String keyPart = sqlMaker.createKeyPart(structures.getValue());
         builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
     }
 
@@ -194,13 +198,15 @@ public final class SQLScope
         // Build delete before insert querys
         buildDeletes(builder, structures);
 
+        final SQLMaker sqlMaker = new SQLMaker(sqlBuilder, sqlBuilder.getInsertConfig());
+
         if (!structures.getValue().isEmpty())
             builder.setLength(builder.length() - "\n".length());
 
         final ServerStorageStructure anyStructure = Iterables.get(structures.getValue(), 0);
-        final String valuePart = sqlBuilder.getSQLMaker().createInsertValuePart(structures.getValue());
+        final String valuePart = sqlMaker.createInsertValuePart(structures.getValue());
 
-        builder.append(sqlBuilder.getSQLMaker().createInsertQuery(anyStructure.getOwner().getTableName(),
+        builder.append(sqlMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
                 anyStructure.getValues(), valuePart)).append("\n");
     }
 }

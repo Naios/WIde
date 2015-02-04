@@ -16,7 +16,7 @@ import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class QueryTypeConfigImpl implements QueryTypeConfig
 {
-    private BooleanProperty custom = new SimpleBooleanProperty(false), names = new SimpleBooleanProperty(false),
+    private BooleanProperty custom = new SimpleBooleanProperty(false), alias = new SimpleBooleanProperty(false),
             enums = new SimpleBooleanProperty(false), flags = new SimpleBooleanProperty(false);
 
     @Override
@@ -26,9 +26,9 @@ public class QueryTypeConfigImpl implements QueryTypeConfig
     }
 
     @Override
-    public BooleanProperty names()
+    public BooleanProperty alias()
     {
-        return names;
+        return alias;
     }
 
     @Override

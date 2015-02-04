@@ -14,7 +14,7 @@ public interface QueryTypeConfig
 {
     public BooleanProperty custom();
 
-    public BooleanProperty names();
+    public BooleanProperty alias();
 
     public BooleanProperty enums();
 
