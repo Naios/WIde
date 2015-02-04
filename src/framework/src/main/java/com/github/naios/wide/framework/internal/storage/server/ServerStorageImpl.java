@@ -202,6 +202,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private void registerStatements()
     {
+        // FIXME this is registered multiple times
         database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
     }
 
@@ -312,7 +313,10 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         final ServerStorageStructurePrivateBase privateBase = ((ServerStorageStructurePrivateBase)structure);
 
         privateBase.setOwnerAndTracker(this, changeTracker);
-        privateBase.onCreate();
+
+        if (created)
+            privateBase.onCreate();
+
         return structure;
     }
 

@@ -10,6 +10,7 @@ package com.github.naios.wide.api.framework;
 
 import java.util.Map;
 
+// TODO convert this into a service
 public interface AliasFactory
 {
     /**
