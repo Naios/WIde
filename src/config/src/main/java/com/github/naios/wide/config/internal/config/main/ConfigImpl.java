@@ -47,7 +47,7 @@ public class ConfigImpl implements Config
     private Map<String, EnviromentConfigImpl> enviroments =
             new HashMap<String, EnviromentConfigImpl>();
 
-    private QueryConfigImpl querys;
+    private QueryConfigImpl queries;
 
     private BooleanProperty compress = new SimpleBooleanProperty(true);
 
@@ -97,7 +97,7 @@ public class ConfigImpl implements Config
     @Override
     public QueryConfig getQueryConfig()
     {
-        return querys;
+        return queries;
     }
 
     @Override

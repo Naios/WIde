@@ -144,15 +144,15 @@ public final class SQLScope
     {
         final StringBuilder builder = new StringBuilder();
 
-        // Build delete querys for each structure
+        // Build delete queries for each structure
         for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : delete.asMap().entrySet())
             buildDeletes(builder, structure);
 
-        // Build insert querys for each structure
+        // Build insert queries for each structure
         for (final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structure : insert.asMap().entrySet())
             buildInserts(builder, structure);
 
-        // Build upate querys for each structure
+        // Build upate queries for each structure
         for (final Entry<ServerStorage<?>, Multimap<ServerStorageStructure, SQLUpdateInfo>> structure : update.entrySet())
             buildUpdates(builder,  structure.getValue());
 
@@ -198,7 +198,7 @@ public final class SQLScope
     private void buildInserts(final StringBuilder builder,
             final Entry<ServerStorage<?>, Collection<ServerStorageStructure>> structures)
     {
-        // Build delete before insert querys
+        // Build delete before insert queries
         buildDeletes(builder, structures);
 
         final SQLMaker sqlMaker = new SQLMaker(sqlBuilder, sqlBuilder.getInsertConfig());

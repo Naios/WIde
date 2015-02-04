@@ -56,7 +56,7 @@ public class DatabaseImpl implements Database
     private final Map<Object, PreparedStatement> preparedStatements =
             new HashMap<>();
 
-    private final Map<Object, String> preparedStatementQuerys =
+    private final Map<Object, String> preparedStatementQueries =
             new HashMap<>();
 
     private final ExecutorService pool = Executors.newSingleThreadExecutor();
@@ -86,7 +86,7 @@ public class DatabaseImpl implements Database
             this.syncConnection = DriverManager.getConnection(connectionString, user, password);
             this.asyncConnection = DriverManager.getConnection(connectionString, user, password);
 
-            for (final Entry<Object, String> query : preparedStatementQuerys.entrySet())
+            for (final Entry<Object, String> query : preparedStatementQueries.entrySet())
                 preparedStatements.put(query.getKey(), syncConnection.prepareStatement(query.getValue()));
         }
         catch (final SQLException e)
@@ -212,12 +212,12 @@ public class DatabaseImpl implements Database
     public void createPreparedStatement(final Object id, final String statement)
             throws UncheckedSQLException
     {
-        if (preparedStatementQuerys.containsKey(id))
+        if (preparedStatementQueries.containsKey(id))
             throw new UncheckedSQLException(String.format("Prepared statement %s already exists!", id));
 
         updateAliveStatus();
 
-        preparedStatementQuerys.put(id, statement);
+        preparedStatementQueries.put(id, statement);
 
         try
         {
@@ -234,7 +234,7 @@ public class DatabaseImpl implements Database
             throws UncheckedSQLException
     {
         updateAliveStatus();
-        preparedStatementQuerys.remove(id);
+        preparedStatementQueries.remove(id);
 
         final PreparedStatement statement = preparedStatements.get(id);
         synchronized (statement)

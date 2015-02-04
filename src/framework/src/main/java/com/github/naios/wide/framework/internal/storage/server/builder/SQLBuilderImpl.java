@@ -92,21 +92,21 @@ public final class SQLBuilderImpl implements SQLBuilder
 
         // Pre calculate everything
         final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(this, update, insert, delete);
-        final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
+        final Map<String /*scope*/, String /*query*/> queries = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery());
+            queries.put(entry.getKey(), entry.getValue().buildQuery());
 
         variableHolder.writeQuery(writer);
 
-        for (final Entry<String, String> entry : querys.entrySet())
+        for (final Entry<String, String> entry : queries.entrySet())
         {
             final String comment = sqlInfoProvider.getCommentOfScope(entry.getKey());
 
             if (!comment.isEmpty())
                 writer.println(SQLMaker.createComment(comment));
 
-            // The actual scope querys
+            // The actual scope queries
             writer.print(entry.getValue());
         }
 

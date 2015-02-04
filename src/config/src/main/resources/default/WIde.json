@@ -99,7 +99,7 @@
       }
     }
   },
-  "querys": {
+  "queries": {
     "types": {
       "INSERT": {
         "custom": true
