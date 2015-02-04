@@ -10,7 +10,8 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 
 import com.github.naios.wide.api.util.StringUtil;
 
-class SQLVariable implements Comparable<SQLVariable>
+final class SQLVariable
+    implements Comparable<SQLVariable>
 {
     private final String name, value, prefix;
 

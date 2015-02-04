@@ -15,10 +15,26 @@ import com.github.naios.wide.api.util.Pair;
 
 public interface SQLInfoProvider
 {
+    /**
+     *
+     * @param structure
+     * @param entry
+     * @return
+     */
     public String getScopeOfEntry(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
 
+    /**
+     *
+     * @param structure
+     * @return
+     */
     public String getScopeOfStructure(ServerStorageStructure structure);
 
+    /**
+     *
+     * @param scope
+     * @return
+     */
     public String getCommentOfScope(String scope);
 
     /**

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
+import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -24,7 +25,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 /**
  * Implementation of an SQLBuilder based on storage holders
  */
-public final class SQLBuilder
+public final class SQLBuilderImpl implements SQLBuilder
 {
     private final SQLInfoProvider sqlInfoProvider;
 
@@ -35,7 +36,7 @@ public final class SQLBuilder
 
     private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
 
-    public SQLBuilder(final SQLInfoProvider sqlInfoProvider,
+    public SQLBuilderImpl(final SQLInfoProvider sqlInfoProvider,
             final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete,
@@ -61,7 +62,7 @@ public final class SQLBuilder
         return sqlInfoProvider;
     }
 
-    public SQLMaker getSqlMaker()
+    public SQLMaker getSQLMaker()
     {
         return sqlMaker;
     }
@@ -84,6 +85,7 @@ public final class SQLBuilder
     /**
      * Builds our SQL query
      */
+    @Override
     public void write(final OutputStream stream)
     {
         final PrintWriter writer = new PrintWriter(stream);
@@ -115,6 +117,7 @@ public final class SQLBuilder
     /**
      * Executes our sql batch on the connection
      */
+    @Override
     public boolean commit()
     {
         /*

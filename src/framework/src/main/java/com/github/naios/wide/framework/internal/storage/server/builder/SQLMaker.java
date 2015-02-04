@@ -31,7 +31,7 @@ import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.collect.Iterables;
 
-public class SQLMaker
+public final class SQLMaker
 {
     protected static final String DELEMITER = ";";
 
@@ -71,11 +71,11 @@ public class SQLMaker
 
     protected static final String NEWLINE = "\n";
 
-    private final SQLBuilder builder;
+    private final SQLBuilderImpl builder;
 
     private final SQLVariableHolder vars;
 
-    public SQLMaker(final SQLBuilder builder, final SQLVariableHolder vars)
+    public SQLMaker(final SQLBuilderImpl builder, final SQLVariableHolder vars)
     {
         this.vars = vars;
         this.builder = builder;

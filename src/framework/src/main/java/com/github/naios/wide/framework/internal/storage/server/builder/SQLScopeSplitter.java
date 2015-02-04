@@ -38,7 +38,7 @@ public abstract class SQLScopeSplitter<T> implements Consumer<T>
         addObservable(scope, entry);
     }
 
-    public abstract SQLBuilder getSQLBuilder();
+    public abstract SQLBuilderImpl getSQLBuilder();
 
     public abstract String getScope(T entry);
 

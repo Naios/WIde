@@ -8,8 +8,15 @@
 
 package com.github.naios.wide.api.framework;
 
+import java.util.Collection;
+import java.util.Map;
+
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
+import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
+import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 
@@ -29,4 +36,38 @@ public interface FrameworkService extends AliasFactory
      * @return
      */
     public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(String databaseId, String name);
+
+    /**
+     * TODO
+     *
+     * @param sqlInfoProvider
+     * @param update
+     * @param insert
+     * @param delete
+     * @return
+     */
+    public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
+            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<ServerStorageStructure> insert,
+            final Collection<ServerStorageStructure> delete);
+
+    /**
+     * TODO
+     *
+     * @param sqlInfoProvider
+     * @param update
+     * @param insert
+     * @param delete
+     * @param updateConfig
+     * @param insertConfig
+     * @param deleteConfig
+     * @return
+     */
+    public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
+            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<ServerStorageStructure> insert,
+            final Collection<ServerStorageStructure> delete,
+            final QueryTypeConfig updateConfig,
+            final QueryTypeConfig insertConfig,
+            final QueryTypeConfig deleteConfig);
 }

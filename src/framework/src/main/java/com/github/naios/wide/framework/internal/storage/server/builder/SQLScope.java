@@ -28,9 +28,9 @@ public final class SQLScope
 
     private final Multimap<ServerStorage<?>, ServerStorageStructure> insert = HashMultimap.create(), delete = HashMultimap.create();
 
-    private final SQLBuilder sqlBuilder;
+    private final SQLBuilderImpl sqlBuilder;
 
-    protected SQLScope(final SQLBuilder builder)
+    protected SQLScope(final SQLBuilderImpl builder)
     {
         this.sqlBuilder = builder;
     }
@@ -58,7 +58,7 @@ public final class SQLScope
     /**
      * Splits collections containing update, insert & delete structures into its scopes
      */
-    protected static Map<String, SQLScope> split(final SQLBuilder sqlBuilder,
+    protected static Map<String, SQLScope> split(final SQLBuilderImpl sqlBuilder,
             final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
@@ -70,7 +70,7 @@ public final class SQLScope
             infos.forEach(new SQLScopeSplitter<SQLUpdateInfo>(scopes)
             {
                 @Override
-                public SQLBuilder getSQLBuilder()
+                public SQLBuilderImpl getSQLBuilder()
                 {
                     return sqlBuilder;
                 }
@@ -99,7 +99,7 @@ public final class SQLScope
         insert.forEach(new SQLScopeSplitter<ServerStorageStructure>(scopes)
         {
             @Override
-            public SQLBuilder getSQLBuilder()
+            public SQLBuilderImpl getSQLBuilder()
             {
                 return sqlBuilder;
             }
@@ -120,7 +120,7 @@ public final class SQLScope
         delete.forEach(new SQLScopeSplitter<ServerStorageStructure>(scopes)
         {
             @Override
-            public SQLBuilder getSQLBuilder()
+            public SQLBuilderImpl getSQLBuilder()
             {
                 return sqlBuilder;
             }
@@ -170,13 +170,13 @@ public final class SQLScope
 
         // Build Changeset (updates without key)
         for (final Entry<ServerStorageStructure, Collection<SQLUpdateInfo>> info : multimap.asMap().entrySet())
-            changesPerStructure.put(sqlBuilder.getSqlMaker().createUpdateFields(info.getKey(), info.getValue()), info.getKey());
+            changesPerStructure.put(sqlBuilder.getSQLMaker().createUpdateFields(info.getKey(), info.getValue()), info.getKey());
 
         for (final Entry<String, Collection<ServerStorageStructure>> change : changesPerStructure.asMap().entrySet())
         {
             final String tableName = Iterables.get(change.getValue(), 0).getOwner().getTableName();
 
-            final String keyPart = sqlBuilder.getSqlMaker().createKeyPart(change.getValue());
+            final String keyPart = sqlBuilder.getSQLMaker().createKeyPart(change.getValue());
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart)).append("\n");
         }
@@ -189,7 +189,7 @@ public final class SQLScope
     {
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
-        final String keyPart = sqlBuilder.getSqlMaker().createKeyPart(structures.getValue());
+        final String keyPart = sqlBuilder.getSQLMaker().createKeyPart(structures.getValue());
         builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
     }
 
@@ -202,9 +202,9 @@ public final class SQLScope
         buildDeletes(builder, structures, vars);
 
         final ServerStorageStructure anyStructure = Iterables.get(structures.getValue(), 0);
-        final String valuePart = sqlBuilder.getSqlMaker().createInsertValuePart(structures.getValue());
+        final String valuePart = sqlBuilder.getSQLMaker().createInsertValuePart(structures.getValue());
 
-        builder.append(sqlBuilder.getSqlMaker().createInsertQuery(anyStructure.getOwner().getTableName(),
+        builder.append(sqlBuilder.getSQLMaker().createInsertQuery(anyStructure.getOwner().getTableName(),
                 anyStructure.getValues(), valuePart)).append("\n");
     }
 }

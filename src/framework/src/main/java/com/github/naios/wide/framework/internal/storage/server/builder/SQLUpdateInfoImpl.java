@@ -16,7 +16,7 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.util.Pair;
 
-public class SQLUpdateInfoImpl implements SQLUpdateInfo
+public final class SQLUpdateInfoImpl implements SQLUpdateInfo
 {
     private final Pair<ObservableValue<?>, MappingMetaData> entry;
 

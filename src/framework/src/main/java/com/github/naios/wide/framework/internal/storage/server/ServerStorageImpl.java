@@ -38,7 +38,7 @@ import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilder;
+import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilderImpl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -316,7 +316,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return mapper.reset(entry.second().getName(), entry.first());
     }
 
-    public SQLBuilder createBuilder()
+    public SQLBuilderImpl createBuilder()
     {
         // TODO Adapt builder
         return null; // new SQLBuilder(changeTracker, true);
