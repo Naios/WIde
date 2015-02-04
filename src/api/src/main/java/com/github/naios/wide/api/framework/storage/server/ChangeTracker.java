@@ -61,12 +61,12 @@ public interface ChangeTracker
      * Sets an observable value as custom variable<br>
      * Value is wrapped into the variable then
      */
-    public void setCustomVariable(ObservableValue<?> value, String name);
+    public void setCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable, String name);
 
     /**
      * Releases a custom variable of an observable value
      */
-    public void releaseCustomVariable(ObservableValue<?> value);
+    public void releaseCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable);
 
     /**
      * Sets the comment of the current scope

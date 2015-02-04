@@ -239,7 +239,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                 ct3.unit_class().set(UnitClass.CLASS_ROGUE);
 
                 ct3.kill_credit1().set(123456);
-                table.getChangeTracker().setCustomVariable(ct3.kill_credit1(), "credit custom variable");
+                table.getChangeTracker().setCustomVariable(ct3, ct3.kill_credit1(), "credit custom variable");
 
                 table.getChangeTracker().setScope(
                         "test flag scope",
@@ -300,16 +300,17 @@ public final class FrameworkServiceImpl implements FrameworkService
                     }
 
                     @Override
-                    public String getCustomVariable(final ServerStorageStructure structure,
-                            final Pair<ObservableValue<?>, MappingMetaData> entry)
-                    {
-                        return null;
-                    }
-
-                    @Override
                     public String getCommentOfScope(final String scope)
                     {
                         return "";
+                    }
+
+                    @Override
+                    public String getCustomVariable(
+                            final ServerStorageStructure structure,
+                            final ObservableValue<?> observable)
+                    {
+                        return null;
                     }
                 };
 

@@ -40,5 +40,5 @@ public interface SQLInfoProvider
      * Gets the custom variable of the observable value
      * @return null if not existing, variable name otherwise
      */
-    public String getCustomVariable(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
+    public String getCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable);
 }

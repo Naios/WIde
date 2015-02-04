@@ -107,7 +107,7 @@ public final class SQLBuilderImpl implements SQLBuilder
                 writer.println(SQLMaker.createComment(comment));
 
             // The actual scope querys
-            writer.println(entry.getValue());
+            writer.print(entry.getValue());
         }
 
         writer.close();

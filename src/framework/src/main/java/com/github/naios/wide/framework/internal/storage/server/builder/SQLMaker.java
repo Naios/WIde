@@ -168,7 +168,7 @@ public final class SQLMaker
         // If the observable has a custom var use it
         if (queryConfig.custom().get())
         {
-            final String customVar = builder.getSQLInfoProvider().getCustomVariable(structure, sqlUpdateInfo.getEntry());
+            final String customVar = builder.getSQLInfoProvider().getCustomVariable(structure, sqlUpdateInfo.getEntry().first());
             if (customVar != null)
                 return vars.addVariable(customVar, sqlUpdateInfo.getEntry().first().getValue());
         }

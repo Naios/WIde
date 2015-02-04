@@ -9,6 +9,7 @@
 package com.github.naios.wide.framework.internal.storage.server;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,6 +48,8 @@ public class ChangeTrackerImpl
 
     private final Map<StructureEntryStorageIndex, String> entryScopes =
             new HashMap<>();
+
+    private final Map<ServerStorageStructure, Map<ObservableValue<?>, String>> customVariables = new HashMap<>();
 
     private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
             deleted = new SimpleSetProperty<>(FXCollections.observableSet());
@@ -174,14 +177,6 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public String getCustomVariable(final ServerStorageStructure structure,
-            final Pair<ObservableValue<?>, MappingMetaData> entry)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public StringProperty scope()
     {
         return scope;
@@ -229,15 +224,36 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public void setCustomVariable(final ObservableValue<?> value, final String name)
+    public String getCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable)
     {
-        // TODO Auto-generated method stub
+        final Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        return Objects.isNull(map) ? null : map.get(observable);
     }
 
     @Override
-    public void releaseCustomVariable(final ObservableValue<?> value)
+    public void setCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable, final String name)
     {
-        // TODO Auto-generated method stub
+        Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        if (Objects.isNull(map))
+        {
+            map = new IdentityHashMap<>();
+            customVariables.put(structure, map);
+        }
+
+        map.put(observable, name);
+    }
+
+    @Override
+    public void releaseCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable)
+    {
+        final Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        if (Objects.isNull(map))
+            return;
+
+        map.remove(observable);
+
+        if (map.isEmpty())
+            customVariables.remove(map);
     }
 
     @Override

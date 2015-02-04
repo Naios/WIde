@@ -179,6 +179,9 @@ public final class SQLScope
 
             builder.append(SQLMaker.createUpdateQuery(tableName, change.getKey(), keyPart));
         }
+
+        if (!multimap.isEmpty())
+            builder.append(SQLMaker.NEWLINE);
     }
 
     private void buildDeletes(final StringBuilder builder,
@@ -189,7 +192,7 @@ public final class SQLScope
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
         final String keyPart = sqlMaker.createKeyPart(structures.getValue());
-        builder.append(SQLMaker.createDeleteQuery(tableName, keyPart));
+        builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append(SQLMaker.NEWLINE);
     }
 
     private void buildInserts(final StringBuilder builder,
@@ -207,6 +210,6 @@ public final class SQLScope
         final String valuePart = sqlMaker.createInsertValuePart(structures.getValue());
 
         builder.append(sqlMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
-                anyStructure.getValues(), valuePart));
+                anyStructure.getValues(), valuePart)).append(SQLMaker.NEWLINE);
     }
 }
