@@ -23,15 +23,13 @@ public interface StructureChangeTracker
 
     public void untrack(ServerStorageStructure structure);
 
-    public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyCreated();
+    public ReadOnlySetProperty<ServerStorageStructure> structuresCreated();
 
-    public ReadOnlySetProperty<ServerStorageStructure> structuresRecentlyDeleted();
+    public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted();
 
-    public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> observablesRecentlyChanged();
+    public ReadOnlySetProperty<Pair<ObservableValue<?>, MappingMetaData>> entriesChanged();
 
     public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap();
-
-    public Object getRemoteValue(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> value);
 
     /**
      * @return Our scope property

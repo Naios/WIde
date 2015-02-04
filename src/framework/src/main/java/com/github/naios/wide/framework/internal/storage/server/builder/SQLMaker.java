@@ -18,10 +18,11 @@ import java.util.TreeSet;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.StructureChangeTracker;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.FlagUtil;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -72,6 +73,23 @@ public class SQLMaker
 
     protected static final String NEWLINE = "\n";
 
+    private final SQLVariableHolder vars;
+
+    private final SQLInfoProvider sqlInfoProvider;
+
+    private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
+
+    public SQLMaker(final SQLVariableHolder vars, final SQLInfoProvider sqlInfoProvider,
+            final QueryTypeConfig updateConfig, final QueryTypeConfig insertConfig,
+            final QueryTypeConfig deleteConfig)
+    {
+        this.vars = vars;
+        this.sqlInfoProvider = sqlInfoProvider;
+        this.updateConfig = updateConfig;
+        this.insertConfig = insertConfig;
+        this.deleteConfig = deleteConfig;
+    }
+
     /**
      * Adds the delemiter to a query
      */
@@ -121,14 +139,13 @@ public class SQLMaker
     /**
      * Creates a sql in clause.
      */
-    protected static String createInClause(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final MappingMetaData mappingMetaData, final Collection<ServerStorageStructure> structures)
+    private String createInClause(final MappingMetaData mappingMetaData, final Collection<ServerStorageStructure> structures)
     {
         final String query = StringUtil.concat(COMMA + SPACE,
                 new CrossIterator<>(structures, structure ->
                 {
                     final Pair<ObservableValue<?>, MappingMetaData> field = structure.getKeys().get(0);
-                    return createValueOfObservableValue(vars, changeTracker, structure, field, true);
+                    return createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field), true);
                 }));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
@@ -145,43 +162,42 @@ public class SQLMaker
     /**
      * Creates field equals value clause.
      */
-    protected static String createNameEqualsValue(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final ServerStorageStructure structure, final SQLUpdateInfo updateInfo, final boolean variablize)
+    private String createNameEqualsValue(final ServerStorageStructure structure, final SQLUpdateInfo field, final boolean variablize)
     {
-        return createNameEqualsName(createName(updateInfo.second()), createValueOfObservableValue(vars, changeTracker, structure, updateInfo, variablize));
+        return createNameEqualsName(createName(field.getEntry().second()), createValueOfObservableValue(structure, field, variablize));
     }
 
     @SuppressWarnings({ "rawtypes" })
-    private static String createValueOfObservableValue(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> field, final boolean variablize)
+    private String createValueOfObservableValue(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo, final boolean variablize)
     {
         if (variablize)
         {
             // If the observable has a custom var use it
-            final String customVar = changeTracker.getCustomVariable(field.first());
+            final String customVar = sqlInfoProvider.getCustomVariable(structure, sqlUpdateInfo.getEntry());
             if (customVar != null)
-                return vars.addVariable(customVar, field.first().getValue());
+                return vars.addVariable(customVar, sqlUpdateInfo.getEntry().first().getValue());
 
             // Enum alias
-            if ((field.first() instanceof EnumProperty || field.first() instanceof FlagProperty)
-                    && !field.second().getAlias().isEmpty())
+            if ((sqlUpdateInfo.getEntry().first() instanceof EnumProperty || sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
+                    && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
             {
-                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(field.second().getAlias());
+                final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(sqlUpdateInfo.getEntry().second().getAlias());
 
                 // Enum Property (Absolute value)
-                if (field.first() instanceof EnumProperty)
-                    return vars.addVariable(enumeration.getEnumConstants()[(int)field.first().getValue()].name(), field.first().getValue());
+                if (sqlUpdateInfo.getEntry().first() instanceof EnumProperty)
+                    return vars.addVariable(enumeration.getEnumConstants()[(int)sqlUpdateInfo.getEntry().first().getValue()].name(), sqlUpdateInfo.getEntry().first().getValue());
                 // Flag Property (Relative value)
-                else if (field.first() instanceof FlagProperty)
+                else if (sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
                 {
                     // FlagProperties only occur in set statements
-                    final int currentFlagValue = ((FlagProperty) field.first()).get();
+                    final int currentFlagValue = ((FlagProperty) sqlUpdateInfo.getEntry().first()).get();
                     final int oldFlagValue;
-                    final Object oldValue = changeTracker.getRemoteValue(structure, field);
-                    if (oldValue == null || !(oldValue instanceof Integer))
+
+                    if (!sqlUpdateInfo.getOldValue().isPresent() ||
+                        !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
                         oldFlagValue = 0;
                     else
-                        oldFlagValue = (int) oldValue;
+                        oldFlagValue = (int) sqlUpdateInfo.getOldValue().get();
 
                     // Get flag values of flags in database and in the current observable
                     final List<? extends Enum> currentFlags = FlagUtil.getFlagList(enumeration, currentFlagValue);
@@ -206,13 +222,13 @@ public class SQLMaker
                             builder.append("(");
 
                         if (!oldFlags.isEmpty())
-                            builder.append(createName(field.second()));
+                            builder.append(createName(sqlUpdateInfo.getEntry().second()));
 
                         if (!removeFlags.isEmpty())
                         {
                             builder.append(" &~ (");
 
-                            builder.append(concatFlags(vars, removeFlags));
+                            builder.append(concatFlags(removeFlags));
 
                             builder.append("))");
                         }
@@ -222,7 +238,7 @@ public class SQLMaker
                             if (!oldFlags.isEmpty())
                                 builder.append(FLAG_DELEMITER);
 
-                            builder.append(concatFlags(vars, addFlags));
+                            builder.append(concatFlags(addFlags));
                         }
 
                         return builder.toString();
@@ -230,26 +246,26 @@ public class SQLMaker
                     else if (currentFlags.isEmpty())
                         return String.valueOf(FlagUtil.DEFAULT_VALUE);
                     else // If Values are not different
-                        return concatFlags(vars, currentFlags);
+                        return concatFlags(currentFlags);
                 }
             }
             // Namestorage alias
-            else if ((field.first() instanceof ReadOnlyIntegerProperty) && !field.second().getAlias().isEmpty())
+            else if ((sqlUpdateInfo.getEntry().first() instanceof ReadOnlyIntegerProperty) && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
             {
-                final String name = FrameworkServiceImpl.getInstance().requestAlias(field.second().getAlias(), (int)field.first().getValue());
+                final String name = FrameworkServiceImpl.getInstance().requestAlias(sqlUpdateInfo.getEntry().second().getAlias(), (int)sqlUpdateInfo.getEntry().first().getValue());
                 if (name != null)
-                    return vars.addVariable(name, field.first().getValue());
+                    return vars.addVariable(name, sqlUpdateInfo.getEntry().first().getValue());
             }
         }
 
-        return new FormatterWrapper(field.first().getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
+        return new FormatterWrapper(sqlUpdateInfo.getEntry().first().getValue(), FormatterWrapper.Options.NO_FLOAT_DOUBLE_POSTFIX).toString();
     }
 
     /**
      * Helper to concat a list of flags as variables
      */
     @SuppressWarnings({ "rawtypes" })
-    private static String concatFlags(final SQLVariableHolder vars, final List<? extends Enum> currentFlags)
+    private String concatFlags(final List<? extends Enum> currentFlags)
     {
         return StringUtil.concat(FLAG_DELEMITER, new Iterator<String>()
         {
@@ -273,7 +289,7 @@ public class SQLMaker
     /**
      * creates the key part of an structure
      */
-    protected static String createKeyPart(final SQLVariableHolder vars, final StructureChangeTracker changeTracker, final Collection<ServerStorageStructure> structures)
+    protected String createKeyPart(final Collection<ServerStorageStructure> structures)
     {
         if (structures.size() == 0)
             return "";
@@ -283,7 +299,7 @@ public class SQLMaker
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
         if (keys.size() == 1 && (structures.size() > 1))
-            return createInClause(vars, changeTracker, keys.get(0).second(), structures);
+            return createInClause(keys.get(0).second(), structures);
         else
         {
             // Yay, nested concat iterator!
@@ -292,7 +308,7 @@ public class SQLMaker
                     {
                         return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), field ->
                         {
-                            return createNameEqualsValue(vars, changeTracker, structure, field, true);
+                            return createNameEqualsValue(structure, new SQLUpdateInfoImpl(field), true);
                         }));
                     }));
         }
@@ -301,11 +317,10 @@ public class SQLMaker
     /**
      * Creates only the update fields part of a collection containing observables with storage infos
      */
-    protected static String createUpdateFields(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final ServerStorageStructure structure, final Collection<SQLUpdateInfo> collection)
+    protected String createUpdateFields(final ServerStorageStructure structure, final Collection<SQLUpdateInfo> collection)
     {
         final Set<String> statements = new TreeSet<>();
-        collection.forEach(field -> statements.add(createNameEqualsValue(vars, changeTracker, structure, field, true)));
+        collection.forEach(field -> statements.add(createNameEqualsValue(structure, field, true)));
 
         return StringUtil.concat(COMMA + SPACE, statements.iterator());
     }
@@ -338,19 +353,18 @@ public class SQLMaker
                         (entry) -> createName(entry.second().getName()))) + ")";
     }
 
-    public static String createInsertValuePart(final SQLVariableHolder vars, final StructureChangeTracker changeTracker,
-            final Collection<ServerStorageStructure> structures)
+    protected String createInsertValuePart(final Collection<ServerStorageStructure> structures)
     {
         return StringUtil.concat(COMMA + NEWLINE,
                 new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
                 {
                     return "(" + StringUtil.concat(COMMA + SPACE,
                             new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(structure,
-                                    field -> createValueOfObservableValue(vars, changeTracker, structure, field, true))) + ")";
+                                    field -> createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field), true))) + ")";
                 }));
     }
 
-    public static String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
+    String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
     {
         return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, list), valuePart));
     }

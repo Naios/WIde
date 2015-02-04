@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
+import java.util.Optional;
+
 import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -17,5 +19,5 @@ public interface SQLUpdateInfo
 {
     public Pair<ObservableValue<?>, MappingMetaData> getEntry();
 
-    public Object getOldValue();
+    public Optional<Object> getOldValue();
 }

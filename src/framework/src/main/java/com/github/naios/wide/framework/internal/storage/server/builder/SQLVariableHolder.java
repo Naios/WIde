@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.StringUtil;
 
+// TODO Check concurrent savety
 public class SQLVariableHolder
 {
     private final Map<String, String> variables = new HashMap<>();

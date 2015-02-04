@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.github.naios.wide.api.framework.storage.server.SQLScopeProvider;
+import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 
@@ -25,17 +25,17 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
  */
 public class SQLBuilder
 {
-    private final SQLScopeProvider scopeProvider;
+    private final SQLInfoProvider sqlInfoProvider;
 
-    private final Collection<Map<ServerStorageStructure, SQLUpdateInfo>> update;
+    private final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update;
     private final Collection<ServerStorageStructure> insert, delete;
 
-    public SQLBuilder(final SQLScopeProvider scopeProvider,
-            final Collection<Map<ServerStorageStructure, SQLUpdateInfo>> update,
+    public SQLBuilder(final SQLInfoProvider sqlInfoProvider,
+            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
-        this.scopeProvider = scopeProvider;
+        this.sqlInfoProvider = sqlInfoProvider;
         this.update = update;
         this.insert = insert;
         this.delete = delete;
@@ -50,17 +50,17 @@ public class SQLBuilder
 
         // Pre calculate everything
         final SQLVariableHolder vars = new SQLVariableHolder();
-        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(scopeProvider, update, insert, delete);
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(sqlInfoProvider, update, insert, delete);
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, changeTracker));
+            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, sqlInfoProvider));
 
         vars.writeQuery(writer);
 
         for (final Entry<String, String> entry : querys.entrySet())
         {
-            final String comment = changeTracker.getScopeComment(entry.getKey());
+            final String comment = sqlInfoProvider.getCommentOfScope(entry.getKey());
 
             if (!comment.isEmpty())
                 writer.println(SQLMaker.createComment(comment));

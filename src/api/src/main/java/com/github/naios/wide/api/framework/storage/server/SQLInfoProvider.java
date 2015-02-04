@@ -13,9 +13,17 @@ import javafx.beans.value.ObservableValue;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.Pair;
 
-public interface SQLScopeProvider
+public interface SQLInfoProvider
 {
     public String getScopeOfEntry(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
 
     public String getScopeOfStructure(ServerStorageStructure structure);
+
+    public String getCommentOfScope(String scope);
+
+    /**
+     * Gets the custom variable of the observable value
+     * @return null if not existing, variable name otherwise
+     */
+    public String getCustomVariable(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
 }
