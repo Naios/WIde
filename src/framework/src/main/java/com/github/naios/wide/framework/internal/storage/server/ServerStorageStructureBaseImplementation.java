@@ -187,6 +187,21 @@ class HistoryRedirect
     }
 }
 
+final class StructureChangeEventUtils
+{
+    private StructureChangeEventUtils() { }
+
+    public static String toStringHelper(final Class<? extends StructureChangeEvent> type)
+    {
+        return toStringHelper(type, "");
+    }
+
+    public static String toStringHelper(final Class<? extends StructureChangeEvent> type, final Object suffix)
+    {
+        return String.format("%s(%s)", type.getSimpleName(), suffix);
+    }
+}
+
 public class ServerStorageStructureBaseImplementation
     implements ServerStorageStructurePrivateBase, MappingCallback<ServerStorageStructure>
 {
@@ -276,6 +291,7 @@ public class ServerStorageStructureBaseImplementation
             {
                 requiresLastCommitIsDeletedEvent();
                 onCreate();
+                subEvents.revert();
             }
 
             @Override
@@ -290,6 +306,12 @@ public class ServerStorageStructureBaseImplementation
             public ServerStorageStructure getStorageStructure()
             {
                 return me;
+            }
+
+            @Override
+            public String toString()
+            {
+                return StructureChangeEventUtils.toStringHelper(StructureDeletedEvent.class, subEvents);
             }
         };
     }
@@ -329,6 +351,12 @@ public class ServerStorageStructureBaseImplementation
             public ServerStorageStructure getStorageStructure()
             {
                 return me;
+            }
+
+            @Override
+            public String toString()
+            {
+                return StructureChangeEventUtils.toStringHelper(StructureCreatedEvent.class);
             }
         };
     }
@@ -377,6 +405,12 @@ public class ServerStorageStructureBaseImplementation
             {
                 return me;
             }
+
+            @Override
+            public String toString()
+            {
+                return StructureChangeEventUtils.toStringHelper(StructureResetEvent.class, subEvents);
+            }
         };
     }
 
@@ -400,6 +434,12 @@ public class ServerStorageStructureBaseImplementation
             public ServerStorageStructure getStorageStructure()
             {
                 return me;
+            }
+
+            @Override
+            public String toString()
+            {
+                return StructureChangeEventUtils.toStringHelper(StructureModifyEvent.class, entry.second().getName() + ", " + oldValue);
             }
         };
     }
@@ -446,21 +486,21 @@ public class ServerStorageStructureBaseImplementation
     @Override
     public synchronized void onCreate()
     {
-        changeTracker.onCreate(me);
         history.pushEvent(createEvent());
+        changeTracker.onCreate(me);
     }
 
     @Override
     public synchronized void onDelete()
     {
-        changeTracker.onDelete(me);
         history.pushEvent(deleteEvent());
+        changeTracker.onDelete(me);
     }
 
     @Override
     public synchronized void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
     {
-        changeTracker.onUpdate(me, entry, oldValue);
         history.pushEvent(updateEvent(entry, oldValue));
+        changeTracker.onUpdate(me, entry, oldValue);
     }
 }

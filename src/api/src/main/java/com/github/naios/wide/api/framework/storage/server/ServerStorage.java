@@ -8,6 +8,7 @@
 package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.List;
+import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
@@ -19,7 +20,7 @@ public interface ServerStorage<T extends ServerStorageStructure>
 
     public ReadOnlyBooleanProperty alive();
 
-    public T get(ServerStorageKey<T> key);
+    public Optional<T> get(ServerStorageKey<T> key);
 
     public List<T> getWhere(String where, Object... args);
 

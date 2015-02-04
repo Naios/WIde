@@ -225,10 +225,10 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 table.getWhere("entry between 22000 and 30000 limit 20").forEach(template -> System.out.println(template));
 
-                final CreatureTemplate ct1 = table.get(new ServerStorageKey<>(491));
-                final CreatureTemplate ct2 = table.get(new ServerStorageKey<>(41378));
-                final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151));
-                final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69));
+                final CreatureTemplate ct1 = table.get(new ServerStorageKey<>(491)).get();
+                final CreatureTemplate ct2 = table.get(new ServerStorageKey<>(41378)).get();
+                final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151)).get();
+                final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69)).get();
 
                 table.getChangeTracker().setScope("test scope", "simple modify test");
 
@@ -261,7 +261,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                 table.getChangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
                 {
-                    final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i));
+                    final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i)).get();
                     if (deleteMe != null)
                         deleteMe.delete();
                 }
@@ -378,6 +378,15 @@ public final class FrameworkServiceImpl implements FrameworkService
                 System.out.println(createSQLBuilder(table.getChangeTracker()));
 
                 System.out.println(table.getChangeTracker());
+
+                System.out.println(String.format("DEBUG: Entries changed:"));
+                table.getChangeTracker().entriesChanged().keySet().forEach(structure -> System.out.println(structure.history()));
+
+                System.out.println(String.format("DEBUG: Entries deleted:"));
+                table.getChangeTracker().structuresDeleted().forEach(structure -> System.out.println(structure.history()));
+
+                System.out.println(String.format("DEBUG: Entries created:"));
+                table.getChangeTracker().structuresCreated().forEach(structure -> System.out.println(structure.history()));
 
                 System.out.println(String.format("DEBUG: Finished!"));
              }

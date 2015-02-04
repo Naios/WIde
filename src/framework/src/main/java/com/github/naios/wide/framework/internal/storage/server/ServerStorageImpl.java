@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import javafx.beans.property.BooleanProperty;
@@ -39,7 +40,6 @@ import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilderImpl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -208,7 +208,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     @Override
     @SuppressWarnings("unchecked")
-    public T get(final ServerStorageKey<T> key)
+    public Optional<T> get(final ServerStorageKey<T> key)
     {
         checkOpen();
 
@@ -217,9 +217,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
         final ServerStorageStructure result = cache.getIfPresent(key.hashCode());
         if (result != null)
-            return (T) result;
+            return Optional.of((T) result);
 
-        return (T) newStructureFromResult(createResultSetFromKey(key));
+        return Optional.ofNullable((T) newStructureFromResult(createResultSetFromKey(key)));
     }
 
     @Override
@@ -328,12 +328,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     protected boolean resetValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry)
     {
         return mapper.reset(entry.second().getName(), entry.first());
-    }
-
-    public SQLBuilderImpl createBuilder()
-    {
-        // TODO Adapt builder
-        return null; // new SQLBuilder(changeTracker, true);
     }
 
     @Override

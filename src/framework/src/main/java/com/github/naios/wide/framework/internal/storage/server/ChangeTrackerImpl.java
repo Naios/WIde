@@ -28,6 +28,7 @@ import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
 public class ChangeTrackerImpl
@@ -260,7 +261,6 @@ public class ChangeTrackerImpl
     public void reset()
     {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -272,8 +272,7 @@ public class ChangeTrackerImpl
     @Override
     public String getQuery()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return FrameworkServiceImpl.getInstance().createSQLBuilder(this).toString();
     }
 
     @Override
