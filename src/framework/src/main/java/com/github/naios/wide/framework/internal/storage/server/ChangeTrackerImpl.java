@@ -21,6 +21,7 @@ import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
@@ -44,17 +45,22 @@ public class ChangeTrackerImpl
     private final Map<String, String> scopeComments =
             new HashMap<>();
 
-    private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(),
-            deleted = new SimpleSetProperty<>();
+    private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
+            deleted = new SimpleSetProperty<>(FXCollections.observableSet());
 
     class UpdateMap extends SimpleMapProperty<ServerStorageStructure, SetProperty<SQLUpdateInfo>>
     {
+        public UpdateMap()
+        {
+            super (FXCollections.observableHashMap());
+        }
+
         public void addUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
         {
             SetProperty<SQLUpdateInfo> set = get(structure);
             if (Objects.isNull(set))
             {
-                set = new SimpleSetProperty<>();
+                set = new SimpleSetProperty<>(FXCollections.observableSet());
                 put(structure, set);
             }
 
@@ -227,5 +233,11 @@ public class ChangeTrackerImpl
     {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("Updated  : %s\nInserted : %s\nUpdated  : %s", updates, created, deleted);
     }
 }

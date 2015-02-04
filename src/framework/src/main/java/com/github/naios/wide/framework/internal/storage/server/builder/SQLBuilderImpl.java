@@ -36,6 +36,8 @@ public final class SQLBuilderImpl implements SQLBuilder
 
     private final QueryTypeConfig updateConfig, insertConfig, deleteConfig;
 
+    private final SQLVariableHolder variableHolder = new SQLVariableHolder();
+
     public SQLBuilderImpl(final SQLInfoProvider sqlInfoProvider,
             final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
             final Collection<ServerStorageStructure> insert,
@@ -54,7 +56,7 @@ public final class SQLBuilderImpl implements SQLBuilder
         this.insertConfig = insertConfig;
         this.deleteConfig = deleteConfig;
 
-        this.sqlMaker = new SQLMaker(this, new SQLVariableHolder());
+        this.sqlMaker = new SQLMaker(this, variableHolder);
     }
 
     public SQLInfoProvider getSQLInfoProvider()
@@ -86,19 +88,19 @@ public final class SQLBuilderImpl implements SQLBuilder
      * Builds our SQL query
      */
     @Override
-    public void write(final OutputStream stream)
+    public synchronized void write(final OutputStream stream)
     {
         final PrintWriter writer = new PrintWriter(stream);
+        variableHolder.clear();
 
         // Pre calculate everything
-        final SQLVariableHolder vars = new SQLVariableHolder();
         final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(this, update, insert, delete);
         final Map<String /*scope*/, String /*query*/> querys = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())
-            querys.put(entry.getKey(), entry.getValue().buildQuery(entry.getKey(), vars, sqlInfoProvider));
+            querys.put(entry.getKey(), entry.getValue().buildQuery());
 
-        vars.writeQuery(writer);
+        variableHolder.writeQuery(writer);
 
         for (final Entry<String, String> entry : querys.entrySet())
         {

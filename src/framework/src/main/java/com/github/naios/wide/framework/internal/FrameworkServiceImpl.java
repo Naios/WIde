@@ -50,6 +50,7 @@ import com.github.naios.wide.framework.internal.storage.client.ClientStorageSele
 import com.github.naios.wide.framework.internal.storage.server.ChangeTrackerImpl;
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilderImpl;
+import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
@@ -249,6 +250,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
                 ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
+                ct2.name().set("hey im here");
 
                 // table.getchangeTracker().setScope("delete scope", "deletes a creature template");
                 ct4.delete();
@@ -309,10 +311,31 @@ public final class FrameworkServiceImpl implements FrameworkService
                 };
 
                 final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update = new HashMap<>();
-                final Collection<ServerStorageStructure> insert = new ArrayList<>();
-                final Collection<ServerStorageStructure> delete = new ArrayList<>();
+                final List<SQLUpdateInfo> updatesOnCT2 = new ArrayList<>();
+                update.put(ct2, updatesOnCT2);
 
-                final SQLBuilder builder = createSQLBuilder(sqlInfoProvider, update, insert, delete);
+                updatesOnCT2.add(new SQLUpdateInfoImpl(ct2.getEntryByName("unit_flags"), 16));
+                updatesOnCT2.add(new SQLUpdateInfoImpl(ct2.getEntryByName("name")));
+
+                final Collection<ServerStorageStructure> insert = new ArrayList<>();
+                insert.add(ct1);
+                insert.add(ct3);
+
+                final Collection<ServerStorageStructure> delete = new ArrayList<>();
+                insert.add(ct4);
+
+                System.out.println(createSQLBuilder(sqlInfoProvider, update, insert, delete));
+
+                System.out.println("\n--\n");
+
+                System.out.println(createSQLBuilder(sqlInfoProvider,
+                        (Map)table.getChangeTracker().entriesChanged(),
+                        table.getChangeTracker().structuresCreated(),
+                        table.getChangeTracker().structuresDeleted()));
+
+                System.out.println(table.getChangeTracker());
+
+                System.out.println(String.format("DEBUG: Finished!"));
              }
 
         }).start();

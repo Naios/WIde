@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.RollbackFailedException;
@@ -40,6 +41,11 @@ class StructureChangeEventCompositum
     extends SimpleListProperty<StructureChangeEvent>
     implements StructureChangeEvent
 {
+    public StructureChangeEventCompositum()
+    {
+        super (FXCollections.observableArrayList());
+    }
+
     @Override
     public void revert() throws RollbackFailedException
     {
@@ -440,18 +446,21 @@ public class ServerStorageStructureBaseImplementation
     @Override
     public synchronized void onCreate()
     {
+        changeTracker.onCreate(me);
         history.pushEvent(createEvent());
     }
 
     @Override
     public synchronized void onDelete()
     {
+        changeTracker.onDelete(me);
         history.pushEvent(deleteEvent());
     }
 
     @Override
     public synchronized void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
     {
+        changeTracker.onUpdate(me, entry, oldValue);
         history.pushEvent(updateEvent(entry, oldValue));
     }
 }

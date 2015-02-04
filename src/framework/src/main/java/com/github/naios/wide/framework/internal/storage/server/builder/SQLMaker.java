@@ -86,7 +86,7 @@ public final class SQLMaker
      */
     protected static String addDelemiter(final String query)
     {
-        return query + DELEMITER;
+        return query + DELEMITER + NEWLINE;
     }
 
     /**

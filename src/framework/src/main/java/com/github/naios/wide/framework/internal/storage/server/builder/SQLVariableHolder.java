@@ -85,9 +85,14 @@ public class SQLVariableHolder
                 writer.println();
             }
 
-            writer.println(SQLMaker.createVariable(format, var.getName(), var.getValue()));
+            writer.print(SQLMaker.createVariable(format, var.getName(), var.getValue()));
         }
 
         writer.println();
+    }
+
+    public void clear()
+    {
+        variables.clear();
     }
 }
