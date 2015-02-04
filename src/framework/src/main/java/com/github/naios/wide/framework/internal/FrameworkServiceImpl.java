@@ -40,7 +40,6 @@ import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
-import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
@@ -49,6 +48,7 @@ import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.entities.server.world.ServerStorageKeys;
 import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.server.ChangeTrackerImpl;
@@ -221,14 +221,14 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
 
-                System.out.println(String.format("DEBUG: %s", table.get(new ServerStorageKey<>(41378))));
+                System.out.println(String.format("DEBUG: %s", table.request(ServerStorageKeys.forCreatureTemplate(41378))));
 
-                table.getWhere("entry between 22000 and 30000 limit 20").forEach(template -> System.out.println(template));
+                table.requestWhere("entry between 22000 and 30000 limit 20").forEach(template -> System.out.println(template));
 
-                final CreatureTemplate ct1 = table.get(new ServerStorageKey<>(491)).get();
-                final CreatureTemplate ct2 = table.get(new ServerStorageKey<>(41378)).get();
-                final CreatureTemplate ct3 = table.get(new ServerStorageKey<>(151)).get();
-                final CreatureTemplate ct4 = table.get(new ServerStorageKey<>(69)).get();
+                final CreatureTemplate ct1 = table.request(ServerStorageKeys.forCreatureTemplate(491)).get();
+                final CreatureTemplate ct2 = table.request(ServerStorageKeys.forCreatureTemplate(41378)).get();
+                final CreatureTemplate ct3 = table.request(ServerStorageKeys.forCreatureTemplate(151)).get();
+                final CreatureTemplate ct4 = table.request(ServerStorageKeys.forCreatureTemplate(69)).get();
 
                 table.getChangeTracker().setScope("test scope", "simple modify test");
 
@@ -261,19 +261,19 @@ public final class FrameworkServiceImpl implements FrameworkService
                 table.getChangeTracker().setScope("delete scope 2", "now we wanna delete multiple entrys, yay!");
                 for (int i = 115; i < 120; ++i)
                 {
-                    final CreatureTemplate deleteMe = table.get(new ServerStorageKey<>(i)).get();
+                    final CreatureTemplate deleteMe = table.request(ServerStorageKeys.forCreatureTemplate(i)).get();
                     if (deleteMe != null)
                         deleteMe.delete();
                 }
 
                 table.getChangeTracker().setScope("create scope 1", "creates one new creature template...");
-                final CreatureTemplate myqueryentry = table.create(new ServerStorageKey<>(1000000));
+                final CreatureTemplate myqueryentry = table.create(ServerStorageKeys.forCreatureTemplate(1000000));
                 myqueryentry.name().set("my test name");
 
                 table.getChangeTracker().setScope("create scope 2", "creates 5 templates with random values");
                 for (int i = 2000000; i < 2000005; ++i)
                 {
-                    final CreatureTemplate template = table.create(new ServerStorageKey<>(i));
+                    final CreatureTemplate template = table.create(ServerStorageKeys.forCreatureTemplate(i));
 
                     template.unit_class().set(RandomUtil.getInt(0, 3));
                     template.unit_flags().set(RandomUtil.getInt(0, 30));

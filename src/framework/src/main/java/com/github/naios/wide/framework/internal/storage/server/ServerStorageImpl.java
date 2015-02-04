@@ -208,7 +208,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<T> get(final ServerStorageKey<T> key)
+    public Optional<T> request(final ServerStorageKey<T> key)
     {
         checkOpen();
 
@@ -223,18 +223,18 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     }
 
     @Override
-    public List<T> getWhere(final String where, final Object... args)
+    public List<T> requestWhere(final String where, final Object... args)
     {
         for (int i = 0; i < args.length; ++i)
             if (args[i] instanceof String)
                 args[i] = ("\"" + args[i].toString() + "\"");
 
-        return getWhere(String.format(where, args));
+        return requestWhere(String.format(where, args));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<T> getWhere(final String where)
+    public List<T> requestWhere(final String where)
     {
         checkOpen();
 

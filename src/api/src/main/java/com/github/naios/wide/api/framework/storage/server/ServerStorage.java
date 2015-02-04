@@ -20,11 +20,11 @@ public interface ServerStorage<T extends ServerStorageStructure>
 
     public ReadOnlyBooleanProperty alive();
 
-    public Optional<T> get(ServerStorageKey<T> key);
+    public Optional<T> request(ServerStorageKey<T> key);
 
-    public List<T> getWhere(String where, Object... args);
+    public List<T> requestWhere(String where, Object... args);
 
-    public List<T> getWhere(String where);
+    public List<T> requestWhere(String where);
 
     public T create(ServerStorageKey<T> key);
 
