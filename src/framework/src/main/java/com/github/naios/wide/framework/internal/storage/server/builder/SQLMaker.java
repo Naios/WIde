@@ -377,7 +377,7 @@ public final class SQLMaker
                 }));
     }
 
-    String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
+    protected String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
     {
         return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, list), valuePart));
     }

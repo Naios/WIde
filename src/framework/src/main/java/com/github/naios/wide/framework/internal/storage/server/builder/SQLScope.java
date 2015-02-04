@@ -189,7 +189,7 @@ public final class SQLScope
         final String tableName = Iterables.get(structures.getValue(), 0).getOwner().getTableName();
 
         final String keyPart = sqlMaker.createKeyPart(structures.getValue());
-        builder.append(SQLMaker.createDeleteQuery(tableName, keyPart)).append("\n");
+        builder.append(SQLMaker.createDeleteQuery(tableName, keyPart));
     }
 
     private void buildInserts(final StringBuilder builder,
@@ -207,6 +207,6 @@ public final class SQLScope
         final String valuePart = sqlMaker.createInsertValuePart(structures.getValue());
 
         builder.append(sqlMaker.createInsertQuery(anyStructure.getOwner().getTableName(),
-                anyStructure.getValues(), valuePart)).append("\n");
+                anyStructure.getValues(), valuePart));
     }
 }

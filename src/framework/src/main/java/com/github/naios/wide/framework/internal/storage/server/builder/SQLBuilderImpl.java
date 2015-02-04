@@ -101,8 +101,6 @@ public final class SQLBuilderImpl implements SQLBuilder
 
         for (final Entry<String, String> entry : querys.entrySet())
         {
-            System.out.println(String.format("Building Scope: \"%s\"...", entry.getKey()));
-
             final String comment = sqlInfoProvider.getCommentOfScope(entry.getKey());
 
             if (!comment.isEmpty())
