@@ -15,7 +15,7 @@ public final class ServerStorageKeys
 {
     private ServerStorageKeys() {}
 
-    public static ServerStorageKey<CreatureTemplate> forCreatureTemplate(final int entry)
+    public static ServerStorageKey<CreatureTemplate> ofCreatureTemplate(final int entry)
     {
         return new ServerStorageKeyImpl<>(entry);
     }
