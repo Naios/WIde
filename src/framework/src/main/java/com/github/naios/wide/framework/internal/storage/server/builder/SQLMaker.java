@@ -174,9 +174,11 @@ public class SQLMaker
             {
                 final Class<? extends Enum> enumeration = FrameworkServiceImpl.getEntityService().requestEnumForName(sqlUpdateInfo.getEntry().second().getAlias());
 
+                final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getEntry().first();
+
                 // Enum Property (Absolute value)
                 if (sqlUpdateInfo.getEntry().first() instanceof EnumProperty)
-                    return vars.addVariable(enumeration.getEnumConstants()[(int)sqlUpdateInfo.getEntry().first().getValue()].name(), sqlUpdateInfo.getEntry().first().getValue());
+                    return vars.addVariable(enumeration.getEnumConstants()[integerProperty.get()].name(), sqlUpdateInfo.getEntry().first().getValue());
                 // Flag Property (Relative value)
                 else if (sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
                 {
@@ -243,7 +245,9 @@ public class SQLMaker
             // Namestorage alias
             else if ((sqlUpdateInfo.getEntry().first() instanceof ReadOnlyIntegerProperty) && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
             {
-                final String name = FrameworkServiceImpl.getInstance().requestAlias(sqlUpdateInfo.getEntry().second().getAlias(), (int)sqlUpdateInfo.getEntry().first().getValue());
+                final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getEntry().first();
+
+                final String name = FrameworkServiceImpl.getInstance().requestAlias(sqlUpdateInfo.getEntry().second().getAlias(), integerProperty.get());
                 if (name != null)
                     return vars.addVariable(name, sqlUpdateInfo.getEntry().first().getValue());
             }
