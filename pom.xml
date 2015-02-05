@@ -64,11 +64,11 @@
         <org.osgi.framework.system.capabilities>osgi.ee; osgi.ee="JavaSE";version:List="1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8"</org.osgi.framework.system.capabilities>
 
         <!-- Version of WIde bundles -->
-        <apiVersion>0.3.1</apiVersion>
-        <entitiesVersion>0.3.1</entitiesVersion>
-        <configVersion>0.3.1</configVersion>
-        <databaseVersion>0.3.1</databaseVersion>
-        <frameworkVersion>0.3.1</frameworkVersion>
+        <apiVersion>0.3.2</apiVersion>
+        <entitiesVersion>0.3.2</entitiesVersion>
+        <configVersion>0.3.2</configVersion>
+        <databaseVersion>0.3.2</databaseVersion>
+        <frameworkVersion>0.3.2</frameworkVersion>
     </properties>   
 
     <dependencyManagement>
@@ -203,7 +203,7 @@
             <dependency>
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
-                <version>1.1.7</version>
+                <version>1.1.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
