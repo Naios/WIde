@@ -61,12 +61,6 @@
             <artifactId>pax-logging-service</artifactId>
         </dependency>
 
-        <!-- Required by pax-logging-service -->
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock</artifactId>
-        </dependency>
-
         <!-- Dependencies -->
         <dependency>
             <groupId>com.google.guava</groupId>
