@@ -119,26 +119,6 @@
                 <version>1.1.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.annotation.api</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.api</artifactId>
-                <version>1.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.cm</artifactId>
-                <version>1.0.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>org.apache.aries.blueprint.core</artifactId>
-                <version>1.4.2</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.aries.proxy</groupId>
                 <artifactId>org.apache.aries.proxy.api</artifactId>
                 <version>1.0.1</version>
@@ -149,9 +129,9 @@
                 <version>1.0.4</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.aries.quiesce</groupId>
-                <artifactId>org.apache.aries.quiesce.api</artifactId>
-                <version>1.0.0</version>
+                <groupId>org.apache.aries</groupId>
+                <artifactId>org.apache.aries.util</artifactId>
+                <version>1.1.0</version>
             </dependency>
 
             <!-- Required by Aries -->
