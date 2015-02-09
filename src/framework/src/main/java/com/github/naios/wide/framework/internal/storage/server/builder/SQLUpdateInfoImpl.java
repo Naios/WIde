@@ -10,7 +10,7 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 
 import java.util.Optional;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
@@ -18,16 +18,16 @@ import com.github.naios.wide.api.util.Pair;
 
 public final class SQLUpdateInfoImpl implements SQLUpdateInfo
 {
-    private final Pair<ObservableValue<?>, MappingMetaData> entry;
+    private final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
 
     private final Optional<Object> oldValue;
 
-    public SQLUpdateInfoImpl(final Pair<ObservableValue<?>, MappingMetaData> entry)
+    public SQLUpdateInfoImpl(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
     {
         this (entry, null);
     }
 
-    public SQLUpdateInfoImpl(final Pair<ObservableValue<?>, MappingMetaData> entry,
+    public SQLUpdateInfoImpl(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry,
             final Object oldValue)
     {
         this.entry = entry;
@@ -35,7 +35,7 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
     }
 
     @Override
-    public Pair<ObservableValue<?>, MappingMetaData> getEntry()
+    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry()
     {
         return entry;
     }

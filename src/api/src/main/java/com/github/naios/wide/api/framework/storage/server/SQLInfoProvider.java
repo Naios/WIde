@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.Pair;
@@ -21,7 +21,7 @@ public interface SQLInfoProvider
      * @param entry
      * @return
      */
-    public String getScopeOfEntry(ServerStorageStructure structure, Pair<ObservableValue<?>, MappingMetaData> entry);
+    public String getScopeOfEntry(ServerStorageStructure structure, Pair<ReadOnlyProperty<?>, MappingMetaData> entry);
 
     /**
      *
@@ -40,5 +40,5 @@ public interface SQLInfoProvider
      * Gets the custom variable of the observable value
      * @return null if not existing, variable name otherwise
      */
-    public String getCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable);
+    public String getCustomVariable(ServerStorageStructure structure, ReadOnlyProperty<?> observable);
 }

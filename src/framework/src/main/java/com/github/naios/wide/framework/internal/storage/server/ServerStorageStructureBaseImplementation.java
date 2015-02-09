@@ -13,6 +13,7 @@ import java.util.ListIterator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -99,24 +100,24 @@ class StructureChangeEventCompositum
 abstract class AbstractStructureModifyEvent
     implements StructureModifyEvent
 {
-    protected final Pair<ObservableValue<?>, MappingMetaData> entry;
+    protected final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
 
     protected final Object oldValue;
 
-    public AbstractStructureModifyEvent(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+    public AbstractStructureModifyEvent(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
     {
         this.entry = entry;
 
         this.oldValue = oldValue;
     }
 
-    public Pair<ObservableValue<?>, MappingMetaData> getEntry()
+    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry()
     {
         return entry;
     }
 
     @Override
-    public ObservableValue<?> getObservable()
+    public ReadOnlyProperty<?> getObservable()
     {
         return entry.first();
     }
@@ -227,7 +228,7 @@ public class ServerStorageStructureBaseImplementation
     {
         this.me = structure;
 
-        for (final Pair<ObservableValue<?>, MappingMetaData> entry : me)
+        for (final Pair<ReadOnlyProperty<?>, MappingMetaData> entry : me)
             entry.first().addListener(new ChangeListener<Object>()
         {
             @Override
@@ -371,7 +372,7 @@ public class ServerStorageStructureBaseImplementation
             {
                 history.setEventHistory(subEvents);
 
-                for (final Pair<ObservableValue<?>, MappingMetaData> entry : me)
+                for (final Pair<ReadOnlyProperty<?>, MappingMetaData> entry : me)
                     owner.resetValueOfObservable(entry);
 
                 history.releaseEventHistory(subEvents);
@@ -414,7 +415,7 @@ public class ServerStorageStructureBaseImplementation
         };
     }
 
-    private StructureModifyEvent updateEvent(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+    private StructureModifyEvent updateEvent(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
     {
         return new AbstractStructureModifyEvent(entry, oldValue)
         {
@@ -497,7 +498,7 @@ public class ServerStorageStructureBaseImplementation
     }
 
     @Override
-    public synchronized void onUpdate(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+    public synchronized void onUpdate(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
     {
         history.pushEvent(updateEvent(entry, oldValue));
         changeTracker.onUpdate(me, entry, oldValue);

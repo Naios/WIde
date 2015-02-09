@@ -7,7 +7,7 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -17,9 +17,9 @@ class StructureEntryStorageIndex
 {
     private final ServerStorageStructure structure;
 
-    private final Pair<ObservableValue<?>, MappingMetaData> entry;
+    private final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
 
-    public StructureEntryStorageIndex(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry)
+    public StructureEntryStorageIndex(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
     {
         this.structure = structure;
         this.entry = entry;

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -290,7 +291,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                     @Override
                     public String getScopeOfEntry(final ServerStorageStructure structure,
-                            final Pair<ObservableValue<?>, MappingMetaData> entry)
+                            final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
                     {
                         return "";
                     }
@@ -304,7 +305,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                     @Override
                     public String getCustomVariable(
                             final ServerStorageStructure structure,
-                            final ObservableValue<?> observable)
+                            final ReadOnlyProperty<?> observable)
                     {
                         return null;
                     }

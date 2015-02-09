@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentMap;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -108,7 +109,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private final String statementFormat, selectLowPart, tableName;
 
-    private final Mapper<ResultSet, T, ObservableValue<?>> mapper;
+    private final Mapper<ResultSet, T, ReadOnlyProperty<?>> mapper;
 
     private final String structureName;
 
@@ -126,10 +127,10 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.structureName = schema.getStructure();
 
         @SuppressWarnings("unchecked")
-        final MappingAdapterHolder<ResultSet, T, ObservableValue<?>> adapter =
-                (MappingAdapterHolder<ResultSet, T, ObservableValue<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
+        final MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>> adapter =
+                (MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
 
-        mapper = new JsonMapper<ResultSet, T, ObservableValue<?>>(schema, adapter,
+        mapper = new JsonMapper<ResultSet, T, ReadOnlyProperty<?>>(schema, adapter,
                 Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class);
 
         selectLowPart = createSelectFormat();
@@ -320,12 +321,12 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return structure;
     }
 
-    protected boolean setValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry, final Object value)
+    protected boolean setValueOfObservable(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object value)
     {
         return mapper.set(entry.second().getName(), entry.first(), value);
     }
 
-    protected boolean resetValueOfObservable(final Pair<ObservableValue<?>, MappingMetaData> entry)
+    protected boolean resetValueOfObservable(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
     {
         return mapper.reset(entry.second().getName(), entry.first());
     }

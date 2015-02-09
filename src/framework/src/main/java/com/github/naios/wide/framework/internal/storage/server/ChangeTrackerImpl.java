@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -50,7 +50,7 @@ public class ChangeTrackerImpl
     private final Map<StructureEntryStorageIndex, String> entryScopes =
             new HashMap<>();
 
-    private final Map<ServerStorageStructure, Map<ObservableValue<?>, String>> customVariables = new HashMap<>();
+    private final Map<ServerStorageStructure, Map<ReadOnlyProperty<?>, String>> customVariables = new HashMap<>();
 
     private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
             deleted = new SimpleSetProperty<>(FXCollections.observableSet());
@@ -62,7 +62,7 @@ public class ChangeTrackerImpl
             super (FXCollections.observableHashMap());
         }
 
-        public void addUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+        public void addUpdate(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
         {
             SetProperty<SQLUpdateInfo> set = get(structure);
             if (Objects.isNull(set))
@@ -77,7 +77,7 @@ public class ChangeTrackerImpl
                 entryScopes.put(new StructureEntryStorageIndex(structure, entry), scope.get());
         }
 
-        public void removeUpdate(final ServerStorageStructure structure, final Pair<ObservableValue<?>, MappingMetaData> entry)
+        public void removeUpdate(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
         {
             final SetProperty<SQLUpdateInfo> set = get(structure);
             if (Objects.nonNull(set))
@@ -125,7 +125,7 @@ public class ChangeTrackerImpl
     }
 
     public void onUpdate(final ServerStorageStructure structure,
-            final Pair<ObservableValue<?>, MappingMetaData> entry, final Object oldValue)
+            final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
     {
         if (!created.contains(structure))
             updates.addUpdate(structure, entry, oldValue);
@@ -162,7 +162,7 @@ public class ChangeTrackerImpl
 
     @Override
     public String getScopeOfEntry(final ServerStorageStructure structure,
-            final Pair<ObservableValue<?>, MappingMetaData> entry)
+            final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
     {
         final String scope = entryScopes.get(new StructureEntryStorageIndex(structure, entry));
         if (Objects.nonNull(scope))
@@ -225,16 +225,16 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public String getCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable)
+    public String getCustomVariable(final ServerStorageStructure structure, final ReadOnlyProperty<?> observable)
     {
-        final Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        final Map<ReadOnlyProperty<?>, String> map = customVariables.get(structure);
         return Objects.isNull(map) ? null : map.get(observable);
     }
 
     @Override
-    public void setCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable, final String name)
+    public void setCustomVariable(final ServerStorageStructure structure, final ReadOnlyProperty<?> observable, final String name)
     {
-        Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        Map<ReadOnlyProperty<?>, String> map = customVariables.get(structure);
         if (Objects.isNull(map))
         {
             map = new IdentityHashMap<>();
@@ -245,9 +245,9 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public void releaseCustomVariable(final ServerStorageStructure structure, final ObservableValue<?> observable)
+    public void releaseCustomVariable(final ServerStorageStructure structure, final ReadOnlyProperty<?> observable)
     {
-        final Map<ObservableValue<?>, String> map = customVariables.get(structure);
+        final Map<ReadOnlyProperty<?>, String> map = customVariables.get(structure);
         if (Objects.isNull(map))
             return;
 

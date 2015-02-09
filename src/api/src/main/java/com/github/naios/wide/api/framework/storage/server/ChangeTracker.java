@@ -9,9 +9,9 @@
 package com.github.naios.wide.api.framework.storage.server;
 
 import javafx.beans.property.ReadOnlyMapProperty;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 public interface ChangeTracker
     extends SQLInfoProvider
@@ -61,12 +61,12 @@ public interface ChangeTracker
      * Sets an observable value as custom variable<br>
      * Value is wrapped into the variable then
      */
-    public void setCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable, String name);
+    public void setCustomVariable(ServerStorageStructure structure, ReadOnlyProperty<?> observable, String name);
 
     /**
      * Releases a custom variable of an observable value
      */
-    public void releaseCustomVariable(ServerStorageStructure structure, ObservableValue<?> observable);
+    public void releaseCustomVariable(ServerStorageStructure structure, ReadOnlyProperty<?> observable);
 
     /**
      * Sets the comment of the current scope

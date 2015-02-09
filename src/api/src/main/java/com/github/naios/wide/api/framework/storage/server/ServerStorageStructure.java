@@ -8,11 +8,11 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 
 public interface ServerStorageStructure
-    extends ServerStorageStructurePublicBase, Mapping<ObservableValue<?>>
+    extends ServerStorageStructurePublicBase, Mapping<ReadOnlyProperty<?>>
 {
 }

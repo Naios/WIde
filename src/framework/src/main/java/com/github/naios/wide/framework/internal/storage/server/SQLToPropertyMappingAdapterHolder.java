@@ -17,13 +17,13 @@ import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.FlagUtil;
@@ -37,11 +37,11 @@ import com.google.common.reflect.TypeToken;
 
 public class SQLToPropertyMappingAdapterHolder
 {
-    public final static MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> INSTANCE = build();
+    public final static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> INSTANCE = build();
 
-    private static MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> build()
+    private static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> build()
     {
-        final MappingAdapterHolder<ResultSet, ?, ObservableValue<?>> holder =
+        final MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> holder =
                 new MappingAdapterHolder<>();
 
         holder

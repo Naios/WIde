@@ -10,14 +10,14 @@ package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.Optional;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.util.Pair;
 
 public interface SQLUpdateInfo
 {
-    public Pair<ObservableValue<?>, MappingMetaData> getEntry();
+    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry();
 
     public Optional<Object> getOldValue();
 }

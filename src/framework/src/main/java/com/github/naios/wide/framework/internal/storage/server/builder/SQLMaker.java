@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -139,8 +139,8 @@ public final class SQLMaker
         final String query = StringUtil.concat(COMMA + SPACE,
                 new CrossIterator<>(structures, structure ->
                 {
-                    final Pair<ObservableValue<?>, MappingMetaData> field = structure.getKeys().get(0);
-                    return createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field));
+                    final Pair<ReadOnlyProperty<?>, MappingMetaData> field = structure.getKeys().get(0);
+                    return createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field));
                 }));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
@@ -159,11 +159,11 @@ public final class SQLMaker
      */
     private String createNameEqualsValue(final ServerStorageStructure structure, final SQLUpdateInfo field)
     {
-        return createNameEqualsName(createName(field.getEntry().second()), createValueOfObservableValue(structure, field));
+        return createNameEqualsName(createName(field.getEntry().second()), createValueOfReadOnlyProperty(structure, field));
     }
 
     @SuppressWarnings({ "rawtypes" })
-    private String createValueOfObservableValue(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo)
+    private String createValueOfReadOnlyProperty(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo)
     {
         // If the observable has a custom var use it
         if (queryConfig.custom().get())
@@ -307,7 +307,7 @@ public final class SQLMaker
         if (structures.size() == 0)
             return "";
 
-        final List<Pair<ObservableValue<?>, MappingMetaData>> keys = Iterables.get(structures, 0).getKeys();
+        final List<Pair<ReadOnlyProperty<?>, MappingMetaData>> keys = Iterables.get(structures, 0).getKeys();
 
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
@@ -354,15 +354,15 @@ public final class SQLMaker
         return addDelemiter(StringUtil.fillWithSpaces(DELETE, FROM, createName(tableName), WHERE, keyPart));
     }
 
-    private static String createInsertHeaderPart(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list)
+    private static String createInsertHeaderPart(final String tableName, final List<Pair<ReadOnlyProperty<?>, MappingMetaData>> list)
     {
         return StringUtil.fillWithSpaces(INSERT, INTO, createName(tableName), createInsertDeclareValuesPart(list), VALUES);
     }
 
-    private static String createInsertDeclareValuesPart(final List<Pair<ObservableValue<?>, MappingMetaData>> list)
+    private static String createInsertDeclareValuesPart(final List<Pair<ReadOnlyProperty<?>, MappingMetaData>> list)
     {
         return "(" + StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(list,
+                new CrossIterator<Pair<ReadOnlyProperty<?>, MappingMetaData>, String>(list,
                         (entry) -> createName(entry.second().getName()))) + ")";
     }
 
@@ -372,12 +372,12 @@ public final class SQLMaker
                 new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
                 {
                     return "(" + StringUtil.concat(COMMA + SPACE,
-                            new CrossIterator<Pair<ObservableValue<?>, MappingMetaData>, String>(structure,
-                                    field -> createValueOfObservableValue(structure, new SQLUpdateInfoImpl(field)))) + ")";
+                            new CrossIterator<Pair<ReadOnlyProperty<?>, MappingMetaData>, String>(structure,
+                                    field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))) + ")";
                 }));
     }
 
-    protected String createInsertQuery(final String tableName, final List<Pair<ObservableValue<?>, MappingMetaData>> list, final String valuePart)
+    protected String createInsertQuery(final String tableName, final List<Pair<ReadOnlyProperty<?>, MappingMetaData>> list, final String valuePart)
     {
         return addDelemiter(StringUtil.fillWithNewLines(createInsertHeaderPart(tableName, list), valuePart));
     }
