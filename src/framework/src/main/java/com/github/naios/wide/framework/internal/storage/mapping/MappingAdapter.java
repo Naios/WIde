@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.framework.internal.storage.mapping;
 
+import java.util.Optional;
+
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
@@ -26,22 +28,34 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         this.type = type;
     }
 
-    public TypeToken<ADAPTED_TYPE> getType()
+    public final TypeToken<ADAPTED_TYPE> getType()
     {
         return type;
     }
 
-    public abstract ADAPTED_TYPE map(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
+    protected abstract Object getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
+
+    public final ADAPTED_TYPE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index, final MappingMetaData metaData)
+    {
+        return create(to, plan, index, metaData, Optional.of(getMappedValue(from, to, plan, index, metaData)));
+    }
 
     /**
-     * @param value is null if the default value needs to be set
+     * @param value value is not present then the default value is set
      */
-    public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Object value);
+    public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Optional<Object> value);
 
-    public final ADAPTED_TYPE createHelper(final ADAPTED_TYPE me, final Object value)
+    /**
+     * Sets the value to the type if present, otherwise set the default value
+     *
+     * @param me    The ADAPTED_TYPE
+     * @param value The Value you want to set
+     * @return      Returns the ADAPTED_TYPE (me param)
+     */
+    public final ADAPTED_TYPE setValueOrDefaultIfNotPresent(final ADAPTED_TYPE me, final Optional<Object> value)
     {
-        if (value != null)
-            setOverwrite(me, value);
+        if (value.isPresent())
+            setAdaptedType(me, value);
         else
             setDefault(me);
 
@@ -61,7 +75,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         return me;
     }
 
-    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
+    protected boolean setAdaptedType(final ADAPTED_TYPE me, final Object value)
     {
         return false;
     }
@@ -72,11 +86,13 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         if (type.isAssignableFrom(TypeToken.of(me.getClass())))
             throw new IllegalArgumentException(type + " is not assignable from " + me.getClass());
 
-        return setOverwrite((ADAPTED_TYPE) me, value);
+        return setAdaptedType((ADAPTED_TYPE) me, value);
     }
 
-    public boolean setDefault(final BASE me)
+    protected abstract Object getDefault();
+
+    public final boolean setDefault(final BASE me)
     {
-        return false;
+        return set(me, getDefault());
     }
 }

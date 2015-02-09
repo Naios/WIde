@@ -70,7 +70,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            content.add(new Pair(adapter.map(from, /*FIXME*/ null, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
+            content.add(new Pair(adapter.getMappedValue(from, /*FIXME*/ null, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(this, plan, content);
