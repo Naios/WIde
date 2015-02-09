@@ -14,7 +14,7 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.google.common.reflect.TypeToken;
 
-public interface MappingPlan
+public interface MappingPlan<BASE>
 {
     public int getNumberOfElements();
 
@@ -30,5 +30,5 @@ public interface MappingPlan
 
     public int getOrdinalOfTarget(final String name) throws OrdinalNotFoundException;
 
-    public List<TypeToken<?>> getMappedTypes();
+    public List<TypeToken<? extends BASE>> getMappedTypes();
 }

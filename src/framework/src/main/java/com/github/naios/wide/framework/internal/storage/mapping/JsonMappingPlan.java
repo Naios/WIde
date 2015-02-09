@@ -21,7 +21,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.reflect.TypeToken;
 
-public class JsonMappingPlan implements MappingPlan
+public class JsonMappingPlan<BASE> implements MappingPlan<BASE>
 {
     private final BiMap<String, Integer> nameToOrdinal =
             HashBiMap.create();
@@ -31,10 +31,11 @@ public class JsonMappingPlan implements MappingPlan
 
     private final List<MappingMetaData> data;
 
-    private final List<TypeToken<?>> mappedType;
+    private final List<TypeToken<? extends BASE>> mappedType;
 
     private final List<MappingMetaData> keys;
 
+    @SuppressWarnings("unchecked")
     public JsonMappingPlan(final TableSchema schema, final Class<?> target, final Class<?> implementation)
     {
         // Calculate the plan based on the schema and the target
@@ -42,7 +43,7 @@ public class JsonMappingPlan implements MappingPlan
         // Non-key Fields defined in the schema must not presented in the target interface
         final List<MappingMetaData> data = new ArrayList<>();
         final List<MappingMetaData> keys = new ArrayList<>();
-        final List<TypeToken<?>> mappedType = new ArrayList<>();
+        final List<TypeToken<? extends BASE>> mappedType = new ArrayList<>();
 
         // Get methods that are not covered through the implementations
         final List<Method> methods = new ArrayList<>();
@@ -73,7 +74,8 @@ public class JsonMappingPlan implements MappingPlan
             if (method == null)
                 continue;
 
-            mappedType.add(TypeToken.of(method.getReturnType()));
+            mappedType.add((TypeToken<? extends BASE>) TypeToken.of(method.getReturnType()));
+
             data.add(metaData);
             nameToOrdinal.put(metaData.getName(), i);
             targetToOrdinal.put(metaData.getTarget(), i);
@@ -184,7 +186,7 @@ public class JsonMappingPlan implements MappingPlan
     }
 
     @Override
-    public List<TypeToken<?>> getMappedTypes()
+    public List<TypeToken<? extends BASE>> getMappedTypes()
     {
         return mappedType;
     }

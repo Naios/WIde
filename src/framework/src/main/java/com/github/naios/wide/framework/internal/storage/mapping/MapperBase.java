@@ -23,12 +23,11 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
 
     private final Class<?>[] interfaces;
 
-    @SuppressWarnings("rawtypes")
-    private final Class<? extends MappingCallback> implementation;
+    private final Class<? extends MappingCallback<?>> implementation;
 
     public MapperBase(final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final Class<? extends TO> target, final List<Class<?>> interfaces,
-                @SuppressWarnings("rawtypes") final Class<? extends MappingCallback> implementation)
+                final Class<? extends MappingCallback<?>> implementation)
     {
         this.adapterHolder = adapterHolder;
 
@@ -42,17 +41,14 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         this.implementation = implementation;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
-            final MappingAdapter<FROM, ? extends BASE> adapter)
+    public Mapper<FROM, TO, BASE> registerAdapter(final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter)
     {
-        adapterHolder.registerAdapter(type, adapter);
+        adapterHolder.registerAdapter(adapter);
         return this;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected MappingAdapter<FROM, BASE> getAdapterOf(final TypeToken type)
+    protected MappingAdapter<FROM, TO, BASE, ? extends BASE> getAdapterOf(final TypeToken<? extends BASE> type)
     {
         return adapterHolder.getAdapterOf(type);
     }
@@ -77,7 +73,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     {
         try
         {
-            return implementation.newInstance();
+            return (MappingCallback<TO>) implementation.newInstance();
         }
         catch (final Exception e)
         {
@@ -106,7 +102,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     {
         final MappingCallback<TO> implementation = newImplementation();
 
-        final MappingProxy proxy = new MappingProxy(implementation, mapping);
+        final MappingProxy proxy = new MappingProxy(implementation);
 
         final TO to = (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
 

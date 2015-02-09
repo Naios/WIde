@@ -22,10 +22,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FlagUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
 import com.github.naios.wide.entities.util.FlagProperty;
@@ -39,15 +39,33 @@ public class SQLToPropertyMappingAdapterHolder
 {
     public final static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> INSTANCE = build();
 
-    private static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> build()
+    private static MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> build()
     {
-        final MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> holder =
+        final MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> holder =
                 new MappingAdapterHolder<>();
 
         holder
             // String
-            .registerAdapter(TypeToken.of(StringProperty.class), new MappingAdapter<ResultSet, StringProperty>()
+            .registerAdapter(new MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, StringProperty>(StringProperty.class)
                 {
+
+                    @Override
+                    public StringProperty map(ResultSet from, MappingPlan plan,
+                            int index, MappingMetaData metaData)
+                    {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    @Override
+                    public StringProperty create(MappingPlan plan, int index,
+                            MappingMetaData metaData, Object value)
+                    {
+                        // TODO Auto-generated method stub
+                        return null;
+                    }
+
+                    /*
                     @Override
                     public StringProperty map(final ResultSet from, final MappingPlan plan, final int index,
                             final MappingMetaData metaData)
@@ -63,7 +81,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final StringProperty me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof String)
                         {
@@ -87,6 +105,7 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         return createHelper(new SimpleStringProperty(), value);
                     }
+                    */
                 })
              // FloatProperty
             .registerAdapter(TypeToken.of(FloatProperty.class), new MappingAdapter<ResultSet, FloatProperty>()
@@ -107,7 +126,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final FloatProperty me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Float)
                         {
@@ -151,7 +170,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final DoubleProperty me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Double)
                         {
@@ -195,7 +214,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final BooleanProperty me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Boolean)
                         {
@@ -239,7 +258,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final IntegerProperty me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Integer)
                         {
@@ -323,7 +342,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final EnumProperty<?> me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Integer)
                         {
@@ -380,7 +399,7 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    public boolean set(final FlagProperty<?> me, final Object value)
+                    protected boolean setOverwrite(final ADAPTED_TYPE me, final Object value)
                     {
                         if (value instanceof Integer)
                         {

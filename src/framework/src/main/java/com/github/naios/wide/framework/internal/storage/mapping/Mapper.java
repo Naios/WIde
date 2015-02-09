@@ -11,7 +11,6 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.util.List;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
-import com.google.common.reflect.TypeToken;
 
 public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 {
@@ -23,9 +22,7 @@ public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 
     public boolean reset(String name, BASE base);
 
-    @SuppressWarnings("rawtypes")
-    public Mapper<FROM, TO, BASE> registerAdapter(final TypeToken type,
-            final MappingAdapter<FROM, ? extends BASE> adapter);
+    public Mapper<FROM, TO, BASE> registerAdapter(MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter);
 
-    public MappingPlan getPlan();
+    public MappingPlan<BASE> getPlan();
 }

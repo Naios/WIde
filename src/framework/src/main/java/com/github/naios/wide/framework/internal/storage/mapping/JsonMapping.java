@@ -22,12 +22,13 @@ import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
+import com.google.common.reflect.TypeToken;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
 {
-    final MapperBase<FROM, TO, BASE> mapper;
+    private final MapperBase<FROM, TO, BASE> mapper;
 
-    private final MappingPlan plan;
+    private final MappingPlan<BASE> plan;
 
     private final List<Pair<BASE, MappingMetaData>> values;
 
@@ -35,7 +36,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
     private final List<Object> rawHashableKeys;
 
-    public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan plan,
+    public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan<BASE> plan,
             final List<Pair<BASE, MappingMetaData>> values)
     {
         this.mapper = mapper;
@@ -64,11 +65,11 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     {
         try
         {
-            return mapper.getAdapterOf(
-                            plan.getMappedTypes().get(
-                                    plan.getOrdinalOfName(
-                                            entry.second().getName())))
-                                .getRawHashableValue(entry.first());
+            final TypeToken<? extends BASE> typeToken =
+                    plan.getMappedTypes().get(
+                            plan.getOrdinalOfName(entry.second().getName()));
+
+            return mapper.getAdapterOf(typeToken).getRawHashableValue(entry.first());
         }
         catch (final Exception e)
         {

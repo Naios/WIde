@@ -10,6 +10,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
@@ -20,28 +21,39 @@ public class MappingProxy implements InvocationHandler
 {
     private final Object implementation;
 
-    private final Mapping<?> mapping;
+    private Optional<Mapping<?>> mapping;
+
+    public MappingProxy(final Object implementation)
+    {
+        this.implementation = implementation;
+        this.mapping = Optional.empty();
+    }
 
     public MappingProxy(final Object implementation, final Mapping<?> mapping)
     {
         this.implementation = implementation;
+        this.mapping = Optional.of(mapping);
+    }
 
-        this.mapping = mapping;
+    public void setMapping(Mapping<?> mapping)
+    {
+        this.mapping = Optional.of(mapping);
     }
 
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
     {
         // First try to get the mapping implementation
-        try
-        {
-            mapping.getClass().getMethod(method.getName(),
-                    method.getParameterTypes());
+        if (mapping.isPresent())
+            try
+            {
+                mapping.get().getClass().getMethod(method.getName(),
+                        method.getParameterTypes());
 
-            return method.invoke(mapping, args);
-        } catch (final NoSuchMethodException e1)
-        {
-        }
+                return method.invoke(mapping.get(), args);
+            } catch (final NoSuchMethodException e1)
+            {
+            }
 
         // Then try to get it in the general implementation
         try
@@ -54,10 +66,12 @@ public class MappingProxy implements InvocationHandler
         {
         }
 
-        final Pair<?, MappingMetaData> result = mapping.getEntryByTarget(method.getName());
-        if (result != null)
-            return result.first();
-        else
-            return new UnknownMappingEntryException(method.getName());
+        if (mapping.isPresent())
+        {
+            final Pair<?, MappingMetaData> result = mapping.get().getEntryByTarget(method.getName());
+            if (result != null)
+                return result.first();
+        }
+        return new UnknownMappingEntryException(method.getName());
     }
 }

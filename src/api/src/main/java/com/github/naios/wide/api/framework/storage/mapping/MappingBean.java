@@ -6,13 +6,13 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.framework.storage.server;
+package com.github.naios.wide.api.framework.storage.mapping;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 
-public interface StructureBeanInfo
+public interface MappingBean<T>
 {
-    public ServerStorageStructure getStructure();
+    public T getStructure();
 
     public MappingMetaData getMappingMetaData();
 }

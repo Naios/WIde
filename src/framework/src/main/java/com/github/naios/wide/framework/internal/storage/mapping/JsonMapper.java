@@ -22,30 +22,29 @@ import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
-    private final MappingPlan plan;
+    private final MappingPlan<BASE> plan;
 
-    @SuppressWarnings("rawtypes")
     public JsonMapper(final TableSchema schema, final List<Class<?>> interfaces,
-                final Class<? extends MappingCallback> implementation)
+                final Class<? extends MappingCallback<?>> implementation)
     {
         this(schema, new MappingAdapterHolder<>(), interfaces, implementation);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+
     public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
             final List<Class<?>> interfaces,
-                final Class<? extends MappingCallback> implementation)
+                final Class<? extends MappingCallback<?>> implementation)
     {
         super(adapterHolder, getTargetOfSchema(schema), interfaces, implementation);
-        this.plan = new JsonMappingPlan(schema, getTarget(), getImplementation());
+        this.plan = new JsonMappingPlan<>(schema, getTarget(), getImplementation());
     }
 
-    @SuppressWarnings("rawtypes")
-    private static Class getTargetOfSchema(final TableSchema schema)
+    @SuppressWarnings({ "unchecked" })
+    private static <TO> Class<? extends TO> getTargetOfSchema(final TableSchema schema)
     {
         try
         {
-            return FrameworkServiceImpl.getEntityService().requestClass(schema.getStructure());
+            return (Class<? extends TO>) FrameworkServiceImpl.getEntityService().requestClass(schema.getStructure());
         }
         catch (final NoSucheEntityException e)
         {
@@ -54,7 +53,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     }
 
     @Override
-    public MappingPlan getPlan()
+    public MappingPlan<BASE> getPlan()
     {
         return plan;
     }
@@ -68,10 +67,10 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
-            final MappingAdapter adapter =
+            final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            content.add(new Pair(adapter.map(from, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
+            content.add(new Pair(adapter.map(from, /*FIXME*/ null, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(this, plan, content);
@@ -87,11 +86,11 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         final Iterator<Object> iterator = keys.iterator();
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
-            final MappingAdapter<FROM, BASE> adapter =
+            final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
             final MappingMetaData metaData = plan.getMetadata().get(i);
-            final BASE base = adapter.create(plan, i, metaData, metaData.isKey() ? iterator.next() : null);
+            final BASE base = adapter.create(/*FIXME*/ null, plan, i, metaData, metaData.isKey() ? iterator.next() : null);
 
             content.add(new Pair(base, plan.getMetadata().get(i)));
         }
@@ -102,7 +101,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     public boolean set(final String name, final BASE base, final Object value)
     {
-        MappingAdapter<FROM, BASE> adapter;
+        MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter;
         try
         {
             adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));
@@ -118,7 +117,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     public boolean reset(final String name, final BASE base)
     {
-        MappingAdapter<FROM, BASE> adapter;
+        MappingAdapter<FROM, TO, BASE, ?> adapter;
         try
         {
             adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));
