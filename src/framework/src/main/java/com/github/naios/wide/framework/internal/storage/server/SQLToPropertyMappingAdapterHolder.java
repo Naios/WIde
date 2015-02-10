@@ -29,7 +29,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.entities.util.EnumProperty;
+import com.github.naios.wide.api.property.EnumProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
@@ -324,7 +324,7 @@ public class SQLToPropertyMappingAdapterHolder
                         return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
                 })
-             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty, Enum>(EnumProperty.class, Enum.class)
+             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<?>, Enum>(Class<Enum>, Enum.class)
                 {
                     @SuppressWarnings("rawtypes")
                     @Override
@@ -340,7 +340,6 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        // TODO Auto-generated method stub
                         return null;
                     }
 

@@ -13,10 +13,10 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.property.EnumProperty;
+import com.github.naios.wide.api.property.FlagProperty;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
-import com.github.naios.wide.entities.util.EnumProperty;
-import com.github.naios.wide.entities.util.FlagProperty;
 
 public interface CreatureTemplate extends ServerStorageStructure
 {

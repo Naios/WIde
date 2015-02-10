@@ -22,13 +22,13 @@ import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.property.EnumProperty;
+import com.github.naios.wide.api.property.FlagProperty;
 import com.github.naios.wide.api.util.CrossIterator;
-import com.github.naios.wide.api.util.FlagUtil;
+import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
-import com.github.naios.wide.entities.util.EnumProperty;
-import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.collect.Iterables;
 
@@ -204,9 +204,9 @@ public final class SQLMaker
 
                 // Get flag values of flags in database and in the current
                 // observable
-                final List<? extends Enum> currentFlags = FlagUtil.getFlagList(
+                final List<? extends Enum> currentFlags = Flags.createFlagList(
                         enumeration, currentFlagValue);
-                final List<? extends Enum> oldFlags = FlagUtil.getFlagList(
+                final List<? extends Enum> oldFlags = Flags.createFlagList(
                         enumeration, oldFlagValue);
 
                 // Now we calculate the difference
@@ -250,7 +250,7 @@ public final class SQLMaker
                     return builder.toString();
                 }
                 else if (currentFlags.isEmpty())
-                    return String.valueOf(FlagUtil.DEFAULT_VALUE);
+                    return String.valueOf(Flags.DEFAULT_VALUE);
                 else
                     // If Values are not different
                     return concatFlags(currentFlags);
@@ -294,7 +294,7 @@ public final class SQLMaker
             public String next()
             {
                 return vars.addVariable(currentFlags.get(i).name(),
-                        StringUtil.asHex(FlagUtil.createFlag(currentFlags.get(i++))));
+                        StringUtil.asHex(Flags.createFlag(currentFlags.get(i++))));
             }
         });
     }

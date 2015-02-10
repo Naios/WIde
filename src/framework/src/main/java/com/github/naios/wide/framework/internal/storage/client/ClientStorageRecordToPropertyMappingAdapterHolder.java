@@ -8,26 +8,9 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
-import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyFloatWrapper;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.ReadOnlyLongProperty;
-import javafx.beans.property.ReadOnlyLongWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.entities.util.EnumProperty;
-import com.github.naios.wide.entities.util.FlagProperty;
-import com.github.naios.wide.entities.util.ReadOnlyEnumProperty;
-import com.github.naios.wide.entities.util.ReadOnlyFlagProperty;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
-import com.google.common.reflect.TypeToken;
 
 public class ClientStorageRecordToPropertyMappingAdapterHolder
 {
@@ -38,6 +21,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
         final MappingAdapterHolder<ClientStorageRecord, ?, ObservableValue<?>> holder =
                 new MappingAdapterHolder<>();
 
+        /*
         holder
             // Integer
             .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyIntegerProperty>()
@@ -198,7 +182,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     {
                         return me.getValue().intValue();
                     }
-                });
+                });*/
 
         return holder;
     }

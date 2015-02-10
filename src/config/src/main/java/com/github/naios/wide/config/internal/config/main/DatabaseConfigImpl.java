@@ -15,7 +15,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.main.DatabaseConfig;
 import com.github.naios.wide.api.config.schema.Schema;
-import com.github.naios.wide.api.util.LateAllocator;
+import com.github.naios.wide.api.util.LazyInitializer;
 import com.github.naios.wide.config.internal.ConfigHolder;
 import com.github.naios.wide.config.internal.config.schema.SchemaImpl;
 
@@ -29,16 +29,12 @@ public class DatabaseConfigImpl implements DatabaseConfig
 
     // We need to late bind the connection property to user and host
     // because user & host might be null sometimes
-    private final LateAllocator<StringProperty> connection = new LateAllocator<StringProperty>()
+    private final LazyInitializer<StringProperty> connection = new LazyInitializer<StringProperty>(() ->
     {
-        @Override
-        public StringProperty allocate()
-        {
-            final StringProperty property = new SimpleStringProperty();
-            property.bind(Bindings.concat(user, "@", host));
-            return property;
-        }
-    };
+        final StringProperty property = new SimpleStringProperty();
+        property.bind(Bindings.concat(user, "@", host));
+        return property;
+    });
 
     private final static String DEFAULT_SCHEMA_PATH = "default/schematics/Server.json";
 

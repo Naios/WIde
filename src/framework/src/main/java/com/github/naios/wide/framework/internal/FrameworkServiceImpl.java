@@ -272,7 +272,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                 {
                     final CreatureTemplate template = table.create(ServerStorageKeys.ofCreatureTemplate(i));
 
-                    template.unit_class().set(RandomUtil.getInt(0, 3));
+                    template.unit_class().set(template.unit_class().getEnumConstant(RandomUtil.getInt(0, 3)));
                     template.unit_flags().set(RandomUtil.getInt(0, 30));
                     template.kill_credit1().set(RandomUtil.getInt(0, 10000));
                     template.name().set(RandomUtil.getString(RandomUtil.getInt(3, 15)));

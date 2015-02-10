@@ -20,7 +20,7 @@ import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.entities.NoSucheEntityException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.FlagUtil;
+import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.entities.enums.Classes;
 
@@ -153,14 +153,14 @@ public class EntityServiceImpl implements EntityService
     {
         final int val = StringUtil.convertToInt(value);
         final Class<? extends Enum> enumeration = requestEnumForName(name);
-        final List<? extends Enum> flags = FlagUtil.getFlagList(enumeration, val);
+        final List<? extends Enum> flags = Flags.createFlagList(enumeration, val);
 
         final List<String> result = new ArrayList<>();
 
         result.add(String.format("Value: %s = %s", val, StringUtil.asHex(val)));
 
         for (final Enum flag : flags)
-            result.add(String.format("\n%-10s = %s", StringUtil.asHex(FlagUtil.createFlag(flag)), flag.name()));
+            result.add(String.format("\n%-10s = %s", StringUtil.asHex(Flags.createFlag(flag)), flag.name()));
 
         return result;
     }
