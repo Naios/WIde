@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -19,6 +20,7 @@ import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
+import com.google.common.reflect.TypeToken;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
@@ -67,7 +69,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
 
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
-            final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter =
+            final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
             content.add(new Pair(adapter.getMappedValue(from, /*FIXME*/ null, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
@@ -86,11 +88,13 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         final Iterator<Object> iterator = keys.iterator();
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
-            final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter =
+            final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
             final MappingMetaData metaData = plan.getMetadata().get(i);
-            final BASE base = adapter.create(/*FIXME*/ null, plan, i, metaData, metaData.isKey() ? iterator.next() : null);
+            final Optional value = Optional.ofNullable(metaData.isKey() ? iterator.next() : null);
+
+            final BASE base = adapter.create(/*FIXME*/ null, plan, i, metaData, value);
 
             content.add(new Pair(base, plan.getMetadata().get(i)));
         }
@@ -98,10 +102,11 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         return new JsonMapping<>(this, plan, content);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public boolean set(final String name, final BASE base, final Object value)
     {
-        MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter;
+        MappingAdapter adapter;
         try
         {
             adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));
@@ -111,13 +116,17 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             throw new Error(e);
         }
 
-        return adapter.set(base, value);
+        // This hack is ok (checked through is Assignable)
+        if (adapter.getPrimitive().isAssignableFrom(TypeToken.of(value.getClass())))
+            return adapter.set(base, value);
+        else
+            return false;
     }
 
     @Override
     public boolean reset(final String name, final BASE base)
     {
-        MappingAdapter<FROM, TO, BASE, ?> adapter;
+        MappingAdapter<FROM, TO, BASE, ?, ?> adapter;
         try
         {
             adapter = getAdapterOf(plan.getMappedTypes().get(plan.getOrdinalOfName(name)));

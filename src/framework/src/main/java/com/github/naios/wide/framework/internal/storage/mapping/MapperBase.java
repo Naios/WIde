@@ -42,13 +42,13 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
     }
 
     @Override
-    public Mapper<FROM, TO, BASE> registerAdapter(final MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter)
+    public Mapper<FROM, TO, BASE> registerAdapter(final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter)
     {
         adapterHolder.registerAdapter(adapter);
         return this;
     }
 
-    protected MappingAdapter<FROM, TO, BASE, ? extends BASE> getAdapterOf(final TypeToken<? extends BASE> type)
+    protected MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> getAdapterOf(final TypeToken<? extends BASE> type)
     {
         return adapterHolder.getAdapterOf(type);
     }

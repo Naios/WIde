@@ -164,7 +164,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     public ReadOnlyEnumProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return setValueOrDefaultIfNotPresent(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
+                        return getValueOrDefaultIfNotPresent(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
 
                     @Override
@@ -190,7 +190,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                     public ReadOnlyFlagProperty<?> create(final MappingPlan plan, final int index,
                             final MappingMetaData metaData, final Object value)
                     {
-                        return setValueOrDefaultIfNotPresent(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
+                        return getValueOrDefaultIfNotPresent(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
 
                     @Override

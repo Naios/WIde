@@ -29,138 +29,313 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.FlagUtil;
 import com.github.naios.wide.entities.util.EnumProperty;
-import com.github.naios.wide.entities.util.FlagProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
-import com.google.common.reflect.TypeToken;
 
 public class SQLToPropertyMappingAdapterHolder
 {
-    private abstract class SQLMappingAdapter<T extends ReadOnlyProperty<?>>
-        extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>,T>
-    {
-        public SQLMappingAdapter(final Class<T> type)
-        {
-            super(type);
-        }
-
-        protected ServerMappingBean createBean(final ServerStorageStructure to,
-                final MappingMetaData metaData)
-        {
-            return new ServerMappingBean()
-            {
-                @Override
-                public ServerStorageStructure getStructure()
-                {
-                    return to;
-                }
-
-                @Override
-                public MappingMetaData getMappingMetaData()
-                {
-                    return metaData;
-                }
-            };
-        }
-    }
-
     public final static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> INSTANCE = build();
 
+    @SuppressWarnings("rawtypes")
     private static MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> build()
     {
+        abstract class SQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
+                extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, T, P>
+        {
+            public SQLMappingAdapter(final Class<T> type,
+                    final Class<P> primitive)
+            {
+                super(type, primitive);
+            }
+
+            protected ServerMappingBean createBean(
+                    final ServerStorageStructure to,
+                    final MappingMetaData metaData)
+            {
+                return new ServerMappingBean()
+                {
+                    @Override
+                    public ServerStorageStructure getStructure()
+                    {
+                        return to;
+                    }
+
+                    @Override
+                    public MappingMetaData getMappingMetaData()
+                    {
+                        return metaData;
+                    }
+                };
+            }
+        }
+
+        abstract class EnumSQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
+                extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, T, P>
+        {
+            public EnumSQLMappingAdapter(final Class<T> type, final Class<P> primitive)
+            {
+                super(type, primitive);
+            }
+
+            @SuppressWarnings("rawtypes")
+            protected Class<? extends Enum> getEnum(final MappingMetaData metaData)
+            {
+                return FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias());
+            }
+        }
+
         final MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> holder =
                 new MappingAdapterHolder<>();
 
         holder
             // String
-            .registerAdapter(new SQLMappingAdapter<StringProperty>(StringProperty.class)
+            .registerAdapter(new SQLMappingAdapter<StringProperty, String>(StringProperty.class, String.class)
                 {
                     @Override
-                    protected Object getMappedValue(final ResultSet from,
+                    protected String getDefault()
+                    {
+                        return "";
+                    }
+
+                    @Override
+                    protected String getMappedValue(final ResultSet from,
                             final ServerStorageStructure to,
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getString(metaData.getName());
+                        try
+                        {
+                            return from.getString(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
                     }
 
                     @Override
                     public StringProperty create(final ServerStorageStructure to,
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
-                            final MappingMetaData metaData, final Optional<Object> value)
+                            final MappingMetaData metaData, final Optional<String> value)
                     {
-                        return setValueOrDefaultIfNotPresent(new SimpleStringProperty(createBean(to, metaData), metaData.getName()), value);
+                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final StringProperty me, final Object value)
+                    protected boolean setAdaptedType(final StringProperty me, final String value)
                     {
-                        if (value instanceof String)
-                        {
-                            me.set((String)value);
-                            return true;
-                        }
-
-                        return false;
+                        me.set(value);
+                        return true;
                     }
-
-                    @Override
-                    protected Object getDefault()
-                    {
-                        return "";
-                    }
-                })
-             // FloatProperty
-            .registerAdapter(new SQLMappingAdapter<FloatProperty>(FloatProperty.class)
+                    })
+                 // FloatProperty
+                .registerAdapter(new SQLMappingAdapter<FloatProperty, Float>(FloatProperty.class, Float.class)
                 {
                     @Override
-                    public FloatProperty map(final ResultSet from,
+                    protected Float getDefault()
+                    {
+                        return 0.f;
+                    }
+
+                    @Override
+                    protected Float getMappedValue(final ResultSet from,
                             final ServerStorageStructure to,
-                            final MappingPlan<ReadOnlyProperty<?>> plan,
-                            final int index,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        final String name = metaData.getName();
-                        final float value = from.getFloat(name);
-
-                        return new SimpleFloatProperty(createBean(to, metaData), name, value);
+                        try
+                        {
+                            return from.getFloat(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
                     }
 
                     @Override
                     public FloatProperty create(final ServerStorageStructure to,
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
-                            final MappingMetaData metaData, final Object value)
+                            final MappingMetaData metaData, final Optional<Float> value)
                     {
-                        return setValueOrDefaultIfNotPresent(new SimpleFloatProperty(createBean(to, metaData), metaData.getName()), value);
+                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
 
                     @Override
-                    protected boolean setOverwritten(final FloatProperty me, final Object value)
+                    protected boolean setAdaptedType(final FloatProperty me, final Float value)
                     {
-                        if (value instanceof Float)
-                        {
-                            me.set((float)value);
-                            return true;
-                        }
+                        me.set(value);
+                        return true;
+                    }
+                })
+            // DoubleProperty
+            .registerAdapter(new SQLMappingAdapter<DoubleProperty, Double>(DoubleProperty.class, Double.class)
+                {
+                    @Override
+                    protected Double getDefault()
+                    {
+                        return 0.d;
+                    }
 
+                    @Override
+                    protected Double getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        try
+                        {
+                            return from.getDouble(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+                    }
+
+                    @Override
+                    public DoubleProperty create(final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Double> value)
+                    {
+                        return new SimpleDoubleProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+
+                    @Override
+                    protected boolean setAdaptedType(final DoubleProperty me, final Double value)
+                    {
+                        me.set(value);
+                        return true;
+                    }
+                })
+            // BooleanProperty
+            .registerAdapter(new SQLMappingAdapter<BooleanProperty, Boolean>(BooleanProperty.class, Boolean.class)
+                {
+                    @Override
+                    protected Boolean getDefault()
+                    {
                         return false;
                     }
 
                     @Override
-                    protected Object getDefault()
+                    protected Boolean getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
                     {
-                        return "";
+                        try
+                        {
+                            return from.getBoolean(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+                    }
+
+                    @Override
+                    public BooleanProperty create(final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Boolean> value)
+                    {
+                        return new SimpleBooleanProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+
+                    @Override
+                    protected boolean setAdaptedType(final BooleanProperty me, final Boolean value)
+                    {
+                        me.set(value);
+                        return true;
                     }
                 })
-            // DoubleProperty
-            .registerAdapter(new SQLMappingAdapter<DoubleProperty>(DoubleProperty.class)
+            // IntegerProperty
+            .registerAdapter(new SQLMappingAdapter<IntegerProperty, Integer>(IntegerProperty.class, Integer.class)
                 {
                     @Override
-                    protected Object getMappedValue(final ResultSet from,
+                    protected Integer getDefault()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    protected Integer getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        try
+                        {
+                            return from.getInt(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+                    }
+
+                    @Override
+                    public IntegerProperty create(final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Integer> value)
+                    {
+                        return new SimpleIntegerProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+
+                    @Override
+                    protected boolean setAdaptedType(final IntegerProperty me, final Integer value)
+                    {
+                        me.set(value);
+                        return true;
+                    }
+                })
+            // ReadOnlyIntegerProperty
+            .registerAdapter(new SQLMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
+                {
+                    @Override
+                    protected Integer getDefault()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    protected Integer getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        try
+                        {
+                            return from.getInt(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+                    }
+
+                    @Override
+                    public ReadOnlyIntegerProperty create(final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Integer> value)
+                    {
+                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+                })
+             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty, Enum>(EnumProperty.class, Enum.class)
+                {
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    protected Enum getDefault()
+                    {
+                        return null;
+                    }
+
+                    @SuppressWarnings("rawtypes")
+                    @Override
+                    protected Enum getMappedValue(final ResultSet from,
                             final ServerStorageStructure to,
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
@@ -169,174 +344,28 @@ public class SQLToPropertyMappingAdapterHolder
                         return null;
                     }
 
+                    @SuppressWarnings("rawtypes")
                     @Override
-                    public DoubleProperty map(final ResultSet from,
-                            final ServerStorageStructure to,
-                            final MappingPlan<ReadOnlyProperty<?>> plan,
-                            final int index,
-                            final MappingMetaData metaData)
-                    {
-                        final String name = ;
-                        final float value = from.getFloat(name);
-
-                        return new SimpleDoubleProperty(createBean(to, metaData), name, value);
-                    }
-
-                    @Override
-                    public DoubleProperty create(final ServerStorageStructure to,
+                    public EnumProperty create(final ServerStorageStructure to,
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
-                            final MappingMetaData metaData, final Object value)
+                            final MappingMetaData metaData, final Optional<Enum> value)
                     {
-                        return setValueOrDefaultIfNotPresent(new SimpleDoubleProperty(createBean(to, metaData), metaData.getName()), value);
-                    }
-
-                    @Override
-                    protected boolean setOverwritten(final DoubleProperty me, final Object value)
-                    {
-                        if (value instanceof Float)
-                        {
-                            me.set((float)value);
-                            return true;
-                        }
-
-                        return false;
-                    }
-
-                    @Override
-                    protected Object getDefault()
-                    {
-                        return "";
+                        // TODO Auto-generated method stub
+                        return null;
                     }
                 })
-            // BooleanProperty
-            .registerAdapter(TypeToken.of(BooleanProperty.class), new MappingAdapter<ResultSet, BooleanProperty>()
-                {
-                    @Override
-                    public BooleanProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetaData metaData)
-                    {
-                        try
-                        {
-                            return new SimpleBooleanProperty(from.getBoolean(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
 
-                    @Override
-                    protected boolean setOverwritten(final ADAPTED_TYPE me, final Object value)
-                    {
-                        if (value instanceof Boolean)
-                        {
-                            me.set((boolean) value);
-                            return true;
-                        }
 
-                        return false;
-                    }
 
-                    @Override
-                    public boolean setDefault(final BooleanProperty me)
-                    {
-                        me.set(false);
-                        return true;
-                    }
 
-                    @Override
-                    public BooleanProperty create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return setValueOrDefaultIfNotPresent(new SimpleBooleanProperty(), value);
-                    }
-                })
-            // IntegerProperty
-            .registerAdapter(TypeToken.of(IntegerProperty.class), new MappingAdapter<ResultSet, IntegerProperty>()
-                {
-                    @Override
-                    public IntegerProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetaData metaData)
-                    {
-                        try
-                        {
-                            return new SimpleIntegerProperty(from.getInt(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
 
-                    @Override
-                    protected boolean setOverwritten(final ADAPTED_TYPE me, final Object value)
-                    {
-                        if (value instanceof Integer)
-                        {
-                            me.set((int) value);
-                            return true;
-                        }
 
-                        return false;
-                    }
 
-                    @Override
-                    public boolean setDefault(final IntegerProperty me)
-                    {
-                        me.set(0);
-                        return true;
-                    }
 
-                    @Override
-                    public IntegerProperty create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return setValueOrDefaultIfNotPresent(new SimpleIntegerProperty(-1), value);
-                    }
-                })
-            // ReadOnlyIntegerProperty
-            .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ResultSet, ReadOnlyIntegerProperty>()
-                {
-                    @Override
-                    public ReadOnlyIntegerProperty map(final ResultSet from, final MappingPlan plan,
-                            final int index, final MappingMetaData metaData)
-                    {
-                        try
-                        {
-                            return new ReadOnlyIntegerWrapper(from.getInt(metaData.getName()));
-                        } catch (final SQLException e)
-                        {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
 
-                    @Override
-                    public boolean isPossibleKey()
-                    {
-                        return true;
-                    }
 
-                    @Override
-                    public Object getRawHashableValue(final ReadOnlyIntegerProperty me)
-                    {
-                        return me.getValue();
-                    }
-
-                    @Override
-                    public ReadOnlyIntegerProperty create(final MappingPlan plan,
-                            final int index, final MappingMetaData metaData, final Object value)
-                    {
-                        if (value instanceof Integer)
-                            return new ReadOnlyIntegerWrapper((int)value);
-                        else
-                            return null;
-                    }
-                })
             // Enum Property
-            .registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
+            /*.registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
                 {
                     @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
@@ -437,7 +466,7 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         return setValueOrDefaultIfNotPresent(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
                     }
-                });
+                })*/;
 
         return holder;
     }

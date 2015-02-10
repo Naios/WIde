@@ -14,18 +14,22 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
-public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPTED_TYPE extends BASE>
+public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPTED_TYPE extends BASE, PRIMITIVE>
 {
     private TypeToken<ADAPTED_TYPE> type;
 
-    public MappingAdapter(final Class<ADAPTED_TYPE> type)
+    private TypeToken<PRIMITIVE> primitive;
+
+    public MappingAdapter(final Class<ADAPTED_TYPE> type, final Class<PRIMITIVE> primitive)
     {
         this.type = TypeToken.of(type);
+        this.primitive = TypeToken.of(primitive);
     }
 
-    public MappingAdapter(final TypeToken<ADAPTED_TYPE> type)
+    public MappingAdapter(final TypeToken<ADAPTED_TYPE> type, final TypeToken<PRIMITIVE> primitive)
     {
         this.type = type;
+        this.primitive = primitive;
     }
 
     public final TypeToken<ADAPTED_TYPE> getType()
@@ -33,7 +37,14 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         return type;
     }
 
-    protected abstract Object getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
+    public final TypeToken<PRIMITIVE> getPrimitive()
+    {
+        return primitive;
+    }
+
+    protected abstract PRIMITIVE getDefault();
+
+    protected abstract PRIMITIVE getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
 
     public final ADAPTED_TYPE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index, final MappingMetaData metaData)
     {
@@ -43,24 +54,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     /**
      * @param value value is not present then the default value is set
      */
-    public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Optional<Object> value);
-
-    /**
-     * Sets the value to the type if present, otherwise set the default value
-     *
-     * @param me    The ADAPTED_TYPE
-     * @param value The Value you want to set
-     * @return      Returns the ADAPTED_TYPE (me param)
-     */
-    public final ADAPTED_TYPE setValueOrDefaultIfNotPresent(final ADAPTED_TYPE me, final Optional<Object> value)
-    {
-        if (value.isPresent())
-            setAdaptedType(me, value);
-        else
-            setDefault(me);
-
-        return me;
-    }
+    public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Optional<PRIMITIVE> value);
 
     public boolean isPossibleKey()
     {
@@ -75,23 +69,30 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         return me;
     }
 
-    protected boolean setAdaptedType(final ADAPTED_TYPE me, final Object value)
+    protected boolean setAdaptedType(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
         return false;
     }
 
     @SuppressWarnings("unchecked")
-    public final boolean set(final BASE me, final Object value)
+    public final boolean set(final BASE me, final PRIMITIVE value)
     {
-        if (type.isAssignableFrom(TypeToken.of(me.getClass())))
-            throw new IllegalArgumentException(type + " is not assignable from " + me.getClass());
+        // TODO Improve this
+        if (!type.isAssignableFrom(TypeToken.of(me.getClass())))
+            throw new IllegalArgumentException("Adapted Type " + type + " is not assignable from " + me.getClass());
+
+        if (!primitive.isAssignableFrom(TypeToken.of(value.getClass())))
+        {
+            // Better return false here instead throwing exceptions
+            // throw new IllegalArgumentException("Primitive Type " + primitive + " is not assignable from " + value.getClass());
+
+            return false;
+        }
 
         return setAdaptedType((ADAPTED_TYPE) me, value);
     }
 
-    protected abstract Object getDefault();
-
-    public final boolean setDefault(final BASE me)
+    public boolean setDefault(final BASE me)
     {
         return set(me, getDefault());
     }

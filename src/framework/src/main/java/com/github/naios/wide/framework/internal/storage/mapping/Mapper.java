@@ -22,7 +22,7 @@ public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
 
     public boolean reset(String name, BASE base);
 
-    public Mapper<FROM, TO, BASE> registerAdapter(MappingAdapter<FROM, TO, BASE, ? extends BASE> adapter);
+    public Mapper<FROM, TO, BASE> registerAdapter(MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter);
 
     public MappingPlan<BASE> getPlan();
 }
