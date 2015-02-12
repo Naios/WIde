@@ -144,20 +144,19 @@ public class EntityServiceImpl implements EntityService
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     @Descriptor("Shows all enum flags of the value and the given enum.")
     public List<String> flags(@Descriptor("The enum name (UnitFlags, UnitClass for example)") final String name,
             @Descriptor("The flags you want to show (in decimal or hex).") final String value)
     {
         final int val = StringUtil.convertToInt(value);
-        final Class<? extends Enum> enumeration = requestEnumForName(name);
-        final List<? extends Enum> flags = Flags.createFlagList(enumeration, val);
+        final Class<? extends Enum<?>> enumeration = requestEnumForName(name);
+        final List<? extends Enum<?>> flags = Flags.createFlagList(enumeration, val);
 
         final List<String> result = new ArrayList<>();
 
         result.add(String.format("Value: %s = %s", val, StringUtil.asHex(val)));
 
-        for (final Enum flag : flags)
+        for (final Enum<?> flag : flags)
             result.add(String.format("\n%-10s = %s", StringUtil.asHex(Flags.createFlag(flag)), flag.name()));
 
         return result;

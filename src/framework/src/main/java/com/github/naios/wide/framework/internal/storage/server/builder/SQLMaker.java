@@ -101,7 +101,7 @@ public final class SQLMaker
     public static String createComment(final String text)
     {
         if (text.contains(NEWLINE))
-            return "/*\n * " + text.replaceAll(NEWLINE, "\n * ") + "\n */";
+            return "/* *\n * " + text.replaceAll(NEWLINE, "\n * ") + "\n */";
         else
             return "-- " + text;
     }
@@ -164,6 +164,7 @@ public final class SQLMaker
         return createNameEqualsName(createName(field.getEntry().second()), createValueOfReadOnlyProperty(structure, field));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private String createValueOfReadOnlyProperty(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo)
     {
         // If the observable has a custom var use it
@@ -207,6 +208,7 @@ public final class SQLMaker
                 // Remove Flags:
                 final List<? extends Enum<?>> removeFlags = new ArrayList<>();
 
+                // FIXME Remove raw class hack
                 Flags.calculateDifferenceTo(flagProperty.getEnumClass(), oldMask, newMask, (List)addFlags, (List)removeFlags);
 
                 if ((!addFlags.isEmpty()) || (!removeFlags.isEmpty()))
@@ -273,7 +275,7 @@ public final class SQLMaker
     {
         return StringUtil.concat(FLAG_DELEMITER,
                 new CrossIterator<>(removeFlags,
-                        flag -> StringUtil.asHex(Flags.createFlag(flag))));
+                        flag -> vars.addVariable(flag.name(), StringUtil.asHex(Flags.createFlag(flag)))));
     }
 
     /**

@@ -56,8 +56,8 @@ public final class Flags
             final int oldMask, final int newMask,
             final Collection<T> add, final Collection<T> remove)
     {
-        final List<T> currentFlags = Flags.createFlagList(enumClass, oldMask);
-        final List<T> oldFlags = Flags.createFlagList(enumClass, newMask);
+        final List<T> currentFlags = Flags.createFlagList(enumClass, newMask);
+        final List<T> oldFlags = Flags.createFlagList(enumClass, oldMask);
 
         currentFlags
             .stream()
