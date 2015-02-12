@@ -13,15 +13,13 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 
 public interface EntityService
 {
-    public Class<?> requestClass(final String fullName) throws NoSucheEntityException;
+    public <T> Class<T> requestClass(final String fullName) throws NoSucheEntityException;
 
-    @SuppressWarnings("rawtypes")
-    public Class<? extends Enum> requestEnumForName(final String shortName) throws NoSucheEntityException;
+    public <T extends Enum<?>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException;
 
-    @SuppressWarnings("rawtypes")
-    public Class<? extends Enum> requestEnum(final String fullName) throws NoSucheEntityException;
+    public <T extends Enum<?>> Class<T> requestEnum(final String fullName) throws NoSucheEntityException;
 
-    public Class<? extends ClientStorageStructure> requestClientStorage(final String fullName) throws NoSucheEntityException;
+    public <T extends ClientStorageStructure> Class<T> requestClientStorage(final String fullName) throws NoSucheEntityException;
 
-    public Class<? extends ServerStorageStructure> requestServerStorage(final String fullName) throws NoSucheEntityException;
+    public <T extends ServerStorageStructure> Class<T> requestServerStorage(final String fullName) throws NoSucheEntityException;
 }

@@ -36,16 +36,18 @@ public class EntityServiceImpl implements EntityService
         this.bundle = bundle;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Class<?> requestClass(final String fullName) throws NoSucheEntityException
+    public <T> Class<T> requestClass(final String fullName) throws NoSucheEntityException
     {
-        Class<?> type = classes.get(fullName);
-        if (type != null)
-            return type;
-
         try
         {
-            type = bundle.loadClass(fullName);
+            Class<T> type = (Class<T>)classes.get(fullName);
+
+            if (type != null)
+                return type;
+
+            type = (Class<T>)bundle.loadClass(fullName);
             classes.put(fullName, type);
             return type;
         }
@@ -56,18 +58,16 @@ public class EntityServiceImpl implements EntityService
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes" })
-    public Class<? extends Enum> requestEnumForName(final String shortName) throws NoSucheEntityException
+    public <T extends Enum<?>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException
     {
         return requestEnum(Classes.class.getPackage().getName() + "." + shortName);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Class<? extends Enum> requestEnum(final String fullName)
+    public <T extends Enum<?>> Class<T> requestEnum(final String fullName)
             throws NoSucheEntityException
     {
-        final Class<?> type;
+        final Class<T> type;
         try
         {
             type = requestClass(fullName);
@@ -80,14 +80,13 @@ public class EntityServiceImpl implements EntityService
         if (!type.isEnum())
             throw new NoSucheEntityException(fullName, Enum.class);
 
-        return (Class)type;
+        return type;
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Class<? extends ClientStorageStructure> requestClientStorage(final String fullName) throws NoSucheEntityException
+    public <T extends ClientStorageStructure> Class<T> requestClientStorage(final String fullName) throws NoSucheEntityException
     {
-        final Class<?> type;
+        final Class<T> type;
         try
         {
             type = requestClass(fullName);
@@ -100,14 +99,13 @@ public class EntityServiceImpl implements EntityService
         if (!ClientStorageStructure.class.isAssignableFrom(type))
             throw new NoSucheEntityException(fullName, ClientStorageStructure.class);
 
-        return (Class)type;
+        return type;
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Class<? extends ServerStorageStructure> requestServerStorage(final String fullName) throws NoSucheEntityException
+    public <T extends ServerStorageStructure> Class<T> requestServerStorage(final String fullName) throws NoSucheEntityException
     {
-        final Class<?> type;
+        final Class<T> type;
         try
         {
             type = requestClass(fullName);
@@ -120,7 +118,7 @@ public class EntityServiceImpl implements EntityService
         if (!ServerStorageStructure.class.isAssignableFrom(type))
             throw new NoSucheEntityException(fullName, ClientStorageStructure.class);
 
-        return (Class)type;
+        return type;
     }
 
     @SuppressWarnings("rawtypes")

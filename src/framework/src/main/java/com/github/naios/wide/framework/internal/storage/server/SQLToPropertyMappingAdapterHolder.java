@@ -79,7 +79,6 @@ public class SQLToPropertyMappingAdapterHolder
                 super(type, primitive);
             }
 
-            @SuppressWarnings("rawtypes")
             protected Class<? extends Enum> getEnum(final MappingMetaData metaData)
             {
                 return FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias());
