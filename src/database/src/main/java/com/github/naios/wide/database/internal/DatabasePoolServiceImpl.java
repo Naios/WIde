@@ -204,32 +204,23 @@ public final class DatabasePoolServiceImpl
         final Database db = requestConnection(id).get();
         db.open();
 
-        final ResultSet result = db.execute(query);
-        if (Objects.isNull(result))
+        try (final ResultSet result = db.execute(query))
         {
-            System.out.println("No result!");
-            return list;
-        }
+            if (Objects.isNull(result))
+            {
+                System.out.println("No result!");
+                return list;
+            }
 
-        ResultSetMetaData metaData;
-        try
-        {
-            metaData = result.getMetaData();
-        }
-        catch (final SQLException e)
-        {
-            throw new UncheckedSQLException(e);
-        }
+            final ResultSetMetaData metaData = result.getMetaData();
 
-        // TODO is this correct?
-        if (Objects.isNull(metaData))
-        {
-            System.out.println("No metadata!");
-            return list;
-        }
+            // TODO is this correct?
+            if (Objects.isNull(metaData))
+            {
+                System.out.println("No metadata!");
+                return list;
+            }
 
-        try
-        {
             final int columns = metaData.getColumnCount();
 
             // Header
@@ -273,12 +264,10 @@ public final class DatabasePoolServiceImpl
 
                 list.add(values);
             }
-
-            result.close();
         }
         catch (final SQLException e)
         {
-            e.printStackTrace();
+            throw new UncheckedSQLException(e);
         }
 
         return list;

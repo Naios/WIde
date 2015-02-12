@@ -245,7 +245,7 @@ public class DatabaseImpl implements Database
 
                 try
                 {
-                    statement.closeOnCompletion();
+                    statement.close();
                 }
                 catch (final SQLException e)
                 {

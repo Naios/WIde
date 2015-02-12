@@ -51,7 +51,6 @@ public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
     public BASE create(final TO to, final MappingPlan<BASE> plan, final int index,
             final MappingMetaData metaData, final Optional<Object> value)
     {
-     // TODO Check this
         return adapter.create(to, plan, index, metaData, (Optional)value);
     }
 

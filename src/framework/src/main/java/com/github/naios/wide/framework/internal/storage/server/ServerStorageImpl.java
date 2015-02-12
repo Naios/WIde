@@ -239,16 +239,15 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     {
         checkOpen();
 
-        final List<T> list = new ArrayList<T>();
-        final ResultSet result;
-        try
-        {
-            result = database.get().execute(selectLowPart + where);
+        final List<T> list = new ArrayList<>();
 
+        try (ResultSet result = database.get().execute(selectLowPart + where))
+        {
             while (result.next())
                 list.add((T) newStructureFromResult(result));
 
-        } catch (final SQLException e)
+        }
+        catch (final SQLException e)
         {
             throw new DatabaseConnectionException(e.getMessage());
         }
