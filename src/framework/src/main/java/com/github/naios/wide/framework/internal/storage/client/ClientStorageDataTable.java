@@ -2,6 +2,7 @@ package com.github.naios.wide.framework.internal.storage.client;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
@@ -16,7 +17,7 @@ public interface ClientStorageDataTable<T extends ClientStorageStructure> extend
 
     public List<TypeToken<?>> getFieldType();
 
-    public T getEntry(int entry) throws ClientStorageException;
+    public Optional<T> getEntry(int entry) throws ClientStorageException;
 
     public Object[][] asObjectArray();
 

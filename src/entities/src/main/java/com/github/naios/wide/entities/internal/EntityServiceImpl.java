@@ -58,13 +58,13 @@ public class EntityServiceImpl implements EntityService
     }
 
     @Override
-    public <T extends Enum<T>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException
+    public <T extends Enum<?>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException
     {
         return requestEnum(Classes.class.getPackage().getName() + "." + shortName);
     }
 
     @Override
-    public <T extends Enum<T>> Class<T> requestEnum(final String fullName)
+    public <T extends Enum<?>> Class<T> requestEnum(final String fullName)
             throws NoSucheEntityException
     {
         final Class<T> type;

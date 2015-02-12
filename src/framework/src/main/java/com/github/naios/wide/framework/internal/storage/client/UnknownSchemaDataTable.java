@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
@@ -204,7 +205,7 @@ public class UnknownSchemaDataTable<T extends ClientStorageStructure>
     }
 
     @Override
-    public T getEntry(final int entry) throws ClientStorageException
+    public Optional<T> getEntry(final int entry) throws ClientStorageException
     {
         throw new UnsupportedOperationException("You can't get specific entries from estimated storages!");
     }

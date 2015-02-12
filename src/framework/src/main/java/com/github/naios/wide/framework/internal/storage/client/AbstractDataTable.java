@@ -10,11 +10,11 @@ package com.github.naios.wide.framework.internal.storage.client;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.collections.FXCollections;
 
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
@@ -100,11 +100,10 @@ public abstract class AbstractDataTable<T extends ClientStorageStructure>
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected Mapper<ClientStorageRecord, ClientStorageStructure, ObservableValue<?>>
-        createMapper(final TableSchema schema)
+    protected Mapper<ClientStorageRecord, ClientStorageStructure, ReadOnlyProperty<?>> createMapper(final TableSchema schema)
     {
         return new JsonMapper(schema, ClientStorageRecordToPropertyMappingAdapterHolder.INSTANCE,
-                            Arrays.asList(ClientStoragePrivateBase.class),
+                            FXCollections.singletonObservableList(ClientStoragePrivateBase.class),
                                 ClientStorageBaseImplementation.class);
     }
 

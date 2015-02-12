@@ -28,7 +28,7 @@ public interface MappingAdapterBase<FROM, TO extends Mapping<BASE>, BASE, ADAPTE
         return false;
     }
 
-    public Object getRawHashableValue(final ADAPTED_TYPE me);
+    public PRIMITIVE getPrimitiveValue(final ADAPTED_TYPE me);
 
     public default boolean set(final ADAPTED_TYPE me, final PRIMITIVE value)
     {

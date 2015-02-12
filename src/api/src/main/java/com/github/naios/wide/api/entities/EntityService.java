@@ -15,9 +15,9 @@ public interface EntityService
 {
     public <T> Class<T> requestClass(final String fullName) throws NoSucheEntityException;
 
-    public <T extends Enum<T>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException;
+    public <T extends Enum<?>> Class<T> requestEnumForName(final String shortName) throws NoSucheEntityException;
 
-    public <T extends Enum<T>> Class<T> requestEnum(final String fullName) throws NoSucheEntityException;
+    public <T extends Enum<?>> Class<T> requestEnum(final String fullName) throws NoSucheEntityException;
 
     public <T extends ClientStorageStructure> Class<T> requestClientStorage(final String fullName) throws NoSucheEntityException;
 

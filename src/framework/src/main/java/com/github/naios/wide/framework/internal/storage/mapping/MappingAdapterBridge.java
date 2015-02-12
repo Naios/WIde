@@ -79,10 +79,10 @@ public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object getRawHashableValue(final BASE me)
+    public Object getPrimitiveValue(final BASE me)
     {
         tokenInstanceOf(adapter.getType(), me, false);
-        return adapter.getRawHashableValue(me);
+        return adapter.getPrimitiveValue(me);
     }
 
     @SuppressWarnings("unchecked")

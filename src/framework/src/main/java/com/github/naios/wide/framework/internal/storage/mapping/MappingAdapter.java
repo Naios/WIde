@@ -53,6 +53,9 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     protected abstract PRIMITIVE getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
 
     @Override
+    public abstract PRIMITIVE getPrimitiveValue(final ADAPTED_TYPE me);
+
+    @Override
     public final ADAPTED_TYPE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index, final MappingMetaData metaData)
     {
         return create(to, plan, index, metaData, Optional.ofNullable(getMappedValue(from, to, plan, index, metaData)));
@@ -64,17 +67,8 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     @Override
     public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Optional<PRIMITIVE> value);
 
-    /**
-     * If you use the type as key, return its real value for hashing
-     */
-    @Override
-    public Object getRawHashableValue(final ADAPTED_TYPE me)
-    {
-        return me;
-    }
-
     // Overwrite this to allow modification of mapped types
-    protected boolean setAdaptedType(final ADAPTED_TYPE me, final PRIMITIVE value)
+    protected boolean setPrimitiveValue(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
         return false;
     }
@@ -82,7 +76,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     @Override
     public final boolean set(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
-        return setAdaptedType(me, value);
+        return setPrimitiveValue(me, value);
     }
 
     @Override

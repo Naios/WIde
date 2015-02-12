@@ -69,7 +69,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
                     plan.getMappedTypes().get(
                             plan.getOrdinalOfName(entry.second().getName()));
 
-            return mapper.getAdapterOf(typeToken).getRawHashableValue(entry.first());
+            return mapper.getAdapterOf(typeToken).getPrimitiveValue(entry.first());
         }
         catch (final Exception e)
         {

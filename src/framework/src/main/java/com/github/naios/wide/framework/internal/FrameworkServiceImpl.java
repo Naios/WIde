@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyProperty;
@@ -45,6 +46,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
+import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
@@ -216,8 +218,8 @@ public final class FrameworkServiceImpl implements FrameworkService
 
             public void testMe()
             {
-                // final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
-                // System.out.println(String.format("DEBUG: %s", me));
+                final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc", ClientStoragePolicy.POLICY_SCHEMA_ONLY).select();
+                System.out.println(String.format("DEBUG: %s", me));
 
                 final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
 
@@ -383,6 +385,9 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 System.out.println(String.format("DEBUG: Entries created:"));
                 table.getChangeTracker().structuresCreated().forEach(structure -> System.out.println(structure.history()));
+
+                final Optional<MapEntry> map =  me.getEntry(1);
+                map.ifPresent(m -> System.out.println(m));
 
                 System.out.println(String.format("DEBUG: Finished!"));
              }

@@ -8,181 +8,248 @@
 
 package com.github.naios.wide.framework.internal.storage.client;
 
-import javafx.beans.value.ObservableValue;
+import java.util.Optional;
 
+import javafx.beans.property.ReadOnlyFloatProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyLongProperty;
+import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
+
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.property.ReadOnlyEnumProperty;
+import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
+import com.github.naios.wide.api.property.SimpleEnumProperty;
+import com.github.naios.wide.api.property.SimpleFlagProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
+import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 
 public class ClientStorageRecordToPropertyMappingAdapterHolder
 {
-    public final static MappingAdapterHolder<ClientStorageRecord, ?, ObservableValue<?>> INSTANCE = build();
+    public final static MappingAdapterHolder<ClientStorageRecord, ?, ReadOnlyProperty<?>> INSTANCE = build();
 
-    private static MappingAdapterHolder<ClientStorageRecord, ?, ObservableValue<?>> build()
+    @SuppressWarnings("rawtypes")
+    private static MappingAdapterHolder<ClientStorageRecord, ClientStorageStructure, ReadOnlyProperty<?>> build()
     {
-        final MappingAdapterHolder<ClientStorageRecord, ?, ObservableValue<?>> holder =
+        final MappingAdapterHolder<ClientStorageRecord, ClientStorageStructure, ReadOnlyProperty<?>> holder =
                 new MappingAdapterHolder<>();
 
-        /*
         holder
-            // Integer
-            .registerAdapter(TypeToken.of(ReadOnlyIntegerProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyIntegerProperty>()
-                {
-                    @Override
-                    public ReadOnlyIntegerProperty map(
-                            final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData)
-                    {
-                        return new ReadOnlyIntegerWrapper(from.getInt(metaData.getIndex(), metaData.isKey()));
-                    }
-
-                    @Override
-                    public ReadOnlyIntegerProperty create(
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return new ReadOnlyIntegerWrapper();
-                    }
-
-                    @Override
-                    public boolean isPossibleKey()
-                    {
-                        return true;
-                    }
-
-                    @Override
-                    public Object getRawHashableValue(final ReadOnlyIntegerProperty me)
-                    {
-                        return me.get();
-                    }
-                })
-            // Long
-            .registerAdapter(TypeToken.of(ReadOnlyLongProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyLongProperty>()
-                {
-                    @Override
-                    public ReadOnlyLongProperty map(
-                            final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData)
-                    {
-                        return new ReadOnlyLongWrapper(from.getLong(metaData.getIndex()));
-                    }
-
-                    @Override
-                    public ReadOnlyLongProperty create(
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return new ReadOnlyLongWrapper();
-                    }
-
-                    @Override
-                    public Object getRawHashableValue(final ReadOnlyLongProperty me)
-                    {
-                        return me.get();
-                    }
-                })
             // String
-            .registerAdapter(TypeToken.of(ReadOnlyStringProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyStringProperty>()
+            .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyStringProperty, String>(ReadOnlyStringProperty.class, String.class)
                 {
                     @Override
-                    public ReadOnlyStringProperty map(
-                            final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData)
+                    protected String getDefault()
                     {
-                        return new ReadOnlyStringWrapper(from.getString(metaData.getIndex()));
+                        return "";
                     }
 
                     @Override
-                    public ReadOnlyStringProperty create(
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return new ReadOnlyStringWrapper();
-                    }
-
-                    @Override
-                    public Object getRawHashableValue(final ReadOnlyStringProperty me)
+                    public String getPrimitiveValue(final ReadOnlyStringProperty me)
                     {
                         return me.get();
                     }
-                })
-             // FloatProperty
-            .registerAdapter(TypeToken.of(ReadOnlyFloatProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFloatProperty>()
-                {
+
                     @Override
-                    public ReadOnlyFloatProperty map(final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
+                    protected String getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return new ReadOnlyFloatWrapper(from.getFloat(metaData.getIndex()));
+                        return from.getString(index);
                     }
 
                     @Override
-                    public ReadOnlyFloatProperty create(final MappingPlan plan,
-                            final int index, final MappingMetaData metaData, final Object value)
+                    public ReadOnlyStringProperty create(final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<String> value)
                     {
-                        return new ReadOnlyFloatWrapper();
+                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+                })
+              // FloatProperty
+                .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyFloatProperty, Float>(ReadOnlyFloatProperty.class, Float.class)
+                {
+                    @Override
+                    protected Float getDefault()
+                    {
+                        return 0.f;
                     }
 
                     @Override
-                    public Object getRawHashableValue(final ReadOnlyFloatProperty me)
+                    public Float getPrimitiveValue(final ReadOnlyFloatProperty me)
                     {
                         return me.get();
                     }
-                })
-            // Enum Property
-            .registerAdapter(TypeToken.of(ReadOnlyEnumProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyEnumProperty<?>>()
-                {
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
+
                     @Override
-                    public ReadOnlyEnumProperty map(final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
+                    protected Float getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getIndex()));
+                        return from.getFloat(index);
                     }
 
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public ReadOnlyEnumProperty<?> create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
+                    public ReadOnlyFloatProperty create(final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Float> value)
                     {
-                        return getValueOrDefaultIfNotPresent(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
+                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+                })
+             // Long Property
+             .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyLongProperty, Long>(ReadOnlyLongProperty.class, Long.class)
+                {
+                    @Override
+                    protected Long getDefault()
+                    {
+                        return 0L;
                     }
 
                     @Override
-                    public Object getRawHashableValue(final ReadOnlyEnumProperty<?> me)
+                    public Long getPrimitiveValue(final ReadOnlyLongProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected Long getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        return from.getLong(index);
+                    }
+
+                    @Override
+                    public ReadOnlyLongProperty create(final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Long> value)
+                    {
+                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+                })
+            // ReadOnlyIntegerProperty
+            .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
+                {
+                    @Override
+                    protected Integer getDefault()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    public Integer getPrimitiveValue(final ReadOnlyIntegerProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected Integer getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        return from.getInt(index);
+                    }
+
+                    @Override
+                    public ReadOnlyIntegerProperty create(final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Integer> value)
+                    {
+                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
+                })
+             // EnumProperty
+             .registerAdapter(new ClientEnumMetaDataMappingAdapter<ReadOnlyEnumProperty<? extends Enum<?>>, Enum<?>>(ReadOnlyEnumProperty.class, Enum.class)
+                {
+                    @Override
+                    protected Enum<?> getDefault()
+                    {
+                        return null;
+                    }
+
+                    @Override
+                    public Enum<?> getPrimitiveValue(final ReadOnlyEnumProperty<? extends Enum<?>> me)
+                    {
+                        return me.getValue();
+                    }
+
+                    private Enum<?> getDefaultForEnum(final MappingMetaData metaData)
+                    {
+                        return getEnum(metaData).getEnumConstants()[0];
+                    }
+
+                    @Override
+                    protected Enum<?> getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        final Class<? extends Enum<?>> type = getEnum(metaData);
+
+                        final int ordinal;
+                        ordinal = from.getInt(index);
+
+                        if (ordinal >= type.getEnumConstants().length)
+                            throw new IllegalArgumentException(String.format("Ordinal %s at column is not part in enum %s!", ordinal, metaData.getName(), type.getName()));
+
+                        return type.getEnumConstants()[ordinal];
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public ReadOnlyEnumProperty<? extends Enum<?>> create(
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Enum<?>> value)
+                    {
+                        return new SimpleEnumProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefaultForEnum(metaData)));
+                    }
+                })
+
+                // FlagProperty
+              .registerAdapter(new ClientEnumMetaDataMappingAdapter<ReadOnlyFlagProperty<? extends Enum<?>>, Integer>(ReadOnlyFlagProperty.class, Integer.class)
+                {
+                    @Override
+                    protected Integer getDefault()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    public Integer getPrimitiveValue(final ReadOnlyFlagProperty<? extends Enum<?>> me)
                     {
                         return me.getValue().intValue();
                     }
-                })
-            // Flag Property
-            .registerAdapter(TypeToken.of(ReadOnlyFlagProperty.class), new MappingAdapter<ClientStorageRecord, ReadOnlyFlagProperty<?>>()
-                {
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
+
                     @Override
-                    public ReadOnlyFlagProperty map(final ClientStorageRecord from,
-                            final MappingPlan plan, final int index,
+                    protected Integer getMappedValue(final ClientStorageRecord from,
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getIndex()));
+                        return from.getInt(index);
                     }
 
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public ReadOnlyFlagProperty<?> create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
+                    public ReadOnlyFlagProperty<? extends Enum<?>> create(
+                            final ClientStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return getValueOrDefaultIfNotPresent(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
+                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
-
-                    @Override
-                    public Object getRawHashableValue(final ReadOnlyFlagProperty<?> me)
-                    {
-                        return me.getValue().intValue();
-                    }
-                });*/
+                });
 
         return holder;
     }

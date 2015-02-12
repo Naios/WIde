@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -202,6 +203,12 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
     {
     }
 
+    @Override
+    public String getPath()
+    {
+        return path;
+    }
+
     // Getter
     @Override
     public int getRecordsCount()
@@ -259,7 +266,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
     }
 
     @Override
-    public T getEntry(final int entry) throws ClientStorageException
+    public Optional<T> getEntry(final int entry) throws ClientStorageException
     {
         return dataTable.getEntry(entry);
     }

@@ -16,6 +16,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyProperty;
@@ -23,18 +24,16 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.property.EnumProperty;
 import com.github.naios.wide.api.property.FlagProperty;
 import com.github.naios.wide.api.property.SimpleEnumProperty;
 import com.github.naios.wide.api.property.SimpleFlagProperty;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 
@@ -45,81 +44,12 @@ public class SQLToPropertyMappingAdapterHolder
     @SuppressWarnings("rawtypes")
     private static MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> build()
     {
-        abstract class SQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
-                extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, T, P>
-        {
-            public SQLMappingAdapter(final Class<T> type, final Class<P> primitive)
-            {
-                super(type, primitive);
-            }
-
-            class ServerMappingBeanImpl
-                implements ServerMappingBean
-            {
-                private final ServerStorageStructure to;
-
-                private final MappingMetaData metaData;
-
-                public ServerMappingBeanImpl(final ServerStorageStructure to, final MappingMetaData metaData)
-                {
-                    this.to = to;
-                    this.metaData = metaData;
-                }
-
-                @Override
-                public ServerStorageStructure getStructure()
-                {
-                    return to;
-                }
-
-                @Override
-                public MappingMetaData getMappingMetaData()
-                {
-                    return metaData;
-                }
-
-                @Override
-                public String toString()
-                {
-                    return String.format("ServerMappingBean(%s)", to.getOwner().getTableName());
-                };
-            }
-
-            protected ServerMappingBean createBean(final ServerStorageStructure to, final MappingMetaData metaData)
-            {
-                return new ServerMappingBeanImpl(to, metaData);
-            }
-        }
-
-        abstract class EnumSQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
-                extends SQLMappingAdapter<T, P>
-        {
-            /*
-            public EnumSQLMappingAdapter(final Class<T> type, final Class<P> primitive)
-            {
-                super(type, primitive);
-            }
-            */
-
-            // FIXME fix this raw class hack
-            @SuppressWarnings("unchecked")
-            public EnumSQLMappingAdapter(final Class type, final Class primitive)
-            {
-                super(type, primitive);
-            }
-
-            protected <T extends Enum<T>> Class<T> getEnum(final MappingMetaData metaData)
-            {
-                return FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias());
-            }
-        }
-
         final MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> holder =
                 new MappingAdapterHolder<>();
 
         holder
             // String
-            .registerAdapter(new SQLMappingAdapter<StringProperty, String>(StringProperty.class, String.class)
+            .registerAdapter(new ServerMetaDataMappingAdapter<StringProperty, String>(StringProperty.class, String.class)
                 {
                     @Override
                     protected String getDefault()
@@ -152,14 +82,20 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final StringProperty me, final String value)
+                    public String getPrimitiveValue(final StringProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected boolean setPrimitiveValue(final StringProperty me, final String value)
                     {
                         me.set(value);
                         return true;
                     }
-                    })
+                })
                  // FloatProperty
-                .registerAdapter(new SQLMappingAdapter<FloatProperty, Float>(FloatProperty.class, Float.class)
+                .registerAdapter(new ServerMetaDataMappingAdapter<FloatProperty, Float>(FloatProperty.class, Float.class)
                 {
                     @Override
                     protected Float getDefault()
@@ -192,14 +128,20 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final FloatProperty me, final Float value)
+                    public Float getPrimitiveValue(final FloatProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected boolean setPrimitiveValue(final FloatProperty me, final Float value)
                     {
                         me.set(value);
                         return true;
                     }
                 })
             // DoubleProperty
-            .registerAdapter(new SQLMappingAdapter<DoubleProperty, Double>(DoubleProperty.class, Double.class)
+            .registerAdapter(new ServerMetaDataMappingAdapter<DoubleProperty, Double>(DoubleProperty.class, Double.class)
                 {
                     @Override
                     protected Double getDefault()
@@ -232,14 +174,20 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final DoubleProperty me, final Double value)
+                    public Double getPrimitiveValue(final DoubleProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected boolean setPrimitiveValue(final DoubleProperty me, final Double value)
                     {
                         me.set(value);
                         return true;
                     }
                 })
             // BooleanProperty
-            .registerAdapter(new SQLMappingAdapter<BooleanProperty, Boolean>(BooleanProperty.class, Boolean.class)
+            .registerAdapter(new ServerMetaDataMappingAdapter<BooleanProperty, Boolean>(BooleanProperty.class, Boolean.class)
                 {
                     @Override
                     protected Boolean getDefault()
@@ -272,14 +220,20 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final BooleanProperty me, final Boolean value)
+                    public Boolean getPrimitiveValue(final BooleanProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected boolean setPrimitiveValue(final BooleanProperty me, final Boolean value)
                     {
                         me.set(value);
                         return true;
                     }
                 })
             // IntegerProperty
-            .registerAdapter(new SQLMappingAdapter<IntegerProperty, Integer>(IntegerProperty.class, Integer.class)
+            .registerAdapter(new ServerMetaDataMappingAdapter<IntegerProperty, Integer>(IntegerProperty.class, Integer.class)
                 {
                     @Override
                     protected Integer getDefault()
@@ -312,14 +266,20 @@ public class SQLToPropertyMappingAdapterHolder
                     }
 
                     @Override
-                    protected boolean setAdaptedType(final IntegerProperty me, final Integer value)
+                    public Integer getPrimitiveValue(final IntegerProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected boolean setPrimitiveValue(final IntegerProperty me, final Integer value)
                     {
                         me.set(value);
                         return true;
                     }
                 })
             // ReadOnlyIntegerProperty
-            .registerAdapter(new SQLMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
+            .registerAdapter(new ServerMetaDataMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
                 {
                     @Override
                     protected Integer getDefault()
@@ -350,9 +310,54 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
+
+                    @Override
+                    public Integer getPrimitiveValue(final ReadOnlyIntegerProperty me)
+                    {
+                        return me.get();
+                    }
+                })
+             // Long Property
+             .registerAdapter(new ServerMetaDataMappingAdapter<LongProperty, Long>(LongProperty.class, Long.class)
+                {
+                    @Override
+                    protected Long getDefault()
+                    {
+                        return 0L;
+                    }
+
+                    @Override
+                    public Long getPrimitiveValue(final LongProperty me)
+                    {
+                        return me.get();
+                    }
+
+                    @Override
+                    protected Long getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        try
+                        {
+                            return from.getLong(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+                    }
+
+                    @Override
+                    public LongProperty create(final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Long> value)
+                    {
+                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                    }
                 })
              // EnumProperty
-             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<? extends Enum<?>>, Enum<?>>(EnumProperty.class, Enum.class)
+             .registerAdapter(new ServerEnumMetaDataMappingAdapter<EnumProperty<? extends Enum<?>>, Enum<?>>(EnumProperty.class, Enum.class)
                 {
                     @Override
                     protected Enum<?> getDefault()
@@ -399,9 +404,15 @@ public class SQLToPropertyMappingAdapterHolder
                         return new SimpleEnumProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefaultForEnum(metaData)));
                     }
 
+                    @Override
+                    public Enum<?> getPrimitiveValue(final EnumProperty<? extends Enum<?>> me)
+                    {
+                        return me.get();
+                    }
+
                     @SuppressWarnings("unchecked")
                     @Override
-                    protected boolean setAdaptedType(final EnumProperty<? extends Enum<?>> me, Enum<?> value)
+                    protected boolean setPrimitiveValue(final EnumProperty<? extends Enum<?>> me, Enum<?> value)
                     {
                         final Optional<? extends Enum<?>> optionalValue = Optional.ofNullable(value);
 
@@ -422,7 +433,7 @@ public class SQLToPropertyMappingAdapterHolder
                 })
 
                 // FlagProperty
-              .registerAdapter(new EnumSQLMappingAdapter<FlagProperty<? extends Enum<?>>, Integer>(FlagProperty.class, Integer.class)
+              .registerAdapter(new ServerEnumMetaDataMappingAdapter<FlagProperty<? extends Enum<?>>, Integer>(FlagProperty.class, Integer.class)
                 {
                     @Override
                     protected Integer getDefault()
@@ -444,6 +455,12 @@ public class SQLToPropertyMappingAdapterHolder
                         {
                             return getDefault();
                         }
+                    }
+
+                    @Override
+                    public Integer getPrimitiveValue(final FlagProperty<? extends Enum<?>> me)
+                    {
+                        return me.get();
                     }
 
                     @SuppressWarnings("unchecked")

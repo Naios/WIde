@@ -9,11 +9,14 @@ package com.github.naios.wide.api.framework.storage.client;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.reflect.TypeToken;
 
 public interface ClientStorage<T extends ClientStorageStructure>
 {
+    public String getPath();
+
     public int getRecordsCount();
 
     public int getFieldsCount();
@@ -24,7 +27,7 @@ public interface ClientStorage<T extends ClientStorageStructure>
 
     public List<TypeToken<?>> getFieldType();
 
-    public T getEntry(int entry) throws ClientStorageException;
+    public Optional<T> getEntry(int entry) throws ClientStorageException;
 
     public ClientStorageFormat getFormat();
 

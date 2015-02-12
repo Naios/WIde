@@ -9,6 +9,7 @@
 package com.github.naios.wide.framework.internal.storage.client;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageException;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
@@ -89,7 +90,7 @@ public class DB2Storage<T extends ClientStorageStructure> extends ClientStorageI
     }
 
     @Override
-    public T getEntry(final int entry) throws ClientStorageException
+    public Optional<T> getEntry(final int entry) throws ClientStorageException
     {
         // TODO Fix this (some Draenor db2 storages don't declare this field)
         // if ((entry < minId) || (entry > maxId))

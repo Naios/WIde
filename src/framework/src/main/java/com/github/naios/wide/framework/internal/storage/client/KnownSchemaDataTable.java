@@ -14,8 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -26,7 +27,7 @@ import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
 public class KnownSchemaDataTable<T extends ClientStorageStructure>
     extends AbstractDataTable<T>
 {
-    private final Mapper<ClientStorageRecord, ClientStorageStructure, ObservableValue<?>> mapper;
+    private final Mapper<ClientStorageRecord, ClientStorageStructure, ReadOnlyProperty<?>> mapper;
 
     private final Map<Integer, T> entries =
             new HashMap<>();
@@ -85,9 +86,9 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
     }
 
     @Override
-    public T getEntry(final int entry) throws ClientStorageException
+    public Optional<T> getEntry(final int entry) throws ClientStorageException
     {
-        return entries.get(entry);
+        return Optional.ofNullable(entries.get(entry));
     }
 
     @Override
