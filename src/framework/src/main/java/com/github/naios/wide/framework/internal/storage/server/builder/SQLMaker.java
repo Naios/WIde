@@ -10,7 +10,6 @@ package com.github.naios.wide.framework.internal.storage.server.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,7 +22,10 @@ import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.property.EnumProperty;
+import com.github.naios.wide.api.property.EnumPropertyBase;
 import com.github.naios.wide.api.property.FlagProperty;
+import com.github.naios.wide.api.property.ReadOnlyEnumProperty;
+import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -162,7 +164,6 @@ public final class SQLMaker
         return createNameEqualsName(createName(field.getEntry().second()), createValueOfReadOnlyProperty(structure, field));
     }
 
-    @SuppressWarnings({ "rawtypes" })
     private String createValueOfReadOnlyProperty(final ServerStorageStructure structure, final SQLUpdateInfo sqlUpdateInfo)
     {
         // If the observable has a custom var use it
@@ -178,47 +179,35 @@ public final class SQLMaker
                 || ((sqlUpdateInfo.getEntry().first() instanceof FlagProperty) && queryConfig.flags().get()))
                 && !sqlUpdateInfo.getEntry().second().getAlias().isEmpty())
         {
-            final Class<? extends Enum> enumeration = FrameworkServiceImpl
-                    .getEntityService().requestEnumForName(
-                            sqlUpdateInfo.getEntry().second().getAlias());
-
-            final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo
-                    .getEntry().first();
+            final EnumPropertyBase<?> base = (EnumPropertyBase<?>) sqlUpdateInfo.getEntry().first();
 
             // Enum Property (Absolute value)
-            if (sqlUpdateInfo.getEntry().first() instanceof EnumProperty)
-                return vars.addVariable(enumeration.getEnumConstants()[integerProperty.get()].name(), sqlUpdateInfo.getEntry().first().getValue());
-            // Flag Property (Relative value)
-            else if (sqlUpdateInfo.getEntry().first() instanceof FlagProperty)
+            if (base instanceof ReadOnlyEnumProperty)
             {
+                final ReadOnlyEnumProperty<? extends Enum<?>> enumProperty = ((ReadOnlyEnumProperty<? extends Enum<?>>)base);
+                return vars.addVariable(enumProperty.getValue().name(), enumProperty.getOrdinal());
+            }
+            // Flag Property (Relative value)
+            else if (base instanceof ReadOnlyFlagProperty)
+            {
+                final ReadOnlyFlagProperty<? extends Enum<?>> flagProperty = (ReadOnlyFlagProperty<? extends Enum<?>>)base;
+
                 // FlagProperties only occur in set statements
-                final int currentFlagValue = ((FlagProperty) sqlUpdateInfo
-                        .getEntry().first()).get();
-                final int oldFlagValue;
+                final int newMask = flagProperty.getValue().intValue();
 
-                if (!sqlUpdateInfo.getOldValue().isPresent()
-                        || !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
-                    oldFlagValue = 0;
+                final int oldMask;
+                if (!sqlUpdateInfo.getOldValue().isPresent()|| !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
+                    oldMask = 0;
                 else
-                    oldFlagValue = (int) sqlUpdateInfo.getOldValue().get();
-
-                // Get flag values of flags in database and in the current
-                // observable
-                final List<? extends Enum> currentFlags = Flags.createFlagList(
-                        enumeration, currentFlagValue);
-                final List<? extends Enum> oldFlags = Flags.createFlagList(
-                        enumeration, oldFlagValue);
+                    oldMask = (int) sqlUpdateInfo.getOldValue().get();
 
                 // Now we calculate the difference
                 // Add Flags:
-                final List<Enum> addFlags = new ArrayList<>();
-                addFlags.addAll(currentFlags);
-                addFlags.removeAll(oldFlags);
-
+                final List<? extends Enum<?>> addFlags = new ArrayList<>();
                 // Remove Flags:
-                final List<Enum> removeFlags = new ArrayList<>();
-                removeFlags.addAll(oldFlags);
-                removeFlags.removeAll(currentFlags);
+                final List<? extends Enum<?>> removeFlags = new ArrayList<>();
+
+                Flags.calculateDifferenceTo(flagProperty.getEnumClass(), oldMask, newMask, (List)addFlags, (List)removeFlags);
 
                 if ((!addFlags.isEmpty()) || (!removeFlags.isEmpty()))
                 {
@@ -227,7 +216,7 @@ public final class SQLMaker
                     if (!removeFlags.isEmpty())
                         builder.append("(");
 
-                    if (!oldFlags.isEmpty())
+                    if (oldMask != 0)
                         builder.append(createName(sqlUpdateInfo.getEntry().second()));
 
                     if (!removeFlags.isEmpty())
@@ -241,7 +230,7 @@ public final class SQLMaker
 
                     if (!addFlags.isEmpty())
                     {
-                        if (!oldFlags.isEmpty())
+                        if (oldMask != 0)
                             builder.append(FLAG_DELEMITER);
 
                         builder.append(concatFlags(addFlags));
@@ -249,11 +238,14 @@ public final class SQLMaker
 
                     return builder.toString();
                 }
-                else if (currentFlags.isEmpty())
+                else if (newMask == 0)
                     return String.valueOf(Flags.DEFAULT_VALUE);
                 else
+                {
+                    final List<? extends Enum<?>> currentFlags = Flags.createFlagList(flagProperty.getEnumClass(), oldMask);
                     // If Values are not different
                     return concatFlags(currentFlags);
+                }
             }
         }
         // Namestorage alias
@@ -277,26 +269,11 @@ public final class SQLMaker
     /**
      * Helper to concat a list of flags as variables
      */
-    @SuppressWarnings({ "rawtypes" })
-    private String concatFlags(final List<? extends Enum> currentFlags)
+    private String concatFlags(final List<? extends Enum<?>> removeFlags)
     {
-        return StringUtil.concat(FLAG_DELEMITER, new Iterator<String>()
-        {
-            int i = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return i < currentFlags.size();
-            }
-
-            @Override
-            public String next()
-            {
-                return vars.addVariable(currentFlags.get(i).name(),
-                        StringUtil.asHex(Flags.createFlag(currentFlags.get(i++))));
-            }
-        });
+        return StringUtil.concat(FLAG_DELEMITER,
+                new CrossIterator<>(removeFlags,
+                        flag -> StringUtil.asHex(Flags.createFlag(flag))));
     }
 
     /**
@@ -318,12 +295,9 @@ public final class SQLMaker
             // Yay, nested concat iterator!
             return StringUtil.concat(SPACE + OR + SPACE,
                     new CrossIterator<ServerStorageStructure, String>(structures, structure ->
-                    {
-                        return StringUtil.concat(SPACE + AND + SPACE, new CrossIterator<>(structure.getKeys(), field ->
-                        {
-                            return createNameEqualsValue(structure, new SQLUpdateInfoImpl(field));
-                        }));
-                    }));
+                        StringUtil.concat(SPACE + AND + SPACE,
+                                new CrossIterator<>(structure.getKeys(),
+                                        field -> createNameEqualsValue(structure, new SQLUpdateInfoImpl(field))))));
         }
     }
 

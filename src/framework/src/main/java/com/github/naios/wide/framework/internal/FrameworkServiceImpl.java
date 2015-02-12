@@ -45,7 +45,6 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
-import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
@@ -217,8 +216,8 @@ public final class FrameworkServiceImpl implements FrameworkService
 
             public void testMe()
             {
-                final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
-                System.out.println(String.format("DEBUG: %s", me));
+                // final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc").select();
+                // System.out.println(String.format("DEBUG: %s", me));
 
                 final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
 

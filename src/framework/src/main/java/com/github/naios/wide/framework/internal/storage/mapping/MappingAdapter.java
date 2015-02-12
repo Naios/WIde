@@ -8,6 +8,7 @@
 
 package com.github.naios.wide.framework.internal.storage.mapping;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -23,8 +24,10 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
 
     public MappingAdapter(final Class<ADAPTED_TYPE> type, final Class<PRIMITIVE> primitive)
     {
-        this.type = TypeToken.of(type);
-        this.primitive = TypeToken.of(primitive);
+       this(TypeToken.of(type), TypeToken.of(primitive));
+
+       Objects.requireNonNull(type);
+       Objects.requireNonNull(primitive);
     }
 
     public MappingAdapter(final TypeToken<ADAPTED_TYPE> type, final TypeToken<PRIMITIVE> primitive)

@@ -16,4 +16,6 @@ public interface ReadOnlyEnumProperty<T extends Enum<T>>
     public ReadOnlyIntegerProperty ordinalProperty();
 
     public int getOrdinal();
+
+    public T getDefaultValue();
 }

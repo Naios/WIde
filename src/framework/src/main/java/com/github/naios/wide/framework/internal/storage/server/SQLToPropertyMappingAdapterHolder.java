@@ -29,6 +29,10 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.property.EnumProperty;
+import com.github.naios.wide.api.property.FlagProperty;
+import com.github.naios.wide.api.property.SimpleEnumProperty;
+import com.github.naios.wide.api.property.SimpleFlagProperty;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
@@ -84,12 +88,21 @@ public class SQLToPropertyMappingAdapterHolder
         abstract class EnumSQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
                 extends SQLMappingAdapter<T, P>
         {
+            /*
             public EnumSQLMappingAdapter(final Class<T> type, final Class<P> primitive)
             {
                 super(type, primitive);
             }
+            */
 
-            protected Class<? extends Enum> getEnum(final MappingMetaData metaData)
+            // FIXME fix this raw class hack
+            @SuppressWarnings("unchecked")
+            public EnumSQLMappingAdapter(final Class type, final Class primitive)
+            {
+                super(type, primitive);
+            }
+
+            protected <T extends Enum<T>> Class<T> getEnum(final MappingMetaData metaData)
             {
                 return FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias());
             }
@@ -331,118 +344,112 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
-                });/*
-             // EnumProperty
-             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<?>, ? extends Enum<?>>(EnumProperty.class, Enum.class)
-                {
-
-                });*/
-
-
-
-            // Enum Property
-            /*.registerAdapter(TypeToken.of(EnumProperty.class), new MappingAdapter<ResultSet, EnumProperty<?>>()
-                {
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
-                    @Override
-                    public EnumProperty map(final ResultSet from,
-                            final MappingPlan plan, final int index,
-                            final MappingMetaData metaData)
-                    {
-                        try
-                        {
-                            return new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getName()));
-                        }
-                        catch (final SQLException e)
-                        {
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected boolean setOverwritten(final ADAPTED_TYPE me, final Object value)
-                    {
-                        if (value instanceof Integer)
-                        {
-                            me.set((int)value);
-                            return true;
-                        }
-
-                        final Class<? extends Enum<?>> enumeration = me.getEnum();
-                        if (!enumeration.isAssignableFrom(value.getClass()))
-                            return false;
-
-                        for (final Enum<?> info : enumeration.getEnumConstants())
-                            if (info.equals(value))
-                            {
-                                me.set(info.ordinal());
-                                return true;
-                            }
-
-                        return false;
-                    }
-
-                    @Override
-                    public boolean setDefault(final EnumProperty<?> me)
-                    {
-                        me.set(0);
-                        return true;
-                    }
-
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
-                    @Override
-                    public EnumProperty<?> create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return setValueOrDefaultIfNotPresent(new EnumProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
-                    }
                 })
-            // Flag Property
-            .registerAdapter(TypeToken.of(FlagProperty.class), new MappingAdapter<ResultSet, FlagProperty<?>>()
+             // EnumProperty
+             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<? extends Enum<?>>, Enum<?>>(EnumProperty.class, Enum.class)
                 {
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
                     @Override
-                    public FlagProperty map(final ResultSet from,
-                            final MappingPlan plan, final int index,
+                    protected Enum<?> getDefault()
+                    {
+                        return null;
+                    }
+
+                    private Enum<?> getDefaultForEnum(final MappingMetaData metaData)
+                    {
+                        return getEnum(metaData).getEnumConstants()[0];
+                    }
+
+                    @Override
+                    protected Enum<?> getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData)
+                    {
+                        final Class<? extends Enum<?>> type = getEnum(metaData);
+
+                        final int ordinal;
+                        try
+                        {
+                            ordinal = from.getInt(metaData.getName());
+                        }
+                        catch (final SQLException e)
+                        {
+                            return getDefault();
+                        }
+
+                        if (ordinal >= type.getEnumConstants().length)
+                            throw new IllegalArgumentException(String.format("Ordinal %s at column is not part in enum %s!", ordinal, metaData.getName(), type.getName()));
+
+                        return type.getEnumConstants()[ordinal];
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public EnumProperty<? extends Enum<?>> create(
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Enum<?>> value)
+                    {
+                        return new SimpleEnumProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefaultForEnum(metaData)));
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    protected boolean setAdaptedType(final EnumProperty<? extends Enum<?>> me, Enum<?> value)
+                    {
+                        final Optional<? extends Enum<?>> optionalValue = Optional.ofNullable(value);
+
+                        if (optionalValue.isPresent())
+                        {
+                            if (value.getDeclaringClass().equals(getType().getRawType()))
+                                return false;
+                        }
+                        else
+                        {
+                            value = me.getDefaultValue();
+                        }
+
+                        ((EnumProperty)me).set(value);
+
+                        return true;
+                    };
+                })
+
+                // FlagProperty
+              .registerAdapter(new EnumSQLMappingAdapter<FlagProperty<? extends Enum<?>>, Integer>(FlagProperty.class, Integer.class)
+                {
+                    @Override
+                    protected Integer getDefault()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    protected Integer getMappedValue(final ResultSet from,
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
                         try
                         {
-                            return new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias()), from.getInt(metaData.getName()));
+                            return from.getInt(metaData.getName());
                         }
                         catch (final SQLException e)
                         {
-                            return null;
+                            return getDefault();
                         }
                     }
 
+                    @SuppressWarnings("unchecked")
                     @Override
-                    protected boolean setOverwritten(final ADAPTED_TYPE me, final Object value)
+                    public FlagProperty<? extends Enum<?>> create(
+                            final ServerStorageStructure to,
+                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
+                            final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        if (value instanceof Integer)
-                        {
-                            me.set((int)value);
-                            return true;
-                        }
-
-                        return false;
+                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
-
-                    @Override
-                    public boolean setDefault(final FlagProperty<?> me)
-                    {
-                        me.set(FlagUtil.DEFAULT_VALUE);
-                        return true;
-                    }
-
-                    @SuppressWarnings({ "unchecked", "rawtypes" })
-                    @Override
-                    public FlagProperty<?> create(final MappingPlan plan, final int index,
-                            final MappingMetaData metaData, final Object value)
-                    {
-                        return setValueOrDefaultIfNotPresent(new FlagProperty(FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias())), value);
-                    }
-                })*/;
+                });
 
         return holder;
     }

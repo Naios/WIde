@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -28,14 +29,17 @@ public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
         this.adapter = adapter;
     }
 
+    final static TypeToken<?> wrapper = TypeToken.of(Wrapper.class);
+
     private void tokenInstanceOf(final TypeToken<?> type, final Object object, final boolean isPrimitive)
     {
         final TypeToken<?> typeToken = TypeToken.of(object.getClass());
         if (!type.isAssignableFrom(typeToken))
             throw new IllegalArgumentException("Adapted Type " + type + " is not assignable from " + typeToken);
 
-        if (isPrimitive && !typeToken.isPrimitive())
-            throw new IllegalArgumentException(typeToken + " is not a primitive type!");
+        /*
+        if (isPrimitive && !typeToken.isPrimitive() && !type.isAssignableFrom(wrapper))
+            throw new IllegalArgumentException(typeToken + " is not a primitive type!");*/
     }
 
     @Override

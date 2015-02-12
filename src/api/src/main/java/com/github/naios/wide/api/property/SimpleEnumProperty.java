@@ -35,7 +35,7 @@ public class SimpleEnumProperty<T extends Enum<T>>
 
     public SimpleEnumProperty(final Class<T> enumClass)
     {
-        this (enumClass, getDefaultValue(enumClass));
+        this (enumClass, getStaticDefaultValue(enumClass));
     }
 
     public SimpleEnumProperty(final Class<T> enumClass, final T initialValue)
@@ -48,7 +48,7 @@ public class SimpleEnumProperty<T extends Enum<T>>
 
     public SimpleEnumProperty(final Class<T> enumClass, final Object bean, final String name)
     {
-        super(bean, name, getDefaultValue(enumClass));
+        super(bean, name, getStaticDefaultValue(enumClass));
         this.enumClass = enumClass;
     }
 
@@ -60,9 +60,15 @@ public class SimpleEnumProperty<T extends Enum<T>>
         Objects.requireNonNull(initialValue);
     }
 
-    private static <T> T getDefaultValue(final Class<T> enumClass)
+    private static <T> T getStaticDefaultValue(final Class<T> enumClass)
     {
         return enumClass.getEnumConstants()[DEFAULT_ELEMENT];
+    }
+
+    @Override
+    public T getDefaultValue()
+    {
+        return getStaticDefaultValue(enumClass);
     }
 
     @Override
