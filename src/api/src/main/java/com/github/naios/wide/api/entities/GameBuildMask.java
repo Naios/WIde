@@ -132,4 +132,10 @@ public class GameBuildMask
             return false;
         return true;
     }
+
+    @Override
+    public int hashCode()
+    {
+        return container.hashCode();
+    }
 }

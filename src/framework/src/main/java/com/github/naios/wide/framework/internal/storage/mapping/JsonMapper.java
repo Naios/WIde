@@ -20,7 +20,6 @@ import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
-import com.google.common.reflect.TypeToken;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
 {
@@ -40,15 +39,15 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
         this.plan = new JsonMappingPlan<>(schema, getTarget(), getImplementation());
     }
 
-    @SuppressWarnings({ "unchecked" })
     private static <TO> Class<? extends TO> getTargetOfSchema(final TableSchema schema)
     {
         try
         {
-            return (Class<? extends TO>) FrameworkServiceImpl.getEntityService().requestClass(schema.getStructure());
+            return FrameworkServiceImpl.getEntityService().requestClass(schema.getStructure());
         }
         catch (final NoSucheEntityException e)
         {
+            // TODO Throw malformed config maybe?
             throw new Error(e);
         }
     }
@@ -60,7 +59,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     }
 
     @Override
-    protected Mapping<BASE> newMappingBasedOn(final FROM from)
+    protected Mapping<BASE> newMappingBasedOn(final FROM from, final TO to)
     {
         final List<Pair<BASE, MappingMetaData>> content =
                 new ArrayList<>();
@@ -70,15 +69,14 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final MappingAdapterBridge<FROM, TO, BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            // TODO
-            // content.add(new Pair<>(adapter.getMappedValue(from, /*FIXME*/ null, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
+            content.add(new Pair<>(adapter.map(from, to, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(this, plan, content);
     }
 
     @Override
-    protected Mapping<BASE> newMappingBasedOn(final List<Object> keys)
+    protected Mapping<BASE> newMappingBasedOn(final List<Object> keys, final TO to)
     {
         final List<Pair<BASE, MappingMetaData>> content =
                 new ArrayList<>();
@@ -92,8 +90,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final MappingMetaData metaData = plan.getMetadata().get(i);
             final Optional<Object> value = Optional.ofNullable(metaData.isKey() ? iterator.next() : null);
 
-            // TODO
-            final BASE base = adapter.create(/*FIXME*/ null, plan, i, metaData, value);
+            final BASE base = adapter.create(to, plan, i, metaData, value);
 
             content.add(new Pair<>(base, plan.getMetadata().get(i)));
         }
@@ -114,11 +111,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             throw new Error(e);
         }
 
-        // This hack is ok (checked through is Assignable)
-        if (adapter.getPrimitive().isAssignableFrom(TypeToken.of(value.getClass())))
-            return adapter.set(base, value);
-        else
-            return false;
+        return adapter.set(base, value);
     }
 
     @Override

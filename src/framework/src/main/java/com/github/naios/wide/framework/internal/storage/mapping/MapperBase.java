@@ -11,6 +11,7 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
@@ -81,30 +82,32 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         }
     }
 
-    protected abstract Mapping<BASE> newMappingBasedOn(final FROM from);
+    protected abstract Mapping<BASE> newMappingBasedOn(final FROM from, TO to);
 
-    protected abstract Mapping<BASE> newMappingBasedOn(List<Object> keys);
+    protected abstract Mapping<BASE> newMappingBasedOn(List<Object> keys, TO to);
 
     @Override
     public TO map(final FROM from)
     {
-        return createNewBasedOnMapping(newMappingBasedOn(from));
+        return createNewBasedOnMapping(to -> newMappingBasedOn(from, to));
     }
 
     @Override
     public TO createEmpty(final List<Object> keys)
     {
-        return createNewBasedOnMapping(newMappingBasedOn(keys));
+        return createNewBasedOnMapping(to -> newMappingBasedOn(keys, to));
     }
 
-    @SuppressWarnings("unchecked")
-    private TO createNewBasedOnMapping(final Mapping<BASE> mapping)
+    private TO createNewBasedOnMapping(final Function<TO, Mapping<BASE>> createMapping)
     {
         final MappingCallback<TO> implementation = newImplementation();
 
         final MappingProxy proxy = new MappingProxy(implementation);
 
+        @SuppressWarnings("unchecked")
         final TO to = (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
+
+        proxy.setMapping(createMapping.apply(to));
 
         implementation.callback(to);
         return to;
