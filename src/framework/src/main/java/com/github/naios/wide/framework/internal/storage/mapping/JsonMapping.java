@@ -99,7 +99,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     @Override
     public List<Object> getRawValues()
     {
-        final List<Object> hashableValues = new ArrayList<>();
+        final List<Object> hashableValues = new ArrayList<>(values.size());
         forEach(entry -> hashableValues.add(getRawValue(entry)));
         return hashableValues;
     }

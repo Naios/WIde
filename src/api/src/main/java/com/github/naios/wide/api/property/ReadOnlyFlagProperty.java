@@ -11,7 +11,7 @@ import javafx.beans.binding.NumberExpression;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyProperty;
 
-public interface ReadOnlyFlagProperty<T extends Enum<?>>
+public interface ReadOnlyFlagProperty<T extends Enum<T>>
     extends ReadOnlyProperty<Number>, NumberExpression, EnumPropertyBase<T>
 {
     public boolean hasFlag(final T flag);

@@ -7,7 +7,7 @@ package com.github.naios.wide.api.property;
  * See file LICENSE for full license details.
  */
 
-public interface EnumPropertyBase<T extends Enum<?>>
+public interface EnumPropertyBase<T extends Enum<T>>
 {
     public Class<T> getEnumClass();
 

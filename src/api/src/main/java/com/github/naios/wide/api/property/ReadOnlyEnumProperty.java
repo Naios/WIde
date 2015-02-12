@@ -10,7 +10,7 @@ package com.github.naios.wide.api.property;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyProperty;
 
-public interface ReadOnlyEnumProperty<T extends Enum<?>>
+public interface ReadOnlyEnumProperty<T extends Enum<T>>
     extends ReadOnlyProperty<T>, EnumPropertyBase<T>
 {
     public ReadOnlyIntegerProperty ordinalProperty();

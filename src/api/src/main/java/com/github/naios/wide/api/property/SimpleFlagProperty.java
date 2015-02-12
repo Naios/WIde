@@ -21,7 +21,7 @@ import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.LazyInitializer;
 import com.github.naios.wide.api.util.StringUtil;
 
-public class SimpleFlagProperty<T extends Enum<?>>
+public class SimpleFlagProperty<T extends Enum<T>>
     extends SimpleIntegerProperty
     implements FlagProperty<T>
 {

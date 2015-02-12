@@ -10,7 +10,7 @@ package com.github.naios.wide.api.property;
 import javafx.beans.property.Property;
 import javafx.beans.value.WritableObjectValue;
 
-public interface EnumProperty<T extends Enum<?>>
+public interface EnumProperty<T extends Enum<T>>
     extends Property<T>, WritableObjectValue<T>, ReadOnlyEnumProperty<T>
 {
 }

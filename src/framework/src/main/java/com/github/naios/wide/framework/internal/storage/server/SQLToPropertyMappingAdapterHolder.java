@@ -44,35 +44,45 @@ public class SQLToPropertyMappingAdapterHolder
         abstract class SQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
                 extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, T, P>
         {
-            public SQLMappingAdapter(final Class<T> type,
-                    final Class<P> primitive)
+            public SQLMappingAdapter(final Class<T> type, final Class<P> primitive)
             {
                 super(type, primitive);
             }
 
-            protected ServerMappingBean createBean(
-                    final ServerStorageStructure to,
-                    final MappingMetaData metaData)
+            class ServerMappingBeanImpl
+                implements ServerMappingBean
             {
-                return new ServerMappingBean()
-                {
-                    @Override
-                    public ServerStorageStructure getStructure()
-                    {
-                        return to;
-                    }
+                private final ServerStorageStructure to;
 
-                    @Override
-                    public MappingMetaData getMappingMetaData()
-                    {
-                        return metaData;
-                    }
-                };
+                private final MappingMetaData metaData;
+
+                public ServerMappingBeanImpl(final ServerStorageStructure to, final MappingMetaData metaData)
+                {
+                    this.to = to;
+                    this.metaData = metaData;
+                }
+
+                @Override
+                public ServerStorageStructure getStructure()
+                {
+                    return to;
+                }
+
+                @Override
+                public MappingMetaData getMappingMetaData()
+                {
+                    return metaData;
+                }
+            }
+
+            protected ServerMappingBean createBean(final ServerStorageStructure to, final MappingMetaData metaData)
+            {
+                return new ServerMappingBeanImpl(to, metaData);
             }
         }
 
         abstract class EnumSQLMappingAdapter<T extends ReadOnlyProperty<?>, P>
-                extends MappingAdapter<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>, T, P>
+                extends SQLMappingAdapter<T, P>
         {
             public EnumSQLMappingAdapter(final Class<T> type, final Class<P> primitive)
             {
@@ -321,44 +331,12 @@ public class SQLToPropertyMappingAdapterHolder
                     {
                         return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
                     }
-                });
-        /*
-             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<?>, Enum>(Class<Enum>, Enum.class)
+                });/*
+             // EnumProperty
+             .registerAdapter(new EnumSQLMappingAdapter<EnumProperty<?>, ? extends Enum<?>>(EnumProperty.class, Enum.class)
                 {
-                    @SuppressWarnings("rawtypes")
-                    @Override
-                    protected Enum getDefault()
-                    {
-                        return null;
-                    }
 
-                    @SuppressWarnings("rawtypes")
-                    @Override
-                    protected Enum getMappedValue(final ResultSet from,
-                            final ServerStorageStructure to,
-                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
-                            final MappingMetaData metaData)
-                    {
-                        return null;
-                    }
-
-                    @SuppressWarnings("rawtypes")
-                    @Override
-                    public EnumProperty create(final ServerStorageStructure to,
-                            final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
-                            final MappingMetaData metaData, final Optional<Enum> value)
-                    {
-                        // TODO Auto-generated method stub
-                        return null;
-                    }
-                })*/
-
-
-
-
-
-
-
+                });*/
 
 
 

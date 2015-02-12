@@ -18,7 +18,7 @@ public final class Flags
     private Flags() { }
 
     @SafeVarargs
-    public static <T extends Enum<?>> int createFlag(final T... flags)
+    public static <T extends Enum<T>> int createFlag(final T... flags)
     {
         int value = 0;
         for (final T flag : flags)
@@ -27,22 +27,22 @@ public final class Flags
         return value;
     }
 
-    public static <T extends Enum<?>> boolean hasFlag(final T flag, final int mask)
+    public static <T extends Enum<T>> boolean hasFlag(final T flag, final int mask)
     {
         return (mask & createFlag(flag)) != 0;
     }
 
-    public static <T extends Enum<?>> int addFlag(final T flag, final int mask)
+    public static <T extends Enum<T>> int addFlag(final T flag, final int mask)
     {
         return mask | createFlag(flag);
     }
 
-    public static <T extends Enum<?>> int removeFlag(final T flag, final int mask)
+    public static <T extends Enum<T>> int removeFlag(final T flag, final int mask)
     {
         return mask &~ createFlag(flag);
     }
 
-    public static <T extends Enum<?>> List<T> createFlagList(final Class<T> type, final int mask)
+    public static <T extends Enum<T>> List<T> createFlagList(final Class<T> type, final int mask)
     {
         final List<T> list = new LinkedList<>();
         for (final T flag : type.getEnumConstants())
@@ -52,7 +52,7 @@ public final class Flags
         return list;
     }
 
-    public static <T extends Enum<?>> void calculateDifferenceTo(final Class<T> enumClass,
+    public static <T extends Enum<T>> void calculateDifferenceTo(final Class<T> enumClass,
             final int oldMask, final int newMask,
             final Collection<T> add, final Collection<T> remove)
     {

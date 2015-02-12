@@ -18,7 +18,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import com.github.naios.wide.api.util.LazyInitializer;
 import com.github.naios.wide.api.util.StringUtil;
 
-public class SimpleEnumProperty<T extends Enum<?>>
+public class SimpleEnumProperty<T extends Enum<T>>
     extends SimpleObjectProperty<T>
     implements EnumProperty<T>
 {

@@ -10,7 +10,7 @@ package com.github.naios.wide.api.property;
 import javafx.beans.property.Property;
 import javafx.beans.value.WritableIntegerValue;
 
-public interface FlagProperty<T extends Enum<?>>
+public interface FlagProperty<T extends Enum<T>>
     extends Property<Number>, WritableIntegerValue, EnumPropertyBase<T>, ReadOnlyFlagProperty<T>
 {
     public void addFlag(final T flag);
