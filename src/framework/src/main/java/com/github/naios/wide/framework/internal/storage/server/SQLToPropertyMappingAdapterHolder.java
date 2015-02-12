@@ -77,6 +77,12 @@ public class SQLToPropertyMappingAdapterHolder
                 {
                     return metaData;
                 }
+
+                @Override
+                public String toString()
+                {
+                    return String.format("ServerMappingBean(%s)", to.getOwner().getTableName());
+                };
             }
 
             protected ServerMappingBean createBean(final ServerStorageStructure to, final MappingMetaData metaData)

@@ -8,8 +8,25 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
+import javafx.beans.property.ReadOnlyProperty;
+
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
 
 public interface ServerMappingBean extends MappingBean<ServerStorageStructure>
 {
+    public static ServerMappingBean get(final ReadOnlyProperty<?> property)
+    {
+        return (ServerMappingBean)property.getBean();
+    }
+
+    public static ServerStorageStructure getStructure(final ReadOnlyProperty<?> property)
+    {
+        return get(property).getStructure();
+    }
+
+    public static MappingMetaData getMetaData(final ReadOnlyProperty<?> property)
+    {
+        return get(property).getMappingMetaData();
+    }
 }
