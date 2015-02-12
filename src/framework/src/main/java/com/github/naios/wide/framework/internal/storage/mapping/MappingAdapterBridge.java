@@ -20,11 +20,22 @@ import com.google.common.reflect.TypeToken;
 public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
     implements MappingAdapterBase<FROM, TO, BASE, BASE, Object>
 {
-    private final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter;
+    @SuppressWarnings("rawtypes")
+    private final MappingAdapter adapter;
 
     public MappingAdapterBridge(final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter)
     {
         this.adapter = adapter;
+    }
+
+    private void tokenInstanceOf(final TypeToken<?> type, final Object object, final boolean isPrimitive)
+    {
+        final TypeToken<?> typeToken = TypeToken.of(object.getClass());
+        if (!type.isAssignableFrom(typeToken))
+            throw new IllegalArgumentException("Adapted Type " + type + " is not assignable from " + typeToken);
+
+        if (isPrimitive && !typeToken.isPrimitive())
+            throw new IllegalArgumentException(typeToken + " is not a primitive type!");
     }
 
     @Override
@@ -39,19 +50,21 @@ public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
         return adapter.getPrimitive();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BASE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index,
             final MappingMetaData metaData)
     {
-        return adapter.map(from, to, plan, index, metaData);
+        return (BASE) adapter.map(from, to, plan, index, metaData);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     @Override
     public BASE create(final TO to, final MappingPlan<BASE> plan, final int index,
             final MappingMetaData metaData, final Optional<Object> value)
     {
-        return adapter.create(to, plan, index, metaData, (Optional)value);
+        value.ifPresent(object -> tokenInstanceOf(adapter.getPrimitive(), object, true));
+        return (BASE) adapter.create(to, plan, index, metaData, value);
     }
 
     @Override
@@ -60,23 +73,28 @@ public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
         return adapter.isPossibleKey();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object getRawHashableValue(final BASE me)
     {
+        tokenInstanceOf(adapter.getType(), me, false);
         return adapter.getRawHashableValue(me);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     @Override
     public boolean set(final BASE me, final Object value)
     {
-        // TODO Check this
-        return ((MappingAdapter)adapter).set(me, value);
+        tokenInstanceOf(adapter.getType(), me, false);
+        tokenInstanceOf(adapter.getPrimitive(), value, true);
+        return adapter.set(me, value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean setDefault(final BASE me)
     {
+        tokenInstanceOf(adapter.getType(), me, false);
         return adapter.setDefault(me);
     }
 }

@@ -28,14 +28,14 @@ public interface MappingAdapterBase<FROM, TO extends Mapping<BASE>, BASE, ADAPTE
         return false;
     }
 
-    public Object getRawHashableValue(final BASE me);
+    public Object getRawHashableValue(final ADAPTED_TYPE me);
 
-    public default boolean set(final BASE me, final PRIMITIVE value)
+    public default boolean set(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
         return false;
     }
 
-    public default boolean setDefault(final BASE me)
+    public default boolean setDefault(final ADAPTED_TYPE me)
     {
         return false;
     }

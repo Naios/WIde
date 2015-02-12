@@ -52,7 +52,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     @Override
     public final ADAPTED_TYPE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index, final MappingMetaData metaData)
     {
-        return create(to, plan, index, metaData, Optional.of(getMappedValue(from, to, plan, index, metaData)));
+        return create(to, plan, index, metaData, Optional.ofNullable(getMappedValue(from, to, plan, index, metaData)));
     }
 
     /**
@@ -65,7 +65,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
      * If you use the type as key, return its real value for hashing
      */
     @Override
-    public Object getRawHashableValue(final BASE me)
+    public Object getRawHashableValue(final ADAPTED_TYPE me)
     {
         return me;
     }
@@ -77,26 +77,13 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public final boolean set(final BASE me, final PRIMITIVE value)
+    public final boolean set(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
-        // TODO Improve this
-        if (!type.isAssignableFrom(TypeToken.of(me.getClass())))
-            throw new IllegalArgumentException("Adapted Type " + type + " is not assignable from " + me.getClass());
-
-        if (!primitive.isAssignableFrom(TypeToken.of(value.getClass())))
-        {
-            // Better return false here instead throwing exceptions
-            // throw new IllegalArgumentException("Primitive Type " + primitive + " is not assignable from " + value.getClass());
-
-            return false;
-        }
-
-        return setAdaptedType((ADAPTED_TYPE) me, value);
+        return setAdaptedType(me, value);
     }
 
     @Override
-    public boolean setDefault(final BASE me)
+    public boolean setDefault(final ADAPTED_TYPE me)
     {
         return set(me, getDefault());
     }
