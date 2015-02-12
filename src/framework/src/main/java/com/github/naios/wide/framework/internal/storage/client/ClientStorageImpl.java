@@ -180,6 +180,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
             }
             catch (final Exception e)
             {
+                e.printStackTrace();
             }
         }
 

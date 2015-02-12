@@ -61,7 +61,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getString(index);
+                        return from.getString(metaData.getIndex());
                     }
 
                     @Override
@@ -93,7 +93,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getFloat(index);
+                        return from.getFloat(metaData.getIndex());
                     }
 
                     @Override
@@ -125,7 +125,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getLong(index);
+                        return from.getLong(metaData.getIndex());
                     }
 
                     @Override
@@ -157,7 +157,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getInt(index);
+                        return from.getInt(metaData.getIndex());
                     }
 
                     @Override
@@ -197,7 +197,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                         final Class<? extends Enum<?>> type = getEnum(metaData);
 
                         final int ordinal;
-                        ordinal = from.getInt(index);
+                        ordinal = from.getInt(metaData.getIndex());
 
                         if (ordinal >= type.getEnumConstants().length)
                             throw new IllegalArgumentException(String.format("Ordinal %s at column is not part in enum %s!", ordinal, metaData.getName(), type.getName()));
@@ -237,7 +237,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData)
                     {
-                        return from.getInt(index);
+                        return from.getInt(metaData.getIndex());
                     }
 
                     @SuppressWarnings("unchecked")

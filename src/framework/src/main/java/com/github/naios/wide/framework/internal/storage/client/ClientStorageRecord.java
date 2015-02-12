@@ -10,6 +10,7 @@ package com.github.naios.wide.framework.internal.storage.client;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.List;
 
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
@@ -17,10 +18,10 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageFormer;
 @SuppressWarnings("serial")
 class WrongFormatType extends RuntimeException
 {
-    public WrongFormatType(final Class<?> type, final ClientStorageFormer former, final int index)
+    public WrongFormatType(final String type, final ClientStorageFormer former, final int index, final ClientStorageFormat format)
     {
-        super(String.format("Requested type: %s does not match former: %s at index: %s",
-                type.getClass().getName(), former, index));
+        super(String.format("Requested type: %s does not match former: %s at index: %s. Format is %s",
+                type, former, index, format));
     }
 }
 
@@ -93,8 +94,9 @@ public class ClientStorageRecord
     private void checkFormer(final int index, final ClientStorageFormer... formers) throws WrongFormatType
     {
         final ClientStorageFormer former = format.getFormerAtIndex(index);
-        if (!Arrays.asList(formers).contains(former))
-            throw new WrongFormatType(former.getClass(), former, index);
+        final List<ClientStorageFormer> list = Arrays.asList(formers);
+        if (!list.contains(former))
+            throw new WrongFormatType(list.toString(), former, index, format);
     }
 
     /**
