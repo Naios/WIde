@@ -48,7 +48,7 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implement
         return this;
     }
 
-    protected MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> getAdapterOf(final TypeToken<? extends BASE> type)
+    protected MappingAdapterBridge<FROM, TO, BASE> getAdapterOf(final TypeToken<? extends BASE> type)
     {
         return adapterHolder.getAdapterOf(type);
     }

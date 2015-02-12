@@ -25,18 +25,18 @@ class MissingMappingAdapterException extends RuntimeException
 
 public class MappingAdapterHolder<FROM, TO extends Mapping<BASE>, BASE>
 {
-    private final Map<TypeToken<? extends BASE>,  MappingAdapter<FROM, TO, BASE, ? extends BASE, ?>> adapter =
+    private final Map<TypeToken<? extends BASE>,  MappingAdapterBridge<FROM, TO, BASE>> adapter =
             new HashMap<>();
 
     public MappingAdapterHolder<FROM, TO, BASE> registerAdapter(final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter)
     {
-        this.adapter.put(adapter.getType(), adapter);
+        this.adapter.put(adapter.getType(), new MappingAdapterBridge<FROM, TO, BASE>(adapter));
         return this;
     }
 
-    protected MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> getAdapterOf(final TypeToken<? extends BASE> type)
+    public MappingAdapterBridge<FROM, TO, BASE> getAdapterOf(final TypeToken<? extends BASE> type)
     {
-        final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter = this.adapter.get(type);
+        final MappingAdapterBridge<FROM, TO, BASE> adapter = this.adapter.get(type);
         if (adapter != null)
             return adapter;
         else

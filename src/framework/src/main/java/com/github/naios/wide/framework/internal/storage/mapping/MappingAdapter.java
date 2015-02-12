@@ -15,6 +15,7 @@ import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
 public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPTED_TYPE extends BASE, PRIMITIVE>
+    implements MappingAdapterBase<FROM, TO, BASE, ADAPTED_TYPE, PRIMITIVE>
 {
     private TypeToken<ADAPTED_TYPE> type;
 
@@ -32,11 +33,13 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         this.primitive = primitive;
     }
 
+    @Override
     public final TypeToken<ADAPTED_TYPE> getType()
     {
         return type;
     }
 
+    @Override
     public final TypeToken<PRIMITIVE> getPrimitive()
     {
         return primitive;
@@ -46,6 +49,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
 
     protected abstract PRIMITIVE getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
 
+    @Override
     public final ADAPTED_TYPE map(final FROM from, final TO to, final MappingPlan<BASE> plan, final int index, final MappingMetaData metaData)
     {
         return create(to, plan, index, metaData, Optional.of(getMappedValue(from, to, plan, index, metaData)));
@@ -54,26 +58,25 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     /**
      * @param value value is not present then the default value is set
      */
+    @Override
     public abstract ADAPTED_TYPE create(TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData, Optional<PRIMITIVE> value);
-
-    public boolean isPossibleKey()
-    {
-        return false;
-    }
 
     /**
      * If you use the type as key, return its real value for hashing
      */
+    @Override
     public Object getRawHashableValue(final BASE me)
     {
         return me;
     }
 
+    // Overwrite this to allow modification of mapped types
     protected boolean setAdaptedType(final ADAPTED_TYPE me, final PRIMITIVE value)
     {
         return false;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public final boolean set(final BASE me, final PRIMITIVE value)
     {
@@ -92,6 +95,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         return setAdaptedType((ADAPTED_TYPE) me, value);
     }
 
+    @Override
     public boolean setDefault(final BASE me)
     {
         return set(me, getDefault());
