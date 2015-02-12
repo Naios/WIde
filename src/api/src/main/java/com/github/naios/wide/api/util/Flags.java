@@ -44,7 +44,7 @@ public final class Flags
 
     public static <T extends Enum<?>> List<T> createFlagList(final Class<T> type, final int mask)
     {
-        final List<T> list = new LinkedList<T>();
+        final List<T> list = new LinkedList<>();
         for (final T flag : type.getEnumConstants())
             if (hasFlag(flag, mask))
                 list.add(flag);

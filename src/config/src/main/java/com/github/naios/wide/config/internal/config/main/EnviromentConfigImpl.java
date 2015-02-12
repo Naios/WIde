@@ -48,7 +48,7 @@ public class EnviromentConfigImpl implements EnviromentConfig
     private ClientStorageConfigImpl clientStorages;
 
     private Map<String, DatabaseConfigImpl> databases =
-            new HashMap<String, DatabaseConfigImpl>();
+            new HashMap<>();
 
     @Override
     public StringProperty aliasDefinition()

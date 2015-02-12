@@ -45,7 +45,7 @@ public class ConfigImpl implements Config
                                     activeEnviroment = new SimpleStringProperty("");
 
     private Map<String, EnviromentConfigImpl> enviroments =
-            new HashMap<String, EnviromentConfigImpl>();
+            new HashMap<>();
 
     private QueryConfigImpl queries;
 

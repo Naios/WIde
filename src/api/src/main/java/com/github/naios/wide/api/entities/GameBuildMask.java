@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class GameBuildMask
 {
-    private final Set<GameBuild> container = new HashSet<GameBuild>();
+    private final Set<GameBuild> container = new HashSet<>();
 
     public final static GameBuildMask ALL_BUILDS = new GameBuildMask().addAll();
 

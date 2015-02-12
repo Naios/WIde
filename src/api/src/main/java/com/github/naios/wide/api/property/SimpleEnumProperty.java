@@ -26,7 +26,7 @@ public class SimpleEnumProperty<T extends Enum<?>>
 
     private final Class<T> enumClass;
 
-    private final LazyInitializer<IntegerProperty> ordinal = new LazyInitializer<IntegerProperty>(() ->
+    private final LazyInitializer<IntegerProperty> ordinal = new LazyInitializer<>(() ->
     {
         final IntegerProperty property = new SimpleIntegerProperty(SimpleEnumProperty.this, "ordinal", getOrdinal());
         property.bind(Bindings.createIntegerBinding(() -> getOrdinal(), SimpleEnumProperty.this));

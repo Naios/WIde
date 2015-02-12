@@ -30,7 +30,7 @@ public class MappingAdapterHolder<FROM, TO extends Mapping<BASE>, BASE>
 
     public MappingAdapterHolder<FROM, TO, BASE> registerAdapter(final MappingAdapter<FROM, TO, BASE, ? extends BASE, ?> adapter)
     {
-        this.adapter.put(adapter.getType(), new MappingAdapterBridge<FROM, TO, BASE>(adapter));
+        this.adapter.put(adapter.getType(), new MappingAdapterBridge<>(adapter));
         return this;
     }
 

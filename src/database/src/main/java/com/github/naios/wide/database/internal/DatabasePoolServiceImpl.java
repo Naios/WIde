@@ -153,7 +153,7 @@ public final class DatabasePoolServiceImpl
             final String endpoint, final String user, final String password,
             final String table, final boolean optional)
     {
-        final SimpleObjectProperty<DatabaseImpl> database = new SimpleObjectProperty<DatabaseImpl>(
+        final SimpleObjectProperty<DatabaseImpl> database = new SimpleObjectProperty<>(
                 createDatabase(id, endpoint, user, password, table, optional));
         connections.put(id, database);
 

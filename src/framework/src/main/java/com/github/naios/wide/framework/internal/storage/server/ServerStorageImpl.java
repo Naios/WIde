@@ -100,7 +100,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             CacheBuilder.newBuilder().weakValues().build();
 
     private final ObjectProperty<Database> database =
-            new SimpleObjectProperty<Database>();
+            new SimpleObjectProperty<>();
 
     private final BooleanProperty alive =
             new SimpleBooleanProperty();
@@ -130,7 +130,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         final MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>> adapter =
                 (MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
 
-        mapper = new JsonMapper<ResultSet, T, ReadOnlyProperty<?>>(schema, adapter,
+        mapper = new JsonMapper<>(schema, adapter,
                 Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class);
 
         selectLowPart = createSelectFormat();

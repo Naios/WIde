@@ -27,7 +27,7 @@ public class QueryConfigImpl implements QueryConfig
     private BooleanProperty compress = new SimpleBooleanProperty(false);
 
     private Map<QueryType, QueryTypeConfigImpl> types =
-            new HashMap<QueryType, QueryTypeConfigImpl>();
+            new HashMap<>();
 
     @Override
     public BooleanProperty compress()

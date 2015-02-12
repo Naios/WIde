@@ -29,7 +29,7 @@ public class DatabaseConfigImpl implements DatabaseConfig
 
     // We need to late bind the connection property to user and host
     // because user & host might be null sometimes
-    private final LazyInitializer<StringProperty> connection = new LazyInitializer<StringProperty>(() ->
+    private final LazyInitializer<StringProperty> connection = new LazyInitializer<>(() ->
     {
         final StringProperty property = new SimpleStringProperty();
         property.bind(Bindings.concat(user, "@", host));

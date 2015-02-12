@@ -137,7 +137,7 @@ class HistoryRedirect
     private final StructureChangeEventCompositum DEFAULT_HISTORY = history;
 
     private final ObjectProperty<StructureChangeEventCompositum> currentEventStack =
-            new SimpleObjectProperty<StructureChangeEventCompositum>(DEFAULT_HISTORY);
+            new SimpleObjectProperty<>(DEFAULT_HISTORY);
 
     protected ReadOnlyListProperty<StructureChangeEvent> defaultHistory()
     {
@@ -213,7 +213,7 @@ public class ServerStorageStructureBaseImplementation
     private final HistoryRedirect history = new HistoryRedirect();
 
     private final ObjectProperty<StructureChangeEvent> head =
-            new SimpleObjectProperty<StructureChangeEvent>();
+            new SimpleObjectProperty<>();
 
     private final ObjectProperty<StructureState> structureState =
             new SimpleObjectProperty<>(StructureState.STATE_ALIVE);

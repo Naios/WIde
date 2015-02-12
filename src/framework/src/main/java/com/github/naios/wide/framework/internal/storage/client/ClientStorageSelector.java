@@ -46,11 +46,11 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
         switch (extension)
         {
             case ADBStorage.EXTENSION:
-                return new ADBStorage<T>(path, policy);
+                return new ADBStorage<>(path, policy);
             case DB2Storage.EXTENSION:
-                return new DB2Storage<T>(path, policy);
+                return new DB2Storage<>(path, policy);
             case DBCStorage.EXTENSION:
-                return new DBCStorage<T>(path, policy);
+                return new DBCStorage<>(path, policy);
             default:
                 return null;
         }
