@@ -13,15 +13,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.entities.NoSucheEntityException;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
-public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase<FROM, TO, BASE>
+public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> extends MapperBase<FROM, TO, BASE>
 {
     private final MappingPlan<BASE> plan;
 
@@ -61,15 +62,14 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     protected Mapping<BASE> newMappingBasedOn(final FROM from, final TO to)
     {
-        final List<Pair<BASE, MappingMetaData>> content =
-                new ArrayList<>();
+        final List<BASE> content = new ArrayList<>(plan.getNumberOfElements());
 
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
         {
             final MappingAdapterBridge<FROM, TO, BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            content.add(new Pair<>(adapter.map(from, to, plan, i, plan.getMetadata().get(i)), plan.getMetadata().get(i)));
+            content.add(adapter.map(from, to, plan, i, plan.getMetadata().get(i)));
         }
 
         return new JsonMapping<>(this, plan, content);
@@ -78,8 +78,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
     @Override
     protected Mapping<BASE> newMappingBasedOn(final List<Object> keys, final TO to)
     {
-        final List<Pair<BASE, MappingMetaData>> content =
-                new ArrayList<>();
+        final List<BASE> content = new ArrayList<>(plan.getNumberOfElements());
 
         final Iterator<Object> iterator = keys.iterator();
         for (int i = 0; i < plan.getNumberOfElements(); ++i)
@@ -91,8 +90,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE> extends MapperBase
             final Optional<Object> value = Optional.ofNullable(metaData.isKey() ? iterator.next() : null);
 
             final BASE base = adapter.create(to, plan, i, metaData, value);
-
-            content.add(new Pair<>(base, plan.getMetadata().get(i)));
+            content.add(base);
         }
 
         return new JsonMapping<>(this, plan, content);

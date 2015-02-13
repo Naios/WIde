@@ -12,12 +12,9 @@ import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.util.Pair;
-
 public interface SQLUpdateInfo
 {
-    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry();
+    public ReadOnlyProperty<?> getEntry();
 
     public Optional<Object> getOldValue();
 }

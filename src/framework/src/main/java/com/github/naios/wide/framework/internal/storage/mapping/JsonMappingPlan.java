@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
@@ -21,7 +23,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.reflect.TypeToken;
 
-public class JsonMappingPlan<BASE> implements MappingPlan<BASE>
+public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements MappingPlan<BASE>
 {
     private final BiMap<String, Integer> nameToOrdinal =
             HashBiMap.create();

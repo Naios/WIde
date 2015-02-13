@@ -10,20 +10,17 @@ package com.github.naios.wide.api.framework.storage.mapping;
 
 import java.util.List;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.util.Pair;
-
-public interface Mapping<BASE> extends Iterable<Pair<BASE, MappingMetaData>>
+public interface Mapping<BASE> extends Iterable<BASE>
 {
-    public List<Pair<BASE, MappingMetaData>> getKeys();
+    public List<BASE> getKeys();
 
     public List<Object> getRawKeys();
 
     public List<Object> getRawValues();
 
-    public List<Pair<BASE, MappingMetaData>> getValues();
+    public List<BASE> getValues();
 
-    public Pair<BASE, MappingMetaData> getEntryByName(String name) throws UnknownMappingEntryException;
+    public BASE getEntryByName(String name) throws UnknownMappingEntryException;
 
-    public Pair<BASE, MappingMetaData> getEntryByTarget(String name) throws UnknownMappingEntryException;
+    public BASE getEntryByTarget(String name) throws UnknownMappingEntryException;
 }

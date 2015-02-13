@@ -62,7 +62,7 @@ public class ChangeTrackerImpl
             super (FXCollections.observableHashMap());
         }
 
-        public void addUpdate(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
+        public void addUpdate(final ServerStorageStructure structure, final ReadOnlyProperty<?> property, final Object oldValue)
         {
             SetProperty<SQLUpdateInfo> set = get(structure);
             if (Objects.isNull(set))
@@ -71,10 +71,10 @@ public class ChangeTrackerImpl
                 put(structure, set);
             }
 
-            set.add(new SQLUpdateInfoImpl(entry, oldValue));
+            set.add(new SQLUpdateInfoImpl(property, oldValue));
 
             if (hasScopeSet())
-                entryScopes.put(new StructureEntryStorageIndex(structure, entry), scope.get());
+                entryScopes.put(new StructureEntryStorageIndex(structure, property), scope.get());
         }
 
         public void removeUpdate(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)

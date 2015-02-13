@@ -12,10 +12,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
-import com.github.naios.wide.api.util.Pair;
 
 public class MappingProxy implements InvocationHandler
 {
@@ -35,7 +33,7 @@ public class MappingProxy implements InvocationHandler
         this.mapping = Optional.of(mapping);
     }
 
-    public void setMapping(Mapping<?> mapping)
+    public void setMapping(final Mapping<?> mapping)
     {
         this.mapping = Optional.of(mapping);
     }
@@ -68,9 +66,9 @@ public class MappingProxy implements InvocationHandler
 
         if (mapping.isPresent())
         {
-            final Pair<?, MappingMetaData> result = mapping.get().getEntryByTarget(method.getName());
+            final Object result = mapping.get().getEntryByTarget(method.getName());
             if (result != null)
-                return result.first();
+                return result;
         }
         return new UnknownMappingEntryException(method.getName());
     }

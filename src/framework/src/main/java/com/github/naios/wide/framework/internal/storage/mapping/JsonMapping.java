@@ -14,30 +14,30 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.FormatterWrapper;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 import com.google.common.reflect.TypeToken;
 
-public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mapping<BASE>
+public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> implements Mapping<BASE>
 {
     private final MapperBase<FROM, TO, BASE> mapper;
 
     private final MappingPlan<BASE> plan;
 
-    private final List<Pair<BASE, MappingMetaData>> values;
+    private final List<BASE> values;
 
-    private final List<Pair<BASE, MappingMetaData>> keys;
+    private final List<BASE> keys;
 
     private final List<Object> rawHashableKeys;
 
-    public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan<BASE> plan,
-            final List<Pair<BASE, MappingMetaData>> values)
+    public JsonMapping(final MapperBase<FROM, TO, BASE> mapper, final MappingPlan<BASE> plan, final List<BASE> values)
     {
         this.mapper = mapper;
 
@@ -45,12 +45,12 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
 
         this.values = Collections.unmodifiableList(values);
 
-        final List<Pair<BASE, MappingMetaData>> keys = new ArrayList<>();
+        final List<BASE> keys = new ArrayList<>();
         final List<Object> rawHashableKeys = new ArrayList<>();
 
-        values.forEach((entry) ->
+        values.forEach(entry ->
         {
-            if (entry.second().isKey())
+            if (MappingBean.getMetaData(entry).isKey())
             {
                 keys.add(entry);
                 rawHashableKeys.add(getRawValue(entry));
@@ -61,15 +61,15 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
         this.rawHashableKeys = Collections.unmodifiableList(rawHashableKeys);
     }
 
-    private Object getRawValue(final Pair<BASE, MappingMetaData> entry)
+    private Object getRawValue(final BASE property)
     {
         try
         {
             final TypeToken<? extends BASE> typeToken =
                     plan.getMappedTypes().get(
-                            plan.getOrdinalOfName(entry.second().getName()));
+                            plan.getOrdinalOfName(MappingBean.getMetaData(property).getName()));
 
-            return mapper.getAdapterOf(typeToken).getPrimitiveValue(entry.first());
+            return mapper.getAdapterOf(typeToken).getPrimitiveValue(property);
         }
         catch (final Exception e)
         {
@@ -79,13 +79,13 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public Iterator<Pair<BASE, MappingMetaData>> iterator()
+    public Iterator<BASE> iterator()
     {
         return values.iterator();
     }
 
     @Override
-    public List<Pair<BASE, MappingMetaData>> getKeys()
+    public List<BASE> getKeys()
     {
         return keys;
     }
@@ -105,13 +105,13 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public List<Pair<BASE, MappingMetaData>> getValues()
+    public List<BASE> getValues()
     {
         return values;
     }
 
     @Override
-    public Pair<BASE, MappingMetaData> getEntryByName(final String name)
+    public BASE getEntryByName(final String name)
     {
         try
         {
@@ -124,7 +124,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     }
 
     @Override
-    public Pair<BASE, MappingMetaData> getEntryByTarget(final String name)
+    public BASE getEntryByTarget(final String name)
             throws UnknownMappingEntryException
     {
         try
@@ -172,8 +172,8 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE> implements Mappin
     {
         return "{" + Arrays.toString(getRawKeys().toArray()) + " -> " +
                     StringUtil.concat(", ",
-                            new CrossIterator<>(this, entry->
-                                entry.second().getName() + " = " +
-                                    new FormatterWrapper(entry.first()).toString())) + "}";
+                            new CrossIterator<>(this, property->
+                            MappingBean.getMetaData(property).getName() + " = " +
+                                    new FormatterWrapper(property).toString())) + "}";
     }
 }

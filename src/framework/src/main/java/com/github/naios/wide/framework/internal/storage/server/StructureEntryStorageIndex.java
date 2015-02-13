@@ -9,20 +9,19 @@ package com.github.naios.wide.framework.internal.storage.server;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.Pair;
+import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 
 class StructureEntryStorageIndex
 {
-    private final ServerStorageStructure structure;
+    private final ReadOnlyProperty<?> property;
 
-    private final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
+    private final ServerMappingBean bean;
 
-    public StructureEntryStorageIndex(final ServerStorageStructure structure, final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
+    public StructureEntryStorageIndex(final ReadOnlyProperty<?> property)
     {
-        this.structure = structure;
-        this.entry = entry;
+        this.property = property;
+
+        bean = ServerMappingBean.get(property);
     }
 
     @Override
@@ -30,8 +29,8 @@ class StructureEntryStorageIndex
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (((entry != null) && (entry.second() != null)) ? 0 : entry.second().hashCode());
-        result = prime * result + ((structure == null) ? 0 : structure.hashCode());
+        result = prime * result + ((bean.getStructure() == null) ? 0 : bean.getStructure().hashCode());
+        result = prime * result + ((bean.getMappingMetaData() == null) ? 0 : bean.getMappingMetaData().hashCode());
         return result;
     }
 
@@ -45,17 +44,12 @@ class StructureEntryStorageIndex
         if (!(obj instanceof StructureEntryStorageIndex))
             return false;
         final StructureEntryStorageIndex other = (StructureEntryStorageIndex) obj;
-        if (entry == null)
+        if (property == null)
         {
-            if (other.entry != null)
+            if (other.property != null)
                 return false;
         }
-        else if (entry.second() == null)
-        {
-            if (other.entry.second() != null)
-                return false;
-        }
-        else if (!entry.second().equals(other.entry.second()))
+        else if (!property.second().equals(other.property.second()))
             return false;
         if (structure == null)
         {

@@ -12,30 +12,27 @@ import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.util.Pair;
 
 public final class SQLUpdateInfoImpl implements SQLUpdateInfo
 {
-    private final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
+    private final ReadOnlyProperty<?> entry;
 
     private final Optional<Object> oldValue;
 
-    public SQLUpdateInfoImpl(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
+    public SQLUpdateInfoImpl(final ReadOnlyProperty<?> property)
     {
-        this (entry, null);
+        this (property, null);
     }
 
-    public SQLUpdateInfoImpl(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry,
-            final Object oldValue)
+    public SQLUpdateInfoImpl(final ReadOnlyProperty<?> property, final Object oldValue)
     {
-        this.entry = entry;
+        this.entry = property;
         this.oldValue = Optional.ofNullable(oldValue);
     }
 
     @Override
-    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry()
+    public ReadOnlyProperty<?> getEntry()
     {
         return entry;
     }
