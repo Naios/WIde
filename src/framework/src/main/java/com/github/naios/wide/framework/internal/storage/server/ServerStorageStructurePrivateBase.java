@@ -22,5 +22,5 @@ public interface ServerStorageStructurePrivateBase extends ServerStorageStructur
 
     public void onDelete();
 
-    public void onUpdate(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue);
+    public void onUpdate(final ReadOnlyProperty<?> property, final Object oldValue);
 }

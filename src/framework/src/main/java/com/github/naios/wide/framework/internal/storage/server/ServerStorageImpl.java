@@ -26,16 +26,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
+import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.CrossIterator;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
@@ -320,14 +319,14 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return structure;
     }
 
-    protected boolean setValueOfObservable(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object value)
+    protected boolean setValueOfObservable(final ReadOnlyProperty<?> property, final Object value)
     {
-        return mapper.set(entry.second().getName(), entry.first(), value);
+        return mapper.set(ServerMappingBean.getMetaData(property).getName(), property, value);
     }
 
-    protected boolean resetValueOfObservable(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
+    protected boolean resetValueOfObservable(final ReadOnlyProperty<?> property)
     {
-        return mapper.reset(entry.second().getName(), entry.first());
+        return mapper.reset(ServerMappingBean.getMetaData(property).getName(), property);
     }
 
     @Override

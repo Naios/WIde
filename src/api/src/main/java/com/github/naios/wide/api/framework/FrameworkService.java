@@ -9,7 +9,6 @@
 package com.github.naios.wide.api.framework;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
@@ -48,7 +47,7 @@ public interface FrameworkService extends AliasFactory
      * @return
      */
     public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete);
 
@@ -65,7 +64,7 @@ public interface FrameworkService extends AliasFactory
      * @return
      */
     public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete,
             final QueryTypeConfig updateConfig,

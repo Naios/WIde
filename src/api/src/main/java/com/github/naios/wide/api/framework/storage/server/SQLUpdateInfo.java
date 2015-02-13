@@ -14,7 +14,7 @@ import javafx.beans.property.ReadOnlyProperty;
 
 public interface SQLUpdateInfo
 {
-    public ReadOnlyProperty<?> getEntry();
+    public ReadOnlyProperty<?> getProperty();
 
     public Optional<Object> getOldValue();
 }

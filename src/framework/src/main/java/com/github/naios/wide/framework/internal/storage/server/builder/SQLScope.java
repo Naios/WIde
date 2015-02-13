@@ -77,7 +77,7 @@ public final class SQLScope
                 @Override
                 public String getScope(final SQLUpdateInfo info)
                 {
-                    return sqlBuilder.getSQLInfoProvider().getScopeOfEntry(structure, info.getEntry());
+                    return sqlBuilder.getSQLInfoProvider().getScopeOfEntry(structure, info.getProperty());
                 }
 
                 @Override

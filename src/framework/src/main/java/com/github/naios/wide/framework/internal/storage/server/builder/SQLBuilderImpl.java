@@ -20,7 +20,10 @@ import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
+import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Implementation of an SQLBuilder based on storage holders
@@ -29,7 +32,7 @@ public final class SQLBuilderImpl implements SQLBuilder
 {
     private final SQLInfoProvider sqlInfoProvider;
 
-    private final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update;
+    private final Multimap<ServerStorageStructure, SQLUpdateInfo> update;
 
     private final Collection<ServerStorageStructure> insert, delete;
 
@@ -38,7 +41,7 @@ public final class SQLBuilderImpl implements SQLBuilder
     private final SQLVariableHolder variableHolder = new SQLVariableHolder();
 
     public SQLBuilderImpl(final SQLInfoProvider sqlInfoProvider,
-            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete,
             final QueryTypeConfig updateConfig,
@@ -47,13 +50,20 @@ public final class SQLBuilderImpl implements SQLBuilder
     {
         this.sqlInfoProvider = sqlInfoProvider;
 
-        this.update = update;
+        this.update = splitUpdateInfo(update);
         this.insert = insert;
         this.delete = delete;
 
         this.updateConfig = updateConfig;
         this.insertConfig = insertConfig;
         this.deleteConfig = deleteConfig;
+    }
+
+    private static Multimap<ServerStorageStructure, SQLUpdateInfo> splitUpdateInfo(final Collection<SQLUpdateInfo> updates)
+    {
+        final Multimap<ServerStorageStructure, SQLUpdateInfo> map = HashMultimap.create();
+        updates.forEach(update -> map.put(ServerMappingBean.getStructure(update.getProperty()), update));
+        return map;
     }
 
     public SQLInfoProvider getSQLInfoProvider()
@@ -91,7 +101,7 @@ public final class SQLBuilderImpl implements SQLBuilder
         variableHolder.clear();
 
         // Pre calculate everything
-        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(this, update, insert, delete);
+        final Map<String /*scope*/, SQLScope> scopes = SQLScope.split(this, update.asMap(), insert, delete);
         final Map<String /*scope*/, String /*query*/> queries = new HashMap<>();
 
         for (final Entry<String, SQLScope> entry : scopes.entrySet())

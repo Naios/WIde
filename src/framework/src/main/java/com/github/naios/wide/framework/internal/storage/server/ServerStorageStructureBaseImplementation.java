@@ -20,8 +20,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.RollbackFailedException;
+import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeEvent;
 import com.github.naios.wide.api.framework.storage.server.StructureCreatedEvent;
@@ -30,7 +30,6 @@ import com.github.naios.wide.api.framework.storage.server.StructureModifyEvent;
 import com.github.naios.wide.api.framework.storage.server.StructureResetEvent;
 import com.github.naios.wide.api.framework.storage.server.StructureState;
 import com.github.naios.wide.api.framework.storage.server.UpdatePolicy;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingCallback;
 
 interface Rollbackable
@@ -100,26 +99,21 @@ class StructureChangeEventCompositum
 abstract class AbstractStructureModifyEvent
     implements StructureModifyEvent
 {
-    protected final Pair<ReadOnlyProperty<?>, MappingMetaData> entry;
+    protected final ReadOnlyProperty<?> property;
 
     protected final Object oldValue;
 
-    public AbstractStructureModifyEvent(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
+    public AbstractStructureModifyEvent(final ReadOnlyProperty<?> property, final Object oldValue)
     {
-        this.entry = entry;
+        this.property = property;
 
         this.oldValue = oldValue;
-    }
-
-    public Pair<ReadOnlyProperty<?>, MappingMetaData> getEntry()
-    {
-        return entry;
     }
 
     @Override
     public ReadOnlyProperty<?> getObservable()
     {
-        return entry.first();
+        return property;
     }
 
     @Override
@@ -228,16 +222,16 @@ public class ServerStorageStructureBaseImplementation
     {
         this.me = structure;
 
-        for (final Pair<ReadOnlyProperty<?>, MappingMetaData> entry : me)
-            entry.first().addListener(new ChangeListener<Object>()
-        {
-            @Override
-            public void changed(final ObservableValue<? extends Object> observable,
-                    final Object oldValue, final Object newValue)
+        for (final ReadOnlyProperty<?> property : me)
+            property.addListener(new ChangeListener<Object>()
             {
-                onUpdate(entry, oldValue);
-            }
-        });
+                @Override
+                public void changed(final ObservableValue<? extends Object> observable,
+                        final Object oldValue, final Object newValue)
+                {
+                    onUpdate(property, oldValue);
+                }
+            });
     }
 
     @Override
@@ -372,8 +366,8 @@ public class ServerStorageStructureBaseImplementation
             {
                 history.setEventHistory(subEvents);
 
-                for (final Pair<ReadOnlyProperty<?>, MappingMetaData> entry : me)
-                    owner.resetValueOfObservable(entry);
+                for (final ReadOnlyProperty<?> property : me)
+                    owner.resetValueOfObservable(property);
 
                 history.releaseEventHistory(subEvents);
             }
@@ -415,20 +409,20 @@ public class ServerStorageStructureBaseImplementation
         };
     }
 
-    private StructureModifyEvent updateEvent(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
+    private StructureModifyEvent updateEvent(final ReadOnlyProperty<?> property, final Object oldValue)
     {
-        return new AbstractStructureModifyEvent(entry, oldValue)
+        return new AbstractStructureModifyEvent(property, oldValue)
         {
             @Override
             public void revert() throws RollbackFailedException
             {
-                onUpdate(entry, oldValue);
+                onUpdate(property, oldValue);
             }
 
             @Override
             public void drop() throws RollbackFailedException
             {
-                dropEvent(updateEvent(entry, oldValue));
+                dropEvent(updateEvent(property, oldValue));
             }
 
             @Override
@@ -440,7 +434,8 @@ public class ServerStorageStructureBaseImplementation
             @Override
             public String toString()
             {
-                return StructureChangeEventUtils.toStringHelper(StructureModifyEvent.class, entry.second().getName() + ", " + oldValue);
+                return StructureChangeEventUtils.toStringHelper(StructureModifyEvent.class,
+                        ServerMappingBean.getMetaData(property).getName() + ", " + oldValue);
             }
         };
     }
@@ -498,9 +493,9 @@ public class ServerStorageStructureBaseImplementation
     }
 
     @Override
-    public synchronized void onUpdate(final Pair<ReadOnlyProperty<?>, MappingMetaData> entry, final Object oldValue)
+    public synchronized void onUpdate(final ReadOnlyProperty<?> property, final Object oldValue)
     {
-        history.pushEvent(updateEvent(entry, oldValue));
-        changeTracker.onUpdate(me, entry, oldValue);
+        history.pushEvent(updateEvent(property, oldValue));
+        changeTracker.onUpdate(me, property, oldValue);
     }
 }

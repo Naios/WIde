@@ -21,7 +21,7 @@ public interface SQLInfoProvider
      * @param entry
      * @return
      */
-    public String getScopeOfEntry(ServerStorageStructure structure, Pair<ReadOnlyProperty<?>, MappingMetaData> entry);
+    public String getScopeOfEntry(ServerStorageStructure structure, ReadOnlyProperty<?> property);
 
     /**
      *

@@ -10,7 +10,6 @@ package com.github.naios.wide.framework.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,7 +28,6 @@ import com.github.naios.wide.api.config.ConfigService;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.api.framework.FrameworkService;
@@ -41,10 +39,10 @@ import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
+import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
-import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
@@ -292,7 +290,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                     @Override
                     public String getScopeOfEntry(final ServerStorageStructure structure,
-                            final Pair<ReadOnlyProperty<?>, MappingMetaData> entry)
+                            final ReadOnlyProperty<?> property)
                     {
                         return "";
                     }
@@ -312,12 +310,10 @@ public final class FrameworkServiceImpl implements FrameworkService
                     }
                 };
 
-                final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update = new HashMap<>();
-                final List<SQLUpdateInfo> updatesOnCT2 = new ArrayList<>();
-                update.put(ct2, updatesOnCT2);
+                final List<SQLUpdateInfo> update = new ArrayList<>();
 
-                updatesOnCT2.add(new SQLUpdateInfoImpl(ct2.getEntryByName("unit_flags"), 16));
-                updatesOnCT2.add(new SQLUpdateInfoImpl(ct2.getEntryByName("name")));
+                update.add(new SQLUpdateInfoImpl(ct2.getEntryByName("unit_flags"), 16));
+                update.add(new SQLUpdateInfoImpl(ct2.getEntryByName("name")));
 
                 final Collection<ServerStorageStructure> insert = new ArrayList<>();
                 insert.add(ct1);
@@ -378,7 +374,10 @@ public final class FrameworkServiceImpl implements FrameworkService
                 System.out.println(table.getChangeTracker());
 
                 System.out.println(String.format("DEBUG: Entries changed:"));
-                table.getChangeTracker().entriesChanged().keySet().forEach(structure -> System.out.println(structure.history()));
+                table.getChangeTracker().entriesChanged().stream()
+                    .map(info -> ServerMappingBean.getStructure(info.getProperty()))
+                    .distinct()
+                    .forEach(structure -> System.out.println(structure.history()));
 
                 System.out.println(String.format("DEBUG: Entries deleted:"));
                 table.getChangeTracker().structuresDeleted().forEach(structure -> System.out.println(structure.history()));
@@ -395,17 +394,15 @@ public final class FrameworkServiceImpl implements FrameworkService
         }).start();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker)
     {
         return createSQLBuilder(changeTracker,
-                (Map)changeTracker.entriesChanged(),
+                changeTracker.entriesChanged(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted());
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker,
                 final QueryTypeConfig updateConfig,
@@ -413,7 +410,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                         final QueryTypeConfig deleteConfig)
     {
         return createSQLBuilder(changeTracker,
-                (Map)changeTracker.entriesChanged(),
+                changeTracker.entriesChanged(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted(),
                 updateConfig,
@@ -423,7 +420,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     @Override
     public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete)
     {
@@ -436,7 +433,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     @Override
     public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Map<ServerStorageStructure, Collection<SQLUpdateInfo>> update,
+            final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete,
             final QueryTypeConfig updateConfig,

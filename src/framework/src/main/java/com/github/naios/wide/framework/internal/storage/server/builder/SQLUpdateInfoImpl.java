@@ -16,7 +16,7 @@ import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 
 public final class SQLUpdateInfoImpl implements SQLUpdateInfo
 {
-    private final ReadOnlyProperty<?> entry;
+    private final ReadOnlyProperty<?> property;
 
     private final Optional<Object> oldValue;
 
@@ -27,14 +27,14 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
 
     public SQLUpdateInfoImpl(final ReadOnlyProperty<?> property, final Object oldValue)
     {
-        this.entry = property;
+        this.property = property;
         this.oldValue = Optional.ofNullable(oldValue);
     }
 
     @Override
-    public ReadOnlyProperty<?> getEntry()
+    public ReadOnlyProperty<?> getProperty()
     {
-        return entry;
+        return property;
     }
 
     @Override
@@ -48,7 +48,7 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((entry == null) ? 0 : entry.hashCode());
+        result = prime * result + ((property == null) ? 0 : property.hashCode());
         return result;
     }
 
@@ -62,12 +62,12 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
         if (!(obj instanceof SQLUpdateInfoImpl))
             return false;
         final SQLUpdateInfoImpl other = (SQLUpdateInfoImpl) obj;
-        if (entry == null)
+        if (property == null)
         {
-            if (other.entry != null)
+            if (other.property != null)
                 return false;
         }
-        else if (!entry.equals(other.entry))
+        else if (!property.equals(other.property))
             return false;
         return true;
     }
@@ -75,6 +75,6 @@ public final class SQLUpdateInfoImpl implements SQLUpdateInfo
     @Override
     public String toString()
     {
-        return String.format("UpdateInfo(%s -> %s)", entry, oldValue);
+        return String.format("UpdateInfo(%s -> %s)", property, oldValue);
     }
 }
