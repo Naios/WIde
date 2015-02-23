@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -62,7 +62,7 @@ public final class SQLBuilderImpl implements SQLBuilder
     private static Multimap<ServerStorageStructure, SQLUpdateInfo> splitUpdateInfo(final Collection<SQLUpdateInfo> updates)
     {
         final Multimap<ServerStorageStructure, SQLUpdateInfo> map = HashMultimap.create();
-        updates.forEach(update -> map.put(ServerMappingBean.getStructure(update.getProperty()), update));
+        updates.forEach(update -> map.put(MappingBeans.getStructure(update.getProperty()), update));
         return map;
     }
 

@@ -10,8 +10,8 @@ package com.github.naios.wide.framework.internal.storage.client;
 import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.client.ClientMappingBean;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 
 public abstract class ClientMetaDataMappingAdapter<T extends ReadOnlyProperty<?>, P>
@@ -22,7 +22,7 @@ public abstract class ClientMetaDataMappingAdapter<T extends ReadOnlyProperty<?>
         super(type, primitive);
     }
 
-    class ClientMappingBeanImpl implements ClientMappingBean
+    class ClientMappingBeanImpl implements MappingBean<ClientStorageStructure>
     {
         private final ClientStorageStructure to;
 
@@ -54,7 +54,7 @@ public abstract class ClientMetaDataMappingAdapter<T extends ReadOnlyProperty<?>
         };
     }
 
-    protected ClientMappingBean createBean(final ClientStorageStructure to,
+    protected MappingBean<ClientStorageStructure> createBean(final ClientStorageStructure to,
             final MappingMetaData metaData)
     {
         return new ClientMappingBeanImpl(to, metaData);

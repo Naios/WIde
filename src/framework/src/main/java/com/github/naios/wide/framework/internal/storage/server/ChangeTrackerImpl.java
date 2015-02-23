@@ -8,19 +8,24 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
@@ -51,21 +56,22 @@ public class ChangeTrackerImpl
     private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
             deleted = new SimpleSetProperty<>(FXCollections.observableSet());
 
-    class UpdateSet extends SetProperty<SQLUpdateInfo>
+    class UpdateMap extends SimpleMapProperty<ServerStorageStructure, SetProperty<SQLUpdateInfo>>
     {
-        public UpdateSet()
+        public UpdateMap()
         {
-            super (FXCollections.observableHashSet());
+            super (FXCollections.observableHashMap());
         }
 
-        public void addUpdate(final ServerStorageStructure structure, final ReadOnlyProperty<?> property, final Object oldValue)
+        public void addUpdate(final ReadOnlyProperty<?> property, final Object oldValue)
         {
+            final ServerStorageStructure structure = MappingBeans.getStructure(property);
+
             SetProperty<SQLUpdateInfo> set = get(structure);
             if (Objects.isNull(set))
             {
-                // TODO
-                set = ;
-                add(new SimpleSetProperty<>(FXCollections.observableSet()));
+                set = new SimpleSetProperty<>(FXCollections.observableSet());
+                put(structure, set);
             }
 
             set.add(new SQLUpdateInfoImpl(property, oldValue));
@@ -74,10 +80,11 @@ public class ChangeTrackerImpl
                 entryScopes.put(new StructureEntryStorageIndex(property), scope.get());
         }
 
-        // TODO review this
-        public void removeUpdate(final ServerStorageStructure structure, final ReadOnlyProperty<?> property)
+        public void removeUpdate(final ReadOnlyProperty<?> property)
         {
-            final SetProperty<SQLUpdateInfo> set = get(structure);
+            final ServerStorageStructure structure = MappingBeans.getStructure(property);
+
+            final SetProperty<SQLUpdateInfo> set = get(property);
             if (Objects.nonNull(set))
             {
                 // Use reference equality here
@@ -99,9 +106,18 @@ public class ChangeTrackerImpl
                 remove(structure);
             }
         }
+
+        public Collection<SQLUpdateInfo> asCollection()
+        {
+            return get()
+                .entrySet()
+                .stream()
+                .flatMap(entry -> entry.getValue().stream())
+                .collect(Collectors.toList());
+        }
     }
 
-    private final UpdateSet updates = new UpdateSet();
+    private final UpdateMap updates = new UpdateMap();
 
     public void onCreate(final ServerStorageStructure structure)
     {
@@ -126,7 +142,7 @@ public class ChangeTrackerImpl
             final ReadOnlyProperty<?> property, final Object oldValue)
     {
         if (!created.contains(structure))
-            updates.addUpdate(structure, property, oldValue);
+            updates.addUpdate(property, oldValue);
     }
 
     @Override
@@ -141,10 +157,17 @@ public class ChangeTrackerImpl
         return deleted;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public ReadOnlySetProperty<SQLUpdateInfo> entriesChanged()
+    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged()
     {
-        return updates;
+        return (ReadOnlyMapProperty)updates;
+    }
+
+    @Override
+    public Collection<SQLUpdateInfo> entriesChangedAsCollection()
+    {
+        return updates.asCollection();
     }
 
     /*

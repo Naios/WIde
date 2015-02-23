@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapter;
 
@@ -24,7 +24,7 @@ public abstract class ServerMetaDataMappingAdapter<T extends ReadOnlyProperty<?>
         super(type, primitive);
     }
 
-    class ServerMappingBeanImpl implements ServerMappingBean
+    class ServerMappingBeanImpl implements MappingBean<ServerStorageStructure>
     {
         private final ServerStorageStructure to;
 
@@ -56,7 +56,7 @@ public abstract class ServerMetaDataMappingAdapter<T extends ReadOnlyProperty<?>
         };
     }
 
-    protected ServerMappingBean createBean(final ServerStorageStructure to,
+    protected MappingBean<ServerStorageStructure> createBean(final ServerStorageStructure to,
             final MappingMetaData metaData)
     {
         return new ServerMappingBeanImpl(to, metaData);

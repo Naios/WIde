@@ -8,24 +8,11 @@
 
 package com.github.naios.wide.api.framework.storage.mapping;
 
-import javafx.beans.property.ReadOnlyProperty;
-
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.client.ClientMappingBean;
 
-public interface MappingBean<T>
+public interface MappingBean<T extends Mapping<?>>
 {
     public T getStructure();
 
     public MappingMetaData getMappingMetaData();
-
-    public static MappingBean<?> get(final ReadOnlyProperty<?> property)
-    {
-        return (ClientMappingBean)property.getBean();
-    }
-
-    public static MappingMetaData getMetaData(final ReadOnlyProperty<?> property)
-    {
-        return get(property).getMappingMetaData();
-    }
 }

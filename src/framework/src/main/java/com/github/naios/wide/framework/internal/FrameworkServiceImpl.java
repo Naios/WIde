@@ -39,7 +39,6 @@ import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
@@ -55,6 +54,8 @@ import com.github.naios.wide.framework.internal.storage.server.ChangeTrackerImpl
 import com.github.naios.wide.framework.internal.storage.server.ServerStorageImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLBuilderImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public final class FrameworkServiceImpl implements FrameworkService
 {
@@ -69,6 +70,25 @@ public final class FrameworkServiceImpl implements FrameworkService
     private final AliasStorage aliases = new AliasStorage();
 
     private static FrameworkServiceImpl INSTANCE;
+
+    private final Cache<String, ClientStorage<?>> clientStorages =
+            CacheBuilder
+                .newBuilder()
+                .weakValues()
+                .build(/*path -> new ClientStorageSelector<?>(path, ClientStoragePolicy.DEFAULT_POLICY).select()*/);
+
+    private final Cache<String, ServerStorage<?>> serverStorages =
+            CacheBuilder
+                .newBuilder()
+                .weakValues()
+                .build(/*new CacheLoader<Pair<String, String>, ServerStorage<?>>()
+                {
+                    @Override
+                    public ServerStorage<?> load(final Pair<String, String> idAndName) throws Exception
+                    {
+                        return new ServerStorageImpl<>(databaseId, tableName, changeTracker);
+                    }
+                }*/);
 
     public void start()
     {
@@ -120,19 +140,16 @@ public final class FrameworkServiceImpl implements FrameworkService
     }
 
     @Override
-    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(
-            final String name)
+    public <T extends ClientStorageStructure> Optional<ClientStorage<T>> requestClientStorage(final String name)
     {
-        // TODO @FrameworkIntegration
-        return null;
+        return Optional.ofNullable(/*TODO*/null/*clientStorages.get(name)*/);
     }
 
     @Override
-    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(
-            final String databaseId, final String name)
+    public <T extends ServerStorageStructure> Optional<ServerStorage<T>> requestServerStorage(final String databaseId, final String name)
     {
         // TODO @FrameworkIntegration
-        return null;
+        return  Optional.ofNullable(null);
     }
 
     @Override
@@ -153,7 +170,7 @@ public final class FrameworkServiceImpl implements FrameworkService
         aliases.reloadAliases();
     }
 
-    private ClientStorage<?> getStorgeOfCommand(final String name, final int policy)
+    private ClientStorage<?> getStorageOfCommand(final String name, final int policy)
     {
         if ((policy < 0) || (policy > ClientStoragePolicy.values().length))
             throw new RuntimeException(String.format("%s is not an ordinal of ClientStoragePolicy!"));
@@ -168,7 +185,7 @@ public final class FrameworkServiceImpl implements FrameworkService
             @Descriptor("0 = POLICY_SCHEMA_ONLY, 1 = POLICY_ESTIMATE_ONLY, 2 = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER (default)")
                 /*FIXME @Parameter(names={"-p", "--policy"}, absentValue="2") */ final int policy)
     {
-        final ClientStorage<?> storage = getStorgeOfCommand(name, policy);
+        final ClientStorage<?> storage = getStorageOfCommand(name, policy);
         final Object[][] array = storage.asObjectArray();
         final int height = array.length, width = array[0].length;
 
@@ -194,7 +211,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     @Descriptor("Returns an estimated format of any .dbc, .db2 or .adb storage (located in the data dir).")
     public ClientStorageFormat dbcformat(@Descriptor("The name of the storage (TaxiNodes.db2 for example)") final String name)
     {
-        return getStorgeOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat();
+        return getStorageOfCommand(name, ClientStoragePolicy.POLICY_ESTIMATE_ONLY.ordinal()).getFormat();
     }
 
     public void test()
@@ -373,12 +390,6 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 System.out.println(table.getChangeTracker());
 
-                System.out.println(String.format("DEBUG: Entries changed:"));
-                table.getChangeTracker().entriesChanged().stream()
-                    .map(info -> ServerMappingBean.getStructure(info.getProperty()))
-                    .distinct()
-                    .forEach(structure -> System.out.println(structure.history()));
-
                 System.out.println(String.format("DEBUG: Entries deleted:"));
                 table.getChangeTracker().structuresDeleted().forEach(structure -> System.out.println(structure.history()));
 
@@ -398,7 +409,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker)
     {
         return createSQLBuilder(changeTracker,
-                changeTracker.entriesChanged(),
+                changeTracker.entriesChangedAsCollection(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted());
     }
@@ -410,7 +421,7 @@ public final class FrameworkServiceImpl implements FrameworkService
                         final QueryTypeConfig deleteConfig)
     {
         return createSQLBuilder(changeTracker,
-                changeTracker.entriesChanged(),
+                changeTracker.entriesChangedAsCollection(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted(),
                 updateConfig,

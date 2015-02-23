@@ -9,19 +9,21 @@ package com.github.naios.wide.framework.internal.storage.server;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 
 class StructureEntryStorageIndex
 {
     private final ReadOnlyProperty<?> property;
 
-    private final ServerMappingBean bean;
+    private final MappingBean<ServerStorageStructure> bean;
 
     public StructureEntryStorageIndex(final ReadOnlyProperty<?> property)
     {
         this.property = property;
 
-        bean = ServerMappingBean.get(property);
+        bean = MappingBeans.<ServerStorageStructure>get(property);
     }
 
     @Override
@@ -49,14 +51,14 @@ class StructureEntryStorageIndex
             if (other.property != null)
                 return false;
         }
-        else if (!property.second().equals(other.property.second()))
+        else if (!bean.getMappingMetaData().equals(other.bean.getMappingMetaData()))
             return false;
-        if (structure == null)
+        if (bean.getStructure() == null)
         {
-            if (other.structure != null)
+            if (other.bean.getStructure() != null)
                 return false;
         }
-        else if (!structure.equals(other.structure))
+        else if (!bean.getStructure().equals(other.bean.getStructure()))
             return false;
         return true;
     }

@@ -8,6 +8,9 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
+import java.util.Collection;
+
+import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.StringProperty;
@@ -19,7 +22,9 @@ public interface ChangeTracker
 
     public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted();
 
-    public ReadOnlySetProperty<SQLUpdateInfo> entriesChanged();
+    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged();
+
+    public Collection<SQLUpdateInfo> entriesChangedAsCollection();
 
     /**
      * Planned but not supported yet!

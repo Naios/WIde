@@ -19,9 +19,8 @@ import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.property.EnumProperty;
 import com.github.naios.wide.api.property.EnumPropertyBase;
@@ -140,11 +139,8 @@ public final class SQLMaker
     private String createInClause(final MappingMetaData mappingMetaData, final Collection<ServerStorageStructure> structures)
     {
         final String query = StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<>(structures, structure ->
-                {
-                    final ReadOnlyProperty<?> field = structure.getKeys().get(0);
-                    return createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field));
-                }));
+                new CrossIterator<>(structures,
+                        structure -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(structure.getKeys().get(0)))));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
     }
@@ -162,7 +158,7 @@ public final class SQLMaker
      */
     private String createNameEqualsValue(final ServerStorageStructure structure, final SQLUpdateInfo field)
     {
-        return createNameEqualsName(createName(MappingBean.getMetaData(field.getProperty())),
+        return createNameEqualsName(createName(MappingBeans.getMetaData(field.getProperty())),
                 createValueOfReadOnlyProperty(structure, field));
     }
 
@@ -177,7 +173,7 @@ public final class SQLMaker
                 return vars.addVariable(customVar, sqlUpdateInfo.getProperty().getValue());
         }
 
-        final MappingMetaData metaData = ServerMappingBean.getMetaData(sqlUpdateInfo.getProperty());
+        final MappingMetaData metaData = MappingBeans.getMetaData(sqlUpdateInfo.getProperty());
 
         // Enum alias
         if ((((sqlUpdateInfo.getProperty() instanceof EnumProperty) && queryConfig.enums().get())
@@ -295,7 +291,7 @@ public final class SQLMaker
         // If only 1 primary key exists its possible to use IN clauses
         // otherwise we use nested AND/ OR clauses
         if (keys.size() == 1 && (structures.size() > 1))
-            return createInClause(ServerMappingBean.getMetaData(keys.get(0)), structures);
+            return createInClause(MappingBeans.getMetaData(keys.get(0)), structures);
         else
         {
             // Yay, nested concat iterator!
@@ -315,7 +311,7 @@ public final class SQLMaker
         final Set<String> statements = new TreeSet<>();
         collection.forEach(field -> statements.add(createNameEqualsValue(structure, field)));
 
-        return StringUtil.concat(COMMA + SPACE, statements.iterator());
+        return StringUtil.concat(COMMA + SPACE, statements);
     }
 
     /**
@@ -343,18 +339,15 @@ public final class SQLMaker
     {
         return "(" + StringUtil.concat(COMMA + SPACE,
                 new CrossIterator<ReadOnlyProperty<?>, String>(list,
-                        property -> createName(ServerMappingBean.getMetaData(property)))) + ")";
+                        property -> createName(MappingBeans.getMetaData(property)))) + ")";
     }
 
     protected String createInsertValuePart(final Collection<ServerStorageStructure> structures)
     {
         return StringUtil.concat(COMMA + NEWLINE,
-                new CrossIterator<ServerStorageStructure, String>(structures, (structure) ->
-                {
-                    return "(" + StringUtil.concat(COMMA + SPACE,
-                            new CrossIterator<ReadOnlyProperty<?>, String>(structure,
-                                    field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))) + ")";
-                }));
+                new CrossIterator<ServerStorageStructure, String>(structures, structure ->
+                    "(" + StringUtil.concat(COMMA + SPACE, new CrossIterator<ReadOnlyProperty<?>, String>(structure,
+                            field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))) + ")"));
     }
 
     protected String createInsertQuery(final String tableName, final List<ReadOnlyProperty<?>> list, final String valuePart)

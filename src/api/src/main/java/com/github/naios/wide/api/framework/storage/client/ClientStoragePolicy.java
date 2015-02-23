@@ -26,6 +26,9 @@ public enum ClientStoragePolicy
      */
     POLICY_SCHEMA_FIRST_ESTIMATE_AFTER;
 
+    /**
+     * DEFAULT_POLICY := POLICY_SCHEMA_FIRST_ESTIMATE_AFTER
+     */
     public static ClientStoragePolicy DEFAULT_POLICY = POLICY_SCHEMA_FIRST_ESTIMATE_AFTER;
 
     public boolean isSchemaProvided()

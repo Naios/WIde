@@ -20,8 +20,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.RollbackFailedException;
-import com.github.naios.wide.api.framework.storage.server.ServerMappingBean;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.framework.storage.server.StructureChangeEvent;
 import com.github.naios.wide.api.framework.storage.server.StructureCreatedEvent;
@@ -435,7 +435,7 @@ public class ServerStorageStructureBaseImplementation
             public String toString()
             {
                 return StructureChangeEventUtils.toStringHelper(StructureModifyEvent.class,
-                        ServerMappingBean.getMetaData(property).getName() + ", " + oldValue);
+                        MappingBeans.getMetaData(property).getName() + ", " + oldValue);
             }
         };
     }

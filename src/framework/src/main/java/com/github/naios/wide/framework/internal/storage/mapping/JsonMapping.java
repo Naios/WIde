@@ -17,7 +17,7 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
-import com.github.naios.wide.api.framework.storage.mapping.MappingBean;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
 import com.github.naios.wide.api.util.CrossIterator;
@@ -50,7 +50,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPr
 
         values.forEach(entry ->
         {
-            if (MappingBean.getMetaData(entry).isKey())
+            if (MappingBeans.getMetaData(entry).isKey())
             {
                 keys.add(entry);
                 rawHashableKeys.add(getRawValue(entry));
@@ -67,7 +67,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPr
         {
             final TypeToken<? extends BASE> typeToken =
                     plan.getMappedTypes().get(
-                            plan.getOrdinalOfName(MappingBean.getMetaData(property).getName()));
+                            plan.getOrdinalOfName(MappingBeans.getMetaData(property).getName()));
 
             return mapper.getAdapterOf(typeToken).getPrimitiveValue(property);
         }
@@ -173,7 +173,7 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPr
         return "{" + Arrays.toString(getRawKeys().toArray()) + " -> " +
                     StringUtil.concat(", ",
                             new CrossIterator<>(this, property->
-                            MappingBean.getMetaData(property).getName() + " = " +
+                            MappingBeans.getMetaData(property).getName() + " = " +
                                     new FormatterWrapper(property).toString())) + "}";
     }
 }
