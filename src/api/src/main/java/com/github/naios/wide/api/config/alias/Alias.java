@@ -8,6 +8,8 @@
 
 package com.github.naios.wide.api.config.alias;
 
+import java.util.Map;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 
@@ -62,12 +64,11 @@ public interface Alias
     public StringProperty prefix();
 
     /**
-     * Defines a name used if the requested value is 0.<br>
-     * If the zeroName string is empty no special name on zero values is used.
+     * Its possible to ass custom entries to the alias config.
      *
-     * @return Returns the zeroName string
+     * @return Returns all custom entries
      */
-    public StringProperty zeroName();
+    public Map<Integer, String> customEntries();
 
     /**
      * Use a special prefix after the normal prefix id no associated name for the requested value was found (such as unk)<br>

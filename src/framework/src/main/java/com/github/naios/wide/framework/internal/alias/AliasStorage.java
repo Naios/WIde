@@ -29,6 +29,7 @@ public class AliasStorage implements AliasFactory
             put(AliasType.CLIENT, new ClientAliasConverter());
             put(AliasType.SERVER, new ServerAliasConverter());
             put(AliasType.ENUM, new EnumAliasConverter());
+            put(AliasType.EMPTY, new EmptyAliasConverter());
         }
     };
 
@@ -43,7 +44,10 @@ public class AliasStorage implements AliasFactory
             throw new IllegalArgumentException(String.format("Alias %s isn't defined!", alias));
 
         final AliasConverter converter = ALIAS_CONVERTER.get(alias.getAliasType());
-        return new Pair<>(alias, Collections.unmodifiableMap(converter.convertAlias(alias)));
+        final Map<Integer, String> entries = converter.convertAlias(alias);
+        entries.putAll(alias.customEntries());
+
+        return new Pair<>(alias, Collections.unmodifiableMap(entries));
     }
 
     private Pair<Alias, Map<Integer, String>> createAliasMapOrGet(final String name)
@@ -68,14 +72,6 @@ public class AliasStorage implements AliasFactory
 
     private String createAliasFromMap(final Pair<Alias, Map<Integer, String>> map, final int value)
     {
-        // Zero values
-        if (value == 0)
-        {
-            final String zeroValue = map.first().zeroName().get();
-            if (Objects.nonNull(zeroValue) && !zeroValue.isEmpty())
-                return createPrefix(map.first().prefix().get()) + zeroValue;
-        }
-
         final String alias = map.second().get(value);
 
         // Fail prefix

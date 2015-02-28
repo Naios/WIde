@@ -8,6 +8,9 @@
 
 package com.github.naios.wide.config.internal.config.alias;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,8 +33,9 @@ public class AliasImpl implements Alias
         nameColumnIndex = new SimpleIntegerProperty(0);
 
     private StringProperty prefix = new SimpleStringProperty(""),
-            zeroName = new SimpleStringProperty(""),
                     failPrefix = new SimpleStringProperty("");
+
+    private Map<Integer, String> custom = new HashMap<>();
 
     @Override
     public AliasType getAliasType()
@@ -82,9 +86,9 @@ public class AliasImpl implements Alias
     }
 
     @Override
-    public StringProperty zeroName()
+    public Map<Integer, String> customEntries()
     {
-        return zeroName;
+        return custom;
     }
 
     @Override

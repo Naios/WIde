@@ -140,16 +140,16 @@ public final class FrameworkServiceImpl implements FrameworkService
     }
 
     @Override
-    public <T extends ClientStorageStructure> Optional<ClientStorage<T>> requestClientStorage(final String name)
+    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(final String name)
     {
-        return Optional.ofNullable(/*TODO*/null/*clientStorages.get(name)*/);
+        return /*TODO*/null/*clientStorages.get(name)*/;
     }
 
     @Override
-    public <T extends ServerStorageStructure> Optional<ServerStorage<T>> requestServerStorage(final String databaseId, final String name)
+    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(final String databaseId, final String name)
     {
         // TODO @FrameworkIntegration
-        return  Optional.ofNullable(null);
+        return null;
     }
 
     @Override

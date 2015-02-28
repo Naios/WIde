@@ -9,7 +9,6 @@
 package com.github.naios.wide.api.framework;
 
 import java.util.Collection;
-import java.util.Optional;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
@@ -28,7 +27,7 @@ public interface FrameworkService extends AliasFactory
      * @param name
      * @return
      */
-    public <T extends ClientStorageStructure> Optional<ClientStorage<T>> requestClientStorage(String name);
+    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(String name);
 
     /**
      * TODO
@@ -36,7 +35,7 @@ public interface FrameworkService extends AliasFactory
      * @param name
      * @return
      */
-    public <T extends ServerStorageStructure> Optional<ServerStorage<T>> requestServerStorage(String databaseId, String name);
+    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(String databaseId, String name);
 
     /**
      * TODO
