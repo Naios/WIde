@@ -20,9 +20,6 @@ import java.util.function.Function;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
@@ -33,8 +30,6 @@ import com.google.common.reflect.TypeToken;
 
 public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements MappingPlan<BASE>
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonMappingPlan.class);
-
     private final BiMap<String, Integer> nameToOrdinal =
             HashBiMap.create();
 
@@ -118,28 +113,6 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
             }
 
         return null;
-    }
-
-    // TODO Fix this dirty workaround
-    private boolean methodSignatureEquals(final Method first, final Method second)
-    {
-        if (first == second)
-            return true;
-
-        if (first == null ||
-            second == null)
-            return false;
-
-        if (!first.getName().equals(second.getName()))
-            return false;
-
-        if (!Arrays.equals(first.getParameterTypes(), second.getParameterTypes()))
-            return false;
-
-        if (!first.getReturnType().equals(second.getReturnType()))
-            return false;
-
-        return true;
     }
 
     @Override
