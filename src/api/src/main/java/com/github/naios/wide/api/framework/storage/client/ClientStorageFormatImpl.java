@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Pair;
 
 public class ClientStorageFormatImpl implements ClientStorageFormat
@@ -89,7 +88,23 @@ public class ClientStorageFormatImpl implements ClientStorageFormat
     @Override
     public Iterator<Pair<Integer, ClientStorageFormer>> iterator()
     {
-        return new CrossIterator<>(entries, (index) -> new Pair<>(index, getFormerAtIndex(index)));
+        return new Iterator<Pair<Integer, ClientStorageFormer>>()
+        {
+            Iterator<Integer> iter = entries.iterator();
+
+            @Override
+            public boolean hasNext()
+            {
+                return iter.hasNext();
+            }
+
+            @Override
+            public Pair<Integer, ClientStorageFormer> next()
+            {
+                final int idex = iter.next();
+                return new Pair<>(idex, getFormerAtIndex(idex));
+            }
+        };
     }
 
     @Override
