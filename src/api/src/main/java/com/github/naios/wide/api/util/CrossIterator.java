@@ -1,3 +1,4 @@
+package com.github.naios.wide.api.util;
 
 /*
  * Copyright (c) 2013 - 2015 Naios <naios-dev@live.de>
@@ -6,19 +7,17 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.api.util;
-
 import java.util.Iterator;
 import java.util.function.Function;
 
 /**
  * Wrapper to convert iterators to specific output
  */
-public class CrossIterator<IN, OUT> implements Iterator<OUT>
+public class CrossIterator<IN, OUT>
+    extends AbstractCrossConvert<IN, OUT>
+    implements Iterator<OUT>
 {
     private final Iterator<IN> iterator;
-
-    private final Function<IN, OUT> convert;
 
     public CrossIterator(final Iterable<IN> iterable, final Function<IN, OUT> convert)
     {
@@ -27,9 +26,8 @@ public class CrossIterator<IN, OUT> implements Iterator<OUT>
 
     public CrossIterator(final Iterator<IN> iterator, final Function<IN, OUT> convert)
     {
+        super (convert);
         this.iterator = iterator;
-
-        this.convert = convert;
     }
 
     @Override
@@ -41,6 +39,6 @@ public class CrossIterator<IN, OUT> implements Iterator<OUT>
     @Override
     public OUT next()
     {
-        return convert.apply(iterator.next());
+        return convert(iterator.next());
     }
 }
