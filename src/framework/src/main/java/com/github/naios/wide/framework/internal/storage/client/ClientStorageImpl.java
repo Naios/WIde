@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
@@ -27,7 +28,6 @@ import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStoragePolicy;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
-import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.reflect.TypeToken;
 
@@ -308,8 +308,8 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
     public String toString()
     {
         return String.format("%s (%s) Storage: %s\n%s\n\n%s\n%s",
-                getExtension(), getMagicSig(), path, getFormat(), StringUtil.concat(" | ", getFieldNames()),
-                    Arrays.deepToString(asStringArray()).replaceAll("],", "],\n"));
+                getExtension(), getMagicSig(), path, getFormat(), getFieldNames().stream().collect(Collectors.joining(" | ")),
+                Arrays.deepToString(asStringArray()).replaceAll("],", "],\n"));
     }
 
     @Override

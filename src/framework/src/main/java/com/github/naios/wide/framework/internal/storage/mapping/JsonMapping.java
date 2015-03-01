@@ -9,10 +9,10 @@
 package com.github.naios.wide.framework.internal.storage.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyProperty;
 
@@ -20,9 +20,7 @@ import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
-import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.FormatterWrapper;
-import com.github.naios.wide.api.util.StringUtil;
 import com.google.common.reflect.TypeToken;
 
 public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> implements Mapping<BASE>
@@ -170,10 +168,10 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPr
     @Override
     public String toString()
     {
-        return "{" + Arrays.toString(getRawKeys().toArray()) + " -> " +
-                    StringUtil.concat(", ",
-                            new CrossIterator<>(this, property->
-                            MappingBeans.getMetaData(property).getName() + " = " +
-                                    new FormatterWrapper(property).toString())) + "}";
+        return "{" + getRawKeys().stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]")) + " -> " +
+                stream()
+                    .map(property-> MappingBeans.getMetaData(property).getName() + " = " + new FormatterWrapper(property).toString())
+                    .collect(Collectors.joining(", "))
+                   + "}";
     }
 }

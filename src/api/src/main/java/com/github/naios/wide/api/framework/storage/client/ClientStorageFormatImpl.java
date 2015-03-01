@@ -13,10 +13,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.api.util.StringUtil;
 
 public class ClientStorageFormatImpl implements ClientStorageFormat
 {
@@ -96,8 +96,8 @@ public class ClientStorageFormatImpl implements ClientStorageFormat
     public String toString()
     {
         return String.format("Format: \"%s\"%s%s", format, comment.isEmpty() ? "" : (" (" + comment + ") "),
-                StringUtil.concat(new CrossIterator<>(indexToOffsetCache.keySet(),
-                        index -> String.format("\n  %-3s %s",
-                                index, getFormerAtIndex(index)))));
+                indexToOffsetCache.keySet().stream()
+                .map(index -> String.format("\n  %-3s %s", index, getFormerAtIndex(index)))
+                .collect(Collectors.joining()));
     }
 }

@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyProperty;
@@ -27,7 +28,6 @@ import com.github.naios.wide.api.property.EnumPropertyBase;
 import com.github.naios.wide.api.property.FlagProperty;
 import com.github.naios.wide.api.property.ReadOnlyEnumProperty;
 import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
-import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.StringUtil;
@@ -138,9 +138,10 @@ public final class SQLMaker
      */
     private String createInClause(final MappingMetaData mappingMetaData, final Collection<ServerStorageStructure> structures)
     {
-        final String query = StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<>(structures,
-                        structure -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(structure.getKeys().get(0)))));
+        final String query = structures
+                .stream()
+                .map(structure -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(structure.getKeys().get(0))))
+                .collect(Collectors.joining(COMMA + SPACE));
 
         return createName(mappingMetaData) + SPACE + IN + "(" + query + ")";
     }
@@ -225,7 +226,7 @@ public final class SQLMaker
                     {
                         builder.append(" &~ (");
 
-                        builder.append(concatFlags(removeFlags));
+                        builder.append(concatFlags((List)removeFlags));
 
                         builder.append("))");
                     }
@@ -235,7 +236,7 @@ public final class SQLMaker
                         if (oldMask != 0)
                             builder.append(FLAG_DELEMITER);
 
-                        builder.append(concatFlags(addFlags));
+                        builder.append(concatFlags((List)addFlags));
                     }
 
                     return builder.toString();
@@ -246,7 +247,7 @@ public final class SQLMaker
                 {
                     final List<? extends Enum<?>> currentFlags = Flags.createFlagList(flagProperty.getEnumClass(), oldMask);
                     // If Values are not different
-                    return concatFlags(currentFlags);
+                    return concatFlags((List)currentFlags);
                 }
             }
         }
@@ -271,11 +272,12 @@ public final class SQLMaker
     /**
      * Helper to concat a list of flags as variables
      */
-    private String concatFlags(final List<? extends Enum<?>> removeFlags)
+    private String concatFlags(final List<Enum<?>> flags)
     {
-        return StringUtil.concat(FLAG_DELEMITER,
-                new CrossIterator<>(removeFlags,
-                        flag -> vars.addVariable(flag.name(), StringUtil.asHex(Flags.createFlag(flag)))));
+        return flags
+                .stream()
+                .map(flag -> vars.addVariable(flag.name(), StringUtil.asHex(Flags.createFlag(flag))))
+                .collect(Collectors.joining(FLAG_DELEMITER));
     }
 
     /**
@@ -294,12 +296,13 @@ public final class SQLMaker
             return createInClause(MappingBeans.getMetaData(keys.get(0)), structures);
         else
         {
-            // Yay, nested concat iterator!
-            return StringUtil.concat(SPACE + OR + SPACE,
-                    new CrossIterator<ServerStorageStructure, String>(structures, structure ->
-                        StringUtil.concat(SPACE + AND + SPACE,
-                                new CrossIterator<>(structure.getKeys(),
-                                        field -> createNameEqualsValue(structure, new SQLUpdateInfoImpl(field))))));
+            return structures
+                    .stream()
+                    .map(structure -> structure.getKeys()
+                            .stream()
+                            .map(field -> createNameEqualsValue(structure, new SQLUpdateInfoImpl(field)))
+                            .collect(Collectors.joining(SPACE + AND + SPACE)))
+                    .collect(Collectors.joining(SPACE + OR + SPACE));
         }
     }
 
@@ -311,7 +314,7 @@ public final class SQLMaker
         final Set<String> statements = new TreeSet<>();
         collection.forEach(field -> statements.add(createNameEqualsValue(structure, field)));
 
-        return StringUtil.concat(COMMA + SPACE, statements);
+        return statements.stream().collect(Collectors.joining(COMMA + SPACE));
     }
 
     /**
@@ -337,17 +340,22 @@ public final class SQLMaker
 
     private static String createInsertDeclareValuesPart(final List<ReadOnlyProperty<?>> list)
     {
-        return "(" + StringUtil.concat(COMMA + SPACE,
-                new CrossIterator<ReadOnlyProperty<?>, String>(list,
-                        property -> createName(MappingBeans.getMetaData(property)))) + ")";
+        return list
+                .stream()
+                .map(MappingBeans::getMetaData)
+                .map(SQLMaker::createName)
+                .collect(Collectors.joining(COMMA + SPACE, "(", ")"));
     }
 
     protected String createInsertValuePart(final Collection<ServerStorageStructure> structures)
     {
-        return StringUtil.concat(COMMA + NEWLINE,
-                new CrossIterator<ServerStorageStructure, String>(structures, structure ->
-                    "(" + StringUtil.concat(COMMA + SPACE, new CrossIterator<ReadOnlyProperty<?>, String>(structure,
-                            field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))) + ")"));
+        return structures
+                .stream()
+                .map(structure -> structure
+                        .stream()
+                        .map(field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))
+                        .collect(Collectors.joining(COMMA + SPACE, "(", ")")))
+                .collect(Collectors.joining(COMMA + NEWLINE));
     }
 
     protected String createInsertQuery(final String tableName, final List<ReadOnlyProperty<?>> list, final String valuePart)

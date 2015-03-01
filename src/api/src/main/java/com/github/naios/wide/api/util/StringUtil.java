@@ -8,7 +8,10 @@
 
 package com.github.naios.wide.api.util;
 
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public class StringUtil
 {
@@ -28,65 +31,27 @@ public class StringUtil
 
     public static String fillWithSpaces(final Object... array)
     {
-        return concat(SPACE, array);
+        return join(SPACE, makeStream(array));
     }
 
     public static String fillWithComma(final Object... array)
     {
-        return concat(COMMA, array);
+        return join(COMMA, makeStream(array));
     }
 
     public static String fillWithNewLines(final Object... array)
     {
-        return concat(NEWLINE, array);
+        return join(NEWLINE, makeStream(array));
     }
 
-    public static String concat(final String delemiter, final Object... array)
+    private static Stream<String> makeStream(final Object[] array)
     {
-        return concat(delemiter, new Iterator<String>()
-        {
-            int pos = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return pos < array.length;
-            }
-
-            @Override
-            public String next()
-            {
-                return array[pos++].toString();
-            }
-        });
+        return Arrays.stream(array).map(Object::toString);
     }
 
-    public static String concat(final Iterable<String> iterable)
+    private static String join(final String delimiter, final Stream<String> stream)
     {
-        return concat(iterable.iterator());
-    }
-
-    public static String concat(final String delemiter, final Iterable<String> iterable)
-    {
-        return concat(delemiter, iterable.iterator());
-    }
-
-    public static String concat(final Iterator<String> iterator)
-    {
-        return concat(new String(), iterator);
-    }
-
-    public static String concat(final String delemiter, final Iterator<String> iterator)
-    {
-        final StringBuilder builder = new StringBuilder();
-
-        while (iterator.hasNext())
-            builder.append(iterator.next()).append(delemiter);
-
-        if (builder.length() >= delemiter.length())
-            builder.delete(builder.length() - delemiter.length(), builder.length());
-
-        return builder.toString();
+        return stream.collect(Collectors.joining(delimiter));
     }
 
     public static String asHex(final int value)

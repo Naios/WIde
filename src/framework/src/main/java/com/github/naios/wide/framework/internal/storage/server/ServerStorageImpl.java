@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -26,6 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
@@ -34,7 +36,6 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.api.util.CrossIterator;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
@@ -189,15 +190,17 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private String createSelectFormat()
     {
-        return StringUtil.fillWithSpaces("SELECT",
-                StringUtil.concat(", ", new CrossIterator<>(mapper.getPlan().getMetadata(), metadata -> metadata.getName())),
-                    "FROM", tableName, "WHERE ");
+        return StringUtil.fillWithSpaces(
+                "SELECT",
+                mapper.getPlan().getMetadata()
+                    .stream()
+                    .map(MappingMetaData::getName).collect(Collectors.joining(", ")),
+                "FROM", tableName, "WHERE ");
     }
 
     private String createStatementFormat()
     {
-        return selectLowPart +
-                StringUtil.concat(" ", new CrossIterator<>(mapper.getPlan().getKeys(), metadata -> metadata.getName() + "=?"));
+        return selectLowPart + mapper.getPlan().getKeys().stream().map(MappingMetaData::getName).map(name -> name  + "=?").collect(Collectors.joining(" "));
     }
 
     private void registerStatements()
