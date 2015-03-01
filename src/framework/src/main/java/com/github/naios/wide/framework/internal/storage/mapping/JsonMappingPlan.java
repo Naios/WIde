@@ -11,20 +11,30 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javafx.beans.property.ReadOnlyProperty;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
+import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.reflect.TypeToken;
 
 public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements MappingPlan<BASE>
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonMappingPlan.class);
+
     private final BiMap<String, Integer> nameToOrdinal =
             HashBiMap.create();
 
@@ -38,45 +48,36 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
     private final List<MappingMetaData> keys;
 
     @SuppressWarnings("unchecked")
-    public JsonMappingPlan(final TableSchema schema, final Class<?> target, final Class<?> implementation)
+    public JsonMappingPlan(final TableSchema schema, final Class<?> target,
+            final Function<MappingMetaData, Optional<TypeToken<?>>> typeReceiver, final Class<?> implementation)
     {
         // Calculate the plan based on the schema and the target
         // Methods defined in target must be defined in the schema.
-        // Non-key Fields defined in the schema must not presented in the target interface
         final List<MappingMetaData> data = new ArrayList<>();
         final List<MappingMetaData> keys = new ArrayList<>();
-        final List<TypeToken<? extends BASE>> mappedType = new ArrayList<>();
+        final List<TypeToken<? extends BASE>> mappedTypes = new ArrayList<>();
 
-        // Get methods that are not covered through the implementations
-        final List<Method> methods = new ArrayList<>();
-        methods.addAll(Arrays.asList(target.getMethods()));
-
-        methods.removeIf(first ->
-        {
-            for (final Method second : implementation.getMethods())
-                if (methodSignatureEquals(first, second))
-                    return true;
-
-            return false;
-        });
-
-        methods.removeIf(first ->
-        {
-            for (final Method second : JsonMapping.class.getMethods())
-                if (methodSignatureEquals(first, second))
-                    return true;
-
-            return false;
-        });
+        final Collection<Method> methods = new HashSet<>(Arrays.asList(target.getMethods()));
+        methods.removeAll(Arrays.asList(ServerStorageStructure.class.getMethods()));
 
         int i = 0;
         for (final MappingMetaData metaData : schema.getEntries())
         {
-            final Method method = getMethodInListByName(methods, metaData.getTarget());
+            final Method method = getMethodByName(methods, metaData.getTarget());
+            final TypeToken<?> type;
             if (method == null)
-                continue;
+            {
+                final Optional<TypeToken<?>> token = typeReceiver.apply(metaData);
+                token.orElseThrow(() -> new RuntimeException("Could not get type of schema entry " + metaData));
+                type = token.get();
+            }
+            else
+            {
+                type = TypeToken.of(method.getReturnType());
+                methods.remove(method);
+            }
 
-            mappedType.add((TypeToken<? extends BASE>) TypeToken.of(method.getReturnType()));
+            mappedTypes.add((TypeToken<? extends BASE>) type);
 
             data.add(metaData);
             nameToOrdinal.put(metaData.getName(), i);
@@ -98,14 +99,16 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
                 ++i;
 
         if (i != keys.size())
-            throw new RuntimeException(String.format("Interface %s defines not all keys present in schema %s.", target, schema.getName()));
+            throw new RuntimeException(String.format(
+                    "Interface %s defines not all keys present in schema %s.",
+                    target, schema.getName()));
 
         this.data = Collections.unmodifiableList(data);
         this.keys = Collections.unmodifiableList(keys);
-        this.mappedType = Collections.unmodifiableList(mappedType);
+        this.mappedType = Collections.unmodifiableList(mappedTypes);
     }
 
-    public Method getMethodInListByName(final List<Method> methods, final String name)
+    public Method getMethodByName(final Collection<Method> methods, final String name)
     {
         for (final Method method : methods)
             if (method.getName().equals(name))

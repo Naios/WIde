@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import javafx.beans.property.ReadOnlyProperty;
 
@@ -21,6 +22,7 @@ import com.github.naios.wide.api.entities.NoSucheEntityException;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
+import com.google.common.reflect.TypeToken;
 
 public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> extends MapperBase<FROM, TO, BASE>
 {
@@ -33,11 +35,17 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPro
     }
 
     public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
-            final List<Class<?>> interfaces,
-                final Class<? extends MappingCallback<?>> implementation)
+            final List<Class<?>> interfaces, final Class<? extends MappingCallback<?>> implementation)
+    {
+        this(schema, adapterHolder, interfaces, implementation, type -> Optional.empty());
+    }
+
+    public JsonMapper(final TableSchema schema, final MappingAdapterHolder<FROM, TO, BASE> adapterHolder,
+            final List<Class<?>> interfaces, final Class<? extends MappingCallback<?>> implementation,
+            final Function<MappingMetaData, Optional<TypeToken<?>>> typeReceiver)
     {
         super(adapterHolder, getTargetOfSchema(schema), interfaces, implementation);
-        this.plan = new JsonMappingPlan<>(schema, getTarget(), getImplementation());
+        this.plan = new JsonMappingPlan<>(schema, getTarget(), typeReceiver, getImplementation());
     }
 
     private static <TO> Class<? extends TO> getTargetOfSchema(final TableSchema schema)
