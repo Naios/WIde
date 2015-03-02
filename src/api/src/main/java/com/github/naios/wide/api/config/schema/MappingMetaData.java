@@ -12,13 +12,33 @@ public interface MappingMetaData
 {
     public String getName();
 
-    public String getTarget();
+    public default String getTarget()
+    {
+        return "";
+    }
 
-    public String getDescription();
+    public default String getDescription()
+    {
+        return "";
+    }
 
-    public int getIndex();
+    public default String getDefaultValue()
+    {
+        return "";
+    }
 
-    public boolean isKey();
+    public default int getIndex()
+    {
+        return 0;
+    }
 
-    public String getAlias();
+    public default boolean isKey()
+    {
+        return false;
+    }
+
+    public default String getAlias()
+    {
+        return "";
+    }
 }

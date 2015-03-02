@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,9 +36,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.schema.AbstractMappingMetaData;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
@@ -115,8 +111,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         STATEMENT_SELECT_ROW
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServerStorageImpl.class);
-
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
@@ -141,6 +135,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.databaseId = databaseId;
         this.tableName = tableName;
         this.changeTracker = changeTracker;
+
+        this.database.bind(FrameworkServiceImpl.getDatabasePoolService()
+                .requestConnection(databaseId));
 
         final Optional<TableSchema> trySchema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
                 .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
@@ -187,7 +184,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
         final TableSchema schema;
         final Function<MappingMetaData, Optional<TypeToken<?>>> typeReceiver;
-        if (providedSchema.getPolicy().hasPermissionToComplete())
+        if (!providedSchema.getPolicy().hasPermissionToComplete())
         {
             schema = providedSchema;
             typeReceiver = metaData -> Optional.empty();
@@ -210,8 +207,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.database.addListener(new ChangeListener<Database>()
         {
             @Override
-            public void changed(
-                    final ObservableValue<? extends Database> observable,
+            public void changed(final ObservableValue<? extends Database> observable,
                     final Database oldValue, final Database newValue)
             {
                 alive.unbind();
@@ -226,7 +222,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             }
         });
 
-        this.database.bind(FrameworkServiceImpl.getDatabasePoolService().requestConnection(databaseId));
+        registerStatements();
     }
 
     @Override
@@ -271,13 +267,21 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private String createStatementFormat()
     {
-        return selectLowPart + mapper.getPlan().getKeys().stream().map(MappingMetaData::getName).map(name -> name  + "=?").collect(Collectors.joining(" "));
+        return selectLowPart + mapper.getPlan().getKeys().stream().map(MappingMetaData::getName).map(name -> name  + "=?").collect(Collectors.joining(" AND "));
     }
 
     private void registerStatements()
     {
         // FIXME this is registered multiple times
-        database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
+        try
+        {
+            database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
+            alive.set(true);
+        }
+        catch (final Throwable t)
+        {
+            t.printStackTrace();
+        }
     }
 
     @Override
@@ -413,15 +417,13 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         final List<MappingMetaData> metaData = new ArrayList<>(providedSchema.getEntries().size());
         final Map<MappingMetaData, TypeToken<?>> types = new HashMap<>();
 
-        try (final ResultSet result = database.get().execute("SHOW COLUMNS FROM " + providedSchema.getName()))
+        try (final ResultSet result = database.get().execute("SHOW COLUMNS FROM " + tableName))
         {
             while (result.next())
             {
                 final String name = result.getString("Field");
                 final boolean isPrimaryKey = result.getString("Key").equals("PRI");
-
-                // TODO Add Support for default values
-                // final String default = result.getString("Default");
+                final String defaultValue = result.getString("Default");
 
                 {
                     final MappingMetaData data = providedData.get(name);
@@ -449,6 +451,12 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                             }
 
                             @Override
+                            public String getDefaultValue()
+                            {
+                                return data.getDefaultValue().isEmpty() ? defaultValue : data.getDefaultValue();
+                            };
+
+                            @Override
                             public int getIndex()
                             {
                                 return data.getIndex();
@@ -457,7 +465,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                             @Override
                             public boolean isKey()
                             {
-                                return isPrimaryKey;
+                                return data.isKey() ? true : isPrimaryKey;
                             }
 
                             @Override
@@ -482,38 +490,27 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                     }
 
                     @Override
-                    public String getTarget()
-                    {
-                        return "";
-                    }
-
-                    @Override
                     public String getDescription()
                     {
-                        return "Automatic completed";
+                        return "Auto completed";
                     }
 
                     @Override
-                    public int getIndex()
+                    public String getDefaultValue()
                     {
-                        return 0;
-                    }
+                        return defaultValue;
+                    };
 
                     @Override
                     public boolean isKey()
                     {
                         return isPrimaryKey;
                     }
-
-                    @Override
-                    public String getAlias()
-                    {
-                        return "";
-                    }
                 };
 
                 final TypeToken<?> type = getJavaTypeOf(result.getString("Type"), isPrimaryKey);
                 types.put(data, type);
+                metaData.add(data);
             }
         }
         catch (final SQLException e)
@@ -570,7 +567,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private TypeToken<?> getJavaTypeOf(final String string, final boolean isPrimaryKey)
     {
-        // TODO Find a better way for this since ResultSet.getObject() is no option
+        // FIXME Find a better way for this since ResultSet.getObject() is no option
         if (string.contains("bit"))
             return TOKEN_OF_BOOL;
         else if (string.contains("bool"))
@@ -596,7 +593,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     @Override
     public String toString()
     {
-        final ConcurrentMap<Integer, ServerStorageStructure> map = cache.asMap();
+        final Map<Integer, ServerStorageStructure> map = cache.asMap();
         return Arrays.toString(map.entrySet().toArray()).replace("],", "],\n");
     }
 

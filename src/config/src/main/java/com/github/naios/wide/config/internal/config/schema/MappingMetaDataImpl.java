@@ -12,13 +12,15 @@ import com.github.naios.wide.api.config.schema.AbstractMappingMetaData;
 
 public class MappingMetaDataImpl extends AbstractMappingMetaData
 {
-    private String name, target, description;
+    private String name = "", target = "", description = "";
 
     private int index;
 
+    private String defaultValue = "";
+
     private boolean key;
 
-    private String alias;
+    private String alias = "";
 
     @Override
     public String getName()
@@ -29,13 +31,19 @@ public class MappingMetaDataImpl extends AbstractMappingMetaData
     @Override
     public String getTarget()
     {
-        return (target == null) ? name : target;
+        return target.isEmpty() ? name : target;
     }
 
     @Override
     public String getDescription()
     {
-        return (description == null) ? "" : description;
+        return description;
+    }
+
+    @Override
+    public String getDefaultValue()
+    {
+        return defaultValue;
     }
 
     @Override
@@ -53,14 +61,6 @@ public class MappingMetaDataImpl extends AbstractMappingMetaData
     @Override
     public String getAlias()
     {
-        return (alias == null) ? "" : alias;
-    }
-
-    @Override
-    public String toString()
-    {
-        return String
-                .format("MappingMetaData [name=%s, target=%s, description=%s, index=%s, key=%s, alias=%s]",
-                        name, target, description, index, key, alias);
+        return alias;
     }
 }

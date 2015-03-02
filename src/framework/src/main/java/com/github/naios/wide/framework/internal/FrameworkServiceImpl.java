@@ -234,7 +234,8 @@ public final class FrameworkServiceImpl implements FrameworkService
             public void testMe()
             {
                 final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc", ClientStoragePolicy.POLICY_SCHEMA_ONLY).select();
-                System.out.println(String.format("DEBUG: %s", me));
+                for (int i = 0; i < 15; ++i)
+                    me.getEntry(i).ifPresent(e -> System.out.println(String.format("DEBUG: %s", e)));
 
                 final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
 

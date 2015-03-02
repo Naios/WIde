@@ -50,4 +50,12 @@ public abstract class AbstractMappingMetaData
             return false;
         return true;
     }
+
+    @Override
+    public String toString()
+    {
+        return String
+                .format("MappingMetaData [name=%s, target=%s, description=%s, index=%s, key=%s, alias=%s]",
+                        getName(), getTarget(), getDescription(), getIndex(), isKey(), getAlias());
+    }
 }

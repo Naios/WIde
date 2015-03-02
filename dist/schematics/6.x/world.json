@@ -4,21 +4,18 @@
   "version": "1.0",
   "tables": {
     "creature_template": {
+      "policy": "LAZY",
       "structure": "com.github.naios.wide.entities.server.world.v6x.CreatureTemplate_6x",
       "entries": [
         {
           "name": "entry",
           "description": "creature entry (primary key).",
-          "key": true,
           "alias": "CreatureName"
         },
         {
           "name": "KillCredit1",
           "target": "kill_credit1",
           "alias": "CreatureName"
-        },
-        {
-          "name": "name"
         },
         {
           "name": "unit_flags",
