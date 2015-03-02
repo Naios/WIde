@@ -11,7 +11,7 @@ package com.github.naios.wide.config.internal.config.schema;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -22,15 +22,6 @@ import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.schema.Schema;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.config.internal.ConfigHolder;
-
-@SuppressWarnings("serial")
-class MissingSchemaException extends RuntimeException
-{
-    public MissingSchemaException(final String name)
-    {
-        super(String.format("Schema %s is missing!!", name));
-    }
-}
 
 public class SchemaImpl implements Schema
 {
@@ -67,13 +58,9 @@ public class SchemaImpl implements Schema
     }
 
     @Override
-    public TableSchema getSchemaOf(final String name)
+    public Optional<TableSchema> getSchemaOf(final String name)
     {
-        final TableSchema schema = tables.get(name);
-        if (Objects.nonNull(schema))
-            return schema;
-        else
-            throw new MissingSchemaException(name);
+        return Optional.ofNullable(tables.get(name));
     }
 
     @Override

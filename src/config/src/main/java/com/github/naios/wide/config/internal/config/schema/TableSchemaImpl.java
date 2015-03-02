@@ -11,6 +11,7 @@ package com.github.naios.wide.config.internal.config.schema;
 import java.util.List;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.SchemaPolicy;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormatImpl;
@@ -18,7 +19,11 @@ import com.github.naios.wide.config.internal.ConfigHolder;
 
 public class TableSchemaImpl implements TableSchema
 {
-    private String name, structure;
+    private String name;
+
+    private SchemaPolicy policy = SchemaPolicy.LAZY;
+
+    private String structure;
 
     private ClientStorageFormatImpl format;
 
@@ -28,6 +33,12 @@ public class TableSchemaImpl implements TableSchema
     public String getName()
     {
         return (name == null) ? "" : name;
+    }
+
+    @Override
+    public SchemaPolicy getPolicy()
+    {
+        return policy;
     }
 
     @Override

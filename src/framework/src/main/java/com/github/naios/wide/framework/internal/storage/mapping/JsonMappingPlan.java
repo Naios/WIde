@@ -94,9 +94,7 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
                 ++i;
 
         if (i != keys.size())
-            throw new RuntimeException(String.format(
-                    "Interface %s defines not all keys present in schema %s.",
-                    target, schema.getName()));
+            throw new RuntimeException(String.format("Interface %s defines not all keys presented in schema %s.", target, schema.getName()));
 
         this.data = Collections.unmodifiableList(data);
         this.keys = Collections.unmodifiableList(keys);

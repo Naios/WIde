@@ -12,37 +12,56 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.naios.wide.api.config.schema.AbstractMappingMetaData;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.SchemaPolicy;
 import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
+import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
+import com.github.naios.wide.api.framework.storage.server.UnknownServerStorageStructure;
+import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.StringUtil;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.mapping.JsonMapper;
 import com.github.naios.wide.framework.internal.storage.mapping.Mapper;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.reflect.TypeToken;
 
 @SuppressWarnings("serial")
 class BadKeyException extends ServerStorageException
@@ -96,6 +115,8 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         STATEMENT_SELECT_ROW
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerStorageImpl.class);
+
     private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
@@ -121,17 +142,67 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.tableName = tableName;
         this.changeTracker = changeTracker;
 
-        final TableSchema schema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
+        final Optional<TableSchema> trySchema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
                 .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
+
+        // Estimate tables without provided schema
+        // Create empty schema
+        final TableSchema providedSchema = trySchema.orElseGet(() ->
+        {
+            return new TableSchema()
+            {
+                private final List<MappingMetaData> entries = Collections.emptyList();
+
+                @Override
+                public SchemaPolicy getPolicy()
+                {
+                    return SchemaPolicy.LAZY;
+                }
+
+                @Override
+                public String getStructure()
+                {
+                    return UnknownServerStorageStructure.class.getCanonicalName();
+                }
+
+                @Override
+                public String getName()
+                {
+                    return tableName;
+                }
+
+                @Override
+                public ClientStorageFormat getFormat()
+                {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public List<MappingMetaData> getEntries()
+                {
+                    return entries;
+                }
+            };
+        });
+
+        final TableSchema schema;
+        final Function<MappingMetaData, Optional<TypeToken<?>>> typeReceiver;
+        if (providedSchema.getPolicy().hasPermissionToComplete())
+        {
+            schema = providedSchema;
+            typeReceiver = metaData -> Optional.empty();
+        }
+        else
+        {
+            final Pair<TableSchema, Function<MappingMetaData, Optional<TypeToken<?>>>> result = estimateSchema(providedSchema);
+            schema = result.first();
+            typeReceiver = result.second();
+        }
 
         this.structureName = schema.getStructure();
 
-        @SuppressWarnings("unchecked")
-        final MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>> adapter =
-                (MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>>) SQLToPropertyMappingAdapterHolder.INSTANCE;
-
-        mapper = new JsonMapper<>(schema, adapter,
-                Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class);
+        mapper = new JsonMapper<>(schema, SQLToPropertyMappingAdapterHolder.<T>get(),
+                Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class, typeReceiver);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
@@ -330,6 +401,196 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     protected boolean resetValueOfObservable(final ReadOnlyProperty<?> property)
     {
         return mapper.reset(MappingBeans.getMetaData(property).getName(), property);
+    }
+
+    private Pair<TableSchema, Function<MappingMetaData, Optional<TypeToken<?>>>> estimateSchema(final TableSchema providedSchema)
+    {
+        final Map<String, MappingMetaData> providedData = providedSchema.getEntries()
+                .stream()
+                .distinct()
+                .collect(Collectors.toMap(MappingMetaData::getName, metaData -> metaData));
+
+        final List<MappingMetaData> metaData = new ArrayList<>(providedSchema.getEntries().size());
+        final Map<MappingMetaData, TypeToken<?>> types = new HashMap<>();
+
+        try (final ResultSet result = database.get().execute("SHOW COLUMNS FROM " + providedSchema.getName()))
+        {
+            while (result.next())
+            {
+                final String name = result.getString("Field");
+                final boolean isPrimaryKey = result.getString("Key").equals("PRI");
+
+                // TODO Add Support for default values
+                // final String default = result.getString("Default");
+
+                {
+                    final MappingMetaData data = providedData.get(name);
+                    if (Objects.nonNull(data))
+                    {
+                        // Complete info
+                        metaData.add(new AbstractMappingMetaData()
+                        {
+                            @Override
+                            public String getName()
+                            {
+                                return data.getName();
+                            }
+
+                            @Override
+                            public String getTarget()
+                            {
+                                return data.getTarget();
+                            }
+
+                            @Override
+                            public String getDescription()
+                            {
+                                return data.getDescription();
+                            }
+
+                            @Override
+                            public int getIndex()
+                            {
+                                return data.getIndex();
+                            }
+
+                            @Override
+                            public boolean isKey()
+                            {
+                                return isPrimaryKey;
+                            }
+
+                            @Override
+                            public String getAlias()
+                            {
+                                return data.getAlias();
+                            }
+                        });
+                        continue;
+                    }
+                }
+
+                if (!providedSchema.getPolicy().hasPermissionToAddColumns())
+                    continue;
+
+                final MappingMetaData data = new AbstractMappingMetaData()
+                {
+                    @Override
+                    public String getName()
+                    {
+                        return name;
+                    }
+
+                    @Override
+                    public String getTarget()
+                    {
+                        return "";
+                    }
+
+                    @Override
+                    public String getDescription()
+                    {
+                        return "Automatic completed";
+                    }
+
+                    @Override
+                    public int getIndex()
+                    {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean isKey()
+                    {
+                        return isPrimaryKey;
+                    }
+
+                    @Override
+                    public String getAlias()
+                    {
+                        return "";
+                    }
+                };
+
+                final TypeToken<?> type = getJavaTypeOf(result.getString("Type"), isPrimaryKey);
+                types.put(data, type);
+            }
+        }
+        catch (final SQLException e)
+        {
+            throw new DatabaseConnectionException(e.getMessage());
+        }
+
+        // Get Fields of the table
+        return new Pair<>(new TableSchema()
+        {
+            private final List<MappingMetaData> entries = Collections.unmodifiableList(metaData);
+
+            @Override
+            public SchemaPolicy getPolicy()
+            {
+                return providedSchema.getPolicy();
+            }
+
+            @Override
+            public String getStructure()
+            {
+                return providedSchema.getStructure();
+            }
+
+            @Override
+            public String getName()
+            {
+                return providedSchema.getName();
+            }
+
+            @Override
+            public ClientStorageFormat getFormat()
+            {
+                return providedSchema.getFormat();
+            }
+
+            @Override
+            public List<MappingMetaData> getEntries()
+            {
+                return entries;
+            }
+        },
+        m -> Optional.ofNullable(types.get(m)));
+    }
+
+    private static final TypeToken<?> TOKEN_OF_BOOL = TypeToken.of(BooleanProperty.class);
+    private static final TypeToken<?> TOKEN_OF_INT = TypeToken.of(IntegerProperty.class);
+    private static final TypeToken<?> TOKEN_OF_INT_KEY = TypeToken.of(ReadOnlyIntegerProperty.class);
+    private static final TypeToken<?> TOKEN_OF_LONG = TypeToken.of(LongProperty.class);
+    private static final TypeToken<?> TOKEN_OF_FLOAT = TypeToken.of(FloatProperty.class);
+    private static final TypeToken<?> TOKEN_OF_DOUBLE = TypeToken.of(DoubleProperty.class);
+    private static final TypeToken<?> TOKEN_OF_STRING = TypeToken.of(StringProperty.class);
+    private static final TypeToken<?> TOKEN_OF_STRING_KEY = TypeToken.of(ReadOnlyStringProperty.class);
+
+    private TypeToken<?> getJavaTypeOf(final String string, final boolean isPrimaryKey)
+    {
+        // TODO Find a better way for this since ResultSet.getObject() is no option
+        if (string.contains("bit"))
+            return TOKEN_OF_BOOL;
+        else if (string.contains("bool"))
+            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
+        else if (string.contains("tinyint"))
+            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
+        else if (string.contains("smallint"))
+            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
+        else if (string.contains("mediumint"))
+            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
+        else if (string.contains("int"))
+            return TOKEN_OF_LONG;
+        else if (string.contains("float"))
+            return TOKEN_OF_FLOAT;
+        else if (string.contains("double"))
+            return TOKEN_OF_DOUBLE;
+        else if (string.contains("decimal"))
+            return TOKEN_OF_DOUBLE;
+        else
+            return isPrimaryKey ? TOKEN_OF_STRING_KEY : TOKEN_OF_STRING;
     }
 
     @Override

@@ -39,7 +39,13 @@ import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 
 public class SQLToPropertyMappingAdapterHolder
 {
-    public final static MappingAdapterHolder<ResultSet, ?, ReadOnlyProperty<?>> INSTANCE = build();
+    private final static MappingAdapterHolder<ResultSet, ? extends ServerStorageStructure, ReadOnlyProperty<?>> INSTANCE = build();
+
+    @SuppressWarnings("unchecked")
+    public static <T extends ServerStorageStructure> MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>> get()
+    {
+        return (MappingAdapterHolder<ResultSet, T, ReadOnlyProperty<?>>) INSTANCE;
+    }
 
     @SuppressWarnings("rawtypes")
     private static MappingAdapterHolder<ResultSet, ServerStorageStructure, ReadOnlyProperty<?>> build()

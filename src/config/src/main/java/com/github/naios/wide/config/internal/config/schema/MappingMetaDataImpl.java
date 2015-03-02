@@ -8,9 +8,9 @@
 
 package com.github.naios.wide.config.internal.config.schema;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.config.schema.AbstractMappingMetaData;
 
-public class MappingMetaDataImpl implements MappingMetaData
+public class MappingMetaDataImpl extends AbstractMappingMetaData
 {
     private String name, target, description;
 
@@ -54,46 +54,6 @@ public class MappingMetaDataImpl implements MappingMetaData
     public String getAlias()
     {
         return (alias == null) ? "" : alias;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (key ? 1231 : 1237);
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((target == null) ? 0 : target.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (!(obj instanceof MappingMetaDataImpl))
-            return false;
-        final MappingMetaDataImpl other = (MappingMetaDataImpl) obj;
-        if (key != other.key)
-            return false;
-        if (name == null)
-        {
-            if (other.name != null)
-                return false;
-        }
-        else if (!name.equals(other.name))
-            return false;
-        if (target == null)
-        {
-            if (other.target != null)
-                return false;
-        }
-        else if (!target.equals(other.target))
-            return false;
-        return true;
     }
 
     @Override

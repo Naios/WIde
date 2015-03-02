@@ -9,6 +9,7 @@
 package com.github.naios.wide.api.config.schema;
 
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -24,5 +25,5 @@ public interface Schema
 
     public Set<Entry<String, TableSchema>> getTables();
 
-    public TableSchema getSchemaOf(String name);
+    public Optional<TableSchema> getSchemaOf(String name);
 }

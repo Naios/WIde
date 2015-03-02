@@ -8,16 +8,7 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import java.util.Optional;
-
-import javafx.beans.property.ReadOnlyProperty;
-
-public interface SQLUpdateInfo
+public interface UnknownServerStorageStructure
+    extends ServerStorageStructure
 {
-    public ReadOnlyProperty<?> getProperty();
-
-    public default Optional<Object> getOldValue()
-    {
-        return Optional.empty();
-    }
 }

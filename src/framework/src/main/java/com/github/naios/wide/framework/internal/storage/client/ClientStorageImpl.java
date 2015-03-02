@@ -171,17 +171,11 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
 
         if (Objects.nonNull(schema))
         {
-            // FIXME Empty catch clause is bad!
-            try
-            {
-                final TableSchema tableSchema = schema.getSchemaOf(file.getName());
-                dataTable = new KnownSchemaDataTable<>(this, tableSchema, buffer);
-                return;
-            }
-            catch (final Exception e)
-            {
-                e.printStackTrace();
-            }
+            final Optional<TableSchema> tableSchema = schema.getSchemaOf(file.getName());
+            dataTable = new KnownSchemaDataTable<>(this,
+                    tableSchema.orElseThrow(() -> new RuntimeException("Schema for client storage " + file.getName() + "is not provided!")), buffer);
+
+            return;
         }
 
         if (!policy.isSchemaEstimated())

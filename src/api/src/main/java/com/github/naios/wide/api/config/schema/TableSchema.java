@@ -16,6 +16,8 @@ public interface TableSchema
 {
     public String getName();
 
+    public SchemaPolicy getPolicy();
+
     public String getStructure();
 
     public ClientStorageFormat getFormat();
