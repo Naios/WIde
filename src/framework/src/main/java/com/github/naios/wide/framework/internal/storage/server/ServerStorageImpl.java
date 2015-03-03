@@ -9,7 +9,6 @@
 package com.github.naios.wide.framework.internal.storage.server;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,9 +70,9 @@ class BadKeyException extends ServerStorageException
 @SuppressWarnings("serial")
 class DatabaseConnectionException extends ServerStorageException
 {
-    public DatabaseConnectionException(final String msg)
+    public DatabaseConnectionException(final Throwable t)
     {
-        super(String.format("Something went wrong with the database! (%s)", msg));
+        super(String.format("Something went wrong with the database!"), t);
     }
 }
 
@@ -324,9 +323,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                 list.add((T) newStructureFromResult(result));
 
         }
-        catch (final SQLException e)
+        catch (final Throwable t)
         {
-            throw new DatabaseConnectionException(e.getMessage());
+            throw new DatabaseConnectionException(t);
         }
 
         return list;
@@ -414,7 +413,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                 .distinct()
                 .collect(Collectors.toMap(MappingMetaData::getName, metaData -> metaData));
 
-        final List<MappingMetaData> metaData = new ArrayList<>(providedSchema.getEntries().size());
+        final List<MappingMetaData> metaDataList = new ArrayList<>(providedSchema.getEntries().size());
         final Map<MappingMetaData, TypeToken<?>> types = new HashMap<>();
 
         try (final ResultSet result = database.get().execute("SHOW COLUMNS FROM " + tableName))
@@ -423,105 +422,115 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
             {
                 final String name = result.getString("Field");
                 final boolean isPrimaryKey = result.getString("Key").equals("PRI");
-                final String defaultValue = result.getString("Default");
 
+                final String defaultValue;
                 {
-                    final MappingMetaData data = providedData.get(name);
-                    if (Objects.nonNull(data))
-                    {
-                        // Complete info
-                        metaData.add(new AbstractMappingMetaData()
-                        {
-                            @Override
-                            public String getName()
-                            {
-                                return data.getName();
-                            }
-
-                            @Override
-                            public String getTarget()
-                            {
-                                return data.getTarget();
-                            }
-
-                            @Override
-                            public String getDescription()
-                            {
-                                return data.getDescription();
-                            }
-
-                            @Override
-                            public String getDefaultValue()
-                            {
-                                return data.getDefaultValue().isEmpty() ? defaultValue : data.getDefaultValue();
-                            };
-
-                            @Override
-                            public int getIndex()
-                            {
-                                return data.getIndex();
-                            }
-
-                            @Override
-                            public boolean isKey()
-                            {
-                                return data.isKey() ? true : isPrimaryKey;
-                            }
-
-                            @Override
-                            public String getAlias()
-                            {
-                                return data.getAlias();
-                            }
-                        });
-                        continue;
-                    }
+                    final String cache = result.getString("Default");
+                    if (cache == null || "null".equals(cache))
+                        defaultValue = "";
+                    else
+                        defaultValue = cache;
                 }
 
-                if (!providedSchema.getPolicy().hasPermissionToAddColumns())
+                final TypeToken<?> type = getJavaTypeOf(result.getString("Type"), isPrimaryKey);
+
+                final MappingMetaData finalMetaData;
+
+                final MappingMetaData data = providedData.get(name);
+                if (Objects.nonNull(data))
+                {
+                    // Complete info
+                    finalMetaData = new AbstractMappingMetaData()
+                    {
+                        @Override
+                        public String getName()
+                        {
+                            return data.getName();
+                        }
+
+                        @Override
+                        public String getTarget()
+                        {
+                            return data.getTarget();
+                        }
+
+                        @Override
+                        public String getDescription()
+                        {
+                            return data.getDescription();
+                        }
+
+                        @Override
+                        public String getDefaultValue()
+                        {
+                            return data.getDefaultValue().isEmpty() ? defaultValue : data.getDefaultValue();
+                        };
+
+                        @Override
+                        public int getIndex()
+                        {
+                            return data.getIndex();
+                        }
+
+                        @Override
+                        public boolean isKey()
+                        {
+                            return data.isKey() ? true : isPrimaryKey;
+                        }
+
+                        @Override
+                        public String getAlias()
+                        {
+                            return data.getAlias();
+                        }
+                    };
+                }
+                else if (providedSchema.getPolicy().hasPermissionToAddColumns())
+                {
+                    // Add column
+                    finalMetaData = new AbstractMappingMetaData()
+                    {
+                        @Override
+                        public String getName()
+                        {
+                            return name;
+                        }
+
+                        @Override
+                        public String getDescription()
+                        {
+                            return "Auto completed";
+                        }
+
+                        @Override
+                        public String getDefaultValue()
+                        {
+                            return defaultValue;
+                        };
+
+                        @Override
+                        public boolean isKey()
+                        {
+                            return isPrimaryKey;
+                        }
+                    };
+                }
+                else
                     continue;
 
-                final MappingMetaData data = new AbstractMappingMetaData()
-                {
-                    @Override
-                    public String getName()
-                    {
-                        return name;
-                    }
-
-                    @Override
-                    public String getDescription()
-                    {
-                        return "Auto completed";
-                    }
-
-                    @Override
-                    public String getDefaultValue()
-                    {
-                        return defaultValue;
-                    };
-
-                    @Override
-                    public boolean isKey()
-                    {
-                        return isPrimaryKey;
-                    }
-                };
-
-                final TypeToken<?> type = getJavaTypeOf(result.getString("Type"), isPrimaryKey);
-                types.put(data, type);
-                metaData.add(data);
+                metaDataList.add(finalMetaData);
+                types.put(finalMetaData, type);
             }
         }
-        catch (final SQLException e)
+        catch (final Throwable t)
         {
-            throw new DatabaseConnectionException(e.getMessage());
+            throw new DatabaseConnectionException(t);
         }
 
         // Get Fields of the table
         return new Pair<>(new TableSchema()
         {
-            private final List<MappingMetaData> entries = Collections.unmodifiableList(metaData);
+            private final List<MappingMetaData> entries = Collections.unmodifiableList(metaDataList);
 
             @Override
             public SchemaPolicy getPolicy()
@@ -570,21 +579,14 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         // FIXME Find a better way for this since ResultSet.getObject() is no option
         if (string.contains("bit"))
             return TOKEN_OF_BOOL;
-        else if (string.contains("bool"))
-            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
-        else if (string.contains("tinyint"))
-            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
-        else if (string.contains("smallint"))
-            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
-        else if (string.contains("mediumint"))
+        else if (string.contains("bool") || string.contains("tinyint")
+              || string.contains("smallint") || string.contains("mediumint"))
             return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
         else if (string.contains("int"))
             return TOKEN_OF_LONG;
         else if (string.contains("float"))
             return TOKEN_OF_FLOAT;
-        else if (string.contains("double"))
-            return TOKEN_OF_DOUBLE;
-        else if (string.contains("decimal"))
+        else if (string.contains("double") || string.contains("decimal"))
             return TOKEN_OF_DOUBLE;
         else
             return isPrimaryKey ? TOKEN_OF_STRING_KEY : TOKEN_OF_STRING;
