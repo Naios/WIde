@@ -30,6 +30,13 @@ public interface FrameworkService extends AliasFactory
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(String name);
 
     /**
+     *
+     * @param databaseId
+     * @return
+     */
+    public ChangeTracker requestChangeTracker(String databaseId);
+
+    /**
      * TODO
      * @param databaseId
      * @param name

@@ -165,6 +165,12 @@ public final class FrameworkServiceImpl implements FrameworkService
         }
     }
 
+    @Override
+    public ChangeTracker requestChangeTracker(final String databaseId)
+    {
+        return requestChangeTrackerImpl(databaseId);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(final String databaseId, final String name)
