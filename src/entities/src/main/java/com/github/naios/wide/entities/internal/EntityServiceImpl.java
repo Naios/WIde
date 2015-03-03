@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.felix.service.command.Descriptor;
 import org.osgi.framework.Bundle;
@@ -150,7 +151,7 @@ public class EntityServiceImpl implements EntityService
     {
         final int val = StringUtil.convertToInt(value);
         final Class<? extends Enum<?>> enumeration = requestEnumForName(name);
-        final List<? extends Enum<?>> flags = Flags.createFlagList(enumeration, val);
+        final Set<? extends Enum<?>> flags = Flags.flagSet(enumeration, val);
 
         final List<String> result = new ArrayList<>();
 

@@ -8,8 +8,10 @@ package com.github.naios.wide.api.util;
  */
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.google.common.collect.Sets;
 
 public final class Flags
 {
@@ -42,31 +44,24 @@ public final class Flags
         return mask &~ createFlag(flag);
     }
 
-    public static <T extends Enum<?>> List<T> createFlagList(final Class<T> type, final int mask)
+    public static <T extends Enum<?>> Set<T> flagSet(final Class<T> type, final int mask)
     {
-        final List<T> list = new LinkedList<>();
+        final Set<T> set = new TreeSet<>();
         for (final T flag : type.getEnumConstants())
             if (hasFlag(flag, mask))
-                list.add(flag);
+                set.add(flag);
 
-        return list;
+        return set;
     }
 
     public static <T extends Enum<?>> void calculateDifferenceTo(final Class<T> enumClass,
             final int oldMask, final int newMask,
             final Collection<T> add, final Collection<T> remove)
     {
-        final List<T> currentFlags = Flags.createFlagList(enumClass, newMask);
-        final List<T> oldFlags = Flags.createFlagList(enumClass, oldMask);
+        final Set<T> currentFlags = Flags.flagSet(enumClass, newMask);
+        final Set<T> oldFlags = Flags.flagSet(enumClass, oldMask);
 
-        currentFlags
-            .stream()
-            .filter(entry-> !oldFlags.contains(entry))
-            .forEach(entry -> add.add(entry));
-
-        oldFlags
-            .stream()
-            .filter(entry-> !currentFlags.contains(entry))
-            .forEach(entry -> remove.add(entry));
+        add.addAll(Sets.difference(currentFlags, oldFlags));
+        remove.addAll(Sets.difference(oldFlags, currentFlags));
     }
 }

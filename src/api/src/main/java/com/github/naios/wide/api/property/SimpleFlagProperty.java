@@ -29,7 +29,7 @@ public class SimpleFlagProperty<T extends Enum<T>>
 
     private ObservableList<T> toObservableList()
     {
-        return FXCollections.observableArrayList(Flags.createFlagList(enumClass, get()));
+        return FXCollections.observableArrayList(Flags.flagSet(enumClass, get()));
     }
 
     private final LazyInitializer<ListProperty<T>> flagList = new LazyInitializer<>(() ->

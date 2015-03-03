@@ -8,8 +8,12 @@
 
 package com.github.naios.wide.config.internal;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +68,7 @@ public final class ConfigServiceImpl implements ConfigService
 
     private final String SAVER_THREAD_NAME = "WIde Config saver Thread";
 
+    // FIXME
     private final Thread saverThread = new Thread()
     {
         {
@@ -107,6 +112,27 @@ public final class ConfigServiceImpl implements ConfigService
     public static EntityService getEntityService()
     {
         return entityService;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getExternalConfig(final String path, final Class<T> type, final Class<?>... interfaces)
+    {
+        return ((Optional<T>) ConfigHolder.getReference(path)).orElseGet(() ->
+        {
+            final T obj = new ConfigHolder<T>(path, type).get(path).get();
+            return (T)Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, new InvocationHandler()
+            {
+                @Override
+                public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable
+                {
+                    if (method.getName().equals("toString"))
+                        return ConfigHolder.toJsonExcludeDefaultValues(obj);
+
+                    return method.invoke(obj, args);
+                }
+            });
+        });
     }
 
     /**

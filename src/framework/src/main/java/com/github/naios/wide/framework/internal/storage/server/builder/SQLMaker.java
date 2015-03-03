@@ -245,9 +245,9 @@ public final class SQLMaker
                     return String.valueOf(Flags.DEFAULT_VALUE);
                 else
                 {
-                    final List<? extends Enum<?>> currentFlags = Flags.createFlagList(flagProperty.getEnumClass(), oldMask);
+                    final Set<? extends Enum<?>> currentFlags = Flags.flagSet(flagProperty.getEnumClass(), oldMask);
                     // If Values are not different
-                    return concatFlags((List)currentFlags);
+                    return concatFlags((Collection)currentFlags);
                 }
             }
         }
@@ -272,7 +272,7 @@ public final class SQLMaker
     /**
      * Helper to concat a list of flags as variables
      */
-    private String concatFlags(final List<Enum<?>> flags)
+    private String concatFlags(final Collection<Enum<?>> flags)
     {
         return flags
                 .stream()

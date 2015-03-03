@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,14 +61,12 @@ class Reference
         this.object = object;
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    public void addReference(final ConfigHolder reference)
+    public void addReference(final ConfigHolder<?> reference)
     {
         references.add(reference);
     }
 
-    @SuppressWarnings({ "rawtypes" })
-    public boolean removeReference(final ConfigHolder reference)
+    public boolean removeReference(final ConfigHolder<?> reference)
     {
         references.remove(reference);
         return !references.isEmpty();
@@ -158,17 +157,22 @@ public class ConfigHolder<T>
 
     private final Class<?> type;
 
-    private ObjectProperty<T> config =
-            new SimpleObjectProperty<>(null);
-
     private final String defaultConfig;
 
     private String path = null;
+
+    private ObjectProperty<T> config =
+            new SimpleObjectProperty<>(null);
 
     public ConfigHolder(final String defaultConfig, final Class<?> type)
     {
         this.defaultConfig = defaultConfig;
         this.type = type;
+    }
+
+    public static Optional<Object> getReference(final String path)
+    {
+        return Optional.ofNullable(REFERENCES.get(path)).map(ref -> ref.getObject());
     }
 
     /**
