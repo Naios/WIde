@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyProperty;
@@ -42,6 +43,7 @@ import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.util.FormatterWrapper;
+import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
 import com.github.naios.wide.entities.enums.UnitClass;
@@ -71,24 +73,22 @@ public final class FrameworkServiceImpl implements FrameworkService
 
     private static FrameworkServiceImpl INSTANCE;
 
-    private final Cache<String, ClientStorage<?>> clientStorages =
-            CacheBuilder
-                .newBuilder()
-                .weakValues()
-                .build(/*path -> new ClientStorageSelector<?>(path, ClientStoragePolicy.DEFAULT_POLICY).select()*/);
 
-    private final Cache<String, ServerStorage<?>> serverStorages =
+
+    private final Cache<String, ClientStorage<? extends ClientStorageStructure>> clientStorages =
             CacheBuilder
                 .newBuilder()
-                .weakValues()
-                .build(/*new CacheLoader<Pair<String, String>, ServerStorage<?>>()
-                {
-                    @Override
-                    public ServerStorage<?> load(final Pair<String, String> idAndName) throws Exception
-                    {
-                        return new ServerStorageImpl<>(databaseId, tableName, changeTracker);
-                    }
-                }*/);
+                .build();
+
+    private final Cache<String, ChangeTrackerImpl> changeTracker =
+            CacheBuilder
+                .newBuilder()
+                .build();
+
+    private final Cache<Pair<String, String>, ServerStorage<? extends ServerStorageStructure>> serverStorages =
+            CacheBuilder
+                .newBuilder()
+                .build();
 
     public void start()
     {
@@ -139,17 +139,44 @@ public final class FrameworkServiceImpl implements FrameworkService
         return INSTANCE;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(final String name)
     {
-        return /*TODO*/null/*clientStorages.get(name)*/;
+        try
+        {
+            return (ClientStorage<T>) clientStorages.get(name, () -> ClientStorageSelector.<T>select(name, ClientStoragePolicy.DEFAULT_POLICY));
+        }
+        catch (final ExecutionException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
+    private ChangeTrackerImpl requestChangeTrackerImpl(final String databaseId)
+    {
+        try
+        {
+            return changeTracker.get(databaseId, () -> new ChangeTrackerImpl());
+        }
+        catch (final ExecutionException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(final String databaseId, final String name)
     {
-        // TODO @FrameworkIntegration
-        return null;
+        try
+        {
+            return (ServerStorage<T>) serverStorages.get(new Pair<>(databaseId, name), () -> new ServerStorageImpl<T>(databaseId, name, requestChangeTrackerImpl(databaseId)));
+        }
+        catch (final ExecutionException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -177,7 +204,7 @@ public final class FrameworkServiceImpl implements FrameworkService
 
         final ClientStoragePolicy p = ClientStoragePolicy.values()[policy];
 
-        return new ClientStorageSelector<>(name, p).select();
+        return ClientStorageSelector.select(name, p);
     }
 
     @Descriptor("Returns any .dbc, .db2 or .adb storage (located in the data dir).")
@@ -233,11 +260,11 @@ public final class FrameworkServiceImpl implements FrameworkService
 
             public void testMe()
             {
-                final ClientStorage<MapEntry> me = new ClientStorageSelector<MapEntry>("Map.dbc", ClientStoragePolicy.POLICY_SCHEMA_ONLY).select();
+                final ClientStorage<MapEntry> me = requestClientStorage("Map.dbc");
                 for (int i = 0; i < 15; ++i)
                     me.getEntry(i).ifPresent(e -> System.out.println(String.format("DEBUG: %s", e)));
 
-                final ServerStorage<CreatureTemplate> table = new ServerStorageImpl<>("world", "creature_template", new ChangeTrackerImpl());
+                final ServerStorage<CreatureTemplate> table = requestServerStorage("world", "creature_template");
 
                 System.out.println(String.format("DEBUG: %s", table.request(ServerStorageKeys.ofCreatureTemplate(41378))));
 

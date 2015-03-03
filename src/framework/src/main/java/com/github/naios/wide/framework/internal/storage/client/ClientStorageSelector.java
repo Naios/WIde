@@ -15,42 +15,26 @@ import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class ClientStorageSelector<T extends ClientStorageStructure>
 {
-    private final String path;
-
-    private final ClientStoragePolicy policy;
-
-    public ClientStorageSelector(final String path)
-    {
-        this (path, ClientStoragePolicy.DEFAULT_POLICY);
-    }
-
-    public ClientStorageSelector(final String name,
-            final ClientStoragePolicy policy)
-    {
-        this.path = getPathForStorage(name);
-
-        this.policy = policy;
-    }
-
     private static String getPathForStorage(final String path)
     {
         return FrameworkServiceImpl.getConfigService().getActiveEnviroment()
                 .getClientStorageConfig().path().get() + "/" + path;
     }
 
-    public ClientStorageImpl<T> select() throws ClientStorageException
+    public static <T extends ClientStorageStructure> ClientStorageImpl<T> select(final String name,
+            final ClientStoragePolicy policy) throws ClientStorageException
     {
         // TODO improve this: maybe there is an easier way to get the extension
-        final String extension = path.substring(path.lastIndexOf("."), path.length());
+        final String extension = name.substring(name.lastIndexOf("."), name.length());
 
         switch (extension)
         {
             case ADBStorage.EXTENSION:
-                return new ADBStorage<>(path, policy);
+                return new ADBStorage<>(getPathForStorage(name), policy);
             case DB2Storage.EXTENSION:
-                return new DB2Storage<>(path, policy);
+                return new DB2Storage<>(getPathForStorage(name), policy);
             case DBCStorage.EXTENSION:
-                return new DBCStorage<>(path, policy);
+                return new DBCStorage<>(getPathForStorage(name), policy);
             default:
                 return null;
         }
