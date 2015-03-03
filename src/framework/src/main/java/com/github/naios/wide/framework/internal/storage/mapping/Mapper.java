@@ -10,9 +10,11 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 
-public interface Mapper<FROM, TO extends Mapping<BASE>, BASE>
+public interface Mapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
 {
     public TO map(FROM from);
 

@@ -11,11 +11,14 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.util.Objects;
 import java.util.Optional;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.google.common.reflect.TypeToken;
 
-public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPTED_TYPE extends BASE, PRIMITIVE>
+public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>, ADAPTED_TYPE extends BASE, PRIMITIVE>
     implements MappingAdapterBase<FROM, TO, BASE, ADAPTED_TYPE, PRIMITIVE>
 {
     private TypeToken<ADAPTED_TYPE> type;
@@ -48,7 +51,7 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
         return primitive;
     }
 
-    protected abstract PRIMITIVE getDefault();
+    protected abstract PRIMITIVE getDefault(MappingMetaData metaData);
 
     protected abstract PRIMITIVE getMappedValue(FROM from, TO to, MappingPlan<BASE> plan, int index, MappingMetaData metaData);
 
@@ -82,6 +85,6 @@ public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE, ADAPT
     @Override
     public boolean setDefault(final ADAPTED_TYPE me)
     {
-        return set(me, getDefault());
+        return set(me, getDefault(MappingBeans.getMetaData(me)));
     }
 }

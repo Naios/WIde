@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
-public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE> implements Mapper<FROM, TO, BASE>
+public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> implements Mapper<FROM, TO, BASE>
 {
     private final MappingAdapterHolder<FROM, TO, BASE> adapterHolder;
 

@@ -23,7 +23,7 @@ public abstract class ServerEnumMetaDataMappingAdapter<T extends ReadOnlyPropert
         super(type, primitive);
     }
 
-    protected <T extends Enum<?>> Class<T> getEnum(final MappingMetaData metaData)
+    protected <E extends Enum<?>> Class<E> getEnum(final MappingMetaData metaData)
     {
         return FrameworkServiceImpl.getEntityService().requestEnumForName(metaData.getAlias());
     }

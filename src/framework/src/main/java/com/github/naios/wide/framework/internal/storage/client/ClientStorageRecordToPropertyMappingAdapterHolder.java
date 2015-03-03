@@ -44,7 +44,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
             .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyStringProperty, String>(ReadOnlyStringProperty.class, String.class)
                 {
                     @Override
-                    protected String getDefault()
+                    protected String getDefault(final MappingMetaData metaData)
                     {
                         return "";
                     }
@@ -69,14 +69,14 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<String> value)
                     {
-                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 })
               // FloatProperty
                 .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyFloatProperty, Float>(ReadOnlyFloatProperty.class, Float.class)
                 {
                     @Override
-                    protected Float getDefault()
+                    protected Float getDefault(final MappingMetaData metaData)
                     {
                         return 0.f;
                     }
@@ -101,14 +101,14 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Float> value)
                     {
-                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 })
              // Long Property
              .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyLongProperty, Long>(ReadOnlyLongProperty.class, Long.class)
                 {
                     @Override
-                    protected Long getDefault()
+                    protected Long getDefault(final MappingMetaData metaData)
                     {
                         return 0L;
                     }
@@ -133,14 +133,14 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Long> value)
                     {
-                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 })
             // ReadOnlyIntegerProperty
             .registerAdapter(new ClientMetaDataMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
                 {
                     @Override
-                    protected Integer getDefault()
+                    protected Integer getDefault(final MappingMetaData metaData)
                     {
                         return 0;
                     }
@@ -165,14 +165,14 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 })
              // EnumProperty
              .registerAdapter(new ClientEnumMetaDataMappingAdapter<ReadOnlyEnumProperty<? extends Enum<?>>, Enum<?>>(ReadOnlyEnumProperty.class, Enum.class)
                 {
                     @Override
-                    protected Enum<?> getDefault()
+                    protected Enum<?> getDefault(final MappingMetaData metaData)
                     {
                         return null;
                     }
@@ -220,7 +220,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
               .registerAdapter(new ClientEnumMetaDataMappingAdapter<ReadOnlyFlagProperty<? extends Enum<?>>, Integer>(ReadOnlyFlagProperty.class, Integer.class)
                 {
                     @Override
-                    protected Integer getDefault()
+                    protected Integer getDefault(final MappingMetaData metaData)
                     {
                         return 0;
                     }
@@ -247,7 +247,7 @@ public class ClientStorageRecordToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 });
 

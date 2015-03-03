@@ -11,6 +11,8 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
@@ -23,7 +25,7 @@ class MissingMappingAdapterException extends RuntimeException
    }
 }
 
-public class MappingAdapterHolder<FROM, TO extends Mapping<BASE>, BASE>
+public class MappingAdapterHolder<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
 {
     private final Map<TypeToken<? extends BASE>,  MappingAdapterBridge<FROM, TO, BASE>> adapter =
             new HashMap<>();

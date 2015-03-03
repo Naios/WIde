@@ -10,6 +10,8 @@ package com.github.naios.wide.framework.internal.storage.mapping;
 
 import java.util.Optional;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.base.Equivalence.Wrapper;
@@ -18,7 +20,7 @@ import com.google.common.reflect.TypeToken;
 /**
  * Helps us to reduce raw class hacks to a minimum
  */
-public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE>
+public class MappingAdapterBridge<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
     implements MappingAdapterBase<FROM, TO, BASE, BASE, Object>
 {
     @SuppressWarnings("rawtypes")

@@ -58,9 +58,9 @@ public class SQLToPropertyMappingAdapterHolder
             .registerAdapter(new ServerMetaDataMappingAdapter<StringProperty, String>(StringProperty.class, String.class)
                 {
                     @Override
-                    protected String getDefault()
+                    protected String getDefault(final MappingMetaData metaData)
                     {
-                        return "";
+                        return metaData.getDefaultValue();
                     }
 
                     @Override
@@ -75,7 +75,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -84,7 +84,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<String> value)
                     {
-                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleStringProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -104,9 +104,22 @@ public class SQLToPropertyMappingAdapterHolder
                 .registerAdapter(new ServerMetaDataMappingAdapter<FloatProperty, Float>(FloatProperty.class, Float.class)
                 {
                     @Override
-                    protected Float getDefault()
+                    protected Float getDefault(final MappingMetaData metaData)
                     {
-                        return 0.f;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0.f;
+                        else
+                        {
+                            try
+                            {
+                                return Float.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0.f;
+                            }
+                        }
                     }
 
                     @Override
@@ -121,7 +134,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -130,7 +143,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Float> value)
                     {
-                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleFloatProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -150,9 +163,22 @@ public class SQLToPropertyMappingAdapterHolder
             .registerAdapter(new ServerMetaDataMappingAdapter<DoubleProperty, Double>(DoubleProperty.class, Double.class)
                 {
                     @Override
-                    protected Double getDefault()
+                    protected Double getDefault(final MappingMetaData metaData)
                     {
-                        return 0.d;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0.d;
+                        else
+                        {
+                            try
+                            {
+                                return Double.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0.d;
+                            }
+                        }
                     }
 
                     @Override
@@ -167,7 +193,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -176,7 +202,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Double> value)
                     {
-                        return new SimpleDoubleProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleDoubleProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -196,9 +222,22 @@ public class SQLToPropertyMappingAdapterHolder
             .registerAdapter(new ServerMetaDataMappingAdapter<BooleanProperty, Boolean>(BooleanProperty.class, Boolean.class)
                 {
                     @Override
-                    protected Boolean getDefault()
+                    protected Boolean getDefault(final MappingMetaData metaData)
                     {
-                        return false;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return false;
+                        else
+                        {
+                            try
+                            {
+                                return Boolean.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return false;
+                            }
+                        }
                     }
 
                     @Override
@@ -213,7 +252,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -222,7 +261,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Boolean> value)
                     {
-                        return new SimpleBooleanProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleBooleanProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -242,9 +281,22 @@ public class SQLToPropertyMappingAdapterHolder
             .registerAdapter(new ServerMetaDataMappingAdapter<IntegerProperty, Integer>(IntegerProperty.class, Integer.class)
                 {
                     @Override
-                    protected Integer getDefault()
+                    protected Integer getDefault(final MappingMetaData metaData)
                     {
-                        return 0;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0;
+                        else
+                        {
+                            try
+                            {
+                                return Integer.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0;
+                            }
+                        }
                     }
 
                     @Override
@@ -259,7 +311,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -268,7 +320,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return new SimpleIntegerProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleIntegerProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -288,9 +340,22 @@ public class SQLToPropertyMappingAdapterHolder
             .registerAdapter(new ServerMetaDataMappingAdapter<ReadOnlyIntegerProperty, Integer>(ReadOnlyIntegerProperty.class, Integer.class)
                 {
                     @Override
-                    protected Integer getDefault()
+                    protected Integer getDefault(final MappingMetaData metaData)
                     {
-                        return 0;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0;
+                        else
+                        {
+                            try
+                            {
+                                return Integer.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0;
+                            }
+                        }
                     }
 
                     @Override
@@ -305,7 +370,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -314,7 +379,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new ReadOnlyIntegerWrapper(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
 
                     @Override
@@ -327,9 +392,22 @@ public class SQLToPropertyMappingAdapterHolder
              .registerAdapter(new ServerMetaDataMappingAdapter<LongProperty, Long>(LongProperty.class, Long.class)
                 {
                     @Override
-                    protected Long getDefault()
+                    protected Long getDefault(final MappingMetaData metaData)
                     {
-                        return 0L;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0L;
+                        else
+                        {
+                            try
+                            {
+                                return Long.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0L;
+                            }
+                        }
                     }
 
                     @Override
@@ -350,7 +428,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -359,21 +437,36 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Long> value)
                     {
-                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleLongProperty(createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 })
              // EnumProperty
              .registerAdapter(new ServerEnumMetaDataMappingAdapter<EnumProperty<? extends Enum<?>>, Enum<?>>(EnumProperty.class, Enum.class)
                 {
                     @Override
-                    protected Enum<?> getDefault()
+                    protected Enum<?> getDefault(final MappingMetaData metaData)
                     {
-                        return null;
+                        return getDefaultForEnum(metaData);
                     }
 
                     private Enum<?> getDefaultForEnum(final MappingMetaData metaData)
                     {
-                        return getEnum(metaData).getEnumConstants()[0];
+                        int ordinal;
+                        if (metaData.getDefaultValue().isEmpty())
+                            ordinal = 0;
+                        else
+                        {
+                            try
+                            {
+                                ordinal = Integer.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                ordinal = 0;
+                            }
+                        }
+                        return getEnum(metaData).getEnumConstants()[ordinal];
                     }
 
                     @Override
@@ -391,7 +484,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
 
                         if (ordinal >= type.getEnumConstants().length)
@@ -442,9 +535,22 @@ public class SQLToPropertyMappingAdapterHolder
               .registerAdapter(new ServerEnumMetaDataMappingAdapter<FlagProperty<? extends Enum<?>>, Integer>(FlagProperty.class, Integer.class)
                 {
                     @Override
-                    protected Integer getDefault()
+                    protected Integer getDefault(final MappingMetaData metaData)
                     {
-                        return 0;
+                        if (metaData.getDefaultValue().isEmpty())
+                            return 0;
+                        else
+                        {
+                            try
+                            {
+                                return Integer.valueOf(metaData.getDefaultValue());
+                            }
+                            catch (final Throwable t)
+                            {
+                                t.printStackTrace();
+                                return 0;
+                            }
+                        }
                     }
 
                     @Override
@@ -459,7 +565,7 @@ public class SQLToPropertyMappingAdapterHolder
                         }
                         catch (final SQLException e)
                         {
-                            return getDefault();
+                            return getDefault(metaData);
                         }
                     }
 
@@ -476,7 +582,7 @@ public class SQLToPropertyMappingAdapterHolder
                             final MappingPlan<ReadOnlyProperty<?>> plan, final int index,
                             final MappingMetaData metaData, final Optional<Integer> value)
                     {
-                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault()));
+                        return new SimpleFlagProperty(getEnum(metaData), createBean(to, metaData), metaData.getName(), value.orElse(getDefault(metaData)));
                     }
                 });
 
