@@ -110,7 +110,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         STATEMENT_SELECT_ROW
     }
 
-    private final Cache<Integer /*hash*/, ServerStorageStructure /*entity*/> cache =
+    private final Cache<Integer /*hash*/, T /*entity*/> cache =
             CacheBuilder.newBuilder().weakValues().build();
 
     private final ObjectProperty<Database> database =
@@ -296,7 +296,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         if (result != null)
             return Optional.of((T) result);
 
-        return Optional.ofNullable((T) newStructureFromResult(createResultSetFromKey(key)));
+        return Optional.ofNullable(newStructureFromResult(createResultSetFromKey(key)));
     }
 
     @Override
@@ -320,7 +320,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         try (ResultSet result = database.get().execute(selectLowPart + where))
         {
             while (result.next())
-                list.add((T) newStructureFromResult(result));
+                list.add(newStructureFromResult(result));
 
         }
         catch (final Throwable t)
@@ -346,7 +346,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return result;
     }
 
-    private ServerStorageStructure newStructureFromResult(final ResultSet result)
+    private T newStructureFromResult(final ResultSet result)
     {
         try
         {
@@ -366,21 +366,31 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return initStructure(mapper.map(result), false);
     }
 
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public T create(final ServerStorageKey<T> key)
     {
-        final ServerStorageStructure record = mapper.createEmpty(key.get());
-        return (T) initStructure(record, true);
+        final ServerStorageStructure structure = mapper.createEmpty(key.get());
+
+        final T record;
+        try
+        {
+            record = (T)structure;
+        }
+        catch (final Throwable t)
+        {
+            throw new RuntimeException(String.format("Could not cast class %s to your parameter! Check config!", structure.getClass()), t);
+        }
+        return initStructure(record, true);
     }
 
     /**
      * @param structure
      * @return The record in cache if exists or the record itself and cache it.
      */
-    private ServerStorageStructure initStructure(final ServerStorageStructure structure, final boolean created)
+    private T initStructure(final T structure, final boolean created)
     {
-        final ServerStorageStructure inCache = cache.getIfPresent(structure.hashCode());
+        final T inCache = cache.getIfPresent(structure.hashCode());
         if (inCache != null)
             return inCache;
 
@@ -595,7 +605,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     @Override
     public String toString()
     {
-        final Map<Integer, ServerStorageStructure> map = cache.asMap();
+        final Map<Integer, T> map = cache.asMap();
         return Arrays.toString(map.entrySet().toArray()).replace("],", "],\n");
     }
 
