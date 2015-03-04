@@ -284,7 +284,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Optional<T> request(final ServerStorageKey<T> key)
     {
         checkOpen();
@@ -292,9 +291,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         if (key.get().size() != mapper.getPlan().getNumberOfKeys())
             throw new BadKeyException(key.get().size(), mapper.getPlan().getNumberOfKeys());
 
-        final ServerStorageStructure result = cache.getIfPresent(key.hashCode());
+        final T result = cache.getIfPresent(key.hashCode());
         if (result != null)
-            return Optional.of((T) result);
+            return Optional.of(result);
 
         return Optional.ofNullable(newStructureFromResult(createResultSetFromKey(key)));
     }
@@ -310,7 +309,6 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<T> requestWhere(final String where)
     {
         checkOpen();
