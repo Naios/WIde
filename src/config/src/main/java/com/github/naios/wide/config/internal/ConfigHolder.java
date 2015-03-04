@@ -233,7 +233,7 @@ public class ConfigHolder<T>
                 catch (final Throwable tt)
                 {
                     tt.printStackTrace();
-                    throw new Error(tt);
+                    throw new RuntimeException(tt);
                 }
             }
 

@@ -469,6 +469,12 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
                         }
 
                         @Override
+                        public String getCategory()
+                        {
+                            return data.getCategory();
+                        };
+
+                        @Override
                         public String getDefaultValue()
                         {
                             return data.getDefaultValue().isEmpty() ? defaultValue : data.getDefaultValue();

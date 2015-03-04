@@ -12,7 +12,7 @@ import com.github.naios.wide.api.config.schema.AbstractMappingMetaData;
 
 public class MappingMetaDataImpl extends AbstractMappingMetaData
 {
-    private String name = "", target = "", description = "";
+    private String name = "", target = "", description = "", category = "";
 
     private int index;
 
@@ -38,6 +38,12 @@ public class MappingMetaDataImpl extends AbstractMappingMetaData
     public String getDescription()
     {
         return description;
+    }
+
+    @Override
+    public String getCategory()
+    {
+        return category;
     }
 
     @Override

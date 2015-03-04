@@ -10,20 +10,33 @@
         {
           "name": "entry",
           "description": "creature entry (primary key).",
+          "category": "key",
+          "key": true,
           "alias": "CreatureName"
         },
         {
           "name": "KillCredit1",
           "target": "kill_credit1",
+          "category": "kill credits",
           "alias": "CreatureName"
         },
         {
+          "name": "name",
+          "category": "names"
+        },
+        {
           "name": "unit_flags",
+          "category": "flags",
           "alias": "UnitFlags"
         },
         {
           "name": "unit_class",
+          "category": "flags",
           "alias": "UnitClass"
+        },
+        {
+          "name": "VerifiedBuild",
+          "defaultValue": "15995"
         }
       ]
     }

@@ -22,6 +22,11 @@ public interface MappingMetaData
         return "";
     }
 
+    public default String getCategory()
+    {
+        return "";
+    }
+
     public default String getDefaultValue()
     {
         return "";
