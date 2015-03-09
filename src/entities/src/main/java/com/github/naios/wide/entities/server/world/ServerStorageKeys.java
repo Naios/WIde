@@ -19,4 +19,9 @@ public final class ServerStorageKeys
     {
         return new ServerStorageKeyImpl<>(entry);
     }
+
+    public static ServerStorageKey<QuestTemplate> ofQuestTemplate(final int id)
+    {
+        return new ServerStorageKeyImpl<>(id);
+    }
 }

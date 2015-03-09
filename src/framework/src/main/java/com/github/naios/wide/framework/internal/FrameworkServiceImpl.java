@@ -46,9 +46,11 @@ import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
+import com.github.naios.wide.entities.enums.Classes;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.entities.server.world.QuestTemplate;
 import com.github.naios.wide.entities.server.world.ServerStorageKeys;
 import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
@@ -72,8 +74,6 @@ public final class FrameworkServiceImpl implements FrameworkService
     private final AliasStorage aliases = new AliasStorage();
 
     private static FrameworkServiceImpl INSTANCE;
-
-
 
     private final Cache<String, ClientStorage<? extends ClientStorageStructure>> clientStorages =
             CacheBuilder
@@ -256,6 +256,49 @@ public final class FrameworkServiceImpl implements FrameworkService
             {
                 try
                 {
+                    System.out.println("\nShort Example (Quest Template):\n");
+                    final ServerStorage<QuestTemplate> questTemplate = requestServerStorage("world", "quest_template");
+                    final QuestTemplate riseOfTheSilithid = questTemplate.request(ServerStorageKeys.ofQuestTemplate(32)).get();
+
+                    System.out.println("\n (Creature Template):\n");
+
+                    questTemplate.getChangeTracker().setScope("q1", "Edit quest Rise of the Silithid\nonly mages allowed\nand set prev and next quest");
+                    riseOfTheSilithid.prevQuestId().set(28);
+                    riseOfTheSilithid.nextQuestId().set(32);
+
+                    riseOfTheSilithid.requiredClasses().reset();
+                    riseOfTheSilithid.requiredClasses().addFlag(Classes.CLASS_MAGE);
+
+                    questTemplate.getChangeTracker().setScope("q2", "Add a new quest");
+                    final QuestTemplate newQuest = questTemplate.create(ServerStorageKeys.ofQuestTemplate(3000000));
+                    newQuest.title().set("hey im new here, complete me please!");
+
+                    // Receive query
+                    System.out.println(createSQLBuilder(questTemplate.getChangeTracker()).toString());
+                    System.out.println("\n");
+
+                    // -------
+
+                    System.out.println("\nShort Example (Creature Template):\n");
+                    final ServerStorage<CreatureTemplate> creatureTemplate = requestServerStorage("world", "creature_template");
+                    final CreatureTemplate maloriak = creatureTemplate.request(ServerStorageKeys.ofCreatureTemplate(41378)).get();
+
+                    creatureTemplate.getChangeTracker().setScope("1", "Some flag changes \nand comment tests");
+                    maloriak.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
+                    maloriak.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
+
+                    creatureTemplate.getChangeTracker().setScope("2", "Set the name");
+                    maloriak.name().set("hey im a test npc");
+
+                    creatureTemplate.getChangeTracker().setScope("3", "Make npc");
+                    final CreatureTemplate newNpc = creatureTemplate.create(ServerStorageKeys.ofCreatureTemplate(3000000));
+                    newNpc.name().set("hey im new here!");
+
+                    // Receive query
+                    System.out.println(createSQLBuilder(creatureTemplate.getChangeTracker()).toString());
+
+                    System.out.println("\n");
+
                     testMe();
                 }
                 catch (final Throwable e)

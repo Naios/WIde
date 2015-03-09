@@ -51,6 +51,18 @@
         "0": "None"
       }
     },
+    "QuestName": {
+      "type": "SERVER",
+      "database": "world",
+      "target": "quest_template",
+      "entryColumn": "Id",
+      "nameColumn": "Title",
+      "prefix": "QUEST",
+      "failPrefix": "unk %s",
+      "custom": {
+        "0": "None"
+      }
+    },
     "MapName": {
       "type": "CLIENT",
       "target": "Map.dbc",
