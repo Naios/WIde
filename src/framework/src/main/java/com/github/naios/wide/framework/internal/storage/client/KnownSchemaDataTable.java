@@ -53,7 +53,7 @@ public class KnownSchemaDataTable<T extends ClientStorageStructure>
         }
 
         final Map<Integer, MappingMetaData> metaDataOfIndex = new HashMap<>();
-        mapper.getPlan().getMetadata().forEach(data -> metaDataOfIndex.put(data.getIndex(), data));
+        mapper.getPlan().getMetaData().forEach(data -> metaDataOfIndex.put(data.getIndex(), data));
 
         names = new ArrayList<>(getFormat().size());
         description = new ArrayList<>(getFormat().size());

@@ -80,6 +80,14 @@ The Apache Felix GOGO shell also [supports advanced structures like lists, varia
 
     each [0x7 1738 27] { flags UnitFlags $it }
 
+Usage
+----------
+Have a look at the code pieced:
+
+* [CreatureTemplate modification](https://gist.github.com/Naios/5cd340dab3052d327feb)
+
+* [QuestTemplate modification](https://gist.github.com/Naios/945eb609a3d44924bc93)
+
 Dependencies
 --------------
 Dependencies are managed automatically through the maven build system.

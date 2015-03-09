@@ -155,6 +155,12 @@ public class SimpleFlagProperty<T extends Enum<T>>
     }
 
     @Override
+    public void reset()
+    {
+        set(Flags.DEFAULT_VALUE);
+    }
+
+    @Override
     public String toString()
     {
         final Object bean = getBean();

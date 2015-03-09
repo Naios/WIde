@@ -12,6 +12,8 @@ import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 
+import com.github.naios.wide.api.config.schema.MappingMetaData;
+
 public interface ServerStorage<T extends ServerStorageStructure>
 {
     public String getTableName();
@@ -19,6 +21,10 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public String getDatabaseId();
 
     public ReadOnlyBooleanProperty alive();
+
+    public List<MappingMetaData> getKeysMetaData();
+
+    public List<MappingMetaData> getMetaData();
 
     public Optional<T> request(ServerStorageKey<T> key);
 
@@ -29,10 +35,4 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public T create(ServerStorageKey<T> key);
 
     public ChangeTracker getChangeTracker();
-
-    @Override
-    public int hashCode();
-
-    @Override
-    public boolean equals(final Object obj);
 }

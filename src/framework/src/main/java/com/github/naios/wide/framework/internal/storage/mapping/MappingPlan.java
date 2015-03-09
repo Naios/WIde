@@ -22,7 +22,7 @@ public interface MappingPlan<BASE>
 
     public int getNumberOfKeys();
 
-    public List<MappingMetaData> getMetadata();
+    public List<MappingMetaData> getMetaData();
 
     public String getNameOfOrdinal(final int ordinal);
 

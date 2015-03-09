@@ -16,4 +16,6 @@ public interface FlagProperty<T extends Enum<T>>
     public void addFlag(final T flag);
 
     public void removeFlag(final T flag);
+
+    public void reset();
 }

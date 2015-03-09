@@ -129,6 +129,8 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private final ChangeTrackerImpl changeTracker;
 
+    private final String statementObject;
+
     public ServerStorageImpl(final String databaseId, final String tableName, final ChangeTrackerImpl changeTracker) throws ServerStorageException
     {
         this.databaseId = databaseId;
@@ -200,6 +202,8 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         mapper = new JsonMapper<>(schema, SQLToPropertyMappingAdapterHolder.<T>get(),
                 Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class, typeReceiver);
 
+        statementObject = tableName + PreparedStatements.STATEMENT_SELECT_ROW.toString();
+
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
 
@@ -258,7 +262,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     {
         return StringUtil.fillWithSpaces(
                 "SELECT",
-                mapper.getPlan().getMetadata()
+                mapper.getPlan().getMetaData()
                     .stream()
                     .map(MappingMetaData::getName).collect(Collectors.joining(", ")),
                 "FROM", tableName, "WHERE ");
@@ -274,13 +278,25 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         // FIXME this is registered multiple times
         try
         {
-            database.get().createPreparedStatement(PreparedStatements.STATEMENT_SELECT_ROW, statementFormat);
+            database.get().createPreparedStatement(statementObject, statementFormat);
             alive.set(true);
         }
         catch (final Throwable t)
         {
             t.printStackTrace();
         }
+    }
+
+    @Override
+    public List<MappingMetaData> getKeysMetaData()
+    {
+        return mapper.getPlan().getKeys();
+    }
+
+    @Override
+    public List<MappingMetaData> getMetaData()
+    {
+        return mapper.getPlan().getMetaData();
     }
 
     @Override
@@ -334,7 +350,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         final ResultSet result;
         try
         {
-            result = database.get().preparedExecute(PreparedStatements.STATEMENT_SELECT_ROW, key.get().toArray());
+            result = database.get().preparedExecute(statementObject, key.get().toArray());
         }
         catch (final Throwable e)
         {
@@ -364,22 +380,10 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         return initStructure(mapper.map(result), false);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public T create(final ServerStorageKey<T> key)
     {
-        final ServerStorageStructure structure = mapper.createEmpty(key.get());
-
-        final T record;
-        try
-        {
-            record = (T)structure;
-        }
-        catch (final Throwable t)
-        {
-            throw new RuntimeException(String.format("Could not cast class %s to your parameter! Check config!", structure.getClass()), t);
-        }
-        return initStructure(record, true);
+        return initStructure(mapper.createEmpty(key.get()), true);
     }
 
     /**

@@ -24,7 +24,8 @@ import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundExcept
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.reflect.TypeToken;
 
-public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> extends MapperBase<FROM, TO, BASE>
+public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
+    extends MapperBase<FROM, TO, BASE>
 {
     private final MappingPlan<BASE> plan;
 
@@ -77,7 +78,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPro
             final MappingAdapterBridge<FROM, TO, BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            content.add(adapter.map(from, to, plan, i, plan.getMetadata().get(i)));
+            content.add(adapter.map(from, to, plan, i, plan.getMetaData().get(i)));
         }
 
         return new JsonMapping<>(this, plan, content);
@@ -94,7 +95,7 @@ public class JsonMapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPro
             final MappingAdapterBridge<FROM, TO, BASE> adapter =
                     getAdapterOf(plan.getMappedTypes().get(i));
 
-            final MappingMetaData metaData = plan.getMetadata().get(i);
+            final MappingMetaData metaData = plan.getMetaData().get(i);
             final Optional<Object> value = Optional.ofNullable(metaData.isKey() ? iterator.next() : null);
 
             final BASE base = adapter.create(to, plan, i, metaData, value);

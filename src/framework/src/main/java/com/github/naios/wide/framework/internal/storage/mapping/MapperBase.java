@@ -18,7 +18,8 @@ import javafx.beans.property.ReadOnlyProperty;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.google.common.reflect.TypeToken;
 
-public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>> implements Mapper<FROM, TO, BASE>
+public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
+    implements Mapper<FROM, TO, BASE>
 {
     private final MappingAdapterHolder<FROM, TO, BASE> adapterHolder;
 
@@ -100,14 +101,22 @@ public abstract class MapperBase<FROM, TO extends Mapping<BASE>, BASE extends Re
         return createNewBasedOnMapping(to -> newMappingBasedOn(keys, to));
     }
 
+    @SuppressWarnings("unchecked")
     private TO createNewBasedOnMapping(final Function<TO, Mapping<BASE>> createMapping)
     {
         final MappingCallback<TO> implementation = newImplementation();
 
         final MappingProxy proxy = new MappingProxy(implementation);
 
-        @SuppressWarnings("unchecked")
-        final TO to = (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
+        final TO to;
+        try
+        {
+            to = (TO) Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, proxy);
+        }
+        catch (final Throwable t)
+        {
+            throw new RuntimeException(String.format("Could not cast class %s to your parameter! Check config!", target.getName()), t);
+        }
 
         proxy.setMapping(createMapping.apply(to));
 

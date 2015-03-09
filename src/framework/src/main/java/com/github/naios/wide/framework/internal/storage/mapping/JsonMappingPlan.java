@@ -132,7 +132,7 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
     }
 
     @Override
-    public List<MappingMetaData> getMetadata()
+    public List<MappingMetaData> getMetaData()
     {
         return data;
     }

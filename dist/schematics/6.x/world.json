@@ -39,6 +39,39 @@
           "defaultValue": "15995"
         }
       ]
+    },
+    "quest_template": {
+      "policy": "LAZY",
+      "structure": "com.github.naios.wide.entities.server.world.v6x.QuestTemplate_6x",
+      "entries": [
+        {
+          "name": "Id",
+          "target": "id",
+          "description": "quest id (primary key).",
+          "category": "key",
+          "key": true,
+          "alias": "QuestName"
+        },
+        {
+          "name": "RequiredClasses",
+          "target": "requiredClasses",
+          "alias": "Classes"
+        },
+        {
+          "name": "Title",
+          "target": "title"
+        },
+        {
+          "name": "PrevQuestId",
+          "target": "prevQuestId",
+          "alias": "QuestName"
+        },
+        {
+          "name": "NextQuestId",
+          "target": "nextQuestId",
+          "alias": "QuestName"
+        }
+      ]
     }
   }
 }

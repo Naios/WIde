@@ -26,12 +26,12 @@ public interface Mapping<BASE> extends Iterable<BASE>
 
     public BASE getEntryByTarget(String name) throws UnknownMappingEntryException;
 
-    default Stream<BASE> stream()
+    public default Stream<BASE> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    default Stream<BASE> parallelStream()
+    public default Stream<BASE> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
     }
