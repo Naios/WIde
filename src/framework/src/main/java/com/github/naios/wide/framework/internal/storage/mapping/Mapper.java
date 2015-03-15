@@ -13,6 +13,7 @@ import java.util.List;
 import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 
 public interface Mapper<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>>
 {

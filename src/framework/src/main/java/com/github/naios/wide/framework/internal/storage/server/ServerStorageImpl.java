@@ -43,6 +43,7 @@ import com.github.naios.wide.api.config.schema.TableSchema;
 import com.github.naios.wide.api.database.Database;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageFormat;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageException;
@@ -288,15 +289,9 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
     }
 
     @Override
-    public List<MappingMetaData> getKeysMetaData()
+    public MappingPlan<ReadOnlyProperty<?>> getMappingPlan()
     {
-        return mapper.getPlan().getKeys();
-    }
-
-    @Override
-    public List<MappingMetaData> getMetaData()
-    {
-        return mapper.getPlan().getMetaData();
+        return mapper.getPlan();
     }
 
     @Override

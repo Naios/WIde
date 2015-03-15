@@ -18,6 +18,7 @@ import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.framework.storage.mapping.UnknownMappingEntryException;
 import com.github.naios.wide.api.util.FormatterWrapper;

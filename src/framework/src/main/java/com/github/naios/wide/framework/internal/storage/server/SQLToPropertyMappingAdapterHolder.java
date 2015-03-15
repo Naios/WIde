@@ -29,13 +29,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.github.naios.wide.api.property.EnumProperty;
 import com.github.naios.wide.api.property.FlagProperty;
 import com.github.naios.wide.api.property.SimpleEnumProperty;
 import com.github.naios.wide.api.property.SimpleFlagProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 
 public class SQLToPropertyMappingAdapterHolder
 {

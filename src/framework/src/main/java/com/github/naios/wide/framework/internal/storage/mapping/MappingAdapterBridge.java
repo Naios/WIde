@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.google.common.base.Equivalence.Wrapper;
 import com.google.common.reflect.TypeToken;
 

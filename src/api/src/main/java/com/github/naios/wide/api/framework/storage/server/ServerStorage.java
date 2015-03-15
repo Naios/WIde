@@ -11,8 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 
 public interface ServerStorage<T extends ServerStorageStructure>
 {
@@ -22,10 +23,6 @@ public interface ServerStorage<T extends ServerStorageStructure>
 
     public ReadOnlyBooleanProperty alive();
 
-    public List<MappingMetaData> getKeysMetaData();
-
-    public List<MappingMetaData> getMetaData();
-
     public Optional<T> request(ServerStorageKey<T> key);
 
     public List<T> requestWhere(String where, Object... args);
@@ -33,6 +30,8 @@ public interface ServerStorage<T extends ServerStorageStructure>
     public List<T> requestWhere(String where);
 
     public T create(ServerStorageKey<T> key);
+
+    public MappingPlan<ReadOnlyProperty<?>> getMappingPlan();
 
     public ChangeTracker getChangeTracker();
 }

@@ -22,12 +22,12 @@ import javafx.beans.property.SimpleStringProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.api.property.ReadOnlyEnumProperty;
 import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
 import com.github.naios.wide.api.property.SimpleEnumProperty;
 import com.github.naios.wide.api.property.SimpleFlagProperty;
 import com.github.naios.wide.framework.internal.storage.mapping.MappingAdapterHolder;
-import com.github.naios.wide.framework.internal.storage.mapping.MappingPlan;
 
 public class ClientStorageRecordToPropertyMappingAdapterHolder
 {

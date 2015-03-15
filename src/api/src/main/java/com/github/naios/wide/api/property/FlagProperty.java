@@ -9,6 +9,7 @@ package com.github.naios.wide.api.property;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.WritableIntegerValue;
+import javafx.collections.ObservableList;
 
 public interface FlagProperty<T extends Enum<T>>
     extends Property<Number>, WritableIntegerValue, EnumPropertyBase<T>, ReadOnlyFlagProperty<T>
@@ -16,6 +17,8 @@ public interface FlagProperty<T extends Enum<T>>
     public void addFlag(final T flag);
 
     public void removeFlag(final T flag);
+
+    public ObservableList<T> getFlags();
 
     public void reset();
 }

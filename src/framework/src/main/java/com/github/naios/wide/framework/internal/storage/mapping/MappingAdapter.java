@@ -16,6 +16,7 @@ import javafx.beans.property.ReadOnlyProperty;
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.mapping.Mapping;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.google.common.reflect.TypeToken;
 
 public abstract class MappingAdapter<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyProperty<?>, ADAPTED_TYPE extends BASE, PRIMITIVE>

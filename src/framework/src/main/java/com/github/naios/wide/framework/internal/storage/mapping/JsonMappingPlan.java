@@ -22,6 +22,7 @@ import javafx.beans.property.ReadOnlyProperty;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.config.schema.TableSchema;
+import com.github.naios.wide.api.framework.storage.mapping.MappingPlan;
 import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
 import com.google.common.collect.BiMap;

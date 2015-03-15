@@ -6,12 +6,11 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.framework.internal.storage.mapping;
+package com.github.naios.wide.api.framework.storage.mapping;
 
 import java.util.List;
 
 import com.github.naios.wide.api.config.schema.MappingMetaData;
-import com.github.naios.wide.api.framework.storage.mapping.OrdinalNotFoundException;
 import com.google.common.reflect.TypeToken;
 
 public interface MappingPlan<BASE>

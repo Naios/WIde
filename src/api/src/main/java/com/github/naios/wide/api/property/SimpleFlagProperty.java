@@ -8,13 +8,17 @@ package com.github.naios.wide.api.property;
  */
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
-import javafx.beans.binding.ListBinding;
-import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import com.github.naios.wide.api.util.Flags;
@@ -27,42 +31,52 @@ public class SimpleFlagProperty<T extends Enum<T>>
 {
     private final Class<T> enumClass;
 
-    private ObservableList<T> toObservableList()
-    {
-        return FXCollections.observableArrayList(Flags.flagSet(enumClass, get()));
-    }
+    private final LazyInitializer<ObservableList<T>> flagList = new LazyInitializer<>(this::createList);
 
-    private final LazyInitializer<ListProperty<T>> flagList = new LazyInitializer<>(() ->
+    private ObservableList<T> createList()
     {
-        final ListProperty<T> property = new SimpleListProperty<>(SimpleFlagProperty.this, "flagList", toObservableList());
+        final ObservableList<T> list = FXCollections.observableArrayList(Flags.flagSet(getEnumClass(), get()));
 
-        property.bind(new ListBinding<T>()
+        final ObjectProperty<ChangeListener<Number>> valueListener = new SimpleObjectProperty<>();
+        final ObjectProperty<ListChangeListener<T>> listListener = new SimpleObjectProperty<>();
+
+        valueListener.set(new ChangeListener<Number>()
         {
-            {
-                super.bind(SimpleFlagProperty.this);
-            }
-
             @Override
-            public void dispose()
+            public void changed(final ObservableValue<? extends Number> observableValue,
+                    final Number oldVal, final Number newVal)
             {
-                super.unbind(SimpleFlagProperty.this);
-            }
+                final Collection<T> add = new HashSet<>(), remove = new HashSet<>();
+                Flags.calculateDifferenceTo(getEnumClass(), oldVal.intValue(), newVal.intValue(), add, remove);
 
-            @Override
-            protected ObservableList<T> computeValue()
-            {
-                return toObservableList();
-            }
-
-            @Override
-            public ObservableList<?> getDependencies()
-            {
-                return FXCollections .singletonObservableList(SimpleFlagProperty.this);
+                list.removeListener(listListener.get());
+                list.addAll(add);
+                list.removeAll(remove);
+                list.addListener(listListener.get());
             }
         });
 
-        return property;
-    });
+        listListener.set(new ListChangeListener<T>()
+        {
+            @Override
+            public void onChanged(final ListChangeListener.Change<? extends T> change)
+            {
+                removeListener(valueListener.get());
+
+                while (change.next())
+                {
+                    change.getAddedSubList().forEach(f -> addFlag(f));
+                    change.getRemoved().forEach(f -> removeFlag(f));
+                }
+
+                addListener(valueListener.get());
+            }
+        });
+
+        list.addListener(listListener.get());
+        addListener(valueListener.get());
+        return list;
+    }
 
     public SimpleFlagProperty(final Class<T> enumClass)
     {
@@ -137,7 +151,7 @@ public class SimpleFlagProperty<T extends Enum<T>>
     }
 
     @Override
-    public ListProperty<T> flagListProperty()
+    public ObservableList<T> getFlags()
     {
         return flagList.get();
     }
@@ -180,14 +194,14 @@ public class SimpleFlagProperty<T extends Enum<T>>
             result.append("bound, ");
             if (Objects.nonNull(get()))
                 result.append("value: ").append(get()).append(" ")
-                .append(Arrays.toString(flagListProperty().toArray()))
+                .append(Arrays.toString(getFlags().toArray()))
                 .append(" ");
             else
                 result.append("invalid");
         }
         else
             result.append("value: ").append(get()).append(" ")
-            .append(Arrays.toString(flagListProperty().toArray()));
+            .append(Arrays.toString(getFlags().toArray()));
 
         result.append("]");
         return result.toString();
