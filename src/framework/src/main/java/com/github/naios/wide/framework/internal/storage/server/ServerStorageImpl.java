@@ -592,11 +592,10 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         // FIXME Find a better way for this since ResultSet.getObject() is no option
         if (string.contains("bit"))
             return TOKEN_OF_BOOL;
-        else if (string.contains("bool") || string.contains("tinyint")
-              || string.contains("smallint") || string.contains("mediumint"))
-            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
-        else if (string.contains("int"))
+        else if (string.contains("bigint"))
             return TOKEN_OF_LONG;
+        else if (string.contains("bool") || string.contains("int"))
+            return isPrimaryKey ? TOKEN_OF_INT_KEY : TOKEN_OF_INT;
         else if (string.contains("float"))
             return TOKEN_OF_FLOAT;
         else if (string.contains("double") || string.contains("decimal"))
