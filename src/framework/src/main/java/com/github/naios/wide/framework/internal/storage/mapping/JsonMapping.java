@@ -60,6 +60,12 @@ public class JsonMapping<FROM, TO extends Mapping<BASE>, BASE extends ReadOnlyPr
         this.rawHashableKeys = Collections.unmodifiableList(rawHashableKeys);
     }
 
+    @Override
+    public MappingPlan<BASE> getMappingPlan()
+    {
+        return plan;
+    }
+
     private Object getRawValue(final BASE property)
     {
         try

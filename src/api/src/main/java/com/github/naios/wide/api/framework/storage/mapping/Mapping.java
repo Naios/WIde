@@ -14,6 +14,8 @@ import java.util.stream.StreamSupport;
 
 public interface Mapping<BASE> extends Iterable<BASE>
 {
+    public MappingPlan<BASE> getMappingPlan();
+
     public List<BASE> getKeys();
 
     public List<Object> getRawKeys();
