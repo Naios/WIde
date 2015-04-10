@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyProperty;
 
@@ -63,9 +64,8 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
             final TypeToken<?> type;
             if (method == null)
             {
-                final Optional<TypeToken<?>> token = typeReceiver.apply(metaData);
-                token.orElseThrow(() -> new RuntimeException("Could not get type of schema entry " + metaData));
-                type = token.get();
+                type = typeReceiver.apply(metaData)
+                        .orElseThrow(() -> new RuntimeException("Could not get type of schema entry " + metaData));
             }
             else
             {
@@ -86,7 +86,9 @@ public class JsonMappingPlan<BASE extends ReadOnlyProperty<?>> implements Mappin
         }
 
         if (!methods.isEmpty())
-            throw new RuntimeException(String.format("Structure fields %s is/are not present in the schema!", methods));
+            throw new RuntimeException(String.format("Structure fields %s are not present in the schema of \"%s\", " +
+                    "interface mapped fields must be written in schematics! Target is \"%s\".",
+                        methods.stream().map(Method::getName).map(s -> String.format("\"%s\"", s)).collect(Collectors.joining(", ")), schema.getName(), target));
 
         // Check if all keys are present in the interface
         i = 0;

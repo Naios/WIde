@@ -46,12 +46,11 @@ import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.api.util.RandomUtil;
 import com.github.naios.wide.entities.client.MapEntry;
-import com.github.naios.wide.entities.enums.Classes;
 import com.github.naios.wide.entities.enums.UnitClass;
 import com.github.naios.wide.entities.enums.UnitFlags;
+import com.github.naios.wide.entities.server.ServerStorageKeys;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.entities.server.world.QuestTemplate;
-import com.github.naios.wide.entities.server.world.ServerStorageKeys;
 import com.github.naios.wide.framework.internal.alias.AliasStorage;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
 import com.github.naios.wide.framework.internal.storage.server.ChangeTrackerImpl;
@@ -258,16 +257,8 @@ public final class FrameworkServiceImpl implements FrameworkService
                 {
                     System.out.println("\nShort Example (Quest Template):\n");
                     final ServerStorage<QuestTemplate> questTemplate = requestServerStorage("world", "quest_template");
-                    final QuestTemplate riseOfTheSilithid = questTemplate.request(ServerStorageKeys.ofQuestTemplate(32)).get();
 
                     System.out.println("\n (Creature Template):\n");
-
-                    questTemplate.getChangeTracker().setScope("q1", "Edit quest Rise of the Silithid\nonly mages allowed\nand set prev and next quest");
-                    riseOfTheSilithid.prevQuestId().set(28);
-                    riseOfTheSilithid.nextQuestId().set(32);
-
-                    riseOfTheSilithid.requiredClasses().reset();
-                    riseOfTheSilithid.requiredClasses().addFlag(Classes.CLASS_MAGE);
 
                     questTemplate.getChangeTracker().setScope("q2", "Add a new quest");
                     final QuestTemplate newQuest = questTemplate.create(ServerStorageKeys.ofQuestTemplate(3000000));
@@ -284,8 +275,8 @@ public final class FrameworkServiceImpl implements FrameworkService
                     final CreatureTemplate maloriak = creatureTemplate.request(ServerStorageKeys.ofCreatureTemplate(41378)).get();
 
                     creatureTemplate.getChangeTracker().setScope("1", "Some flag changes \nand comment tests");
-                    maloriak.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
-                    maloriak.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
+                    maloriak.unitFlags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
+                    maloriak.unitFlags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
 
                     creatureTemplate.getChangeTracker().setScope("2", "Set the name");
                     maloriak.name().set("hey im a test npc");
@@ -330,23 +321,23 @@ public final class FrameworkServiceImpl implements FrameworkService
 
                 ct2.name().set("blub");
 
-                ct3.unit_class().set(UnitClass.CLASS_ROGUE);
+                ct3.unitClass().set(UnitClass.CLASS_ROGUE);
 
-                ct3.kill_credit1().set(123456);
-                table.getChangeTracker().setCustomVariable(ct3, ct3.kill_credit1(), "credit custom variable");
+                ct3.killCredit1().set(123456);
+                table.getChangeTracker().setCustomVariable(ct3, ct3.killCredit1(), "credit custom variable");
 
                 table.getChangeTracker().setScope(
                         "test flag scope",
                         "some flag tests\nadds some strange flags to maloriak\n"
                                 + "it only updates flags that have changed");
 
-                ct2.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_UNK_6);
+                ct2.unitFlags().removeFlag(UnitFlags.UNIT_FLAG_UNK_6);
 
                 // This flag is not present in the database and won't lead to changes
-                ct2.unit_flags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
+                ct2.unitFlags().removeFlag(UnitFlags.UNIT_FLAG_DISARMED);
 
-                ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
-                ct2.unit_flags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
+                ct2.unitFlags().addFlag(UnitFlags.UNIT_FLAG_IMMUNE_TO_NPC);
+                ct2.unitFlags().addFlag(UnitFlags.UNIT_FLAG_NOT_SELECTABLE);
                 ct2.name().set("hey im here");
 
                 table.getChangeTracker().setScope("delete scope", "deletes a creature template");
@@ -365,9 +356,9 @@ public final class FrameworkServiceImpl implements FrameworkService
                 {
                     final CreatureTemplate template = table.create(ServerStorageKeys.ofCreatureTemplate(i));
 
-                    template.unit_class().set(template.unit_class().getEnumConstant(RandomUtil.getInt(0, 3)));
-                    template.unit_flags().set(RandomUtil.getInt(0, 30));
-                    template.kill_credit1().set(RandomUtil.getInt(0, 10000));
+                    template.unitClass().set(template.unitClass().getEnumConstant(RandomUtil.getInt(0, 3)));
+                    template.unitFlags().set(RandomUtil.getInt(0, 30));
+                    template.killCredit1().set(RandomUtil.getInt(0, 10000));
                     template.name().set(RandomUtil.getString(RandomUtil.getInt(3, 15)));
                 }
 

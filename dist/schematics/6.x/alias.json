@@ -56,7 +56,7 @@
       "database": "world",
       "target": "quest_template",
       "entryColumn": "Id",
-      "nameColumn": "Title",
+      "nameColumn": "LogTitle",
       "prefix": "QUEST",
       "failPrefix": "unk %s",
       "custom": {

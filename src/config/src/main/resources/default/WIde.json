@@ -2,12 +2,13 @@
   "title": "WIde framework main configuration file.",
   "description": "WIde by Naios (naios-dev@live.de) see https://github.com/Naios/WIde",
   "license": "Creative Commons 4.0 (by-nc-sa) - Non Commercial!",
+  "version": "1.0",
   "ui": "any",
   "activeEnviroment": "6.x",
   "enviroments": {
     "3.3.5": {
       "build": "V3_3_5a_12340",
-      "aliasDefinition": "schematics/alias.json",
+      "aliasDefinition": "schematics/3.3.5/alias.json",
       "clientStorages": {
         "path": "data/3.3.5/dbc",
         "schema": "schematics/3.3.5/dbc.json"
@@ -17,28 +18,25 @@
           "name": "auth",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/3.3.5/auth.json"
         },
         "character": {
           "name": "char_335",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/3.3.5/character.json"
         },
         "world": {
           "name": "world_335",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/3.3.5/world.json"
         }
       }
     },
     "4.3.4": {
       "build": "V4_3_4_15595",
-      "aliasDefinition": "schematics/alias.json",
+      "aliasDefinition": "schematics/4.3.4/alias.json",
       "clientStorages": {
         "path": "data/4.3.4/dbc",
         "schema": "schematics/4.3.4/dbc.json"
@@ -48,28 +46,25 @@
           "name": "auth",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/4.3.4/auth.json"
         },
         "character": {
           "name": "char_434",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/4.3.4/character.json"
         },
         "world": {
           "name": "world_434",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/4.3.4/world.json"
         }
       }
     },
     "6.x": {
       "build": "V6_0_3_19103",
-      "aliasDefinition": "schematics/alias.json",
+      "aliasDefinition": "schematics/6.x/alias.json",
       "clientStorages": {
         "path": "data/6.0.3/dbc",
         "schema": "schematics/6.x/dbc.json"
@@ -79,21 +74,18 @@
           "name": "auth",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/6.x/auth.json"
         },
         "character": {
           "name": "char_6x",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/6.x/character.json"
         },
         "world": {
           "name": "world_6x",
           "host": "localhost:3306",
           "user": "root",
-          "password": "",
           "schema": "schematics/6.x/world.json"
         }
       }

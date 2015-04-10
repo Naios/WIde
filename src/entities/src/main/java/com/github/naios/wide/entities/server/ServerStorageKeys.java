@@ -6,14 +6,16 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.entities.server.world;
+package com.github.naios.wide.entities.server;
 
 import com.github.naios.wide.api.framework.storage.server.ServerStorageKey;
 import com.github.naios.wide.entities.internal.ServerStorageKeyImpl;
+import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.entities.server.world.QuestTemplate;
 
 public final class ServerStorageKeys
 {
-    private ServerStorageKeys() {}
+    private ServerStorageKeys() { }
 
     public static ServerStorageKey<CreatureTemplate> ofCreatureTemplate(final int entry)
     {

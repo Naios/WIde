@@ -22,11 +22,11 @@ public interface CreatureTemplate extends ServerStorageStructure
 {
     public ReadOnlyIntegerProperty entry();
 
-    public IntegerProperty kill_credit1();
+    public IntegerProperty killCredit1();
 
     public StringProperty name();
 
-    public FlagProperty<UnitFlags> unit_flags();
+    public FlagProperty<UnitFlags> unitFlags();
 
-    public EnumProperty<UnitClass> unit_class();
+    public EnumProperty<UnitClass> unitClass();
 }

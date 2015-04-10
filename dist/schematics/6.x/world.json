@@ -16,7 +16,7 @@
         },
         {
           "name": "KillCredit1",
-          "target": "kill_credit1",
+          "target": "killCredit1",
           "category": "kill credits",
           "alias": "CreatureName"
         },
@@ -26,11 +26,13 @@
         },
         {
           "name": "unit_flags",
+          "target": "unitFlags",
           "category": "flags",
           "alias": "UnitFlags"
         },
         {
           "name": "unit_class",
+          "target": "unitClass",
           "category": "flags",
           "alias": "UnitClass"
         },
@@ -45,7 +47,7 @@
       "structure": "com.github.naios.wide.entities.server.world.v6x.QuestTemplate_6x",
       "entries": [
         {
-          "name": "Id",
+          "name": "ID",
           "target": "id",
           "description": "quest id (primary key).",
           "category": "key",
@@ -53,23 +55,8 @@
           "alias": "QuestName"
         },
         {
-          "name": "RequiredClasses",
-          "target": "requiredClasses",
-          "alias": "Classes"
-        },
-        {
-          "name": "Title",
+          "name": "LogTitle",
           "target": "title"
-        },
-        {
-          "name": "PrevQuestId",
-          "target": "prevQuestId",
-          "alias": "QuestName"
-        },
-        {
-          "name": "NextQuestId",
-          "target": "nextQuestId",
-          "alias": "QuestName"
         }
       ]
     }
