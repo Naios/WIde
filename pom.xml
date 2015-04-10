@@ -190,6 +190,31 @@
                 <artifactId>org.apache.servicemix.bundles.lucene</artifactId>
                 <version>5.0.0_1</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.lucene-queryparser</artifactId>
+                <version>5.0.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.lucene-analyzers-common</artifactId>
+                <version>5.0.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.lucene-queries</artifactId>
+                <version>5.0.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.lucene-sandbox</artifactId>
+                <version>5.0.0_1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.jakarta-regexp</artifactId>
+                <version>1.4_1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

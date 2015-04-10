@@ -10,6 +10,7 @@ package com.github.naios.wide.config.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -44,7 +45,6 @@ import com.github.naios.wide.api.util.StringUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.stream.MalformedJsonException;
 
 class Reference
 {
@@ -214,13 +214,7 @@ public class ConfigHolder<T>
             {
                 object = INSTANCE.fromJson(reader, type);
             }
-            catch (final MalformedJsonException e)
-            {
-                if (LOGGER.isDebugEnabled())
-                    LOGGER.debug(e.getMessage());
-                throw new Error(e);
-            }
-            catch (final Exception e)
+            catch (final FileNotFoundException e)
             {
                 try (final Reader reader = new InputStreamReader(
                         getClass().getClassLoader().getResourceAsStream(defaultConfig)))
@@ -235,6 +229,10 @@ public class ConfigHolder<T>
                     tt.printStackTrace();
                     throw new RuntimeException(tt);
                 }
+            }
+            catch (final Exception e)
+            {
+                throw new Error(e);
             }
 
             ref = new Reference(object);
