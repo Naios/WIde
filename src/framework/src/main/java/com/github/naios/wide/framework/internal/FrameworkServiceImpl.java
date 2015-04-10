@@ -46,7 +46,7 @@ import com.github.naios.wide.entities.server.ServerStorageKeys;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.entities.server.world.QuestTemplate;
 import com.github.naios.wide.framework.internal.storage.client.ClientStorageSelector;
-import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
+import com.github.naios.wide.framework.internal.storage.server.SQLUpdateInfoImpl;
 
 public final class FrameworkServiceImpl implements FrameworkService
 {

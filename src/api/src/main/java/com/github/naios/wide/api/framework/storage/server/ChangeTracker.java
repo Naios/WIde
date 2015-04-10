@@ -8,29 +8,27 @@
 
 package com.github.naios.wide.api.framework.storage.server;
 
-import java.util.Collection;
-
-import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.ReadOnlySetProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableSet;
 
 public interface ChangeTracker
     extends SQLInfoProvider
 {
-    public ReadOnlySetProperty<ServerStorageStructure> structuresCreated();
-
-    public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted();
-
-    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged();
-
-    public Collection<SQLUpdateInfo> entriesChangedAsCollection();
+    /**
+     * @return Returns a modifiable set of all structures which were created.
+     */
+    public ObservableSet<ServerStorageStructure> structuresCreated();
 
     /**
-     * Planned but not supported yet!
-     * @return
+     * @return Returns a modifiable set of all structures which were deleted.
      */
-    // public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap();
+    public ObservableSet<ServerStorageStructure> structuresDeleted();
+
+    /**
+     * @return Returns a modifiable set of all properties which were updated.
+     */
+    public ObservableSet<SQLUpdateInfo> propertiesUpdated();
 
     /**
      * @return Our scope property
@@ -77,11 +75,6 @@ public interface ChangeTracker
      * @param comment the comment you want to set
      */
     public void setScopeComment(String comment);
-
-    /**
-     * Drops all changes so the change tracker is in sync with the remote database
-     */
-    public void reset();
 
     /**
      * Commits the current content to the database

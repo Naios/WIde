@@ -8,29 +8,21 @@
 
 package com.github.naios.wide.framework.internal.storage.server;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import javafx.beans.property.ReadOnlyMapProperty;
 import javafx.beans.property.ReadOnlyProperty;
-import javafx.beans.property.ReadOnlySetProperty;
-import javafx.beans.property.SetProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 
 import com.github.naios.wide.api.framework.FrameworkWorkspace;
-import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
 public class ChangeTrackerImpl
     implements ChangeTracker
@@ -55,71 +47,11 @@ public class ChangeTrackerImpl
 
     private final Map<ServerStorageStructure, Map<ReadOnlyProperty<?>, String>> customVariables = new HashMap<>();
 
-    private final SetProperty<ServerStorageStructure> created = new SimpleSetProperty<>(FXCollections.observableSet()),
-            deleted = new SimpleSetProperty<>(FXCollections.observableSet());
+    private final ObservableSet<ServerStorageStructure> created = FXCollections.observableSet();
 
-    class UpdateMap extends SimpleMapProperty<ServerStorageStructure, SetProperty<SQLUpdateInfo>>
-    {
-        public UpdateMap()
-        {
-            super (FXCollections.observableHashMap());
-        }
+    private final ObservableSet<ServerStorageStructure> deleted = FXCollections.observableSet();
 
-        public void addUpdate(final ReadOnlyProperty<?> property, final Object oldValue)
-        {
-            final ServerStorageStructure structure = MappingBeans.getStructure(property);
-
-            SetProperty<SQLUpdateInfo> set = get(structure);
-            if (Objects.isNull(set))
-            {
-                set = new SimpleSetProperty<>(FXCollections.observableSet());
-                put(structure, set);
-            }
-
-            set.add(new SQLUpdateInfoImpl(property, oldValue));
-
-            if (hasScopeSet())
-                entryScopes.put(new StructureEntryStorageIndex(property), scope.get());
-        }
-
-        public void removeUpdate(final ReadOnlyProperty<?> property)
-        {
-            final ServerStorageStructure structure = MappingBeans.getStructure(property);
-
-            final SetProperty<SQLUpdateInfo> set = get(property);
-            if (Objects.nonNull(set))
-            {
-                // Use reference equality here
-                for (final SQLUpdateInfo info : set)
-                    if (info.getProperty() == property)
-                        set.remove(info);
-
-                if (set.isEmpty())
-                    removeUpdates(structure);
-            }
-        }
-
-        public void removeUpdates(final ServerStorageStructure structure)
-        {
-            final SetProperty<SQLUpdateInfo> set = get(structure);
-            if (Objects.nonNull(set))
-            {
-                set.forEach(entry -> entryScopes.remove(new StructureEntryStorageIndex(entry.getProperty())));
-                remove(structure);
-            }
-        }
-
-        public Collection<SQLUpdateInfo> asCollection()
-        {
-            return get()
-                .entrySet()
-                .stream()
-                .flatMap(entry -> entry.getValue().stream())
-                .collect(Collectors.toList());
-        }
-    }
-
-    private final UpdateMap updates = new UpdateMap();
+    private final ObservableSet<SQLUpdateInfo> updated = FXCollections.observableSet();
 
     public ChangeTrackerImpl(final FrameworkWorkspace workspace)
     {
@@ -138,7 +70,6 @@ public class ChangeTrackerImpl
     public void onDelete(final ServerStorageStructure structure)
     {
         created.remove(created);
-        updates.removeUpdates(structure);
         deleted.add(structure);
 
         if (hasScopeSet())
@@ -149,43 +80,30 @@ public class ChangeTrackerImpl
             final ReadOnlyProperty<?> property, final Object oldValue)
     {
         if (!created.contains(structure))
-            updates.addUpdate(property, oldValue);
+        {
+            final SQLUpdateInfo info = new SQLUpdateInfoImpl(property, oldValue);
+            if (updated.contains(info));
+                updated.add(info);
+        }
     }
 
     @Override
-    public ReadOnlySetProperty<ServerStorageStructure> structuresCreated()
+    public ObservableSet<ServerStorageStructure> structuresCreated()
     {
         return created;
     }
 
     @Override
-    public ReadOnlySetProperty<ServerStorageStructure> structuresDeleted()
+    public ObservableSet<ServerStorageStructure> structuresDeleted()
     {
         return deleted;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public ReadOnlyMapProperty<ServerStorageStructure, ReadOnlySetProperty<SQLUpdateInfo>> entriesChanged()
+    public ObservableSet<SQLUpdateInfo> propertiesUpdated()
     {
-        return (ReadOnlyMapProperty)updates;
+        return updated;
     }
-
-    @Override
-    public Collection<SQLUpdateInfo> entriesChangedAsCollection()
-    {
-        return updates.asCollection();
-    }
-
-    /*
-     * Planned but not supported yet!
-     * @Override
-     * public ReadOnlyMapProperty<ServerStorage<?>, ReadOnlyMapProperty<ServerStorageStructure, ReadOnlyListProperty<StructureChangeEvent>>> changeMap()
-     * {
-     *     // TODO Auto-generated method stub
-     *     return null;
-     * }
-     */
 
     @Override
     public String getScopeOfEntry(final ServerStorageStructure structure,
@@ -285,12 +203,6 @@ public class ChangeTrackerImpl
     }
 
     @Override
-    public void reset()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     public void commit()
     {
         // TODO Auto-generated method stub
@@ -306,6 +218,6 @@ public class ChangeTrackerImpl
     public String toString()
     {
         return String.format("Updated  : %s\nInserted : %s\nUpdated  : %s\nStructure Scopes  : %s\nEntry Scopes  : %s\nScope Comments  : %s",
-                updates, created, deleted, structureScopes, entryScopes, scopeComments);
+                updated, created, deleted, structureScopes, entryScopes, scopeComments);
     }
 }

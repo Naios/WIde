@@ -10,14 +10,18 @@ package com.github.naios.wide.api.framework.storage.server;
 
 import java.util.Optional;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyProperty;
 
 public interface SQLUpdateInfo
 {
+    /**
+     * @return Returns the property which was changed.
+     */
     public ReadOnlyProperty<?> getProperty();
 
-    public default Optional<Object> getOldValue()
-    {
-        return Optional.empty();
-    }
+    /**
+     * @return Returns an object property that hold the old value on remote if any.
+     */
+    public ObjectProperty<Optional<Object>> oldValueProperty();
 }

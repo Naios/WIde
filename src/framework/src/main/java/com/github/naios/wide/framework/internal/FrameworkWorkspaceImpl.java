@@ -135,7 +135,7 @@ public class FrameworkWorkspaceImpl implements FrameworkWorkspace
     public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker)
     {
         return createSQLBuilder(changeTracker,
-                changeTracker.entriesChangedAsCollection(),
+                changeTracker.propertiesUpdated(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted());
     }
@@ -147,7 +147,7 @@ public class FrameworkWorkspaceImpl implements FrameworkWorkspace
                         final QueryTypeConfig deleteConfig)
     {
         return createSQLBuilder(changeTracker,
-                changeTracker.entriesChangedAsCollection(),
+                changeTracker.propertiesUpdated(),
                 changeTracker.structuresCreated(),
                 changeTracker.structuresDeleted(),
                 updateConfig,

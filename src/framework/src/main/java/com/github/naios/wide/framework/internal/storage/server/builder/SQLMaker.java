@@ -31,6 +31,7 @@ import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
 import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.StringUtil;
+import com.github.naios.wide.framework.internal.storage.server.SQLUpdateInfoImpl;
 import com.google.common.collect.Iterables;
 
 public final class SQLMaker
@@ -197,10 +198,10 @@ public final class SQLMaker
                 final int newMask = flagProperty.getValue().intValue();
 
                 final int oldMask;
-                if (!sqlUpdateInfo.getOldValue().isPresent()|| !((sqlUpdateInfo.getOldValue().get()) instanceof Integer))
+                if (!sqlUpdateInfo.oldValueProperty().get().isPresent()|| !((sqlUpdateInfo.oldValueProperty().get().get()) instanceof Integer))
                     oldMask = 0;
                 else
-                    oldMask = (int) sqlUpdateInfo.getOldValue().get();
+                    oldMask = (int) sqlUpdateInfo.oldValueProperty().get().get();
 
                 // Now we calculate the difference
                 // Add Flags:
