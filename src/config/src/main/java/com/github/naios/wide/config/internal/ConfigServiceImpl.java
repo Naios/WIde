@@ -68,7 +68,7 @@ public final class ConfigServiceImpl implements ConfigService
 
     private final String SAVER_THREAD_NAME = "WIde Config saver Thread";
 
-    // FIXME
+    // FIXME Convert thread into a scheduled task
     private final Thread saverThread = new Thread()
     {
         {

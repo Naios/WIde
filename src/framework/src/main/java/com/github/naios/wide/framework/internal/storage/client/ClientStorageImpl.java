@@ -166,6 +166,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         // Select our Schema
         Schema schema = null;
 
+        // TODO Remove getActiveEnvironment()
         if (policy.isSchemaProvided())
             schema = FrameworkServiceImpl.getConfigService().getActiveEnvironment().getClientStorageConfig().schema().get();
 

@@ -29,6 +29,11 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 public interface FrameworkWorkspace extends AliasFactory
 {
     /**
+     * @return Returns The Environment Config for this workspace.
+     */
+    EnvironmentConfig getEnvironmentConfig();
+
+    /**
      * TODO
      * @param name
      * @return

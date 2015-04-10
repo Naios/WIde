@@ -18,7 +18,6 @@ import com.github.naios.wide.api.config.alias.AliasType;
 import com.github.naios.wide.api.framework.AliasFactory;
 import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.util.Pair;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class AliasStorage implements AliasFactory
 {
@@ -45,7 +44,7 @@ public class AliasStorage implements AliasFactory
 
     private Pair<Alias, Map<Integer, String>> createStorage(final String name)
     {
-        final Alias alias = FrameworkServiceImpl.getConfigService().getActiveEnvironment()
+        final Alias alias = workspace.getEnvironmentConfig()
                 .getAliasDefinitionConfig().get().getAliasForName(name);
 
         if (Objects.isNull(alias))

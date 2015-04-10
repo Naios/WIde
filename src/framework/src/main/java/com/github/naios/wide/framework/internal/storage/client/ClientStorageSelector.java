@@ -15,6 +15,7 @@ import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class ClientStorageSelector<T extends ClientStorageStructure>
 {
+    // TODO Remove getActiveEnvironment()
     private static String getPathForStorage(final String path)
     {
         return FrameworkServiceImpl.getConfigService().getActiveEnvironment()

@@ -61,6 +61,12 @@ public class FrameworkWorkspaceImpl implements FrameworkWorkspace
         this.config = config;
     }
 
+    @Override
+    public EnvironmentConfig getEnvironmentConfig()
+    {
+        return config;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(final String name)
