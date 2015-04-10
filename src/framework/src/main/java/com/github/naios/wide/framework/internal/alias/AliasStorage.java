@@ -45,7 +45,7 @@ public class AliasStorage implements AliasFactory
 
     private Pair<Alias, Map<Integer, String>> createStorage(final String name)
     {
-        final Alias alias = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
+        final Alias alias = FrameworkServiceImpl.getConfigService().getActiveEnvironment()
                 .getAliasDefinitionConfig().get().getAliasForName(name);
 
         if (Objects.isNull(alias))

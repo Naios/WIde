@@ -8,7 +8,7 @@
 
 package com.github.naios.wide.api.framework;
 
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 
 /**
  * The Framework Service is exported as OSGI service.
@@ -18,8 +18,8 @@ public interface FrameworkService
 {
     /**
      * Creates a new fresh {@link FrameworkWorkspace}.
-     * @param config The {@link EnviromentConfig} you want to use.
+     * @param config The {@link EnvironmentConfig} you want to use.
      * @return Returns a new {@link FrameworkWorkspace} which allows you to work with.
      */
-    public FrameworkWorkspace createWorkspaceFromEnviroment(EnviromentConfig config);
+    public FrameworkWorkspace createWorkspaceFromEnvironment(EnvironmentConfig config);
 }

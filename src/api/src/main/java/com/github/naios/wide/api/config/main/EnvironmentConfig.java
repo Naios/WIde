@@ -17,7 +17,7 @@ import javafx.beans.property.StringProperty;
 import com.github.naios.wide.api.config.alias.AliasConfig;
 import com.github.naios.wide.api.entities.GameBuild;
 
-public interface EnviromentConfig
+public interface EnvironmentConfig
 {
     /**
      * @return Path to the alias definition
@@ -40,7 +40,7 @@ public interface EnviromentConfig
     public GameBuild getBuild();
 
     /**
-     * @return The {@link DatabaseConfig}'s of the enviroment
+     * @return The {@link DatabaseConfig}'s of the environment
      */
     public Set<Entry<String, DatabaseConfig>> getDatabases();
 

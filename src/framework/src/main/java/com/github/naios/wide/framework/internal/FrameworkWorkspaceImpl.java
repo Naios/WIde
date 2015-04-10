@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.config.main.QueryType;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
@@ -37,7 +37,7 @@ import com.google.common.cache.CacheBuilder;
 
 public class FrameworkWorkspaceImpl implements FrameworkWorkspace
 {
-    private final EnviromentConfig config;
+    private final EnvironmentConfig config;
 
     private final AliasStorage aliases = new AliasStorage(this);
 
@@ -56,7 +56,7 @@ public class FrameworkWorkspaceImpl implements FrameworkWorkspace
                 .newBuilder()
                 .build();
 
-    public FrameworkWorkspaceImpl(final EnviromentConfig config)
+    public FrameworkWorkspaceImpl(final EnvironmentConfig config)
     {
         this.config = config;
     }

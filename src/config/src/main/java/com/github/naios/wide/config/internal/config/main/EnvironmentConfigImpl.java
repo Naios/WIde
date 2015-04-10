@@ -20,7 +20,7 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.config.alias.AliasConfig;
 import com.github.naios.wide.api.config.main.DatabaseConfig;
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.entities.GameBuild;
 import com.github.naios.wide.config.internal.ConfigHolder;
 import com.github.naios.wide.config.internal.config.alias.AliasConfigImpl;
@@ -34,7 +34,7 @@ class MissingDatabaseConfig extends RuntimeException
     }
 }
 
-public class EnviromentConfigImpl implements EnviromentConfig
+public class EnvironmentConfigImpl implements EnvironmentConfig
 {
     private GameBuild build = GameBuild.DEFAULT_BUILD;
 

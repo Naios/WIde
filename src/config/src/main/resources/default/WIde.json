@@ -4,8 +4,8 @@
   "license": "Creative Commons 4.0 (by-nc-sa) - Non Commercial!",
   "version": "1.0",
   "ui": "any",
-  "activeEnviroment": "6.x",
-  "enviroments": {
+  "activeEnvironment": "6.x",
+  "environments": {
     "3.3.5": {
       "build": "V3_3_5a_12340",
       "aliasDefinition": "schematics/3.3.5/alias.json",

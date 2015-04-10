@@ -55,12 +55,12 @@ public interface Config
     /**
      * @return The name of our current active config
      */
-    public StringProperty activeEnviroment();
+    public StringProperty activeEnvironment();
 
     /**
-     * @return All Enviroments as entry set
+     * @return All Environments as entry set
      */
-    public Set<Entry<String, EnviromentConfig>> getEnviroments();
+    public Set<Entry<String, EnvironmentConfig>> getEnvironments();
 
     /**
      * @return Our query config
@@ -68,9 +68,9 @@ public interface Config
     public QueryConfig getQueryConfig();
 
     /**
-     * @return The current active enviroment
+     * @return The current active environment
      */
-    public EnviromentConfig getActiveEnviroment();
+    public EnvironmentConfig getActiveEnvironment();
 
     /**
      * @return Boolean property that says if we want to compress the config<br>

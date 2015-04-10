@@ -141,7 +141,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         this.database.bind(FrameworkServiceImpl.getDatabasePoolService()
                 .requestConnection(databaseId));
 
-        final Optional<TableSchema> trySchema = FrameworkServiceImpl.getConfigService().getActiveEnviroment()
+        final Optional<TableSchema> trySchema = FrameworkServiceImpl.getConfigService().getActiveEnvironment()
                 .getDatabaseConfig(databaseId).schema().get().getSchemaOf(tableName);
 
         // Estimate tables without provided schema
@@ -368,7 +368,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         }
 
         /*TODO @FrameworkIntegration:Trace
-        if (WIde.getEnviroment().isTraceEnabled())
+        if (WIde.getEnvironment().isTraceEnabled())
             System.out.println(String.format("Mapping result\"%s\" to new \"%s\"", preparedStatement, structureName));
          */
 

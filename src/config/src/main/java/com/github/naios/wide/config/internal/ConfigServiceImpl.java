@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.api.entities.EntityService;
 import com.github.naios.wide.config.internal.config.main.ConfigImpl;
@@ -209,15 +209,15 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public StringProperty activeEnviroment()
+    public StringProperty activeEnvironment()
     {
-        return config.get(PATH).get().activeEnviroment();
+        return config.get(PATH).get().activeEnvironment();
     }
 
     @Override
-    public Set<Entry<String, EnviromentConfig>> getEnviroments()
+    public Set<Entry<String, EnvironmentConfig>> getEnvironments()
     {
-        return config.get(PATH).get().getEnviroments();
+        return config.get(PATH).get().getEnvironments();
     }
 
     @Override
@@ -227,9 +227,9 @@ public final class ConfigServiceImpl implements ConfigService
     }
 
     @Override
-    public EnviromentConfig getActiveEnviroment()
+    public EnvironmentConfig getActiveEnvironment()
     {
-        return config.get(PATH).get().getActiveEnviroment();
+        return config.get(PATH).get().getActiveEnvironment();
     }
 
     @Override

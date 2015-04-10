@@ -17,7 +17,7 @@ public class ClientStorageSelector<T extends ClientStorageStructure>
 {
     private static String getPathForStorage(final String path)
     {
-        return FrameworkServiceImpl.getConfigService().getActiveEnviroment()
+        return FrameworkServiceImpl.getConfigService().getActiveEnvironment()
                 .getClientStorageConfig().path().get() + "/" + path;
     }
 

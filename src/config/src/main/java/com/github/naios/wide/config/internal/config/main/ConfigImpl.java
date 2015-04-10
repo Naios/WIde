@@ -22,16 +22,16 @@ import javafx.beans.property.StringProperty;
 
 import com.github.naios.wide.api.WIdeConstants;
 import com.github.naios.wide.api.config.main.Config;
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.config.main.QueryConfig;
 import com.github.naios.wide.config.internal.ConfigHolder;
 
 @SuppressWarnings("serial")
-class MissingActiveEnviroment extends RuntimeException
+class MissingActiveEnvironment extends RuntimeException
 {
-    public MissingActiveEnviroment()
+    public MissingActiveEnvironment()
     {
-        super("Active enviroment config is missing!");
+        super("Active environment config is missing!");
     }
 }
 
@@ -42,9 +42,9 @@ public class ConfigImpl implements Config
                         license = new SimpleStringProperty(""),
                             version = new SimpleStringProperty(WIdeConstants.VERSION_WIDE_MAIN_CONFIG.toString()),
                                 ui = new SimpleStringProperty(Config.DEFAULT_UI_AUTO),
-                                    activeEnviroment = new SimpleStringProperty("");
+                                    activeEnvironment = new SimpleStringProperty("");
 
-    private Map<String, EnviromentConfigImpl> enviroments =
+    private Map<String, EnvironmentConfigImpl> environments =
             new HashMap<>();
 
     private QueryConfigImpl queries;
@@ -82,16 +82,16 @@ public class ConfigImpl implements Config
     }
 
     @Override
-    public StringProperty activeEnviroment()
+    public StringProperty activeEnvironment()
     {
-        return activeEnviroment;
+        return activeEnvironment;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Set<Entry<String, EnviromentConfig>> getEnviroments()
+    public Set<Entry<String, EnvironmentConfig>> getEnvironments()
     {
-        return (Set)enviroments.entrySet();
+        return (Set)environments.entrySet();
     }
 
     @Override
@@ -107,13 +107,13 @@ public class ConfigImpl implements Config
     }
 
     @Override
-    public EnviromentConfig getActiveEnviroment()
+    public EnvironmentConfig getActiveEnvironment()
     {
-        final EnviromentConfig enviroment = enviroments.get(activeEnviroment.get());
-        if (Objects.nonNull(enviroment))
-            return enviroment;
+        final EnvironmentConfig environment = environments.get(activeEnvironment.get());
+        if (Objects.nonNull(environment))
+            return environment;
         else
-            throw new MissingActiveEnviroment();
+            throw new MissingActiveEnvironment();
     }
 
     @Override

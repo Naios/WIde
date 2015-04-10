@@ -10,7 +10,7 @@ package com.github.naios.wide.api.framework;
 
 import java.util.Collection;
 
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
@@ -23,7 +23,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure
 
 /**
  * A Framework Workspace is a non shared environment, every operation is kept into the workspace until you export it.
- * Create new fresh workspaces using {@link FrameworkService#createWorkspaceFromEnviroment(EnviromentConfig)}.<br>
+ * Create new fresh workspaces using {@link FrameworkService#createWorkspaceFromEnvironment(EnvironmentConfig)}.<br>
  * <b>Keep a reference to the {@link FrameworkWorkspace} otherwise it will be garbage collected!</b>
  */
 public interface FrameworkWorkspace extends AliasFactory

@@ -81,7 +81,7 @@ public final class DatabasePoolServiceImpl
                     remove.add(id);
                 }
                 else
-                    database.set(createDatabase(id, config.getActiveEnviroment().getDatabaseConfig(id)));
+                    database.set(createDatabase(id, config.getActiveEnvironment().getDatabaseConfig(id)));
             });
 
             remove.forEach(id -> connections.remove(id));
@@ -101,7 +101,7 @@ public final class DatabasePoolServiceImpl
             LOGGER.error("Didn't find jdbc class {}", name);
         }
 
-        for (final Entry<String, DatabaseConfig> db : config.getActiveEnviroment().getDatabases())
+        for (final Entry<String, DatabaseConfig> db : config.getActiveEnvironment().getDatabases())
             connections.put(db.getKey(), new SimpleObjectProperty<>(createDatabase(db.getKey(), db.getValue())));
 
         if (LOGGER.isDebugEnabled())
@@ -122,7 +122,7 @@ public final class DatabasePoolServiceImpl
     public void setConfig(final ConfigService config)
     {
         this.config = config;
-        this.config.activeEnviroment().addListener(listener);
+        this.config.activeEnvironment().addListener(listener);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

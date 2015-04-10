@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.naios.wide.api.config.ConfigService;
-import com.github.naios.wide.api.config.main.EnviromentConfig;
+import com.github.naios.wide.api.config.main.EnvironmentConfig;
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
 import com.github.naios.wide.api.database.DatabasePoolService;
 import com.github.naios.wide.api.entities.EntityService;
@@ -110,7 +110,7 @@ public final class FrameworkServiceImpl implements FrameworkService
     }
 
     @Override
-    public FrameworkWorkspace createWorkspaceFromEnviroment(final EnviromentConfig config)
+    public FrameworkWorkspace createWorkspaceFromEnvironment(final EnvironmentConfig config)
     {
         return new FrameworkWorkspaceImpl(config);
     }
@@ -168,7 +168,7 @@ public final class FrameworkServiceImpl implements FrameworkService
             {
                 try
                 {
-                    final FrameworkWorkspace workspace = createWorkspaceFromEnviroment(configService.getActiveEnviroment());
+                    final FrameworkWorkspace workspace = createWorkspaceFromEnvironment(configService.getActiveEnvironment());
 
                     System.out.println("\nShort Example (Quest Template):\n");
                     final ServerStorage<QuestTemplate> questTemplate = workspace.requestServerStorage("world", "quest_template");

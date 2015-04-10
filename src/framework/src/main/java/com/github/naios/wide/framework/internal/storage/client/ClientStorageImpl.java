@@ -167,7 +167,7 @@ public abstract class ClientStorageImpl<T extends ClientStorageStructure>
         Schema schema = null;
 
         if (policy.isSchemaProvided())
-            schema = FrameworkServiceImpl.getConfigService().getActiveEnviroment().getClientStorageConfig().schema().get();
+            schema = FrameworkServiceImpl.getConfigService().getActiveEnvironment().getClientStorageConfig().schema().get();
 
         if (Objects.nonNull(schema))
         {
