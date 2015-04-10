@@ -11,8 +11,9 @@ package com.github.naios.wide.framework.internal.alias;
 import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 
 public interface AliasConverter
 {
-    public Map<Integer, String> convertAlias(Alias alias);
+    public Map<Integer, String> convertAlias(Alias alias, FrameworkWorkspace workspace);
 }

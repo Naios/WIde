@@ -16,11 +16,19 @@ import java.util.Objects;
 import com.github.naios.wide.api.config.alias.Alias;
 import com.github.naios.wide.api.config.alias.AliasType;
 import com.github.naios.wide.api.framework.AliasFactory;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.util.Pair;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class AliasStorage implements AliasFactory
 {
+    private final FrameworkWorkspace workspace;
+
+    public AliasStorage(final FrameworkWorkspace workspace)
+    {
+        this.workspace = workspace;
+    }
+
     @SuppressWarnings("serial")
     private static final Map<AliasType, AliasConverter> ALIAS_CONVERTER =
             new HashMap<AliasType, AliasConverter>()
@@ -44,7 +52,7 @@ public class AliasStorage implements AliasFactory
             throw new IllegalArgumentException(String.format("Alias %s isn't defined!", alias));
 
         final AliasConverter converter = ALIAS_CONVERTER.get(alias.getAliasType());
-        final Map<Integer, String> entries = converter.convertAlias(alias);
+        final Map<Integer, String> entries = converter.convertAlias(alias, workspace);
         entries.putAll(alias.customEntries());
 
         return new Pair<>(alias, Collections.unmodifiableMap(entries));

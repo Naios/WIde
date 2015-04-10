@@ -12,11 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 
 public class EmptyAliasConverter implements AliasConverter
 {
     @Override
-    public Map<Integer, String> convertAlias(final Alias alias)
+    public Map<Integer, String> convertAlias(final Alias alias, final FrameworkWorkspace workspace)
     {
         return new HashMap<>();
     }

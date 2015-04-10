@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.github.naios.wide.api.config.main.QueryTypeConfig;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
 import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
@@ -30,6 +31,8 @@ import com.google.common.collect.Multimap;
  */
 public final class SQLBuilderImpl implements SQLBuilder
 {
+    private final FrameworkWorkspace workspace;
+
     private final SQLInfoProvider sqlInfoProvider;
 
     private final Multimap<ServerStorageStructure, SQLUpdateInfo> update;
@@ -40,7 +43,8 @@ public final class SQLBuilderImpl implements SQLBuilder
 
     private final SQLVariableHolder variableHolder = new SQLVariableHolder();
 
-    public SQLBuilderImpl(final SQLInfoProvider sqlInfoProvider,
+    public SQLBuilderImpl(final FrameworkWorkspace workspace,
+            final SQLInfoProvider sqlInfoProvider,
             final Collection<SQLUpdateInfo> update,
             final Collection<ServerStorageStructure> insert,
             final Collection<ServerStorageStructure> delete,
@@ -48,6 +52,8 @@ public final class SQLBuilderImpl implements SQLBuilder
             final QueryTypeConfig insertConfig,
             final QueryTypeConfig deleteConfig)
     {
+        this.workspace = workspace;
+
         this.sqlInfoProvider = sqlInfoProvider;
 
         this.update = splitUpdateInfo(update);
@@ -64,6 +70,11 @@ public final class SQLBuilderImpl implements SQLBuilder
         final Multimap<ServerStorageStructure, SQLUpdateInfo> map = HashMultimap.create();
         updates.forEach(update -> map.put(MappingBeans.getStructure(update.getProperty()), update));
         return map;
+    }
+
+    public FrameworkWorkspace getWorkspace()
+    {
+        return workspace;
     }
 
     public SQLInfoProvider getSQLInfoProvider()

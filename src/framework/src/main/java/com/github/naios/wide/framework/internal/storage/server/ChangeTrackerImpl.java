@@ -25,16 +25,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.framework.storage.mapping.MappingBeans;
 import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
 import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.github.naios.wide.framework.internal.storage.server.builder.SQLUpdateInfoImpl;
 
 public class ChangeTrackerImpl
     implements ChangeTracker
 {
+    private final FrameworkWorkspace workspace;
+
     private final static String DEFAULT_SCOPE = "";
 
     private final static String DEFAULT_SCOPE_COMMENT = "";
@@ -118,6 +120,11 @@ public class ChangeTrackerImpl
     }
 
     private final UpdateMap updates = new UpdateMap();
+
+    public ChangeTrackerImpl(final FrameworkWorkspace workspace)
+    {
+        this.workspace = workspace;
+    }
 
     public void onCreate(final ServerStorageStructure structure)
     {
@@ -292,7 +299,7 @@ public class ChangeTrackerImpl
     @Override
     public String getQuery()
     {
-        return FrameworkServiceImpl.getInstance().createSQLBuilder(this).toString();
+        return workspace.createSQLBuilder(this).toString();
     }
 
     @Override

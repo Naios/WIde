@@ -35,7 +35,7 @@ public interface EnviromentConfig
     public ClientStorageConfig getClientStorageConfig();
 
     /**
-     * @return The {@link GameBuild} of the enviroment
+     * @return The {@link GameBuild} of the environment
      */
     public GameBuild getBuild();
 

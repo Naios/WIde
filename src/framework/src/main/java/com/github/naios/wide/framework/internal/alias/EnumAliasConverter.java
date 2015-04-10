@@ -12,13 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class EnumAliasConverter implements AliasConverter
 {
     @SuppressWarnings("rawtypes")
     @Override
-    public Map<Integer, String> convertAlias(final Alias alias)
+    public Map<Integer, String> convertAlias(final Alias alias, final FrameworkWorkspace workspace)
     {
         final Map<Integer, String> map = new HashMap<>();
 

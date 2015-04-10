@@ -31,7 +31,6 @@ import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
 import com.github.naios.wide.api.util.Flags;
 import com.github.naios.wide.api.util.FormatterWrapper;
 import com.github.naios.wide.api.util.StringUtil;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 import com.google.common.collect.Iterables;
 
 public final class SQLMaker
@@ -258,7 +257,7 @@ public final class SQLMaker
         {
             final ReadOnlyIntegerProperty integerProperty = (ReadOnlyIntegerProperty) sqlUpdateInfo.getProperty();
 
-            final String name = FrameworkServiceImpl.getInstance()
+            final String name = builder.getWorkspace()
                     .requestAlias(metaData.getAlias(), integerProperty.get());
 
             if (name != null)

@@ -12,18 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
+import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.framework.storage.client.ClientStorage;
 import com.github.naios.wide.api.framework.storage.client.UnknownClientStorageStructure;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
 public class ClientAliasConverter implements AliasConverter
 {
     @Override
-    public Map<Integer, String> convertAlias(final Alias alias)
+    public Map<Integer, String> convertAlias(final Alias alias, final FrameworkWorkspace workspace)
     {
         final Map<Integer, String> map = new HashMap<>();
 
-        final ClientStorage<UnknownClientStorageStructure> storage = FrameworkServiceImpl.getInstance().requestClientStorage(alias.target().get());
+        final ClientStorage<UnknownClientStorageStructure> storage =
+                workspace.requestClientStorage(alias.target().get());
 
         final Object[][] objects = storage.asObjectArray();
         for (int i = 0; i < storage.getRecordsCount(); ++i)

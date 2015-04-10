@@ -8,94 +8,18 @@
 
 package com.github.naios.wide.api.framework;
 
-import java.util.Collection;
+import com.github.naios.wide.api.config.main.EnviromentConfig;
 
-import com.github.naios.wide.api.config.main.QueryTypeConfig;
-import com.github.naios.wide.api.framework.storage.client.ClientStorage;
-import com.github.naios.wide.api.framework.storage.client.ClientStorageStructure;
-import com.github.naios.wide.api.framework.storage.server.ChangeTracker;
-import com.github.naios.wide.api.framework.storage.server.SQLBuilder;
-import com.github.naios.wide.api.framework.storage.server.SQLInfoProvider;
-import com.github.naios.wide.api.framework.storage.server.SQLUpdateInfo;
-import com.github.naios.wide.api.framework.storage.server.ServerStorage;
-import com.github.naios.wide.api.framework.storage.server.ServerStorageStructure;
-
-public interface FrameworkService extends AliasFactory
+/**
+ * The Framework Service is exported as OSGI service.
+ * It allows you to create new {@link FrameworkWorkspace}s.
+ */
+public interface FrameworkService
 {
     /**
-     * TODO
-     * @param name
-     * @return
+     * Creates a new fresh {@link FrameworkWorkspace}.
+     * @param config The {@link EnviromentConfig} you want to use.
+     * @return Returns a new {@link FrameworkWorkspace} which allows you to work with.
      */
-    public <T extends ClientStorageStructure> ClientStorage<T> requestClientStorage(String name);
-
-    /**
-     *
-     * @param databaseId
-     * @return
-     */
-    public ChangeTracker requestChangeTracker(String databaseId);
-
-    /**
-     * TODO
-     * @param databaseId
-     * @param name
-     * @return
-     */
-    public <T extends ServerStorageStructure> ServerStorage<T> requestServerStorage(String databaseId, String name);
-
-    /**
-     * TODO
-     *
-     * @param sqlInfoProvider
-     * @param update
-     * @param insert
-     * @param delete
-     * @return
-     */
-    public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Collection<SQLUpdateInfo> update,
-            final Collection<ServerStorageStructure> insert,
-            final Collection<ServerStorageStructure> delete);
-
-    /**
-     * TODO
-     *
-     * @param sqlInfoProvider
-     * @param update
-     * @param insert
-     * @param delete
-     * @param updateConfig
-     * @param insertConfig
-     * @param deleteConfig
-     * @return
-     */
-    public SQLBuilder createSQLBuilder(final SQLInfoProvider sqlInfoProvider,
-            final Collection<SQLUpdateInfo> update,
-            final Collection<ServerStorageStructure> insert,
-            final Collection<ServerStorageStructure> delete,
-            final QueryTypeConfig updateConfig,
-            final QueryTypeConfig insertConfig,
-            final QueryTypeConfig deleteConfig);
-
-    /**
-     * TODO
-     *
-     * @param changeTracker
-     * @return
-     */
-    public SQLBuilder createSQLBuilder(final ChangeTracker changeTracker);
-
-    /**
-     * TODO
-     *
-     * @param changeTracker
-     * @param updateConfig
-     * @param insertConfig
-     * @param deleteConfig
-     * @return
-     */
-    public SQLBuilder createSQLBuilder(ChangeTracker changeTracker,
-            QueryTypeConfig updateConfig, QueryTypeConfig insertConfig,
-            QueryTypeConfig deleteConfig);
+    public FrameworkWorkspace createWorkspaceFromEnviroment(EnviromentConfig config);
 }
