@@ -335,7 +335,7 @@ public final class SQLMaker
 
     private static String createInsertHeaderPart(final String tableName, final List<ReadOnlyProperty<?>> list)
     {
-        return StringUtil.fillWithSpaces(INSERT, INTO, createName(tableName), createInsertDeclareValuesPart(list), VALUES);
+        return INSERT + SPACE + INTO + createName(tableName) + NEWLINE + SPACE + createInsertDeclareValuesPart(list) + NEWLINE + VALUES;
     }
 
     private static String createInsertDeclareValuesPart(final List<ReadOnlyProperty<?>> list)
@@ -354,7 +354,7 @@ public final class SQLMaker
                 .map(structure -> structure
                         .stream()
                         .map(field -> createValueOfReadOnlyProperty(structure, new SQLUpdateInfoImpl(field)))
-                        .collect(Collectors.joining(COMMA + SPACE, "(", ")")))
+                        .collect(Collectors.joining(COMMA + SPACE, " (", ")")))
                 .collect(Collectors.joining(COMMA + NEWLINE));
     }
 
