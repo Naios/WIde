@@ -101,7 +101,6 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.jakarta-regexp</artifactId>
-            <version>1.4_1</version>
         </dependency>
     </dependencies>
 </project>

@@ -10,9 +10,7 @@ package com.github.naios.wide.framework.internal.storage.server;
 
 import javafx.beans.property.ReadOnlyProperty;
 
-import com.github.naios.wide.api.config.schema.MappingMetaData;
 import com.github.naios.wide.api.framework.storage.server.ServerStorageStructurePublicBase;
-import com.github.naios.wide.api.util.Pair;
 
 public interface ServerStorageStructurePrivateBase extends ServerStorageStructurePublicBase
 {
