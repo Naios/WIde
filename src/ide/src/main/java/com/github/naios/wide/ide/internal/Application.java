@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.entities.server.ServerStorageKeys;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
 import com.github.naios.wide.ide.internal.controls.MappingPropertySheet;
+import com.github.naios.wide.ide.internal.controls.map.WorldMap;
 
 public class Application extends javafx.application.Application
 {
@@ -32,16 +34,27 @@ public class Application extends javafx.application.Application
     {
         primaryStage.setTitle("WIde GUI - by Naios");
 
-        final Pane root = new VBox();
+        final BorderPane root = new BorderPane();
+
+        final Pane propertyRoot = new VBox();
+        final WorldMap map = new WorldMap();
+
+
+        root.setLeft(map);
+        root.setRight(propertyRoot);
+
+
         primaryStage.setScene(new Scene(root, 300, 250));
 
-        primaryStage.setMinHeight(700);
-        primaryStage.setMinWidth(400);
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(700);
 
         final Label label = new Label();
         label.setAlignment(Pos.CENTER);
 
-        root.getChildren().add(label);
+        propertyRoot.setMaxWidth(300);
+
+        propertyRoot.getChildren().add(label);
 
         final FrameworkWorkspace workspace = Services.getFrameworkService().createWorkspaceFromEnvironment(
                 Services.getConfigService().getActiveEnvironment());
@@ -57,7 +70,7 @@ public class Application extends javafx.application.Application
         propertySheet.getStructures().add(creatureTemplate.request(ServerStorageKeys.ofCreatureTemplate(40)).get());
         propertySheet.getStructures().add(creatureTemplate.request(ServerStorageKeys.ofCreatureTemplate(60)).get());
 
-        root.getChildren().add(propertySheet);
+        propertyRoot.getChildren().add(propertySheet);
 
         final TextArea textField = new TextArea();
         textField.setEditable(false);
@@ -69,7 +82,7 @@ public class Application extends javafx.application.Application
             textField.setText(workspace.createSQLBuilder(creatureTemplate.getChangeTracker()).toString());
         });
 
-        root.getChildren().addAll(asSQLButton, textField);
+        propertyRoot.getChildren().addAll(asSQLButton, textField);
 
         primaryStage.toFront();
         primaryStage.show();
