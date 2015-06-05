@@ -14,7 +14,7 @@
 
     <packaging>pom</packaging>
 
-    <name>WIde - MMORPG Framework Tools</name>
+    <name>WIde - MMORPG Framework IDE</name>
     <url>https://github.com/Naios/WIde</url>
 
     <scm>
@@ -52,10 +52,14 @@
         <!-- Add JavaFX to the OSGI default Classpath-->
         <org.osgi.framework.system.packages.extra>
             javafx.animation, javafx.application, javafx.beans, javafx.beans.binding, javafx.beans.property, javafx.beans.property.adapter, javafx.beans.value,\
-            javafx.collections, javafx.concurrent,  javafx.embed.swing, javafx.embed.swt, javafx.event, javafx.fxml, javafx.geometry, javafx.scene, javafx.scene.canvas,\
+            javafx.collections, javafx.collections.transformation, javafx.concurrent,  javafx.embed.swing, javafx.embed.swt, javafx.event, javafx.fxml, javafx.geometry, javafx.scene, javafx.scene.canvas,\
             javafx.scene.chart, javafx.scene.control, javafx.scene.control.cell, javafx.scene.effect, javafx.scene.image,  javafx.scene.input, javafx.scene.layout,\
             javafx.scene.media, javafx.scene.paint, javafx.scene.shape,  javafx.scene.text, javafx.scene.transform, javafx.scene.web, javafx.stage, javafx.util,\
-            javafx.util.converter, com.sun.javafx.application
+            javafx.util.converter, javafx.css,\
+            com.sun.javafx, com.sun.javafx.collections, com.sun.javafx.css, com.sun.javafx.css.converters,\
+            com.sun.javafx.event, com.sun.javafx.runtime, com.sun.javafx.scene.control, com.sun.javafx.scene.control.behavior,\
+            com.sun.javafx.scene.control.skin, com.sun.javafx.scene.text, com.sun.javafx.scene.traversal,\
+            com.sun.javafx.tk, com.sun.javafx.webkit, com.sun.webkit
         </org.osgi.framework.system.packages.extra>
 
         <!-- Tell equinox to respect the ext path -->
@@ -225,6 +229,11 @@
                 <artifactId>org.apache.servicemix.bundles.jakarta-regexp</artifactId>
                 <version>1.4_1</version>
             </dependency>
+            <dependency>
+                <groupId>org.controlsfx</groupId>
+                <artifactId>controlsfx</artifactId>
+                <version>8.40.9</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -270,5 +279,6 @@
         <module>src/config</module>
         <module>src/database</module>
         <module>src/framework</module>
+        <module>src/ide</module>
     </modules>
 </project>

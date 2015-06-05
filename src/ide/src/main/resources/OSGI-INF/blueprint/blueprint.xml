@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Copyright (c) 2013 - 2015 Naios <naios-dev@live.de>
+ *
+ * This file is part of WIde which is released under Creative Commons 4.0 (by-nc-sa)
+ * See file LICENSE for full license details.
+ -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <description>WIde IDE</description>
+
+    <reference id="configService" interface="com.github.naios.wide.api.config.ConfigService"/>
+    <reference id="databasePoolService" interface="com.github.naios.wide.api.database.DatabasePoolService"/>
+    <reference id="entityService" interface="com.github.naios.wide.api.entities.EntityService"/>
+    <reference id="frameworkService" interface="com.github.naios.wide.api.framework.FrameworkService"/>
+
+    <bean id="application" class="com.github.naios.wide.ide.internal.WIdeGUIController"
+          init-method="start" destroy-method="stop">
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+    </bean>
+
+    <bean id="services" class="com.github.naios.wide.ide.internal.Services">
+        <property name="configService" ref="configService"/>
+        <property name="databasePoolService" ref="databasePoolService"/>
+        <property name="entityService" ref="entityService"/>
+        <property name="frameworkService" ref="frameworkService"/>
+    </bean>
+
+</blueprint>
