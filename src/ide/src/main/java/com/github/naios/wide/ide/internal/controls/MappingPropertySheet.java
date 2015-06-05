@@ -6,7 +6,7 @@
  * See file LICENSE for full license details.
  */
 
-package com.github.naios.wide.ide.internal;
+package com.github.naios.wide.ide.internal.controls;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,6 +58,7 @@ import com.github.naios.wide.api.property.ReadOnlyFlagProperty;
 import com.github.naios.wide.api.property.SimpleEnumProperty;
 import com.github.naios.wide.api.property.SimpleFlagProperty;
 import com.github.naios.wide.api.util.Flags;
+import com.github.naios.wide.ide.internal.Services;
 import com.google.common.collect.Iterables;
 
 

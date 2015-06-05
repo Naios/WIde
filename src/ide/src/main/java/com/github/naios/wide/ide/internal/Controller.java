@@ -8,25 +8,26 @@
 
 package com.github.naios.wide.ide.internal;
 
-import javafx.application.Application;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 
-public class WIdeGUIController
+public class Controller
 {
+    /**
+     * The system property which prevents the gui from starting.
+     */
     private static final String WIDE_NO_GUI_PROPERTY = "wide.nogui";
 
     private static BundleContext bundleContext;
 
-    private static WIdeGUIController instance;
+    private static Controller instance;
 
     public void setBundleContext(final BundleContext bundleContext)
     {
-        WIdeGUIController.bundleContext = bundleContext;
+        Controller.bundleContext = bundleContext;
     }
 
-    public static WIdeGUIController getInstance()
+    public static Controller getInstance()
     {
         return instance;
     }
@@ -54,7 +55,7 @@ public class WIdeGUIController
                 public void run()
                 {
                     // Start Application
-                    Application.launch(WIdeGUIApplication.class);
+                    Application.launch(Application.class);
                 };
 
             }.start();

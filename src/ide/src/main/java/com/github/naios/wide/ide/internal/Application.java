@@ -10,7 +10,6 @@ package com.github.naios.wide.ide.internal;
 
 import java.util.Optional;
 
-import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,8 +23,9 @@ import com.github.naios.wide.api.framework.FrameworkWorkspace;
 import com.github.naios.wide.api.framework.storage.server.ServerStorage;
 import com.github.naios.wide.entities.server.ServerStorageKeys;
 import com.github.naios.wide.entities.server.world.CreatureTemplate;
+import com.github.naios.wide.ide.internal.controls.MappingPropertySheet;
 
-public class WIdeGUIApplication extends Application
+public class Application extends javafx.application.Application
 {
     @Override
     public void start(final Stage primaryStage)
@@ -80,6 +80,6 @@ public class WIdeGUIApplication extends Application
     @Override
     public void stop() throws Exception
     {
-        WIdeGUIController.shutdownFramework();
+        Controller.shutdownFramework();
     }
 }

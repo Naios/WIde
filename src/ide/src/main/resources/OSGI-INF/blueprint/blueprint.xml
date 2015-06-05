@@ -15,7 +15,7 @@
     <reference id="entityService" interface="com.github.naios.wide.api.entities.EntityService"/>
     <reference id="frameworkService" interface="com.github.naios.wide.api.framework.FrameworkService"/>
 
-    <bean id="application" class="com.github.naios.wide.ide.internal.WIdeGUIController"
+    <bean id="application" class="com.github.naios.wide.ide.internal.Controller"
           init-method="start" destroy-method="stop">
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
