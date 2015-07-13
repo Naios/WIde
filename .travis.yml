@@ -5,5 +5,9 @@ language: java
 jdk:
   - oraclejdk8
 
+cache:
+  directories:
+    - .m2
+
 script:
   mvn clean install
