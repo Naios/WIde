@@ -73,6 +73,7 @@
         <configVersion>0.4.1</configVersion>
         <databaseVersion>0.4.1</databaseVersion>
         <frameworkVersion>0.4.1</frameworkVersion>
+        <ideVersion>0.4.1</ideVersion>
     </properties>   
 
     <dependencyManagement>
@@ -103,7 +104,11 @@
                 <artifactId>framework</artifactId>
                 <version>${frameworkVersion}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.github.naios.wide</groupId>
+                <artifactId>ide</artifactId>
+                <version>${ideVersion}</version>
+            </dependency>
             <!-- OSGI -->
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -188,6 +193,11 @@
                 <groupId>org.mariadb.jdbc</groupId>
                 <artifactId>mariadb-java-client</artifactId>
                 <version>1.1.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.12</version>
             </dependency>
             <!-- <dependency>
                 <groupId>commons-dbcp</groupId>

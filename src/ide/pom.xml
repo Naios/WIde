@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.naios.wide</groupId>
     <artifactId>ide</artifactId>
-    <version>${guiCoreVersion}</version>
+    <version>${ideVersion}</version>
 
     <name>WIde IDE</name>
 
@@ -39,8 +39,8 @@
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
