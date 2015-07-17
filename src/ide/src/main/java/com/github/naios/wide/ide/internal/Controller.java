@@ -10,9 +10,13 @@ package com.github.naios.wide.ide.internal;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Controller
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
+
     /**
      * The system property which prevents the gui from starting.
      */
@@ -46,16 +50,33 @@ public class Controller
 
     public void start()
     {
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("starting ide service...");
+
         instance = this;
+
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("config is {}", Services.getConfigService().title());
 
         if (!Boolean.getBoolean(WIDE_NO_GUI_PROPERTY))
             new Thread()
             {
+                {
+                    setDaemon(true);
+                }
+
                 @Override
                 public void run()
                 {
-                    // Start Application
-                    Application.launch(Application.class);
+                    try
+                    {
+                        // Start Application
+                        Application.launch(Application.class);
+                    }
+                    catch (final Throwable e)
+                    {
+                        e.printStackTrace();
+                    }
                 };
 
             }.start();
@@ -63,6 +84,7 @@ public class Controller
 
     public void stop()
     {
-
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("stopping ide service...");
     }
 }

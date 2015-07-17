@@ -156,14 +156,17 @@ public final class ConfigServiceImpl implements ConfigService
 	@Override
     public void reload()
 	{
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Starting WIde Config Service...");
+
 	    THIS_SERVICE = this;
 
 	    config.load(PATH);
 
-	    if (LOGGER.isDebugEnabled())
-            LOGGER.debug("WIde Config Service stopped!");
-
 	    saverThread.start();
+
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("WIde Config Service started!");
 	}
 
 	@Override
