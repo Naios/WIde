@@ -122,6 +122,7 @@ public class DatabaseImpl implements Database
 
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("Established sync & async connection to {}.", connectionString);
+
         return true;
     }
 

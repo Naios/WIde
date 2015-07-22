@@ -64,14 +64,12 @@ public final class FrameworkServiceImpl implements FrameworkService
     {
         INSTANCE = this;
 
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("WIde Framework Service started!");
+        LOGGER.info("WIde Framework Service started!");
     }
 
     public void stop()
     {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("WIde Framework Service stopped!");
+        LOGGER.info("WIde Framework Service stopped!");
     }
 
     public void setConfigService(final ConfigService configService)

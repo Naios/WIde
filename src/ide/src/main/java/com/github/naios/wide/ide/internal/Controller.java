@@ -50,13 +50,11 @@ public class Controller
 
     public void start()
     {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("starting ide service...");
+        // Don't access the services here!
 
         instance = this;
 
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("config is {}", Services.getConfigService().title());
+        System.out.println(String.format("The logging property: %s", bundleContext.getProperty("org.ops4j.pax.logging.DefaultServiceLog.level")));
 
         if (!Boolean.getBoolean(WIDE_NO_GUI_PROPERTY))
             new Thread()
@@ -80,11 +78,12 @@ public class Controller
                 };
 
             }.start();
+
+        LOGGER.info("Started WIde IDE service.");
     }
 
     public void stop()
     {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("stopping ide service...");
+        LOGGER.info("Stopped WIde IDE service.");
     }
 }

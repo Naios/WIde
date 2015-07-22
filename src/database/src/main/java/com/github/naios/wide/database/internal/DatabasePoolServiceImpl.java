@@ -104,8 +104,7 @@ public final class DatabasePoolServiceImpl
         for (final Entry<String, DatabaseConfig> db : config.getActiveEnvironment().getDatabases())
             connections.put(db.getKey(), new SimpleObjectProperty<>(createDatabase(db.getKey(), db.getValue())));
 
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("WIde DatabasePool Service opened!");
+        LOGGER.info("WIde DatabasePool Service opened!");
     }
 
     public void close()
@@ -115,8 +114,8 @@ public final class DatabasePoolServiceImpl
             database.get().close();
             database.set(null);
         });
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("WIde DatabasePool Service: closed!");
+
+        LOGGER.info("WIde DatabasePool Service: closed!");
     }
 
     public void setConfig(final ConfigService config)
