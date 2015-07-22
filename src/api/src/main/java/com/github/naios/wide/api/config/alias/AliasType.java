@@ -10,5 +10,5 @@ package com.github.naios.wide.api.config.alias;
 
 public enum AliasType
 {
-    ENUM, CLIENT, SERVER, EMPTY;
+    ENUM, CLIENT, SERVER, DICTIONARY, EMPTY;
 }

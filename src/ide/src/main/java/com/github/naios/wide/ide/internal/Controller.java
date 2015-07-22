@@ -54,8 +54,6 @@ public class Controller
 
         instance = this;
 
-        System.out.println(String.format("The logging property: %s", bundleContext.getProperty("org.ops4j.pax.logging.DefaultServiceLog.level")));
-
         if (!Boolean.getBoolean(WIDE_NO_GUI_PROPERTY))
             new Thread()
             {

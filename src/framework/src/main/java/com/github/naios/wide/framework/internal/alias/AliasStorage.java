@@ -36,7 +36,9 @@ public class AliasStorage implements AliasFactory
             put(AliasType.CLIENT, new ClientAliasConverter());
             put(AliasType.SERVER, new ServerAliasConverter());
             put(AliasType.ENUM, new EnumAliasConverter());
+            put(AliasType.DICTIONARY, new DictionaryAliasConverter());
             put(AliasType.EMPTY, new EmptyAliasConverter());
+
         }
     };
 

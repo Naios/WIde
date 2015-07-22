@@ -13,23 +13,12 @@ import java.util.Map;
 
 import com.github.naios.wide.api.config.alias.Alias;
 import com.github.naios.wide.api.framework.FrameworkWorkspace;
-import com.github.naios.wide.framework.internal.FrameworkServiceImpl;
 
-public class EnumAliasConverter implements AliasConverter
+public class DictionaryAliasConverter implements AliasConverter
 {
-    @SuppressWarnings("rawtypes")
     @Override
     public Map<Integer, String> convertAlias(final Alias alias, final FrameworkWorkspace workspace)
     {
-        final Map<Integer, String> map = new HashMap<>();
-
-        // Get enumeration
-        final Class<? extends Enum> enumeration =
-                FrameworkServiceImpl.getEntityService().requestEnum(alias.target().get());
-
-        for (int i = 0; i < enumeration.getEnumConstants().length; ++i)
-            map.put(i, enumeration.getEnumConstants()[i].name());
-
-        return map;
+        return new HashMap<>(alias.customEntries());
     }
 }
