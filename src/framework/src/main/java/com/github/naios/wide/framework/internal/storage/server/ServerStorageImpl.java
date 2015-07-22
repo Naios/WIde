@@ -132,6 +132,8 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
 
     private final String statementObject;
 
+    private static int INCREMENT = 0;
+
     public ServerStorageImpl(final String databaseId, final String tableName, final ChangeTrackerImpl changeTracker) throws ServerStorageException
     {
         this.databaseId = databaseId;
@@ -203,7 +205,7 @@ public class ServerStorageImpl<T extends ServerStorageStructure> implements Serv
         mapper = new JsonMapper<>(schema, SQLToPropertyMappingAdapterHolder.<T>get(),
                 Arrays.asList(ServerStorageStructurePrivateBase.class), ServerStorageStructureBaseImplementation.class, typeReceiver);
 
-        statementObject = tableName + PreparedStatements.STATEMENT_SELECT_ROW.toString();
+        statementObject = tableName + PreparedStatements.STATEMENT_SELECT_ROW.toString() + (/*FIXME*/ INCREMENT++);
 
         selectLowPart = createSelectFormat();
         statementFormat = createStatementFormat();
