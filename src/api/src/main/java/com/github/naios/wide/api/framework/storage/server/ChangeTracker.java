@@ -12,6 +12,9 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableSet;
 
+/**
+ * The {@link ChangeTracker} is responsible for tracking changes on the properties of its associated environment.
+ */
 public interface ChangeTracker
     extends SQLInfoProvider
 {
@@ -31,12 +34,12 @@ public interface ChangeTracker
     public ObservableSet<SQLUpdateInfo> propertiesUpdated();
 
     /**
-     * @return Our scope property
+     * @return Our current scope property
      */
     public StringProperty scope();
 
     /**
-     * @return Returns a boolean that identifies if a scope was set.
+     * @return Returns true if a scope was set.
      */
     public boolean hasScopeSet();
 
@@ -60,6 +63,12 @@ public interface ChangeTracker
     public void releaseScope();
 
     /**
+     * Sets the comment of the current scope
+     * @param comment the comment you want to set
+     */
+    public void setScopeComment(String comment);
+
+    /**
      * Sets an observable value as custom variable<br>
      * Value is wrapped into the variable then
      */
@@ -71,18 +80,14 @@ public interface ChangeTracker
     public void releaseCustomVariable(ServerStorageStructure structure, ReadOnlyProperty<?> observable);
 
     /**
-     * Sets the comment of the current scope
-     * @param comment the comment you want to set
-     */
-    public void setScopeComment(String comment);
-
-    /**
-     * Commits the current content to the database
+     * Commits the current Changeset to the database.
+     * TODO Move this in another class
      */
     public void commit();
 
     /**
      * @return Returns the sql query of all changes
+     * TODO Move this in a another class
      */
     public String getQuery();
 }
